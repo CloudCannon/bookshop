@@ -1,0 +1,8 @@
+[defaults]
+text = "Hello World"
+big = false
+
+[standardTitle]
+
+[otherTitle]
+big = true

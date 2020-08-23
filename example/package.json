@@ -1,0 +1,34 @@
+{
+  "name": "@bookshop/example",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Kitchen sink example for the bookshop storybook",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloudcannon/bookshop.git",
+    "directory": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "start-storybook -p 4999"
+  },
+  "author": "@LiamBigelow",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.11.4",
+    "@bookshop/loader": "file:../loader",
+    "@bookshop/jekyll-engine": "file:../jekyll-engine",
+    "@storybook/html": "^6.0.16",
+    "css-loader": "^4.2.1",
+    "liquidjs": "^9.15.0",
+    "resolve-url-loader": "^3.1.1",
+    "sass": "^1.26.10",
+    "sass-loader": "^9.0.3",
+    "style-loader": "^1.2.1",
+    "@storybook/addon-controls": "^6.0.16",
+    "@storybook/addon-docs": "^6.0.16",
+    "copy-webpack-plugin": "^6.0.3",
+    "import-glob": "^1.5.0"
+  }
+}
