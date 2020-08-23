@@ -17,3 +17,5 @@ See the example folder. Currently split into:
 - Add generic support by allowing custom templates to be provided to @bookshop/loader
 - Abstract WebpackCopyPlugin
 - Publish a bookshop package that handles everything including .storybook
+- addDependency in @bookshop/loader to all files in the component's folder so webpack watches them (without bundling them)
+- Figure out how to categorise frameworks within a component

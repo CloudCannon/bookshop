@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/loader",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "src/index.js",
   "repository": {
@@ -20,5 +20,8 @@
   },
   "peerDependencies": {
     "@bookshop/jekyll-engine": "~1.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
