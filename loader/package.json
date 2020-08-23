@@ -1,0 +1,24 @@
+{
+  "name": "@bookshop/loader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloudcannon/bookshop.git",
+    "directory": "loader"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "@LiamBigelow",
+  "license": "MIT",
+  "dependencies": {
+    "change-case": "^4.1.1",
+    "ejs": "^3.1.5",
+    "toml": "^3.0.0"
+  },
+  "peerDependencies": {
+    "@bookshop/jekyll-engine": "~1.0"
+  }
+}
