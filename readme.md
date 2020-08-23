@@ -2,6 +2,12 @@
 
 An opinionated set of configurations for a multi-framework component library in Storybook.
 
+## Usage
+
+See the example folder. Currently split into:
+`@bookshop/jekyll-engine`
+`@bookshop/loader`
+
 ## TODO:
 - Add generator as a package
 - Glob all jekyll files into webpack and load through a custom FS implementation
