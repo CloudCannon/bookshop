@@ -1,0 +1,8 @@
+{
+  "packages": [
+    "jekyll-engine",
+    "jekyll-extract",
+    "loader"
+  ],
+  "version": "1.0.0"
+}
