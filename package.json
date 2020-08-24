@@ -22,5 +22,8 @@
     "@bookshop/jekyll-engine": "file:jekyll-engine",
     "@bookshop/jekyll-extract": "file:jekyll-extract",
     "@bookshop/loader": "file:loader"
+  },
+  "scripts": {
+    "publish": "lerna publish"
   }
 }
