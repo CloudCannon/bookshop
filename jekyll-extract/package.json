@@ -25,5 +25,8 @@
   },
   "bin": {
     "jekyll-extract": "src/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
