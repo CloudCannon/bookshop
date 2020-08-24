@@ -70,23 +70,7 @@ webpack({
             ],
             include: [
                 path.resolve(process.cwd(), 'components'),
-            ],
-        }, {
-            test: /\.scss$/,
-            use: [{
-                    loader: require.resolve('file-loader'),
-                    options: {
-                        name: '_sass/[path][name].[ext]',
-                    }
-                }, {
-                    loader: require.resolve('extract-loader')
-                }, {
-                    loader: require.resolve('raw-loader')
-                },
-                require.resolve('import-glob')
-            ],
-            include: [
-                path.resolve(process.cwd(), 'styles'),
+                path.resolve(process.cwd(), 'styles')
             ],
         }, {
             test: /\.html$/,
