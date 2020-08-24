@@ -73,7 +73,7 @@ webpack({
             use: [{
                 loader: require.resolve('file-loader'),
                 options: {
-                    name: '_includes/[path][name].html',
+                    name: '_components/[name].html',
                 }
             }, {
                 loader: require.resolve('extract-loader')

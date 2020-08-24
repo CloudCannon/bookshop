@@ -3,7 +3,7 @@ var path = require('path');
 
 //root here refers to the path im the browser, not on the fs.
 const engine = new Liquid({
-    root: '/',                   // root for layouts/includes lookup 
+    root: '/components',                   // root for layouts/includes lookup 
     extname: '.html'             // used for layouts/includes, defaults ""
 });
 engine.plugin(require('./plugins/bem-mods.js'));
@@ -35,6 +35,13 @@ const rewriteTag = function(token, src) {
   if (token.name && token.name.match(/^end/)) return src;
 
   if (token.name && token.name === 'include_cached') raw = raw.replace(/include_cached/, 'include');
+  if (token.name && token.name === 'component') {
+    token.name = 'include';
+    raw = raw.replace(
+      /component (\S+)/,
+      (_, component) => `include ${component}.jekyll.html`
+    );
+  }
   if (token.name && token.name.match(/^include/)) {
     raw = raw.replace(/=/g, ': ');
     raw = raw.replace(/include\s([^"'][^\s]+)/gi, 'include "$1"');

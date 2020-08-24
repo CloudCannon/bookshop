@@ -6,7 +6,7 @@ let changeCase = require("change-case");
 const storyTemplate = `
 const { jekyllEngine } = require("@bookshop/jekyll-engine");
 
-const jekyllComponent = props => jekyllEngine.renderFileSync("<%= full %>.jekyll.html", props);
+const jekyllComponent = props => jekyllEngine.renderFileSync("<%= component %>.jekyll.html", props);
 
 export default {
     title: "<%= title %>",
