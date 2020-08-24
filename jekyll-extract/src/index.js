@@ -16,15 +16,11 @@ webpack({
         path: outputPath,
         filename: 'assets/js/theme.js'
     },
-    plugins: [
-        new CleanWebpackPlugin()
-    ],
     module: {
         rules: [{
             test: /\.js$/,
             use: [
-                require.resolve('import-glob'),
-                {
+                require.resolve('import-glob'), {
                     loader: require.resolve('string-replace-loader'),
                     options: {
                         search: '__ROOT__',
@@ -88,7 +84,16 @@ webpack({
                 process.cwd(),
             ],
         }]
-    }
+    },
+    plugins: [
+        new CleanWebpackPlugin(),
+        new CopyPlugin({
+            patterns: [{
+                from: path.resolve(process.cwd(), 'temporary-jekyll-data'),
+                to: outputPath
+            }]
+        })
+    ]
 }, (err, stats) => {
     if (err || stats.hasErrors()) {
         console.log("Error extracting theme");
