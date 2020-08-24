@@ -86,13 +86,7 @@ webpack({
         }]
     },
     plugins: [
-        new CleanWebpackPlugin(),
-        new CopyPlugin({
-            patterns: [{
-                from: path.resolve(process.cwd(), 'temporary-jekyll-data'),
-                to: outputPath
-            }]
-        })
+        new CleanWebpackPlugin()
     ]
 }, (err, stats) => {
     if (err || stats.hasErrors()) {
