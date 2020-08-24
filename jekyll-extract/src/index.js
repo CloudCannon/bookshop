@@ -42,7 +42,7 @@ webpack({
             use: [{
                     loader: require.resolve('file-loader'),
                     options: {
-                        name: 'assets/css/theme.scss',
+                        name: '_sass/theme.scss',
                     }
                 }, {
                     loader: require.resolve('extract-loader')
