@@ -11,24 +11,29 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "start-storybook -p 4999"
+    "start": "start-storybook -p 4999",
+    "build": "jekyll-extract"
   },
   "author": "@LiamBigelow",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.11.4",
-    "@bookshop/loader": "file:../loader",
     "@bookshop/jekyll-engine": "file:../jekyll-engine",
+    "@bookshop/jekyll-extract": "file:../jekyll-extract",
+    "@bookshop/loader": "file:../loader",
+    "@storybook/addon-controls": "^6.0.16",
+    "@storybook/addon-docs": "^6.0.16",
     "@storybook/html": "^6.0.16",
+    "copy-webpack-plugin": "^6.0.3",
     "css-loader": "^4.2.1",
+    "extract-loader": "^5.1.0",
+    "file-loader": "^6.0.0",
+    "import-glob": "^1.5.0",
     "liquidjs": "^9.15.0",
+    "raw-loader": "^4.0.1",
     "resolve-url-loader": "^3.1.1",
     "sass": "^1.26.10",
     "sass-loader": "^9.0.3",
-    "style-loader": "^1.2.1",
-    "@storybook/addon-controls": "^6.0.16",
-    "@storybook/addon-docs": "^6.0.16",
-    "copy-webpack-plugin": "^6.0.3",
-    "import-glob": "^1.5.0"
+    "style-loader": "^1.2.1"
   }
 }

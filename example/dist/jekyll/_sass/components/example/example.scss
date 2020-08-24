@@ -1,0 +1,8 @@
+.c-example {
+    color: $color;
+    font-size: 25px;
+
+    &--big {
+        font-size: 50px;
+    }
+}
