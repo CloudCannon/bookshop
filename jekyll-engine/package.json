@@ -19,5 +19,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "core-js": "^3.6.5"
   }
 }
