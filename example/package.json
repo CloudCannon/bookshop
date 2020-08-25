@@ -12,7 +12,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "start-storybook -p 4999",
-    "build": "jekyll-extract"
+    "build": "jekyll-extract",
+    "gen": "gen"
   },
   "author": "@LiamBigelow",
   "license": "MIT",
@@ -21,6 +22,7 @@
     "@bookshop/jekyll-engine": "file:../jekyll-engine",
     "@bookshop/jekyll-extract": "file:../jekyll-extract",
     "@bookshop/loader": "file:../loader",
+    "@bookshop/gen": "file:../gen",
     "@storybook/addon-backgrounds": "^6.0.16",
     "@storybook/addon-controls": "^6.0.16",
     "@storybook/addon-docs": "^6.0.16",
