@@ -1,6 +1,8 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
-const { rewriteIncludes } = require('@bookshop/jekyll-engine');
+const {
+    rewriteIncludes
+} = require('@bookshop/jekyll-engine');
 
 const projectRoot = path.resolve(__dirname, '../');
 
@@ -43,20 +45,27 @@ module.exports = async({
         ],
     });
 
-      config.plugins.push(
+    config.plugins.push(
         new CopyPlugin({
             patterns: [{
-            from: path.resolve(projectRoot, 'components/**/*.jekyll.html'),
-            to: './components',
-            globOptions: {
-                ignore: ['*.stories.*'],
-            },
-            transform(content, path) {
-              return rewriteIncludes(content);
-            },
-            flatten: true
-          }]
-        }));
+                from: path.resolve(projectRoot, 'components/**/*.jekyll.html'),
+                to: './components',
+                globOptions: {
+                    ignore: ['*.stories.*'],
+                },
+                transform(content, path) {
+                    return rewriteIncludes(content);
+                },
+                flatten: true
+            }, {
+                from: path.resolve(projectRoot, 'assets'),
+                to: './assets',
+                globOptions: {
+                    ignore: ['*.scss'],
+                }
+            }]
+        })
+    );
 
     return config;
 };
