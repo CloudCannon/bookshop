@@ -94,7 +94,7 @@ const typeFromVal = val => {
     };
   }
   if (typeof val === 'string') {
-    if (val[0] === '#') {
+    if (val[0] === '#' && val.length > 3) {
       return {
         name:'color',
         value: `"${val}"`
