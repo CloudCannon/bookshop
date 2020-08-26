@@ -1,5 +1,6 @@
 ---
 to: components/<%= name %>/<%= name %>.stories.toml
+unless_exists: true
 ---
 [defaults]
 <% for(var j=0; j<mods.length; j++) {-%>

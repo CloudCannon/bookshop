@@ -1,5 +1,6 @@
 ---
 to: components/<%= name %>/<%= name %>.scss
+unless_exists: true
 ---
 .c-<%= name %> { $c: &;
 <% for(var i=0; i<mods.length; i++) {%>

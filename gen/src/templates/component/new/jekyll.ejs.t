@@ -1,5 +1,6 @@
 ---
 to: components/<%= name %>/<%= name %>.jekyll.html
+unless_exists: true
 ---
 <div class="{{ 'c-<%= name %>' | addmods: <% for(var i=0; i<mods.length; i++) {%><%= mods[i] %>:include.<%= mods[i] %><% if(i < mods.length - 1){ %>,<% } %> <% } %>}}">
 <% for(var i=0; i<elements.length; i++) {%>
