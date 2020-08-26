@@ -17,6 +17,15 @@ var JSTHandler = {
 
 window.JST = new Proxy({}, JSTHandler);
 
+window.ADDMODS = (classname, mods) => {
+    for (let [mod, val] of Object.entries(mods)) {
+        if (val) {
+            classname = `${classname} ${classname}--${mod}`;
+        }
+    }
+    return classname;
+}
+
 module.exports = {
     underscoreEngine: underscoreEngine
 }
