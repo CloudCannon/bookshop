@@ -24,6 +24,6 @@
     "@bookshop/loader": "file:loader"
   },
   "scripts": {
-    "publish": "lerna publish"
+    "publish": "lerna publish --force-publish"
   }
 }

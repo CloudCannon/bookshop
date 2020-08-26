@@ -1,6 +1,7 @@
 {
   "packages": [
     "engines/jekyll-engine",
+    "engines/underscore-engine",
     "extractors/jekyll-extract",
     "loader",
     "gen"
