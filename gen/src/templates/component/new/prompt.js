@@ -2,8 +2,7 @@
 // https://github.com/enquirer/enquirer/tree/master/examples
 //
 let globalName = '';
-module.exports = [
-  {
+module.exports = [{
     type: 'input',
     name: 'name',
     message: "Component Name",
@@ -20,8 +19,7 @@ module.exports = [
         globalName = name;
         return name.toLowerCase();
     }
-  },
-  {
+}, {
     type: 'list',
     name: 'elements',
     message: "BEM elements (Space seperated)",
@@ -30,8 +28,7 @@ module.exports = [
     format: vals => {
         return (typeof vals == 'string') ? vals.split(/\s/).map(v => `c-${globalName}__${v}`).join(', ') : vals;
     }
-  },
-  {
+}, {
     type: 'list',
     name: 'mods',
     message: "BEM modifiers (Space seperated)",
@@ -40,22 +37,37 @@ module.exports = [
     format: vals => {
         return (typeof vals == 'string') ? vals.split(/\s/).map(v => `c-${globalName}--${v}`).join(', ') : vals;
     }
-  },
-  {
+}, {
     type: 'multiselect',
     name: 'knobs',
     message: "Storybook Knobs",
     hint: '<Space> to select, <Enter> to skip',
-    choices: [
-        { name: "Text", value: "text" },
-        { name: "Number", value: "number" },
-        { name: "Boolean", value: "boolean" },
-        { name: "Color", value: "color" },
-        { name: "Array", value: "array" },
-        { name: "Object", value: "object" },
-    ]
-  },
-  {
+    indicator(state, choice) {
+        if (choice.enabled) {
+            return '🆕';
+        }
+        return '✖️';
+    },
+    choices: [{
+        name: "Text",
+        value: "text"
+    }, {
+        name: "Number",
+        value: "number"
+    }, {
+        name: "Boolean",
+        value: "boolean"
+    }, {
+        name: "Color",
+        value: "color"
+    }, {
+        name: "Array",
+        value: "array"
+    }, {
+        name: "Object",
+        value: "object"
+    }, ]
+}, {
     type: 'multiselect',
     name: 'frameworks',
     message: "Generate frameworks",
@@ -63,14 +75,24 @@ module.exports = [
     validate(value) {
         return value.length === 0 ? `Select at least one framework.` : true;
     },
-    choices: [
-        { name: "Jekyll", value: "jekyll" },
-        { name: "Underscore", value: "underscore" },
-    ]
-  }
-]
+    indicator(state, choice) {
+        if (choice.enabled) {
+            return '🥳';
+        }
+        return '❌';
+    },
+    choices: [{
+        name: "Jekyll",
+        value: "jekyll"
+    }, {
+        name: "Underscore",
+        value: "underscore"
+    }, ]
+}]
 
 function exitHandler(options, exitCode) {
     console.log("Component added! Storybook might not catch the event, but saving any file will rebuild.");
 }
-process.on('exit', exitHandler.bind(null,{cleanup:true}));
+process.on('exit', exitHandler.bind(null, {
+    cleanup: true
+}));
