@@ -1,7 +1,7 @@
 {
   "packages": [
-    "jekyll-engine",
-    "jekyll-extract",
+    "engines/jekyll-engine",
+    "extractors/jekyll-extract",
     "loader",
     "gen"
   ],

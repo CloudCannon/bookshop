@@ -3,6 +3,11 @@
   "version": "1.1.1",
   "description": "",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloudcannon/bookshop.git",
+    "directory": "extractors/jekyll-extract"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\""
   },

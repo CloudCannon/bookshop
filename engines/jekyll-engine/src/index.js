@@ -10,6 +10,13 @@ engine.plugin(require('./plugins/bem-mods.js'));
 engine.plugin(require('./plugins/jsonify.js'));
 engine.plugin(require('./plugins/slugify-plugin.js'));
 
+const jekyllEngine = {
+  render: (component, props) => {
+    component = `${component}.jekyll.html`;
+    return engine.renderFileSync(component, props);
+  }
+}
+
 /**
  * Rewrite Jekyll includes to match LiquidJS syntax
  * @param  {Buffer} text File contents of a Jekyll include
@@ -58,6 +65,6 @@ const rewriteTag = function(token, src) {
 }
 
 module.exports = {
-    jekyllEngine: engine,
+    jekyllEngine: jekyllEngine,
     rewriteIncludes: rewriteIncludes
 }

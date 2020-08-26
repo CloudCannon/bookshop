@@ -6,7 +6,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/cloudcannon/bookshop.git",
-    "directory": "jekyll-engine"
+    "directory": "engines/jekyll-engine"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\""
