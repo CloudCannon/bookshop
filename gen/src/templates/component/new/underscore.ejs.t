@@ -1,5 +1,5 @@
 ---
-to: components/<%= name %>/<%= name %>.jst.ejs
+to: "<%= (frameworks.indexOf('Underscore') >= 0) ? `components/${name}/${name}.jst.ejs` : null %>"
 unless_exists: true
 ---
 <div class="<%%= ADDMODS('c-<%= name %>', {<% for(var i=0; i<mods.length; i++) {%><%= mods[i] %>:<%= mods[i] %><% if(i < mods.length - 1){ %>,<% } %> <% } %>}) %%>">

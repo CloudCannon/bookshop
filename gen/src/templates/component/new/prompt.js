@@ -54,6 +54,19 @@ module.exports = [
         { name: "Array", value: "array" },
         { name: "Object", value: "object" },
     ]
+  },
+  {
+    type: 'multiselect',
+    name: 'frameworks',
+    message: "Generate frameworks",
+    hint: '<Space> to select, <Enter> to skip',
+    validate(value) {
+        return value.length === 0 ? `Select at least one framework.` : true;
+    },
+    choices: [
+        { name: "Jekyll", value: "jekyll" },
+        { name: "Underscore", value: "underscore" },
+    ]
   }
 ]
 
