@@ -1,0 +1,6 @@
+[defaults]
+
+linkone = "Hello"
+linktwo = "World"
+
+[standard]

@@ -48,7 +48,7 @@ module.exports = async({
     config.plugins.push(
         new CopyPlugin({
             patterns: [{
-                from: path.resolve(projectRoot, 'components/**/*.jekyll.html'),
+                from: path.resolve(projectRoot, 'components/**/*'),
                 to: './components',
                 globOptions: {
                     ignore: ['*.stories.*'],
