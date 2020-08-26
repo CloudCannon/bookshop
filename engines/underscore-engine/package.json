@@ -1,0 +1,23 @@
+{
+  "name": "@bookshop/underscore-engine",
+  "version": "1.1.0",
+  "description": "",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloudcannon/bookshop.git",
+    "directory": "engines/underscore-engine"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\""
+  },
+  "author": "@LiamBigelow",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^3.1.5",
+    "underscore": "^1.10.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
