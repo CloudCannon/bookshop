@@ -17,6 +17,8 @@ to: components/<%= name %>/<%= name %>.stories.toml
   Small = "small"<% } %>
 <% } %>
 
+[standard]
+
 <% for(var i=0; i<mods.length; i++) {-%>
 [<%= mods[i] %>]
 <% for(var j=0; j<mods.length; j++) {-%>
