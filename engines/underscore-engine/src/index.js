@@ -1,18 +1,17 @@
+const _ = require("underscore");
+
 const underscoreEngine = {
   render: (component, props) => {
-    props = JSON.stringify(props);
-
-    return ejs.render(`<%- JST["${component}"](${props}) %>`, {}, {client: true});
+    return _.template(`<%= JST["${component}"](props) %>`)({props: props});
   }
 }
 
-const JSTHandler = {
-  get: (_, name) => {
+var JSTHandler = {
+  get: (o, name) => {
     let request = new XMLHttpRequest();
     request.open('GET', `/components/${name}.jst.ejs`, false);  // `false` makes the request synchronous
     request.send(null);
-
-    return ejs.compile(request.responseText, {client: true});
+    return _.template(request.responseText);
   },
 };
 
