@@ -1,5 +1,6 @@
 [defaults]
 text = "Link"
 href = "#"
+bold = false
 
 [standard]

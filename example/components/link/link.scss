@@ -1,3 +1,7 @@
 .c-link {
     color: pink;
+
+    &--bold {
+        font-weight: bold;
+    }
 }
