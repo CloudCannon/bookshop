@@ -5,8 +5,13 @@ let changeCase = require("change-case");
 
 const storyTemplate = `
 const { jekyllEngine } = require("@bookshop/jekyll-engine");
+const { underscoreEngine } = require("@bookshop/underscore-engine");
 
-const jekyllComponent = props => jekyllEngine.renderFileSync("<%= component %>.jekyll.html", props);
+const component = props => {
+  if (!props.framework) props.framework = "<%- frameworks[0] %>";
+  if (props.framework === "jekyll") return jekyllEngine.render("<%- component %>", props);
+  if (props.framework === "jst-ejs") return underscoreEngine.render("<%- component %>", props);
+}
 
 export default {
     title: "<%= title %>",
@@ -15,7 +20,7 @@ export default {
 };
 
 <% for(var i=0; i<stories.length; i++) {%>
-export const <%= stories[i].name %> = jekyllComponent.bind({});
+export const <%= stories[i].name %> = component.bind({});
 <%= stories[i].name %>.args = <%- stories[i].args %>;
 <%= stories[i].name %>.argTypes = <%- stories[i].argTypes %>;
 <% } %>
@@ -30,11 +35,31 @@ module.exports = function(source) {
   //todo: report meaningful errors
   let data = toml.parse(source);
 
+  const frameworks = findFrameworkFiles(this);
+  const hasMultipleFrameworks = frameworks.length > 1;
+
   let {component, title, full} = getTitleFromPath(this);
+
+  if (hasMultipleFrameworks) {
+    data.defaults = {
+      framework: frameworks[0] || 'jekyll',
+      ...data.defaults
+    }
+  }
+
+  const defaultArgTypes = processProps(data.defaults);
+  if (hasMultipleFrameworks) {
+    defaultArgTypes["framework"] = {
+      control: {
+        type: 'inline-radio',
+        options: frameworks
+      }
+    }
+  }
 
   let defaults = {
     args: JSON.stringify(data.defaults),
-    argTypes: JSON.stringify(processProps(data.defaults))
+    argTypes: JSON.stringify(defaultArgTypes)
   }
   delete data.defaults;
 
@@ -47,10 +72,34 @@ module.exports = function(source) {
     })
   }
 
-  let t = ejs.render(storyTemplate, { component, title, full, defaults, stories });
+  let t = ejs.render(storyTemplate, { component, title, full, defaults, stories, frameworks });
 
   this.callback(null, t);
   return;
+}
+
+/**
+ * Check the webpack FS for what component files exist
+ */
+const findFrameworkFiles = context => {
+  const componentFolder = path.dirname(context.resourcePath);
+  const componentName = path.basename(context.resourcePath).split('.')[0];
+
+  const files = {
+    "jekyll": path.resolve(componentFolder, `${componentName}.jekyll.html`),
+    "jst-ejs": path.resolve(componentFolder, `${componentName}.jst.ejs`)
+  }
+
+  let fileList = [];
+
+  for (let [framework, filename] of Object.entries(files)) {
+    if (context.fs._statStorage.data.has(filename)) {
+      fileList.push(framework);
+    }
+  }
+
+  console.log(`\nFound ${componentName} files: ${fileList.join(', ')}`);
+  return fileList;
 }
 
 /**
