@@ -7,7 +7,13 @@ const {
     CleanWebpackPlugin
 } = require('clean-webpack-plugin');
 
-const outputPath = path.resolve(process.cwd(), 'dist/jekyll');
+let outputPath = path.resolve(process.cwd(), '_bookshop');
+let libPath = path.resolve(process.cwd(), process.env.COMPONENT_LIB);
+
+if (!libPath) {
+    outputPath = path.resolve(process.cwd(), 'dist/jekyll');
+    libPath = process.cwd();
+}
 
 webpack({
     mode: 'production',
@@ -24,7 +30,7 @@ webpack({
                     loader: require.resolve('string-replace-loader'),
                     options: {
                         search: '__ROOT__',
-                        replace: process.cwd(),
+                        replace: libPath,
                         flags: 'g'
                     }
                 }
@@ -38,7 +44,7 @@ webpack({
             use: [{
                     loader: require.resolve('file-loader'),
                     options: {
-                        name: '_sass/theme.scss',
+                        name: 'sass/theme.scss',
                     }
                 }, {
                     loader: require.resolve('extract-loader')
@@ -48,14 +54,15 @@ webpack({
                 require.resolve('import-glob')
             ],
             include: [
-                process.cwd(),
+                path.resolve(libPath),
             ],
         }, {
             test: /\.scss$/,
             use: [{
                     loader: require.resolve('file-loader'),
                     options: {
-                        name: '_sass/[path][name].[ext]',
+                        name: 'sass/[path][name].[ext]',
+                        context: path.resolve(libPath),
                     }
                 }, {
                     loader: require.resolve('extract-loader')
@@ -65,15 +72,15 @@ webpack({
                 require.resolve('import-glob')
             ],
             include: [
-                path.resolve(process.cwd(), 'components'),
-                path.resolve(process.cwd(), 'styles')
+                path.resolve(libPath, 'components'),
+                path.resolve(libPath, 'styles')
             ],
         }, {
             test: /\.html$/,
             use: [{
                 loader: require.resolve('file-loader'),
                 options: {
-                    name: '_components/[name].html',
+                    name: 'components/[name].html',
                 }
             }, {
                 loader: require.resolve('extract-loader')
@@ -81,13 +88,18 @@ webpack({
                 loader: require.resolve('raw-loader')
             }],
             include: [
-                process.cwd(),
+                path.resolve(libPath),
             ],
         }]
     },
     plugins: [
         new CleanWebpackPlugin()
-    ]
+    ],
+    watch: true,
+    watchOptions: {
+        aggregateTimeout: 500,
+        ignored: ['.git/**', 'node_modules/**', 'dist/**']
+    }
 }, (err, stats) => {
     if (err || stats.hasErrors()) {
         console.log("Error extracting theme");
