@@ -1,4 +1,3 @@
-@@ -0,0 +1,47 @@
 # New theme connector
 As at 31st August 2020 
 
