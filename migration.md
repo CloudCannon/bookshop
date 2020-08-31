@@ -36,3 +36,7 @@ gem "jekyll-bookshop", "~> 1.1"
 - Run `npm start` in your bookshop to serve the storybook app
 
 Automatically running this stack is something we can look at in the future.
+
+## Deploying
+
+Nothing special needs to be done for deployment. The change you made to `spec.files` in your theme means that your bookshop components will be bundled with the theme, and the jekyll-bookshop plugin is environment agnostic, so it should all just work™️.
