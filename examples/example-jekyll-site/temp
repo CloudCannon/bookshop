@@ -1,0 +1,262 @@
+Configuration file: /Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-site/_config.yml
+--- &5 !ruby/object:Jekyll::Site
+source: "/Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-site"
+dest: "/Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-site/_site"
+config: &8 !ruby/hash:Jekyll::Configuration
+  source: "/Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-site"
+  destination: "/Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-site/_site"
+  collections_dir: ''
+  cache_dir: ".jekyll-cache"
+  plugins_dir: _plugins
+  layouts_dir: _layouts
+  data_dir: _data
+  includes_dir: _includes
+  collections:
+    posts:
+      output: true
+      permalink: "/:categories/:year/:month/:day/:title:output_ext"
+  safe: false
+  include: &2
+  - ".htaccess"
+  exclude: &1
+  - ".sass-cache"
+  - ".jekyll-cache"
+  - gemfiles
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  keep_files: &3
+  - ".git"
+  - ".svn"
+  encoding: utf-8
+  markdown_ext: markdown,mkdown,mkdn,mkd,md
+  strict_front_matter: false
+  show_drafts: 
+  limit_posts: 0
+  future: false
+  unpublished: false
+  whitelist: []
+  plugins: &4
+  - jekyll-feed
+  markdown: kramdown
+  highlighter: rouge
+  lsi: false
+  excerpt_separator: "\n\n"
+  incremental: false
+  detach: false
+  port: '4000'
+  host: 127.0.0.1
+  baseurl: ''
+  show_dir_listing: false
+  permalink: date
+  paginate_path: "/page:num"
+  timezone: 
+  quiet: false
+  verbose: false
+  defaults: []
+  liquid:
+    error_mode: warn
+    strict_filters: false
+    strict_variables: false
+  kramdown:
+    auto_ids: true
+    toc_levels: &9
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    entity_output: as_char
+    smart_quotes: lsquo,rsquo,ldquo,rdquo
+    input: GFM
+    hard_wrap: false
+    guess_lang: true
+    footnote_nr: 1
+    show_warnings: false
+  title: Your awesome title
+  email: your-email@example.com
+  description: Write an awesome description for your new site here. You can edit this
+    line in _config.yml. It will appear in your document head meta (for Google search
+    results) and in your feed.xml site description.
+  url: http://localhost:4000
+  twitter_username: jekyllrb
+  github_username: jekyll
+  theme: example-jekyll-theme
+  livereload_port: 35729
+  serving: true
+  watch: true
+safe: false
+lsi: false
+highlighter: rouge
+baseurl: ''
+exclude: *1
+include: *2
+future: false
+unpublished: false
+show_drafts: 
+limit_posts: 0
+keep_files: *3
+gems: *4
+plugin_manager: !ruby/object:Jekyll::PluginManager
+  site: *5
+plugins:
+- "/Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-site/_plugins"
+theme: !ruby/object:Jekyll::Theme
+  name: example-jekyll-theme
+  gemspec: !ruby/object:Gem::Specification
+    name: example-jekyll-theme
+    version: !ruby/object:Gem::Version
+      version: 0.1.0
+    platform: ruby
+    authors:
+    - Liam Bigelow
+    autorequire: 
+    bindir: bin
+    cert_chain: []
+    date: 2020-08-31 00:00:00.000000000 Z
+    dependencies:
+    - !ruby/object:Gem::Dependency
+      name: jekyll
+      requirement: &6 !ruby/object:Gem::Requirement
+        requirements:
+        - - "~>"
+          - !ruby/object:Gem::Version
+            version: '4.1'
+      type: :runtime
+      prerelease: false
+      version_requirements: *6
+    description: 
+    email:
+    - liam@cloudcannon.com
+    executables: []
+    extensions: []
+    extra_rdoc_files: []
+    files:
+    - README.md
+    - _bookshop/assets/js/theme.js
+    - _bookshop/components/example.jekyll.html
+    - _bookshop/components/link.jekyll.html
+    - _bookshop/components/twolinks.jekyll.html
+    - _bookshop/sass/components/example/example.scss
+    - _bookshop/sass/components/link/link.scss
+    - _bookshop/sass/components/twolinks/twolinks.scss
+    - _bookshop/sass/styles/variables.scss
+    - _bookshop/sass/theme.scss
+    - _layouts/default.html
+    - _layouts/page.html
+    - _layouts/post.html
+    homepage: https://github.com/cloudcannon/bookshop.git
+    licenses:
+    - MIT
+    metadata: {}
+    post_install_message: 
+    rdoc_options: []
+    require_paths:
+    - lib
+    required_ruby_version: !ruby/object:Gem::Requirement
+      requirements:
+      - &7
+        - ">="
+        - !ruby/object:Gem::Version
+          version: '0'
+    required_rubygems_version: !ruby/object:Gem::Requirement
+      requirements:
+      - *7
+    requirements: []
+    rubygems_version: 3.0.3
+    signing_key: 
+    specification_version: 4
+    summary: Example theme integrating with @bookshop
+    test_files: []
+  root: "/Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-theme"
+  includes_path: "/Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-theme/_includes"
+includes_load_paths:
+- "/Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-site/_includes"
+- "/Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-theme/_includes"
+file_read_opts:
+  :encoding: bom|utf-8
+permalink_style: :date
+cache_dir: "/Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-site/.jekyll-cache"
+filter_cache: {}
+reader: !ruby/object:Jekyll::Reader
+  site: *5
+profiler: !ruby/object:Jekyll::Profiler
+  site: *5
+regenerator: !ruby/object:Jekyll::Regenerator
+  site: *5
+  disabled: true
+  metadata: {}
+  cache: {}
+liquid_renderer: !ruby/object:Jekyll::LiquidRenderer
+  site: *5
+  stats: {}
+  cache: {}
+time: 2020-08-31 19:47:59.298873000 +12:00
+layouts: {}
+inclusions: {}
+pages: []
+static_files: []
+data: {}
+post_attr_hash: {}
+site_data: 
+collections: 
+documents: 
+docs_to_write: 
+site_cleaner: 
+frontmatter_defaults: !ruby/object:Jekyll::FrontmatterDefaults
+  site: *5
+converters:
+- !ruby/object:Jekyll::Converters::Markdown
+  config: *8
+- !ruby/object:Jekyll::Converters::SmartyPants
+  config:
+    auto_ids: true
+    toc_levels: *9
+    entity_output: as_char
+    smart_quotes: lsquo,rsquo,ldquo,rdquo
+    input: GFM
+    hard_wrap: false
+    guess_lang: true
+    footnote_nr: 1
+    show_warnings: false
+    :input: :SmartyPants
+- !ruby/object:Jekyll::Converters::Sass
+  config: *8
+- !ruby/object:Jekyll::Converters::Scss
+  config: *8
+- !ruby/object:Jekyll::Converters::Identity
+  config: *8
+generators:
+- !ruby/object:JekyllFeed::Generator {}
+            Source: /Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-site
+       Destination: /Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-site/_site
+ Incremental build: disabled. Enable with --incremental
+      Generating... 
+       Jekyll Feed: Generating feed for posts
+                    done in 0.281 seconds.
+    Locating Theme: Local theme found ✅
+ Auto-regeneration: enabled for
+                    /Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-site
+                    /Users/liambigelow/Projects/CloudChitons/bookshop/examples/example-jekyll-theme
+    Server address: http://127.0.0.1:4000/
+  Server running... press ctrl-c to stop.
+      Regenerating: 1 file(s) changed at 2020-08-31 19:48:44
+                    /_sass/theme.scss
+       Jekyll Feed: Generating feed for posts
+                    ...done in 0.041133 seconds.
+                    
+      Regenerating: 1 file(s) changed at 2020-08-31 19:49:07
+                    /_sass/theme.scss
+       Jekyll Feed: Generating feed for posts
+                    ...done in 0.018089 seconds.
+                    
+      Regenerating: 1 file(s) changed at 2020-08-31 19:49:09
+                    /_sass/theme.scss
+       Jekyll Feed: Generating feed for posts
+                    ...done in 0.021816 seconds.
+                    

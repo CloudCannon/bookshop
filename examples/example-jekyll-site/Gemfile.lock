@@ -1,10 +1,16 @@
 GIT
-  remote: https://github.com/bigelowcc/jekyll-watch
+  remote: https://github.com/cloudcannon/jekyll-watch
   revision: c787910fa0a4257f36f3cbc88eb47acec295e3b1
   branch: master
   specs:
     jekyll-watch (2.2.1)
       listen (~> 3.0)
+
+PATH
+  remote: ../example-jekyll-theme
+  specs:
+    example-jekyll-theme (0.1.0)
+      jekyll (~> 4.1)
 
 GEM
   remote: https://rubygems.org/
@@ -37,12 +43,12 @@ GEM
       rouge (~> 3.0)
       safe_yaml (~> 1.0)
       terminal-table (~> 1.8)
+    jekyll-bookshop (1.1.8)
+      jekyll (>= 3.7, < 5.0)
     jekyll-feed (0.15.0)
       jekyll (>= 3.7, < 5.0)
     jekyll-sass-converter (2.1.0)
       sassc (> 2.0.1, < 3.0)
-    jekyll-seo-tag (2.6.1)
-      jekyll (>= 3.3, < 5.0)
     kramdown (2.3.0)
       rexml
     kramdown-parser-gfm (1.1.0)
@@ -52,10 +58,6 @@ GEM
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     mercenary (0.4.0)
-    minima (2.5.1)
-      jekyll (>= 3.5, < 5.0)
-      jekyll-feed (~> 0.9)
-      jekyll-seo-tag (~> 2.1)
     pathutil (0.16.2)
       forwardable-extended (~> 2.6)
     public_suffix (4.0.5)
@@ -75,10 +77,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  example-jekyll-theme!
   jekyll (~> 4.1.1)
+  jekyll-bookshop (~> 1.1)
   jekyll-feed (~> 0.12)
   jekyll-watch!
-  minima (~> 2.5)
   tzinfo (~> 1.2)
   tzinfo-data
   wdm (~> 0.1.1)
