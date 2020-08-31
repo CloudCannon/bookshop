@@ -1,6 +1,8 @@
 # New theme connector
 As at 31st August 2020 
 
+# Installation
+
 ## Theme connection
 Steps:
 1. Run `npm init` in your jekyll theme to initialise a package.json
@@ -14,8 +16,9 @@ Steps:
 ```
 spec.files         = `git ls-files -z`.split("\x0").select { |f| f.match(%r!^(assets|_layouts|_includes|_bookshop|_sass|LICENSE|README|_config\.yml)!i) }
 ```
+Specifically, this is adding `_bookshop` to the list of theme files when building a gem. 
 
-5. You may now run `npm run watch` in your theme directory to automatically build bookshop components into the theme.
+You may now run `npm run watch` in your theme directory to automatically build bookshop components into the theme.
 
 ## Site connection
 Steps:
@@ -25,8 +28,9 @@ gem "jekyll-watch", :git => "https://github.com/cloudcannon/jekyll-watch", :bran
 gem "jekyll-bookshop", "~> 1.1"
 ```
 
+Now running `bundle exec jekyll serve` will also watch the theme directory (and thus the built bookshop directory).
 
-# Done!
+# Usage
 
 ## Development
 
