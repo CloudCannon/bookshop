@@ -44,7 +44,7 @@ webpack({
             use: [{
                     loader: require.resolve('file-loader'),
                     options: {
-                        name: 'sass/theme.scss',
+                        name: 'sass/bookshop.scss',
                     }
                 }, {
                     loader: require.resolve('extract-loader')
