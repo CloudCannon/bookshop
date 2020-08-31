@@ -36,6 +36,22 @@ gem "jekyll-bookshop", "~> 1.1"
 
 Automatically running this stack is something we can look at in the future.
 
+### Using components
+
+To use a component from the bookshop, use the component tag:
+```
+{% component link text="Go" href="/go" %}
+```
+The jekyll-bookshop plugin will do the work of locating and including that component. At this stage all directories are ignored, so components are referenced purely by their name. This **will** change in the future, and you will have to update a buncha stuff. Sorry.
+
+### Including styles
+
+To include the styles from the bookshop, add the following somewhere in your theme scss:
+```
+@import 'bookshop'
+```
+Again, the jekyll-bookshop plugin will do the work of connecting this. This line will include everything from your bookshop, including mixins & variables.
+
 ## Deploying
 
 Nothing special needs to be done for deployment. The change you made to `spec.files` in your theme means that your bookshop components will be bundled with the theme, and the jekyll-bookshop plugin is environment agnostic, so it should all just work™️.
