@@ -1,5 +1,6 @@
+@@ -0,0 +1,47 @@
 # New theme connector
-As at 30th August 2020 
+As at 31st August 2020 
 
 ## Theme connection
 Steps:
@@ -19,29 +20,19 @@ spec.files         = `git ls-files -z`.split("\x0").select { |f| f.match(%r!^(as
 
 ## Site connection
 Steps:
-1. Add a new file in your site's `_plugins` folder named `bookshop.rb` containing the following: (pending gem publish)
+1. Within the `group :jekyll_plugins do` section of your site's `Gemfile` add the following:
 ```
-require "jekyll"
-require 'pathname'
-
-module ComponentLib
-  class Tag < Jekyll::Tags::IncludeTag
-    def initialize(tag_name, markup, tokens)
-      cname = markup.strip.partition(" ").first
-      tag = markup.strip.partition(" ").last
-      markup = "#{cname}.jekyll.html #{tag}"
-      puts markup
-      super
-    end
-
-    def tag_includes_dirs(context)
-      Array(Pathname.new(context['site']['source'] + '/_bookshop/components').cleanpath.to_s).freeze
-    end
-  end
-end
-
-Liquid::Template.register_tag("component", ComponentLib::Tag)
+gem "jekyll-watch", :git => "https://github.com/cloudcannon/jekyll-watch", :branch => "master"
+gem "jekyll-bookshop", "~> 1.1"
 ```
 
-2. Within the `group :jekyll_plugins do` group of your site's `Gemfile` add the following gem: (pending gem publish)
-`gem "jekyll-watch", :git => "https://github.com/bigelowcc/jekyll-watch", :branch => "master"`
+
+# Done!
+
+## Development
+
+- Run `bundle exec jekyll serve` in your jekyll site to serve the site and rebuild changes
+- Run `npm run watch` in your theme to watch bookshop and rebuild components
+- Run `npm start` in your bookshop to serve the storybook app
+
+Automatically running this stack is something we can look at in the future.
