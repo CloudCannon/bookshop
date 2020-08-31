@@ -18,9 +18,10 @@ var JSTHandler = {
 window.JST = new Proxy({}, JSTHandler);
 
 window.ADDMODS = (classname, mods) => {
+    let base = classname;
     for (let [mod, val] of Object.entries(mods)) {
         if (val) {
-            classname = `${classname} ${classname}--${mod}`;
+            classname = `${classname} ${base}--${mod}`;
         }
     }
     return classname;
