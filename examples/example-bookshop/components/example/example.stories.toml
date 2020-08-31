@@ -1,0 +1,22 @@
+[defaults]
+text = "Hello World"
+big = false
+
+###
+
+[standardTitle]
+
+docs = """
+# Example
+
+This is just an example component"""
+
+###
+
+[otherTitle]
+big = true
+
+docs = """
+## Other Example 
+
+This is a big one"""

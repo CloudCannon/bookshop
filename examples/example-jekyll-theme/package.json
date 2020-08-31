@@ -1,0 +1,21 @@
+{
+  "name": "@bookshop/example-jekyll-theme",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloudcannon/bookshop.git",
+    "directory": "examples/example-jekyll-theme"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "COMPONENT_LIB='../example-bookshop' jekyll-extract"
+  },
+  "author": "@LiamBigelow",
+  "license": "MIT",
+  "devDependencies": {
+    "@bookshop/jekyll-extract": "file:../../extractors/jekyll-extract"
+  }
+}

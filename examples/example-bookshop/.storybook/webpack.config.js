@@ -1,5 +1,6 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
+const createCompiler = require('@storybook/addon-docs/mdx-compiler-plugin');
 const {
     rewriteIncludes
 } = require('@bookshop/jekyll-engine');
@@ -13,7 +14,12 @@ module.exports = async({
     config.module.rules.push({
         test: /\.stories\.to?ml?$/,
         use: [
-            '@bookshop/loader'
+            {
+                loader: '@bookshop/loader',
+                options: {
+                    mdxCompiler: createCompiler({})
+                }
+            }
         ]
     });
 
