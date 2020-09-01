@@ -7,6 +7,12 @@ GIT
       listen (~> 3.0)
 
 PATH
+  remote: ../../plugins/jekyll-bookshop
+  specs:
+    jekyll-bookshop (1.1.8)
+      jekyll (>= 3.7, < 5.0)
+
+PATH
   remote: ../example-jekyll-theme
   specs:
     example-jekyll-theme (0.1.0)
@@ -43,8 +49,6 @@ GEM
       rouge (~> 3.0)
       safe_yaml (~> 1.0)
       terminal-table (~> 1.8)
-    jekyll-bookshop (1.1.8)
-      jekyll (>= 3.7, < 5.0)
     jekyll-feed (0.15.0)
       jekyll (>= 3.7, < 5.0)
     jekyll-sass-converter (2.1.0)
@@ -79,7 +83,7 @@ PLATFORMS
 DEPENDENCIES
   example-jekyll-theme!
   jekyll (~> 4.1.1)
-  jekyll-bookshop (~> 1.1)
+  jekyll-bookshop!
   jekyll-feed (~> 0.12)
   jekyll-watch!
   tzinfo (~> 1.2)

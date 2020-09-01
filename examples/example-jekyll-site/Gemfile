@@ -17,7 +17,7 @@ gem "example-jekyll-theme", :path => '../example-jekyll-theme'
 group :jekyll_plugins do
   gem "jekyll-feed", "~> 0.12"
   gem "jekyll-watch", :git => "https://github.com/cloudcannon/jekyll-watch", :branch => "master"
-  gem "jekyll-bookshop", "~> 1.1"
+  gem "jekyll-bookshop", :path => "../../plugins/jekyll-bookshop"
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem

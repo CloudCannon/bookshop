@@ -55,14 +55,14 @@ module.exports = async({
         new CopyPlugin({
             patterns: [{
                 from: path.resolve(projectRoot, 'components/**/*'),
+                context: path.resolve(projectRoot, 'components'),
                 to: './components',
                 globOptions: {
                     ignore: ['*.stories.*'],
                 },
                 transform(content, path) {
                     return rewriteIncludes(content);
-                },
-                flatten: true
+                }
             }, {
                 from: path.resolve(projectRoot, 'assets'),
                 to: './assets',
