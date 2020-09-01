@@ -12,7 +12,9 @@ engine.plugin(require('./plugins/slugify-plugin.js'));
 
 const jekyllEngine = {
   render: (component, props) => {
-    component = `${component}.jekyll.html`;
+    let cpath = component.split('/');
+    let cname = cpath[cpath.length - 1];
+    component = `${component}/${cname}.jekyll.html`;
     return engine.renderFileSync(component, props);
   }
 }
@@ -46,7 +48,11 @@ const rewriteTag = function(token, src) {
     token.name = 'include';
     raw = raw.replace(
       /component (\S+)/,
-      (_, component) => `include ${component}.jekyll.html`
+      (_, component) => {
+        let cpath = component.split('/');
+        let cname = cpath[cpath.length - 1];
+        return `include ${component}/${cname}.jekyll.html`
+      }
     );
   }
   if (token.name && token.name.match(/^include/)) {

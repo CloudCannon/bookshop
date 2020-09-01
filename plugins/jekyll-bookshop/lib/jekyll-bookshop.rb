@@ -4,9 +4,10 @@ require 'pathname'
 module JekyllBookshop
   class Tag < Jekyll::Tags::IncludeTag
     def initialize(tag_name, markup, tokens)
-      cname = markup.strip.partition(" ").first
+      cpath = markup.strip.partition(" ").first
+      cname = cpath.strip.split("/").last
       tag = markup.strip.partition(" ").last
-      markup = "#{cname}.jekyll.html #{tag}"
+      markup = "#{cpath}/#{cname}.jekyll.html #{tag}"
       super
     end
 

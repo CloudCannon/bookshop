@@ -9,7 +9,9 @@ const underscoreEngine = {
 var JSTHandler = {
   get: (o, name) => {
     let request = new XMLHttpRequest();
-    request.open('GET', `/components/${name}.jst.ejs`, false);  // `false` makes the request synchronous
+    let cpath = name.split('/');
+    let cname = cpath[cpath.length - 1];
+    request.open('GET', `/components/${name}/${cname}.jst.ejs`, false);  // `false` makes the request synchronous
     request.send(null);
     return _.template(request.responseText);
   },

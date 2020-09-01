@@ -80,7 +80,8 @@ webpack({
             use: [{
                 loader: require.resolve('file-loader'),
                 options: {
-                    name: 'components/[name].html',
+                    name: 'components/[path][name].html',
+                        context: path.resolve(libPath, 'components'),
                 }
             }, {
                 loader: require.resolve('extract-loader')

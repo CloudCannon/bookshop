@@ -109,7 +109,7 @@ const getTitleFromPath = context => {
   let relativePath = path.relative(context.rootContext, context.resourcePath);
   relativePath = relativePath.split('.')[0];
 
-  let component = path.basename(relativePath);
+  let component = path.dirname(relativePath).replace('components/', '');
 
   let segments = relativePath.split('/');
   segments = Array.from(new Set(segments));
