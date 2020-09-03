@@ -9,7 +9,7 @@ GIT
 PATH
   remote: ../../plugins/jekyll-bookshop
   specs:
-    jekyll-bookshop (1.1.8)
+    jekyll-bookshop (1.1.10)
       jekyll (>= 3.7, < 5.0)
 
 PATH
