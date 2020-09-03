@@ -1,0 +1,11 @@
+<div class="{{ 'c-component-repeat' | addmods: }}">
+
+    <h1 class="c-component-repeat__name">
+        {{ include.name }}
+    </h1>
+
+    {% for sub in include.subcomponents %}
+    {% component kitchen-sink/linking/subcomponent text=sub.text %}
+    {% endfor %}
+
+</div>

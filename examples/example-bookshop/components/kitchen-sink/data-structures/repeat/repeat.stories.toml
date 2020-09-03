@@ -1,0 +1,8 @@
+[defaults]
+
+[defaults.items--repeat] # Repeated object, destructured into objects with a repeat control
+message = "Line item"
+weight = 4
+
+[standard]
+

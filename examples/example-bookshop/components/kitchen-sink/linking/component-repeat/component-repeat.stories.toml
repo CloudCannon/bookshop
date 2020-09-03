@@ -1,0 +1,9 @@
+[defaults]
+
+name = "Hello World"
+
+[defaults.subcomponents--repeat] # An array of objects
+text = "Subcomponent Text"
+
+[standard]
+
