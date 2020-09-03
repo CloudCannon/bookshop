@@ -6,7 +6,7 @@ us = "CloudCannon"
 other = "Guest"
 
 [defaults.tags--repeat] # Array of post tags
-tag = "SSG"
+tag = "SSG" # Tag name
 
 [standard]
 

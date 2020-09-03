@@ -29,6 +29,7 @@
     "@storybook/addon-docs": "^6.0.16",
     "@storybook/addon-viewport": "^6.0.16",
     "@storybook/html": "^6.0.16",
+    "@storybook/addon-a11y": "^6.0.16",
     "copy-webpack-plugin": "^6.0.3",
     "css-loader": "^4.2.1",
     "extract-loader": "^5.1.0",

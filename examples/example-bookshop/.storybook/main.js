@@ -6,5 +6,6 @@ module.exports = {
         '@storybook/addon-controls',
         '@storybook/addon-backgrounds',
         '@storybook/addon-viewport',
+        '@storybook/addon-a11y'
   ],
 };
