@@ -245,10 +245,21 @@ const determineObjectType = (key, val) => {
 
   [key, enumType] = splitKey;
 
-  if (/^(select|multi-select|radio|inline-radio|check|inline-check)$/.test(enumType)) {
+  if (/^(select|radio|inline-radio)$/.test(enumType)) {
     return [{
         name:enumType,
         value: val[Object.keys(val).find(v => v !== '--doc')],
+        options: capitalizeKeys(val),
+        rawOptions: val,
+        key: key,
+        rawKey: rawKey
+      }];
+  }
+
+  if (/^(multi-select|check|inline-check)$/.test(enumType)) {
+    return [{
+        name:enumType,
+        value: [val[Object.keys(val).find(v => v !== '--doc')]],
         options: capitalizeKeys(val),
         rawOptions: val,
         key: key,
