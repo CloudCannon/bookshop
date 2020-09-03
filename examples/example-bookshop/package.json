@@ -12,7 +12,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "start-storybook -p 4999",
-    "build": "jekyll-extract",
+    "build": "build-storybook -c .storybook -o ../../dist",
     "gen": "gen"
   },
   "author": "@LiamBigelow",
