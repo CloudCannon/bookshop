@@ -26,6 +26,7 @@
     "file-loader": "^6.0.0",
     "import-glob": "^1.5.0",
     "raw-loader": "^4.0.1",
+    "stretcher-loader": "^0.1.1",
     "string-replace-loader": "^2.3.0"
   }
 }
