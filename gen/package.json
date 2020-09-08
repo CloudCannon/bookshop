@@ -20,6 +20,7 @@
     "access": "public"
   },
   "dependencies": {
-    "hygen": "^6.0.4"
+    "hygen": "^6.0.4",
+    "enquirer": "^2.3.6"
   }
 }

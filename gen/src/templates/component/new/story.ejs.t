@@ -1,5 +1,5 @@
 ---
-to: components/<%= name %>/<%= name %>.stories.toml
+to: <%= directory %>/<%= name %>/<%= name %>.stories.toml
 unless_exists: true
 ---
 [defaults]

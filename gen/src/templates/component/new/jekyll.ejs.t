@@ -1,5 +1,5 @@
 ---
-to: "<%= (frameworks.indexOf('Jekyll') >= 0) ? `components/${name}/${name}.jekyll.html` : null %>"
+to: "<%= (frameworks.indexOf('Jekyll') >= 0) ? `${directory}/${name}/${name}.jekyll.html` : null %>"
 unless_exists: true
 ---
 <div class="{{ 'c-<%= name %>' | addmods: <% for(var i=0; i<mods.length; i++) {%><%= mods[i] %>:include.<%= mods[i] %><% if(i < mods.length - 1){ %>,<% } %> <% } %>}}">

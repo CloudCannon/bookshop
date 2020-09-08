@@ -1,5 +1,5 @@
 ---
-to: components/<%= name %>/<%= name %>.scss
+to: <%= directory %>/<%= name %>/<%= name %>.scss
 unless_exists: true
 ---
 .c-<%= name %> { $c: &;
