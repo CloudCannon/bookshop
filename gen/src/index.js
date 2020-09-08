@@ -11,7 +11,7 @@ let globalName = '';
 
 const gen = async () => {
 	let directories = populateDirectories('components');
-	
+
 	let response = await mainPrompt();
 	response.directory = await directoryPrompt(directories.components, 'components');
 
@@ -72,6 +72,15 @@ const mainPrompt = async () => {
 	    separator: /\s/,
 	    format: vals => {
 	        return (typeof vals == 'string') ? vals.split(/\s/).map(v => `c-${globalName}--${v}`).join(', ') : vals;
+	    }
+	}, {
+	    type: 'list',
+	    name: 'states',
+	    message: "BEM states (Space seperated)",
+	    hint: '<Enter> to skip',
+	    separator: /\s/,
+	    format: vals => {
+	        return (typeof vals == 'string') ? vals.split(/\s/).map(v => `is-${v}`).join(', ') : vals;
 	    }
 	}, {
 	    type: 'multiselect',

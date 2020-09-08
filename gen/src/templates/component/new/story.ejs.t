@@ -6,6 +6,9 @@ unless_exists: true
 <% for(var j=0; j<mods.length; j++) {-%>
 <%= mods[j] %> = false
 <% } %>
+<% for(var j=0; j<states.length; j++) {-%>
+<%= states[j] %> = false
+<% } %>
 <% for(var j=0; j<knobs.length; j++) {-%>
 <% if (knobs[j] == 'Text') {%>text = "Hello World"<% } -%>
 <% if (knobs[j] == 'Number') {%>number = 1<% } -%>
@@ -25,6 +28,16 @@ unless_exists: true
 <% for(var j=0; j<mods.length; j++) {-%>
 <% if (mods[i] == mods[j]) {-%>
 <%= mods[j] %> = true
+<% } -%>
+<% } %>
+
+<% } %>
+
+<% for(var i=0; i<states.length; i++) {-%>
+[<%= states[i] %>]
+<% for(var j=0; j<states.length; j++) {-%>
+<% if (states[i] == states[j]) {-%>
+<%= states[j] %> = true
 <% } -%>
 <% } %>
 
