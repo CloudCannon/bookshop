@@ -40,11 +40,14 @@ module.exports = async({
             }, {
                 loader: 'sass-loader',
                 options: {
-                    implementation: require("sass"),
-                    sourceMap: false
+                    implementation: require("node-sass"),
+                    sassOptions: {
+                        importer: require('stretcher-importer')
+                    }
                 }
             },
-            'import-glob'
+            'import-glob',
+            'stretcher-loader'
         ],
         include: [
             projectRoot,
