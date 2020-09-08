@@ -29,7 +29,8 @@ window.ADDMODS = (classname, mods) => {
     return classname;
 }
 
-window.ADDSTATES = (classname, states) => {
+window.ADDSTATES = (states) => {
+    let classname = '';
     for (let [state, val] of Object.entries(states)) {
         if (val) {
             classname = `${classname} is-${state}`;
