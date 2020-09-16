@@ -1,50 +1,18 @@
-// START INJECTED STRETCHER
-$stretcher-min: 375px !default;
-$stretcher-max: 1440px !default;
-
-@mixin stretcher-double-scale($properties, $min-value, $max-value) {
-  @each $property in $properties {
-    #{$property}: $min-value;
-  }
-
-  @media (min-width: $stretcher-min) {
-    @each $property in $properties {
-      #{$property}: calc(#{$min-value} + #{strip-unit($max-value - $min-value)} * (100vw - #{$stretcher-min}) / #{strip-unit($stretcher-max - $stretcher-min)});
-    }
-  }
-
-  @media (min-width: $stretcher-max) {
-    @each $property in $properties {
-      #{$property}: $max-value;
-    }
-  }
-}
-
-@function strip-unit($number) {
-  @if type-of($number) == "number" and not unitless($number) {
-    @return $number / ($number * 0 + 1);
-  }
-
-  @return $number;
-}
-// END INJECTED STRETCHER
-
-
-$stretcher-min: 900px;
+$stretcher-min: 900px;  // These don't have to be defined in the same file
 $stretcher-max: 1000px;
 
 .c-stretcher { $c: &;
 
     &__box {
     	background-color: #eef;
-    	@include stretcher-double-scale(width, 100px, 1000px);
+    	width: 100px -> 1000px;
     	border-color: #ccf;
     	border-style: solid;
-    	@include stretcher-double-scale(border-width, 100px, 4px);
+    	border-width: 100px -> 4px;
     }
 
     &__text {
-    	@include stretcher-double-scale(font-size, 10px, 50px);
+    	font-size: 10px -> 50px;
     }
 
 }
