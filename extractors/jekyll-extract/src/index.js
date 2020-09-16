@@ -51,8 +51,7 @@ webpack({
                 }, {
                     loader: require.resolve('raw-loader')
                 },
-                require.resolve('import-glob'),
-                require.resolve('stretcher-loader')
+                require.resolve('import-glob')
             ],
             include: [
                 path.resolve(libPath),
@@ -70,8 +69,7 @@ webpack({
                 }, {
                     loader: require.resolve('raw-loader')
                 },
-                require.resolve('import-glob'),
-                require.resolve('stretcher-loader')
+                require.resolve('import-glob')
             ],
             include: [
                 path.resolve(libPath, 'components'),
