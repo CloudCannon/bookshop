@@ -17,6 +17,7 @@ gem "example-jekyll-theme", :path => '../example-jekyll-theme'
 group :jekyll_plugins do
   gem "jekyll-feed", "~> 0.12"
   gem "jekyll-watch", :git => "https://github.com/cloudcannon/jekyll-watch", :branch => "master"
+  gem 'jekyll-stretcher', "~> 0.1"
   gem "jekyll-bookshop", :path => "../../plugins/jekyll-bookshop"
 end
 
