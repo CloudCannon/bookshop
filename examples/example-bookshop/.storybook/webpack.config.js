@@ -54,6 +54,16 @@ module.exports = async({
         ],
     });
 
+    config.module.rules.push({
+        test: /\.svelte$/,
+        use: [
+            'svelte-loader'
+        ],
+        include: [
+            projectRoot,
+        ],
+    });
+
     config.plugins.push(
         new CopyPlugin({
             patterns: [{

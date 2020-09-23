@@ -19,10 +19,13 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.11.6",
+    "@babel/plugin-transform-runtime": "^7.11.5",
+    "@babel/preset-env": "^7.11.5",
     "@bookshop/gen": "file:../../gen",
     "@bookshop/jekyll-engine": "file:../../engines/jekyll-engine",
     "@bookshop/jekyll-extract": "file:../../extractors/jekyll-extract",
     "@bookshop/loader": "file:../../loader",
+    "@bookshop/svelte-engine": "file:../../engines/svelte-engine",
     "@bookshop/underscore-engine": "file:../../engines/underscore-engine",
     "@storybook/addon-a11y": "^6.0.16",
     "@storybook/addon-backgrounds": "^6.0.21",
@@ -30,6 +33,7 @@
     "@storybook/addon-docs": "^6.0.21",
     "@storybook/addon-viewport": "^6.0.21",
     "@storybook/html": "^6.0.21",
+    "babel-loader": "^8.1.0",
     "copy-webpack-plugin": "^6.1.0",
     "css-loader": "^4.3.0",
     "extract-loader": "^5.1.0",
@@ -44,6 +48,8 @@
     "stretcher": "0.0.0",
     "stretcher-importer": "^0.1.1",
     "stretcher-loader": "^0.1.1",
-    "style-loader": "^1.2.1"
+    "style-loader": "^1.2.1",
+    "svelte": "^3.25.1",
+    "svelte-loader": "^2.13.6"
   }
 }
