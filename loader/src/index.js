@@ -8,9 +8,36 @@ let changeCase = require("change-case");
 const storyTemplate = `
 const { jekyllEngine } = require("@bookshop/jekyll-engine");
 const { underscoreEngine } = require("@bookshop/underscore-engine");
+const { svelteEngine } = require("@bookshop/svelte-engine");
 
-const component = props => {
+let SVELTE_APP;
+<% if (sv) { %>
+try {
+  SVELTE_APP = require("<%- sv %>").default;
+} catch (e) {console.error(e)}
+<% } %>
+
+const component = function(props) {
   if (!props.framework) props.framework = "<%- frameworks[0] %>";
+  let uniqueFrameworkKey = this.uniqueKey + "_" + props.framework;
+  let newComponentRender = false;
+
+  let bookshopRoot = document.querySelector("#bookshop-generated-render-root");
+  if (!bookshopRoot) {
+    bookshopRoot = document.createElement('div');
+    bookshopRoot.id = "bookshop-generated-render-root";
+    document.body.appendChild(bookshopRoot);
+  }
+
+  let renderRoot = bookshopRoot.querySelector(\`#\${uniqueFrameworkKey}\`);
+  if (!renderRoot) {
+    renderRoot = document.createElement('div');
+    renderRoot.id = uniqueFrameworkKey;
+    bookshopRoot.innerHTML = "";
+    bookshopRoot.appendChild(renderRoot);
+    newComponentRender = true;
+  }
+
   let consolidatedProps = {};
   for (let [key, val] of Object.entries(props)) {
     let splitKey = key.split('&&');
@@ -30,8 +57,19 @@ const component = props => {
     }
     consolidatedProps[baseKey][innerKey] = val;
   }
-  if (props.framework === "jekyll") return jekyllEngine.render("<%- component %>", consolidatedProps);
-  if (props.framework === "jst-ejs") return underscoreEngine.render("<%- component %>", consolidatedProps);
+
+  let options = {
+    svelteApp: SVELTE_APP,
+    uniqueKey: uniqueFrameworkKey,
+    renderRoot: renderRoot,
+    newComponentRender: newComponentRender
+  }
+
+  if (props.framework === "jekyll") jekyllEngine.render("<%- component %>", consolidatedProps, options);
+  if (props.framework === "jst-ejs") underscoreEngine.render("<%- component %>", consolidatedProps, options);
+  if (props.framework === "svelte") svelteEngine.render("<%- component %>", consolidatedProps, options);
+
+  return '<div id="bookshop-rendered-elsewhere"></div>';
 }
 
 export default {
@@ -41,7 +79,7 @@ export default {
 };
 
 <% for(var i=0; i<stories.length; i++) {%>
-export const <%= stories[i].name %> = component.bind({});
+export const <%= stories[i].name %> = component.bind({uniqueKey: "bookshop_<%= componentKey %>_<%= stories[i].name %>"});
 <%= stories[i].name %>.args = <%- stories[i].args %>;
 <%= stories[i].name %>.argTypes = <%- stories[i].argTypes %>;
 <% } %>
@@ -73,7 +111,8 @@ module.exports = function(source) {
 
   let data = toml.parse(rejoinedToml);
 
-  const frameworks = findFrameworkFiles(this);
+  const { frameworks, files } = findFrameworkFiles(this);
+  const sv = files.svelte;
   const hasMultipleFrameworks = frameworks.length > 1;
 
   let {component, title, full} = getTitleFromPath(this);
@@ -110,7 +149,9 @@ module.exports = function(source) {
     })
   }
 
-  let t = ejs.render(storyTemplate, { component, title, full, defaults, stories, frameworks });
+
+  const componentKey = changeCase.snakeCase(component);
+  let t = ejs.render(storyTemplate, { component, componentKey, title, full, defaults, stories, frameworks, sv });
 
   this.callback(null, t);
   return;
@@ -125,7 +166,11 @@ const findFrameworkFiles = context => {
 
   const files = {
     "jekyll": path.resolve(componentFolder, `${componentName}.jekyll.html`),
-    "jst-ejs": path.resolve(componentFolder, `${componentName}.jst.ejs`)
+    "jst-ejs": path.resolve(componentFolder, `${componentName}.jst.ejs`),
+    "svelte": path.resolve(componentFolder, `${componentName}.svelte`)
+  }
+
+  let existFiles = {
   }
 
   let fileList = [];
@@ -133,10 +178,14 @@ const findFrameworkFiles = context => {
   for (let [framework, filename] of Object.entries(files)) {
     if (context.fs._statStorage.data.has(filename)) {
       fileList.push(framework);
+      existFiles[framework] = filename;
     }
   }
 
-  return fileList;
+  return {
+    frameworks: fileList, 
+    files: existFiles
+  };
 }
 
 /**
