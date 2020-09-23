@@ -1,7 +1,6 @@
-$stretcher-min: 900px;  // These don't have to be defined in the same file
-$stretcher-max: 1000px;
-
 .c-stretcher { $c: &;
+    $stretcher-min: 900px;  // These don't have to be defined in the same file
+    $stretcher-max: 1000px;
 
     &__box {
     	background-color: #eef;
