@@ -2,9 +2,10 @@
   "packages": [
     "engines/jekyll-engine",
     "engines/underscore-engine",
+    "engines/svelte-engine",
     "extractors/jekyll-extract",
     "loader",
     "gen"
   ],
-  "version": "1.4.0"
+  "version": "1.4.1"
 }
