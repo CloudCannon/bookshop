@@ -1,8 +1,8 @@
 const _ = require("underscore");
 
 const underscoreEngine = {
-  render: (component, props) => {
-    return _.template(`<%= JST["${component}"](props) %>`)({props: props});
+  render: (component, props, options) => {
+    options.renderRoot.innerHTML = _.template(`<%= JST["${component}"](props) %>`)({props: props});
   }
 }
 

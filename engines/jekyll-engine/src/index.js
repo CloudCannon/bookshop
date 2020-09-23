@@ -11,11 +11,11 @@ engine.plugin(require('./plugins/jsonify.js'));
 engine.plugin(require('./plugins/slugify-plugin.js'));
 
 const jekyllEngine = {
-  render: (component, props) => {
+  render: (component, props, options) => {
     let cpath = component.split('/');
     let cname = cpath[cpath.length - 1];
     component = `${component}/${cname}.jekyll.html`;
-    return engine.renderFileSync(component, props);
+    options.renderRoot.innerHTML = engine.renderFileSync(component, props);
   }
 }
 
