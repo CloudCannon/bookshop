@@ -91,6 +91,22 @@ webpack({
             include: [
                 path.resolve(libPath),
             ],
+        }, {
+            test: /\.svelte$/,
+            use: [{
+                loader: require.resolve('file-loader'),
+                options: {
+                    name: 'components/[path][name].[ext]',
+                        context: path.resolve(libPath, 'components'),
+                }
+            }, {
+                loader: require.resolve('extract-loader')
+            }, {
+                loader: require.resolve('raw-loader')
+            }],
+            include: [
+                path.resolve(libPath),
+            ],
         }]
     },
     plugins: [
