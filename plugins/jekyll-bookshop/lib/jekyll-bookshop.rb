@@ -14,6 +14,20 @@ module JekyllBookshop
     def tag_includes_dirs(context)
       Array(Pathname.new(context['site']['bookshop_path'] + '/components').cleanpath.to_s).freeze
     end
+
+    def parse_params(context)
+      params = super
+
+      params.each do |key, value|
+        if key == 'bind'
+          valueHash = {}.merge(value)
+          params = valueHash.merge(params)
+          next
+        end
+      end
+
+      params
+    end
   end
 
   class Styles
