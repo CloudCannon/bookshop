@@ -9,6 +9,7 @@ const engine = new Liquid({
 engine.plugin(require('./plugins/bem-mods.js'));
 engine.plugin(require('./plugins/jsonify.js'));
 engine.plugin(require('./plugins/slugify-plugin.js'));
+engine.plugin(require('./plugins/svelte.js'));
 
 const jekyllEngine = {
   render: (component, props, options) => {
