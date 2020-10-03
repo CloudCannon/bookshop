@@ -74,7 +74,7 @@ module.exports = async({
                     ignore: ['*.stories.*'],
                 },
                 transform(content, path) {
-                    return rewriteIncludes(content);
+                    return rewriteIncludes(content, path);
                 }
             }, {
                 from: path.resolve(projectRoot, 'assets'),

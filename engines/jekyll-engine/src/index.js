@@ -22,9 +22,13 @@ const jekyllEngine = {
 /**
  * Rewrite Jekyll includes to match LiquidJS syntax
  * @param  {Buffer} text File contents of a Jekyll include
+ * @param  {String} path File path of an include
  * @return {String}      File context of a LiquidJS include
  */
-const rewriteIncludes = function(text) {
+const rewriteIncludes = function(text, path) {
+    if (path && !/\.jekyll\.html$/.test(path)) {
+      return text;
+    }
     text = text.toString();
     let tokenizer = new Tokenizer(text);
     let output = tokenizer.readTopLevelTokens();
