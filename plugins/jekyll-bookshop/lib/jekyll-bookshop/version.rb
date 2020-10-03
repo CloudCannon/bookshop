@@ -1,3 +1,3 @@
 module JekyllBookshop
-  VERSION = "1.2.1"
+  VERSION = "1.4.1"
 end
