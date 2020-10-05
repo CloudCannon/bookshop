@@ -10,6 +10,7 @@ engine.plugin(require('./plugins/bem-mods.js'));
 engine.plugin(require('./plugins/jsonify.js'));
 engine.plugin(require('./plugins/slugify-plugin.js'));
 engine.plugin(require('./plugins/svelte.js'));
+engine.plugin(require('./plugins/unbind.js'));
 
 const jekyllEngine = {
   render: (component, props, options) => {
@@ -38,7 +39,7 @@ const rewriteIncludes = function(text, path) {
       text = rewriteTag(tag, text);
     });
 
-    return text;
+    return `{% unbind %}${text}`;
 };
 
 const rewriteTag = function(token, src) {
