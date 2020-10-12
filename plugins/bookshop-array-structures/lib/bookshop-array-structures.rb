@@ -60,12 +60,16 @@ module Bookshop
     end
 
     def self.build_array_structures(site)
+      base_path = ''
+      if !site.theme.nil?
+        base_path = site.theme.root + '/_bookshop/components'
+      end
       site.config["_select_data"] ||= {}
       site.config["_array_structures"] ||= {}
       site.config["_array_structures"]["components"] ||= {
         "values" => []
       }
-      Dir.glob("**/*.stories.{toml,tml,tom,tm}").each do |f|
+      Dir.glob("**/*.stories.{toml,tml,tom,tm}", base: base_path).each do |f|
         component = TomlRB.load_file(f)
         site.config["_array_structures"]["components"]["values"].push({
           "label" => get_story_name(f),
