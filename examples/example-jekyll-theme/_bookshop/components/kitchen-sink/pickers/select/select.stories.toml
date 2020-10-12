@@ -1,0 +1,8 @@
+[defaults]
+
+[defaults.image--select] # Select box of key = value
+kitten = "https://placekitten.com/200/100"
+cat = "https://placekitten.com/100/200"
+
+[standard]
+
