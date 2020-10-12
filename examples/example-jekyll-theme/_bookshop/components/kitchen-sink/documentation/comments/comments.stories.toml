@@ -1,0 +1,12 @@
+[defaults]
+title = "Hello World" # Post Title
+
+[defaults.author--select] # Author category
+us = "CloudCannon"
+other = "Guest"
+
+[defaults.tags--repeat] # Array of post tags
+tag = "SSG" # Tag name
+
+[standard]
+

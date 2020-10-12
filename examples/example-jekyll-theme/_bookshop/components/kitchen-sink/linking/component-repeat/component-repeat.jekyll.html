@@ -5,7 +5,7 @@
     </h1>
 
     {% for sub in include.subcomponents %}
-    {% component kitchen-sink/linking/subcomponent text=sub.text %}
+    {% component kitchen-sink/linking/subcomponent bind=sub %}
     {% endfor %}
 
 </div>

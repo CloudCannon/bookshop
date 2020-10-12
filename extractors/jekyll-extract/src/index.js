@@ -92,7 +92,7 @@ webpack({
                 path.resolve(libPath),
             ],
         }, {
-            test: /\.svelte$/,
+            test: /\.svelte|\.toml$/,
             use: [{
                 loader: require.resolve('file-loader'),
                 options: {
