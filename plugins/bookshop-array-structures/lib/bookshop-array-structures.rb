@@ -32,6 +32,8 @@ module Bookshop
               "label" => label,
               "value" => value
             })
+          elsif key.include? "--"
+            next
           else
             result[key] = value
           end
