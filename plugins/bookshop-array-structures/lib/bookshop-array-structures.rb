@@ -8,8 +8,9 @@ module Bookshop
       return basename.split("-").map(&:capitalize).join(" ")
     end
 
-    def self.transform_component(component, site)
+    def self.transform_component(path, component, site)
       result = {}
+      result['_component_type'] = path.split(".").first;
       component.each_pair { |storyname, story|
         story.each_pair {|key, value|
           if result.has_key?(key) && storyname != "defaults"
@@ -73,7 +74,7 @@ module Bookshop
         component = TomlRB.load_file(base_path + f)
         site.config["_array_structures"]["components"]["values"].push({
           "label" => get_story_name(f),
-          "value" => transform_component(component, site)
+          "value" => transform_component(f, component, site)
         })
       end
     end
