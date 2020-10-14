@@ -25,7 +25,7 @@ module Bookshop
             }
 
             label = new_key.split("_").map(&:capitalize).join(" ")
-            if site.config["_array_structures"][new_key]["values"].select{|value| value.label == label}.length > 0
+            if site.config["_array_structures"][new_key]["values"].select{|value| value["label"] == label}.length > 0
               next
             end
             site.config["_array_structures"][new_key]["values"].push({
