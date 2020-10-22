@@ -32,8 +32,26 @@ module Bookshop
               "label" => label,
               "value" => value
             })
-          elsif key.include? "--"
-            next
+          elsif key.include? "--select" or key.include? "--radio" or key.include? "--inline-radio"
+            new_key = key.split("--").first
+            result[new_key] = nil
+            site.config["_select_data"][new_key+"s"] = []
+            value.each_value{|option|
+              if site.config["_select_data"][new_key+"s"].select{|value| value == option}.length > 0
+                next
+              end
+              site.config["_select_data"][new_key+"s"].push(option)
+            }
+          elsif key.include? "--multi-select" or key.include? "--check" or key.include? "--inline-check"
+            new_key = key.split("--").first
+            result[new_key] = []
+            site.config["_select_data"][new_key] = []
+            value.each_value{|option|
+              if site.config["_select_data"][new_key].select{|value| value == option}.length > 0
+                next
+              end
+              site.config["_select_data"][new_key].push(option)
+            } 
           else
             result[key] = value
           end
@@ -47,6 +65,7 @@ module Bookshop
       if !site.theme.nil?
         base_path = site.theme.root + "/_bookshop/components/"
       end
+      site.config["_select_data"] ||= {}
       site.config["_array_structures"] ||= {}
       site.config["_array_structures"]["components"] ||= {
         "values" => []
