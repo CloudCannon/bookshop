@@ -8,9 +8,20 @@ module Bookshop
       return basename.split("-").map(&:capitalize).join(" ")
     end
 
+    def self.get_component_type(path)
+      result = path.split(".").first;
+      pathParts = path.split(".").first.split("/")
+      if pathParts.length >= 2 && pathParts[pathParts.length-1] === pathParts[pathParts.length-2]
+        pathParts.pop
+        result = pathParts.join("/")
+      end
+      return result
+    end
+
+
     def self.transform_component(path, component, site)
       result = {}
-      result['_component_type'] = path.split(".").first;
+      result['_component_type'] = get_component_type(path);
       component.each_pair { |storyname, story|
         story.each_pair {|key, value|
           if result.has_key?(key) && storyname != "defaults"
