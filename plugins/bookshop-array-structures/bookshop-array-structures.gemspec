@@ -5,6 +5,7 @@ Gem::Specification.new do |spec|
   spec.version       = Bookshop::Arraystructures::VERSION
   spec.authors       = ["Tate"]
   spec.email         = ["tate@cloudcannon.com"]
+  spec.homepage      = "https://github.com/cloudcannon/bookshop"
   spec.summary       = "A Jekyll plugin to generate array structures from bookshop"
 
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
@@ -17,6 +18,7 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
+  spec.license       = "MIT"
 
   spec.add_dependency "jekyll", ">= 3.7", "< 5.0"
   spec.add_dependency "toml-rb", ">= 2.0", "< 3.0"
