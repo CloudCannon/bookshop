@@ -70,7 +70,8 @@ module Bookshop
     def self.transform_component(path, component, site)
       result = { "value" => {} }
       result["label"] = get_story_name(path)
-      result["_component_type"] = get_component_type(path)
+      result["array_structures"] = ["components"];
+      result["value"]["_component_type"] = get_component_type(path)
       component.each_pair { |storyname, story|
         if storyname == "meta"
           result.merge!(story)
@@ -88,13 +89,15 @@ module Bookshop
       end
       site.config["_select_data"] ||= {}
       site.config["_array_structures"] ||= {}
-      site.config["_array_structures"]["components"] ||= {
-        "values" => []
-      }
       Dir.glob("**/*.stories.{toml,tml,tom,tm}", base: base_path).each do |f|
         component = TomlRB.load_file(base_path + f)
-        transformed_component = transform_component(f, component, site);
-        site.config["_array_structures"]["components"]["values"].push(transformed_component)
+        transformed_component = transform_component(f, component, site)
+        array_structures = transformed_component.delete("array_structures")
+        array_structures.each{|key|
+          site.config["_array_structures"][key] ||= {}
+          site.config["_array_structures"][key]["values"] ||= []
+          site.config["_array_structures"][key]["values"].push(transformed_component)
+        }
       end
       puts site.config["_array_structures"].inspect
     end
