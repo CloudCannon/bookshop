@@ -18,12 +18,9 @@ module Bookshop
       return result
     end
 
-
-    def self.transform_component(path, component, site)
-      result = {}
-      result['_component_type'] = get_component_type(path);
-      component.each_pair { |storyname, story|
-        story.each_pair {|key, value|
+    def self.handle_story(story, site)
+      result = {};
+      story.each_pair {|key, value|
           if result.has_key?(key) && storyname != "defaults"
             next
           end
@@ -67,6 +64,19 @@ module Bookshop
             result[key] = value
           end
         }
+        return result
+    end
+
+    def self.transform_component(path, component, site)
+      result = { "value" => {} }
+      result["label"] = get_story_name(path)
+      result["_component_type"] = get_component_type(path)
+      component.each_pair { |storyname, story|
+        if storyname == "meta"
+          result.merge!(story)
+        else
+          result["value"].merge!(handle_story(story, site))
+        end
       }
       return result
     end
@@ -83,11 +93,10 @@ module Bookshop
       }
       Dir.glob("**/*.stories.{toml,tml,tom,tm}", base: base_path).each do |f|
         component = TomlRB.load_file(base_path + f)
-        site.config["_array_structures"]["components"]["values"].push({
-          "label" => get_story_name(f),
-          "value" => transform_component(f, component, site)
-        })
+        transformed_component = transform_component(f, component, site);
+        site.config["_array_structures"]["components"]["values"].push(transformed_component)
       end
+      puts site.config["_array_structures"].inspect
     end
   end
 end
