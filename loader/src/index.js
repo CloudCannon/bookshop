@@ -110,6 +110,7 @@ module.exports = function(source) {
   let rejoinedToml = outputLines.join('\n');
 
   let data = toml.parse(rejoinedToml);
+  delete data.meta;
 
   const { frameworks, files } = findFrameworkFiles(this);
   const sv = files.svelte;
