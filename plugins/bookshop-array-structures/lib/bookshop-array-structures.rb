@@ -4,8 +4,8 @@ require "toml-rb"
 module Bookshop
   class ArrayStructures
     def self.get_story_name(path)
-      basename = path.split("/").last.split(".").first
-      return basename.split("-").map(&:capitalize).join(" ")
+      basename = get_component_type(path)
+      return basename.split(/-|\//).map(&:capitalize).join(" ")
     end
 
     def self.get_component_type(path)
@@ -72,7 +72,7 @@ module Bookshop
     end
 
     def self.build_array_structures(site)
-      base_path = ""
+      base_path = "_bookshop/components/"
       if !site.theme.nil?
         base_path = site.theme.root + "/_bookshop/components/"
       end
