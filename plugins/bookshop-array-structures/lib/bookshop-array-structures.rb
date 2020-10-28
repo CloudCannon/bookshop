@@ -60,6 +60,9 @@ module Bookshop
               end
               site.config["_select_data"][new_key].push(option)
             } 
+          elsif key.include? "--"
+            new_key = key.split("--").first
+            result[new_key] = nil
           else
             result[key] = value
           end
