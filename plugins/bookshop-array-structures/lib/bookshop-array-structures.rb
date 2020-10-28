@@ -89,17 +89,30 @@ module Bookshop
       end
       site.config["_select_data"] ||= {}
       site.config["_array_structures"] ||= {}
+      puts "📚 Parsing Stories..."
       Dir.glob("**/*.stories.{toml,tml,tom,tm}", base: base_path).each do |f|
-        component = TomlRB.load_file(base_path + f)
+        begin
+          component = TomlRB.load_file(base_path + f)  
+        rescue => exception
+          puts "❌ Error Parsing Story: " + f
+          puts exception
+          next
+        end
         transformed_component = transform_component(f, component, site)
         array_structures = transformed_component.delete("array_structures")
         array_structures.each{|key|
-          site.config["_array_structures"][key] ||= {}
-          site.config["_array_structures"][key]["values"] ||= []
-          site.config["_array_structures"][key]["values"].push(transformed_component)
+          begin
+            site.config["_array_structures"][key] ||= {}
+            site.config["_array_structures"][key]["values"] ||= []
+            site.config["_array_structures"][key]["values"].push(transformed_component)
+          rescue => exception
+            puts "❌ Error Adding Story to Array Structures: " + f
+            puts "🤔 Maybe your current _config.yml has conflicting array structures?"
+          end
         }
       end
-      puts site.config["_array_structures"].inspect
+      puts "✅ Finshed Parsing Stories"
+      #puts site.config["_array_structures"].inspect
     end
   end
 end
