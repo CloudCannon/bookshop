@@ -70,7 +70,6 @@ module Bookshop
     def self.transform_component(path, component, site)
       result = { "value" => {} }
       result["label"] = get_story_name(path)
-      result["array_structures"] = ["components"];
       result["value"]["_component_type"] = get_component_type(path)
       component.each_pair { |storyname, story|
         if storyname == "meta"
@@ -79,6 +78,12 @@ module Bookshop
           result["value"].merge!(handle_story(story, site))
         end
       }
+      result["array_structures"] ||= [];
+      contains_component = result["array_structures"].select{|value| value == 'components'}.length > 0
+      if !contains_component && !result["_hidden"]
+        result["array_structures"].push("components")
+      end
+      result.delete("_hidden") unless result["_hidden"].nil?
       return result
     end
 
