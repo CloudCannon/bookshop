@@ -295,6 +295,8 @@ const determineObjectType = (key, val) => {
 
   [key, enumType] = splitKey;
 
+  if (enumType === 'preview') enumType = 'select'
+
   if (/^(select|radio|inline-radio)$/.test(enumType)) {
     return [{
         name:enumType,
