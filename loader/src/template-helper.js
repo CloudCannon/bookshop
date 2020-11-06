@@ -20,20 +20,12 @@ const buildStoryTemplate = (context, files) => {
             } catch (err) { console.log(err) }
           })(),`
         : "";
-      const run = initData.run
-        ? initData.run
-            .map((func) => {
-              return `${varName}.${func.name}();`;
-            })
-            .join("\n")
-        : "";
       return `
         const ${varName} = require("${initData.packageName}").engine;
         const ${varName}Context = {
           file: "${files[name]}",
           ${requireFiles}
         };
-        ${run}
       `;
     })
     .join("\n");
