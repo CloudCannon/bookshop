@@ -2,9 +2,9 @@ const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const createCompiler = require("@storybook/addon-docs/mdx-compiler-plugin");
 const { rewriteIncludes } = require("@bookshop/jekyll-engine");
-const { svelteEngine } = require("@bookshop/svelte-engine");
-const { jekyllEngine } = require("@bookshop/jekyll-engine");
-const { underscoreEngine } = require("@bookshop/underscore-engine");
+const svelteEngine = require("@bookshop/svelte-engine").engine;
+const jekyllEngine = require("@bookshop/jekyll-engine").engine;
+const underscoreEngine = require("@bookshop/underscore-engine").engine;
 const projectRoot = path.resolve(__dirname, "../");
 
 module.exports = async ({ config, mode }) => {

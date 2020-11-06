@@ -5,12 +5,14 @@ const underscoreEngine = {
   render: (component, props, options) => {
     options.renderRoot.innerHTML = _.template(
       `<%= JST["${component}"](props) %>`
-    )({ props: props });
+    )({ props: props, test: "meow" });
   },
-  init: (name) => `
-    const { underscoreEngine: ${name} } = require("@bookshop/underscore-engine");
-    ${name}.setupWindow();
-  `,
+  init: () => {
+    return {
+      packageName: "@bookshop/underscore-engine",
+      run: [underscoreEngine.setupWindow],
+    };
+  },
   setupWindow: () => {
     var JSTHandler = {
       get: (o, name) => {
@@ -48,5 +50,5 @@ const underscoreEngine = {
 };
 
 module.exports = {
-  underscoreEngine: underscoreEngine,
+  engine: underscoreEngine,
 };

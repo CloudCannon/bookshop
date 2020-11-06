@@ -20,8 +20,9 @@ const jekyllEngine = {
     component = `${component}/${cname}.jekyll.html`;
     options.renderRoot.innerHTML = engine.renderFileSync(component, props);
   },
-  init: (name) =>
-    `const { jekyllEngine: ${name} } = require("@bookshop/jekyll-engine");`,
+  init: () => {
+    return { packageName: "@bookshop/jekyll-engine" };
+  },
 };
 
 /**
@@ -73,6 +74,6 @@ const rewriteTag = function (token, src) {
 };
 
 module.exports = {
-  jekyllEngine: jekyllEngine,
+  engine: jekyllEngine,
   rewriteIncludes: rewriteIncludes,
 };

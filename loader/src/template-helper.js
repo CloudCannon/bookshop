@@ -5,27 +5,44 @@
  * @param files The set of file names for each frameworks story
  */
 const buildStoryTemplate = (context, files) => {
-  const initBlock = context.query.engines
+  const engines = context.query.engines.filter(
+    (engineSettings) => files[engineSettings.engine.name]
+  );
+  const initBlock = engines
     .map((engineSettings) => {
       const name = engineSettings.engine.name;
       const varName = name.replace("-", "_");
-      return engineSettings.engine.init(varName, files[name]);
+      const initData = engineSettings.engine.init();
+      const requireFiles = initData.requireFiles
+        ? `require: (() => {
+            try{
+              return require("${files[name]}");
+            } catch (err) { console.log(err) }
+          })(),`
+        : "";
+      const run = initData.run
+        ? initData.run
+            .map((func) => {
+              return `${varName}.${func.name}();`;
+            })
+            .join("\n")
+        : "";
+      return `
+        const ${varName} = require("${initData.packageName}").engine;
+        const ${varName}Context = {
+          file: "${files[name]}",
+          ${requireFiles}
+        };
+        ${run}
+      `;
     })
     .join("\n");
 
-  const renderBlock = context.query.engines
+  const renderBlock = engines
     .map((engineSettings) => {
       const name = engineSettings.engine.name;
       const varName = name.replace("-", "_");
-      return `if (props.framework === "${name}") ${varName}.render("<%- component %>", consolidatedProps, options);`;
-    })
-    .join("\n");
-
-  const optionsBlock = context.query.engines
-    .map((engineSettings) => {
-      const engine = engineSettings.engine;
-      const options = engine.options ? engine.options() : "null";
-      return `"${engine.name}":${options},`;
+      return `if (props.framework === "${name}") ${varName}.render("<%- component %>", consolidatedProps, options, ${varName}Context);`;
     })
     .join("\n");
 
@@ -77,7 +94,6 @@ const buildStoryTemplate = (context, files) => {
         uniqueKey: uniqueFrameworkKey,
         renderRoot: renderRoot,
         newComponentRender: newComponentRender,
-        ${optionsBlock}
       }
 
       ${renderBlock}
