@@ -9,7 +9,7 @@ const {
 
 let outputPath = path.resolve(process.cwd(), '_bookshop');
 let libPath = path.resolve(process.cwd(), process.env.COMPONENT_LIB);
-const watch = process.argv.includes('--watch');
+const watch = !process.argv.includes('--build');
 
 if (!libPath) {
     outputPath = path.resolve(process.cwd(), 'dist/jekyll');
