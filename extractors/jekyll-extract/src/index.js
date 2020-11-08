@@ -9,6 +9,7 @@ const {
 
 let outputPath = path.resolve(process.cwd(), '_bookshop');
 let libPath = path.resolve(process.cwd(), process.env.COMPONENT_LIB);
+const watch = process.argv.includes('--watch');
 
 if (!libPath) {
     outputPath = path.resolve(process.cwd(), 'dist/jekyll');
@@ -112,7 +113,7 @@ webpack({
     plugins: [
         new CleanWebpackPlugin()
     ],
-    watch: true,
+    watch: watch,
     watchOptions: {
         aggregateTimeout: 500,
         ignored: ['.git/**', 'node_modules/**', 'dist/**']
