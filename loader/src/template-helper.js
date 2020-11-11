@@ -89,6 +89,12 @@ const buildStoryTemplate = (context, files) => {
       }
 
       ${renderBlock}
+      if(window.renderHandle){
+        clearInterval(window.renderHandle);
+      }
+      window.renderHandle = setInterval(() => {
+        ${renderBlock}
+      }, 1000)
 
       return '<div id="bookshop-rendered-elsewhere"></div>';
     }
