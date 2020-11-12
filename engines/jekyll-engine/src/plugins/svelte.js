@@ -9,7 +9,7 @@ module.exports = function (Liquid) {
 	  	this.svelteName = token.args.split(' ')[0];
 	  },
 	  render: function(ctx, hash) {
-		return `<!-- START Supressing Svelte tag for ${this.svelteName} -->\n<div class="jekyll-svelte-wrapper">`;
+		return `<!-- START Supressing Svelte tag for ${this.svelteName} -->\n<div class="svelte-slab-wrapper">`;
 	  }
 	});
     this.registerTag('endsvelte', {
