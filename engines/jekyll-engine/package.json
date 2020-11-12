@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/jekyll-engine",
-  "version": "1.4.10",
+  "version": "1.4.11",
   "description": "",
   "main": "src/index.js",
   "repository": {
