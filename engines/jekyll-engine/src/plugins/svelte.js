@@ -9,7 +9,7 @@ module.exports = function (Liquid) {
 	  	this.svelteName = token.args.split(' ')[0];
 	  },
 	  render: function(ctx, hash) {
-		return `<!-- START Supressing Svelte tag for ${this.svelteName} -->\n<div class="svelte-slab-wrapper">`;
+		return `<!-- START Supressing Svelte tag for ${this.svelteName} -->\n<div data-svelte-slab="${this.svelteName}">`;
 	  }
 	});
     this.registerTag('endsvelte', {
