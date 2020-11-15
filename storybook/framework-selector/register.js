@@ -4,15 +4,15 @@ import React, { useState } from "react";
 import { addons, types } from "@storybook/addons";
 import { useArgs, useArgTypes } from "@storybook/api";
 
-const ADDON_ID = "myaddon";
-const PANEL_ID = `${ADDON_ID}/panel`;
+const ADDON_ID = "framework-selector";
+const TOOL_ID = `${ADDON_ID}/tool`;
 
 // give a unique name for the panel
-const MyPanel = () => {
+const FrameworkSelector = () => {
   const [currFramework, setCurrFramework] = useState(null);
   const options = [];
   const argTypes = useArgTypes();
-  const [args, updateArgs, resetArgs] = useArgs();
+  const [args, updateArgs] = useArgs();
   if (args.framework && args.framework !== currFramework) {
     if (!currFramework) {
       setCurrFramework(args.framework);
@@ -48,7 +48,6 @@ const MyPanel = () => {
       <p style={{ marginRight: "10px" }}> Bookshop Framework: </p>
       <select
         onChange={(e) => {
-          console.log(e.target.value);
           setCurrFramework(e.target.value);
           updateArgs({ framework: e.target.value });
         }}
@@ -59,10 +58,10 @@ const MyPanel = () => {
   );
 };
 addons.register(ADDON_ID, (api) => {
-  addons.add(PANEL_ID, {
+  addons.add(TOOL_ID, {
     type: types.TOOL,
-    title: "My Addon",
+    title: "Bookshop Framework Selector",
     match: ({ viewMode }) => !!(viewMode && viewMode.match(/^(story|docs)$/)),
-    render: () => <MyPanel />,
+    render: () => <FrameworkSelector />,
   });
 });
