@@ -9,14 +9,14 @@ module.exports = function (Liquid) {
 	  	this.svelteName = token.args.split(' ')[0];
 	  },
 	  render: function(ctx, hash) {
-		return `<!-- START Supressing Svelte tag for ${this.svelteName} -->`;
+		return `<!-- START Supressing Svelte tag for ${this.svelteName} -->\n<div data-svelte-slab="${this.svelteName}">`;
 	  }
 	});
     this.registerTag('endsvelte', {
 	  parse: function(token){
 	  },
 	  render: function(ctx, hash) {
-		return `<!-- END supressing Svelte tag -->`;
+		return `</div>\n<!-- END supressing Svelte tag -->`;
 	  }
 	});
 }
