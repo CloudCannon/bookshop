@@ -7,6 +7,6 @@ module.exports = {
     "@storybook/addon-backgrounds",
     "@storybook/addon-viewport",
     "@storybook/addon-a11y",
-    "../../../addons/framework-selector/register.js",
+    "../../../storybook/preset",
   ],
 };

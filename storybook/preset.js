@@ -7,7 +7,7 @@ function managerEntries(entry = []) {
 }
 
 function config(entry = []) {
-  return [...entry, require.resolve("./width-selector/addDecorator")];
+  return [...entry, require.resolve("./width-selector/decorator")];
 }
 
 module.exports = {

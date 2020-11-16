@@ -1,13 +1,13 @@
-import React, { memo } from "react";
+import React, { useState } from "react";
 import { addons, types } from "@storybook/addons";
 import { IconButton, Icons } from "@storybook/components";
-import { useGlobals } from "@storybook/addons";
 
 const ADDON_ID = "width-selector";
 const TOOL_ID = `${ADDON_ID}/tool`;
 
 // give a unique name for the panel
 const WidthSelector = ({ api }) => {
+  const [currWidth, setCurrWidth] = useState("fit-content");
   return (
     <div
       style={{
@@ -25,21 +25,25 @@ const WidthSelector = ({ api }) => {
       <IconButton
         key="bookshop-width-fit"
         title="Change the width of the component"
-        active={true}
+        active={currWidth === "fit-content"}
+        onClick={() => {
+          api.updateGlobals({ "bookshop-width": "fit-content" });
+          setCurrWidth("fit-content");
+        }}
+        style={{ marginRight: "10px" }}
       >
-        <Icons
-          icon="photo"
-          onClick={() => {
-            api.updateGlobals({ "bookshop-width": "100%" });
-          }}
-        />
+        <Icons icon="component" />
       </IconButton>
       <IconButton
         key="bookshop-width-full"
         title="Change the width of the component"
-        active={true}
+        active={currWidth === "100%"}
+        onClick={() => {
+          api.updateGlobals({ "bookshop-width": "100%" });
+          setCurrWidth("100%");
+        }}
       >
-        <Icons icon="discord" />
+        <Icons icon="expand" />
       </IconButton>
     </div>
   );
