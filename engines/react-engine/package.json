@@ -1,0 +1,23 @@
+{
+  "name": "@bookshop/react-engine",
+  "version": "1.4.8",
+  "description": "",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cloudcannon/bookshop.git",
+    "directory": "engines/react-engine"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\""
+  },
+  "author": "@TateKennington",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  }
+}
