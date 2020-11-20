@@ -1,5 +1,5 @@
 import React from "react";
-import Subcomponent from "../subcomponent/subcomponent";
+import Subcomponent from "Components/linking/subcomponent/subcomponent";
 
 class Component extends React.Component {
   constructor(props) {

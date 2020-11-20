@@ -27,6 +27,10 @@ module.exports = async ({ config, mode }) => {
     ],
   });
 
+  config.resolve.alias["Components"] = path.resolve(
+    "./components/kitchen-sink"
+  );
+
   config.module.rules.push({
     test: /\.scss$/,
     use: [
