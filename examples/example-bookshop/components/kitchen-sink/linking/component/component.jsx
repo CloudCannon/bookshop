@@ -9,8 +9,8 @@ class Component extends React.Component {
 
   render() {
     return (
-      <div class="{{ 'c-component' | addmods: }}">
-        <h1 class="c-component__name">{this.props.name}</h1>
+      <div className="c-component">
+        <h1 className="c-component__name">{this.props.name}</h1>
         <Subcomponent text="I am a subcomponent" />
       </div>
     );

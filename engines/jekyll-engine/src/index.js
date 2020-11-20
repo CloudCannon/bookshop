@@ -43,7 +43,11 @@ const createFs = (context) => {
       return !!context[file];
     },
     resolve: (root, file, ext) => {
-      return file;
+      if (context[file]) {
+        return file;
+      } else {
+        return Object.keys(context).filter((key) => key.includes(file))[0];
+      }
     },
   };
 };

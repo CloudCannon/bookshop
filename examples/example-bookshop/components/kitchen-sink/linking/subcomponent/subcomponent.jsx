@@ -7,8 +7,8 @@ class Subcomponent extends React.Component {
 
   render() {
     return (
-      <div class="c-subcomponent">
-        <div class="c-subcomponent__text">{this.props.text}</div>
+      <div className="c-subcomponent">
+        <div className="c-subcomponent__text">{this.props.text}</div>
       </div>
     );
   }
