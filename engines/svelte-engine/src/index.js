@@ -7,7 +7,6 @@ const svelteEngine = {
       window.svelteApps[options.uniqueKey].$$set(props);
     } else {
       options.renderRoot.innerHTML = "";
-      console.log(context, component);
       const app = new context[component].default({
         target: options.renderRoot,
         props: props,
