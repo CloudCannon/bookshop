@@ -2,6 +2,7 @@ const _ = require("underscore");
 
 const underscoreEngine = {
   name: "jst-ejs",
+  packageName: "@bookshop/underscore-engine",
   render: (component, props, options) => {
     let name = component;
     let request = new XMLHttpRequest();
@@ -30,11 +31,6 @@ const underscoreEngine = {
         return classname;
       },
     });
-  },
-  init: () => {
-    return {
-      packageName: "@bookshop/underscore-engine",
-    };
   },
 };
 

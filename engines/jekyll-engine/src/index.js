@@ -1,28 +1,51 @@
 var { Liquid, Tokenizer } = require("liquidjs");
-var path = require("path");
-
-//root here refers to the path im the browser, not on the fs.
-const engine = new Liquid({
-  root: "/components", // root for layouts/includes lookup
-  extname: ".html", // used for layouts/includes, defaults ""
-});
-engine.plugin(require("./plugins/bem-mods.js"));
-engine.plugin(require("./plugins/jsonify.js"));
-engine.plugin(require("./plugins/slugify-plugin.js"));
-engine.plugin(require("./plugins/svelte.js"));
-engine.plugin(require("./plugins/unbind.js"));
+const bem = require("./plugins/bem-mods.js");
+const jsonify = require("./plugins/jsonify.js");
+const slugify = require("./plugins/slugify-plugin.js");
+const svelte = require("./plugins/svelte.js");
+const unbind = require("./plugins/unbind.js");
 
 const jekyllEngine = {
   name: "jekyll",
-  render: (component, props, options) => {
-    let cpath = component.split("/");
-    let cname = cpath[cpath.length - 1];
-    component = `${component}/${cname}.jekyll.html`;
-    options.renderRoot.innerHTML = engine.renderFileSync(component, props);
+  packageName: "@bookshop/jekyll-engine",
+  render: (component, props, options, context) => {
+    options.renderRoot.innerHTML = createEngine(context).renderFileSync(
+      component,
+      props
+    );
   },
-  init: () => {
-    return { packageName: "@bookshop/jekyll-engine" };
-  },
+};
+
+const createEngine = (context) => {
+  const engine = new Liquid({
+    fs: createFs(context),
+  });
+  engine.plugin(bem);
+  engine.plugin(jsonify);
+  engine.plugin(slugify);
+  engine.plugin(svelte);
+  engine.plugin(unbind);
+  return engine;
+};
+
+const createFs = (context) => {
+  return {
+    readFileSync: (file) => {
+      return rewriteIncludes(context[file]);
+    },
+    readFile: async (file) => {
+      return rewriteIncludes(context[file]);
+    },
+    existsSync: (file) => {
+      return !!context[file];
+    },
+    exists: async (file) => {
+      return !!context[file];
+    },
+    resolve: (root, file, ext) => {
+      return file;
+    },
+  };
 };
 
 /**
@@ -31,10 +54,7 @@ const jekyllEngine = {
  * @param  {String} path File path of an include
  * @return {String}      File context of a LiquidJS include
  */
-const rewriteIncludes = function (text, path) {
-  if (path && !/\.jekyll\.html$/.test(path)) {
-    return text;
-  }
+const rewriteIncludes = function (text) {
   text = text.toString();
   let tokenizer = new Tokenizer(text);
   let output = tokenizer.readTopLevelTokens();

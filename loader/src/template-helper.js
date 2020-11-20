@@ -10,22 +10,16 @@ const buildStoryTemplate = (context, files) => {
   );
   const initBlock = engines
     .map((engineSettings) => {
-      const name = engineSettings.engine.name;
+      const { name, packageName } = engineSettings.engine;
       const varName = name.replace("-", "_");
-      const initData = engineSettings.engine.init();
-      const requireFiles = initData.requireFiles
-        ? `require: (() => {
-            try{
-              return require("${files[name]}");
-            } catch (err) { console.log(err) }
-          })(),`
-        : "";
       return `
-        const ${varName} = require("${initData.packageName}").engine;
-        const ${varName}Context = {
-          file: "${files[name]}",
-          ${requireFiles}
-        };
+        const ${varName} = require("${packageName}").engine;
+        window.${varName}Context = window.${varName}Context || {};
+        window.${varName}Context["${files[name]}"] = (() => {
+          try{
+            return require("${files[name]}");
+          } catch (err) { console.log(err) }
+        })()
       `;
     })
     .join("\n");
@@ -34,7 +28,7 @@ const buildStoryTemplate = (context, files) => {
     .map((engineSettings) => {
       const name = engineSettings.engine.name;
       const varName = name.replace("-", "_");
-      return `if (props.framework === "${name}") ${varName}.render("<%- component %>", consolidatedProps, options, ${varName}Context);`;
+      return `if (props.framework === "${name}") ${varName}.render("${files[name]}", consolidatedProps, options, window.${varName}Context);`;
     })
     .join("\n");
 
