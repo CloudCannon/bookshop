@@ -111,6 +111,12 @@ const mainPrompt = async () => {
 	    }, {
 	        name: "Object",
 	        value: "object"
+	    },{
+	        name: "Repeat",
+	        value: "repeat"
+	    },{
+	        name: "Select",
+	        value: "select"
 	    }, ]
 	}, {
 	    type: 'multiselect',
@@ -130,8 +136,8 @@ const mainPrompt = async () => {
 	        name: "Jekyll",
 	        value: "jekyll"
 	    }, {
-	        name: "Underscore",
-	        value: "underscore"
+	        name: "Svelte",
+	        value: "svelte"
 	    }, ]
 	}
 	]);
