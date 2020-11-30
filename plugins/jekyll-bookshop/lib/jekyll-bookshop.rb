@@ -6,7 +6,10 @@ module JekyllBookshop
 
     # Look for includes in the built bookshop directory
     def tag_includes_dirs(context)
-      Array(Pathname.new(context['site']['bookshop_path'] + '/components').cleanpath.to_s).freeze
+      Array([
+        Pathname.new(context['site']['bookshop_theme_path'] + '/components').cleanpath.to_s, 
+        Pathname.new(context['site']['bookshop_site_path'] + '/components').cleanpath.to_s
+      ]).freeze
     end
 
     # Support the bind syntax, spreading an object into params
@@ -57,11 +60,15 @@ module JekyllBookshop
 
     # Add the paths to find bookshop's styles
     def self.open_bookshop(site)
-      bookshop_path = site.theme.root + '/_bookshop'
-      site.config['bookshop_path'] = Pathname.new(bookshop_path).cleanpath.to_s
+      bookshop_theme_path = site.theme.root + '/_bookshop'
+      bookshop_site_path = site.source + '/_bookshop'
+      site.config['bookshop_theme_path'] = Pathname.new(bookshop_theme_path).cleanpath.to_s
+      site.config['bookshop_site_path'] = Pathname.new(bookshop_site_path).cleanpath.to_s
+
       site.config['sass'] ||= {}
       site.config['sass']['load_paths'] ||= []
-      site.config['sass']['load_paths'].push(Pathname.new(bookshop_path + '/sass').cleanpath.to_s)
+      site.config['sass']['load_paths'].push(Pathname.new(bookshop_theme_path + '/sass').cleanpath.to_s)
+      site.config['sass']['load_paths'].push(Pathname.new(bookshop_site_path + '/sass').cleanpath.to_s)
     end
   end
 
