@@ -80,6 +80,7 @@ export default {
 
 <% for(var i=0; i<stories.length; i++) {%>
 export const <%= stories[i].name %> = component.bind({uniqueKey: "bookshop_<%= componentKey %>_<%= stories[i].name %>"});
+<%= stories[i].name %>.parameters = <%- stories[i].parameters %>;
 <%= stories[i].name %>.args = <%- stories[i].args %>;
 <%= stories[i].name %>.argTypes = <%- stories[i].argTypes %>;
 <% } %>
@@ -145,6 +146,7 @@ module.exports = function(source) {
   for (let [story, props] of Object.entries(data)) {
     stories.push({
       name: changeCase.camelCase(story),
+      parameters: JSON.stringify(propsToParameters(props)),
       args: JSON.stringify(propsToArgs(props)),
       argTypes: JSON.stringify(propsToArgTypes(props))
     })
@@ -230,6 +232,16 @@ const propsToArgTypes = props => {
   return argTypes;
 };
 
+const propsToParameters = props => {
+  if (!props || !props._design) return {};
+  return {
+    design: {
+        type: 'figma',
+        url: props._design
+     }
+  }
+}
+
 /**
  * Turn TOML fields into @storybook/controls args
  */
@@ -238,6 +250,7 @@ const propsToArgs = props => {
   let args = {};
   Object.entries(props).map(([key, val]) => {
     if (/--doc/.test(key)) return;
+    if (/^_design/.test(key)) return;
     let propData = typeFromVal(key, val);
     for (let item of propData) {
       args[item.key] = item.value
