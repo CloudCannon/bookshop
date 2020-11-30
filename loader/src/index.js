@@ -215,7 +215,7 @@ const propsToArgTypes = props => {
   if (!props) return {};
   let argTypes = {};
   Object.entries(props).map(([key, val]) => {
-    if (/--doc/.test(key)) return;
+    if (filterOutKey(key)) return;
     let propData = typeFromVal(key, val);
     for (let item of propData) {
       argTypes[item.key] = {
@@ -249,8 +249,7 @@ const propsToArgs = props => {
   if (!props) return {};
   let args = {};
   Object.entries(props).map(([key, val]) => {
-    if (/--doc/.test(key)) return;
-    if (/^_design/.test(key)) return;
+    if (filterOutKey(key)) return;
     let propData = typeFromVal(key, val);
     for (let item of propData) {
       args[item.key] = item.value
@@ -313,7 +312,7 @@ const determineObjectType = (key, val) => {
   if (/^(select|radio|inline-radio)$/.test(enumType)) {
     return [{
         name:enumType,
-        value: val[Object.keys(val).find(v => v !== '--doc')],
+        value: val[Object.keys(val).find(v => !filterOutKey(v))],
         options: capitalizeKeys(val),
         rawOptions: val,
         key: key,
@@ -324,7 +323,7 @@ const determineObjectType = (key, val) => {
   if (/^(multi-select|check|inline-check)$/.test(enumType)) {
     return [{
         name:enumType,
-        value: [val[Object.keys(val).find(v => v !== '--doc')]],
+        value: [val[Object.keys(val).find(v => !filterOutKey(v))]],
         options: capitalizeKeys(val),
         rawOptions: val,
         key: key,
@@ -344,7 +343,7 @@ const determineObjectType = (key, val) => {
     });
 
     for (let [controlKey, controlVal] of Object.entries(val)) {
-      if (/--doc/.test(controlKey)) continue;
+      if (filterOutKey(controlKey)) continue;
       let innerKeys = typeFromVal(controlKey, controlVal);
       for (let ik of innerKeys) {
         repeatControls.push({
@@ -400,6 +399,13 @@ const determineStringVal = (key, val) => {
 }
 
 /**
+ * Filter out keys used for comments and whatnot
+ */
+const filterOutKey = key => {
+  return /--doc|^_design/.test(key);
+}
+
+/**
  * Capitalize keys in an object.
  * Use this when padding a set of options to storybook,
  * i.e. for a select box. Makes things prettier.
@@ -407,7 +413,7 @@ const determineStringVal = (key, val) => {
 const capitalizeKeys = o => {
   let output = {};
   for (let [key, val] of Object.entries(o)) {
-    if (/--doc/.test(key)) continue;
+    if (filterOutKey(key)) continue;
     output[changeCase.capitalCase(key)] = val;
   }
   return output;
