@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-
+const { program } = require('commander');
 const path = require('path');
 const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
@@ -7,8 +7,15 @@ const {
     CleanWebpackPlugin
 } = require('clean-webpack-plugin');
 
-let outputPath = path.resolve(process.cwd(), '_bookshop');
-let libPath = path.resolve(process.cwd(), process.env.COMPONENT_LIB);
+program
+  .requiredOption('-c, --components <dir>', 'component library source')
+  .option('-o, --output <dir>', 'output directory', '_bookshop')
+  .option('-w, --watch', 'watch for changes', false);
+
+program.parse(process.argv);
+
+let outputPath = path.resolve(process.cwd(), program.output);
+let libPath = path.resolve(process.cwd(), program.components);
 
 if (!libPath) {
     outputPath = path.resolve(process.cwd(), 'dist/jekyll');
@@ -112,7 +119,7 @@ webpack({
     plugins: [
         new CleanWebpackPlugin()
     ],
-    watch: true,
+    watch: program.watch,
     watchOptions: {
         aggregateTimeout: 500,
         ignored: ['.git/**', 'node_modules/**', 'dist/**']
