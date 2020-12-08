@@ -24,6 +24,8 @@ module JekyllBookshop
         end
       end
 
+      params.delete('bind')
+
       params
     end
 
