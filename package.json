@@ -1,5 +1,8 @@
 {
   "name": "root",
+  "bin": {
+    "init": "cli/index.js"
+  },
   "private": true,
   "devDependencies": {
     "@types/meow": "^5.0.0",
