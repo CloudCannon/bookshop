@@ -12,11 +12,17 @@ const path = require("path");
 async function run() {
   const cli = meow(`
     Usage
-      $ npx bookshop init <output-dir>
+      $ npx bookshop --init <output-dir>
  
     Examples
-      $ npx bookshop init .
-`);
+      $ npx bookshop --init .
+  `, {
+    flags: {
+      init: {
+        isRequired: true
+      }
+    }
+  });
 
   const spinner = ora("Downloading bookshop...").start();
 
