@@ -1,0 +1,36 @@
+{
+  "name": "@bookshop/cli",
+  "bin": {
+    "init": "index.js"
+  },
+  "version": "0.0.1",
+  "description": "A cli package for bookshop",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CloudCannon/bookshop.git"
+  },
+  "keywords": [
+    "bookshop",
+    "@bookshop",
+    "cli",
+    "components",
+    "svelte",
+    "react"
+  ],
+  "author": "CloudCannon <support@cloudcannon.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CloudCannon/bookshop/issues"
+  },
+  "homepage": "https://github.com/CloudCannon/bookshop#readme",
+  "dependencies": {
+    "@types/node": "^14.14.12",
+    "download-git-repo": "^3.0.2",
+    "meow": "^8.0.0",
+    "ora": "^5.1.0"
+  }
+}

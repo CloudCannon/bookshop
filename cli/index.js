@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 
 const execSync = require("child_process").execSync;
-const util = require("util");
 const meow = require("meow");
-const ora = require('ora');
+const ora = require("ora");
+const download = require("download-git-repo");
+const path = require("path");
 
-
-const cli = meow(`
+/**
+ * A CLI package to help init a bookshop package
+ */
+async function run() {
+  const cli = meow(`
     Usage
       $ npx bookshop init <output-dir>
  
@@ -14,11 +18,28 @@ const cli = meow(`
       $ npx bookshop init .
 `);
 
-const spinner = ora('Initializing bookshop...').start();
+  const spinner = ora("Downloading bookshop...").start();
 
-// Copy the example project into user's specified directory
-execSync(`cp -r ${__dirname}/../examples/example-bookshop/ ${cli.input || "."}`);
+  await new Promise((resolve) =>
+    download(
+      "CloudCannon/bookshop",
+      path.resolve(__dirname, "temp"),
+      {},
+      resolve
+    )
+  );
 
-spinner.stop();
+  // Copy the example project into user's specified directory
+  execSync(
+    `cp -r ${__dirname}/temp/examples/example-bookshop/ ${cli.input || "."}`
+  );
 
-console.log('Finished');
+  spinner.text = "Removing temp directory...";
+  execSync(`rm -rf ${__dirname}/temp`);
+
+  spinner.stop();
+
+  console.log("Finished");
+}
+
+run();
