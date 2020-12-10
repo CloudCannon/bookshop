@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/cli",
   "bin": {
-    "init": "index.js"
+    "bookshop-cli": "index.js"
   },
   "version": "0.0.1",
   "description": "A cli package for bookshop",
