@@ -35,10 +35,17 @@ async function run() {
     )
   );
 
+  const output = `${cli.flags.init || "."}`;
+
   // Copy the example project into user's specified directory
+  try {
   execSync(
-    `cp -r ${__dirname}/temp/examples/example-bookshop/ ${cli.input || "."}`
+    `cp -r ${__dirname}/temp/examples/example-bookshop/ ${output}`
   );
+  } catch (ex) {
+    console.error(`Command failed! ${ex}`);
+    process.exit(1);
+  }
 
   spinner.text = "Removing temp directory...";
   execSync(`rm -rf ${__dirname}/temp`);
