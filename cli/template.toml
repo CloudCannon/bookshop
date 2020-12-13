@@ -1,0 +1,107 @@
+# Required, name of the template
+name = "Bookshop"
+# Optional, longer form description
+description = "Make a new bookshop template"
+# Required, the version of the kickstart schema, currently only `1` is used
+kickstart_version = 1
+# Optional, the URL of the template
+# url = ""
+# Optional, a list of authors for this template
+authors = [
+	"CloudCannon"
+]
+# Optional, a list of keywords for this template
+keywords = [
+	"bookshop",
+	"cli",
+	"bookshop-cli"
+]
+# Optional, those files will NOT be copied over when generating the template
+# Use it to remove template-specific like its CI or its README/docs
+ignore = [
+    "README.md",
+    "CONTRIBUTING.md",
+    ".travis.yml",
+    "docs",
+]
+# If this is set, kickstart will use this directory as a base for the template instead of
+# the root directory. This is useful when your template has its own documentation/CI/etc and you don't want
+# to ignore it.
+directory = "../examples/example-bookshop"
+# Optional, a list of patterns. All files matching one of the patterns will
+# be copied over without going through Tera.
+# Use it for files that contain syntax similar to Tera for example
+# copy_without_render = [
+#     "*.html",
+# ]
+
+# Optional, a list of cleanup actions to do.
+# All paths listed will be deleted if the `name` has the value `value` after
+# the questions have been answered and the project generated.
+# cleanup = [
+#     { name = "spa", value = true, paths = ["{{ project_name }}/templates/"]},
+#     { name = "auth_method", value = "none", paths = ["{{ project_name }}/docs/auth.md"]},
+# ]
+
+# A list of variables, the schema is explained in detail below
+[[variables]]
+name = "project_name"
+default = "my-project"
+prompt = "What is the name of this project?"
+validation = "^([a-zA-Z][a-zA-Z0-9_-]+)$"
+
+[[variables]]
+name = "database"
+default = "postgres"
+prompt = "Which database do you want to use?"
+choices = ["postgres", "mysql", "sqlite"]
+
+[[variables]]
+name = "pg_version"
+default = "10.4"
+prompt = "Which version of Postgres?"
+choices =  [
+    "10.4",
+    "10.3",
+    "10.2",
+    "10.1",
+    "9.6",
+    "9.5",
+    "9.4",
+    "9.3",
+]
+only_if = { name = "database", value = "postgres" }
+
+[[variables]]
+name = "auth_method"
+default = "jwt"
+prompt = "How are users going to be authenticated?"
+choices = ["jwt", "sessions", "none"]
+
+[[variables]]
+name = "sentry"
+default = true
+prompt = "Do you want to add Sentry integration?"
+
+[[variables]]
+name = "spa"
+default = false
+prompt = "Is the frontend a SPA?"
+
+[[variables]]
+name = "js_framework"
+default = "React"
+prompt = "Which JS framework do you want to setup?"
+choices =  [
+    "React",
+    "Angular",
+    "Vue",
+    "None",
+]
+only_if = { name = "spa", value = true }
+
+[[variables]]
+name = "typescript"
+default = true
+prompt = "Do you want to use TypeScript?"
+only_if = { name = "spa", value = true }
