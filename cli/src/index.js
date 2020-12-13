@@ -1,31 +1,20 @@
 #!/usr/bin/env node
 
 const execSync = require("child_process").execSync;
-const meow = require("meow");
 const ora = require("ora");
 const download = require("download-git-repo");
 const path = require("path");
+
+const { Command } = require("commander");
+const program = new Command();
 
 /**
  * A CLI package to help init a bookshop package
  */
 async function run() {
-  const cli = meow(
-    `
-    Usage
-      $ npx bookshop --init <output-dir>
- 
-    Examples
-      $ npx bookshop --init .
-  `,
-    {
-      flags: {
-        init: {
-          isRequired: true,
-        },
-      },
-    }
-  );
+
+  program.option("--init <dir>", "Make a new bookshop component library");
+  program.parse(process.argv);
 
   const spinner = ora("Downloading bookshop...").start();
 
@@ -38,7 +27,7 @@ async function run() {
     )
   );
 
-  const output = `${cli.flags.init || "."}`;
+  const output = `${program.init || "."}`;
 
   // Copy the example project into user's specified directory
   try {

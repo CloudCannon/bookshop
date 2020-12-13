@@ -28,7 +28,6 @@
   "dependencies": {
     "@types/node": "^14.14.12",
     "download-git-repo": "^3.0.2",
-    "meow": "^8.0.0",
     "ora": "^5.1.0"
   }
 }
