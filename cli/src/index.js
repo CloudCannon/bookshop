@@ -58,7 +58,9 @@ async function run() {
     // Run kickstart command
     await new Promise((resolve) => {
       const proc = shell.exec(
-        `~/.cargo/bin/kickstart ${templatePath} --output-dir ${program.init || "."}`,
+        `~/.cargo/bin/kickstart ${templatePath} --output-dir ${
+          program.init || "."
+        }`,
         {
           async: true,
         }
@@ -74,7 +76,7 @@ async function run() {
     exit(1);
   }
 
-  // spinner.stop();
+  spinner.stop();
   console.log("Finished");
   exit(0);
 }
