@@ -1,0 +1,5 @@
+<ol class="{{ 'c-repeat' | addmods: }}">
+{% for item in items %}
+    <li class="c-repeat__item">{{ item.message }} <span class="c-repeat__weight">{{ item.weight }}</span></li>
+{% endfor %}
+</ol>

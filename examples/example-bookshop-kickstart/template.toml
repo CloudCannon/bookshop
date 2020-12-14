@@ -46,62 +46,12 @@ directory = "../examples/example-bookshop"
 # A list of variables, the schema is explained in detail below
 [[variables]]
 name = "project_name"
-default = "my-project"
+default = "bookshop-example"
 prompt = "What is the name of this project?"
 validation = "^([a-zA-Z][a-zA-Z0-9_-]+)$"
 
-[[variables]]
-name = "database"
-default = "postgres"
-prompt = "Which database do you want to use?"
-choices = ["postgres", "mysql", "sqlite"]
 
 [[variables]]
-name = "pg_version"
-default = "10.4"
-prompt = "Which version of Postgres?"
-choices =  [
-    "10.4",
-    "10.3",
-    "10.2",
-    "10.1",
-    "9.6",
-    "9.5",
-    "9.4",
-    "9.3",
-]
-only_if = { name = "database", value = "postgres" }
-
-[[variables]]
-name = "auth_method"
-default = "jwt"
-prompt = "How are users going to be authenticated?"
-choices = ["jwt", "sessions", "none"]
-
-[[variables]]
-name = "sentry"
-default = true
-prompt = "Do you want to add Sentry integration?"
-
-[[variables]]
-name = "spa"
-default = false
-prompt = "Is the frontend a SPA?"
-
-[[variables]]
-name = "js_framework"
-default = "React"
-prompt = "Which JS framework do you want to setup?"
-choices =  [
-    "React",
-    "Angular",
-    "Vue",
-    "None",
-]
-only_if = { name = "spa", value = true }
-
-[[variables]]
-name = "typescript"
-default = true
-prompt = "Do you want to use TypeScript?"
-only_if = { name = "spa", value = true }
+name = "author"
+default = "CloudCannon"
+prompt = "Who is the author of this project?"

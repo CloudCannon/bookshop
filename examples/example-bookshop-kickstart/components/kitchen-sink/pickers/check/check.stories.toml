@@ -1,0 +1,8 @@
+[defaults]
+
+[defaults.color--check] # Checkbox of key = value
+Red-Color = "red"
+Blue-Color = "blue"
+
+[standard]
+

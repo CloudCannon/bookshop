@@ -1,0 +1,8 @@
+[defaults]
+
+[defaults.post] # An object, destructured into controls
+title = "Hello world"
+author = "CloudCannon"
+
+[standard]
+
