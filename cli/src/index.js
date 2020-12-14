@@ -105,22 +105,33 @@ async function run() {
 
   try {
     // Test whether user has Rust. If not, install
-    if (!fs.existsSync(`~/.cargo/bin`)) {
-      spinner.text = "Installing Rust...";
-      await shell.exec(`brew install rust`);
+    if (!fs.existsSync(path.resolve(os.homedir(), `.cargo/bin`))) {
+      spinner.stop();
+
+      console.error(
+        `Please install rust (e.g. \`brew install rust\`) before running this command`
+      );
+      exit(1);
     }
 
-    spinner.text = "Installing kickstart...";
-    await shell.exec(`cargo install kickstart`);
+    if (!fs.existsSync(path.resolve(os.homedir(), `.cargo/bin/kickstart`))) {
+      spinner.text = "Installing kickstart...";
+      shell.exec(`cargo install kickstart`);
+    }
 
     spinner.text = "Kickstarting project...";
     spinner.stop();
 
     // Run kickstart command
     await new Promise((resolve) => {
-      const proc = shell.exec(`~/.cargo/bin/kickstart ${templatePath} --output-dir ${path.resolve(".")}`, {
-        async: true,
-      });
+      const proc = shell.exec(
+        `~/.cargo/bin/kickstart ${templatePath} --output-dir ${path.resolve(
+          "."
+        )}`,
+        {
+          async: true,
+        }
+      );
       // Pipe user input to kickstart
       stdin.pipe(proc.stdin);
       proc.on("exit", () => {
