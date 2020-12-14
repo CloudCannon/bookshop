@@ -42,7 +42,7 @@ async function run() {
       spinner.stop();
 
       console.error(
-        `Please install rust (e.g. \`brew install rust\`) before running this command`
+        `Please install rust (e.g. \`brew install rust\`) before running this command.`
       );
       exit(1);
     }
