@@ -11,7 +11,7 @@ var JSTHandler = {
     let request = new XMLHttpRequest();
     let cpath = name.split('/');
     let cname = cpath[cpath.length - 1];
-    request.open('GET', `/components/${name}/${cname}.jst.ejs`, false);  // `false` makes the request synchronous
+    request.open('GET', `/components/${name}/${cname}.ejs`, false);  // `false` makes the request synchronous
     request.send(null);
     return _.template(request.responseText);
   },

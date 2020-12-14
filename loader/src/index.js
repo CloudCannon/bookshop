@@ -169,7 +169,7 @@ const findFrameworkFiles = context => {
 
   const files = {
     "jekyll": path.resolve(componentFolder, `${componentName}.jekyll.html`),
-    "jst-ejs": path.resolve(componentFolder, `${componentName}.jst.ejs`),
+    "ejs": path.resolve(componentFolder, `${componentName}.ejs`),
     "svelte": path.resolve(componentFolder, `${componentName}.svelte`)
   }
 
