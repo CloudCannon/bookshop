@@ -1,5 +1,5 @@
 {
-  "name": "{{ project_name $$ slugify }}",
+  "name": "{{ project_name }}",
   "private": true,
   "version": "1.0.0",
   "description": "Kitchen sink example for the bookshop storybook",

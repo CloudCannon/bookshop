@@ -26,8 +26,10 @@
   },
   "homepage": "https://github.com/CloudCannon/bookshop#readme",
   "dependencies": {
-    "@types/node": "^14.14.12",
+    "@types/node": "^14.14.13",
+    "@types/shelljs": "^0.8.8",
     "download-git-repo": "^3.0.2",
-    "ora": "^5.1.0"
+    "ora": "^5.1.0",
+    "shelljs": "^0.8.4"
   }
 }
