@@ -140,7 +140,7 @@ const mainPrompt = async () => {
           value: "svelte"
       }, {
           name: "EJS",
-          value: "ejs"
+          value: "EJS"
       }]
   }
   ]);
