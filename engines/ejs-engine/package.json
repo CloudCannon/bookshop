@@ -13,13 +13,12 @@
     "start": "webpack --watch",
     "build": "webpack --mode=production"
   },
-  "author": "@LiamBigelow",
+  "author": "@CloudCannon",
   "license": "MIT",
   "dependencies": {
     "@types/ejs": "^3.0.5",
     "ejs": "^3.1.5",
-    "path-browserify": "^1.0.1",
-    "underscore": "^1.10.2"
+    "path-browserify": "^1.0.1"
   },
   "publishConfig": {
     "access": "public"
