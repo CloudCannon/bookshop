@@ -10,15 +10,10 @@
 
 > An extension to bookshop that allows support for .ejs modules
 
-## Install
-
-```sh
-npm install
-```
-
 ## Local Development
 
 ```sh
+npm i
 npm run start
 ```
 
