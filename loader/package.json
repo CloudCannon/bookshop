@@ -17,6 +17,7 @@
     "@bookshop/jekyll-engine": "^1.5.3",
     "@bookshop/svelte-engine": "^1.5.3",
     "@bookshop/underscore-engine": "^1.5.3",
+    "@bookshop/ejs-engine": "file:../engines/ejs-engine",
     "change-case": "^4.1.1",
     "ejs": "^3.1.5",
     "toml": "^3.0.0"

@@ -1,8 +1,7 @@
-const _ = require("underscore");
 const ejs = require("ejs");
 console.log('hello');
 
-const underscoreEngine = {
+const engine = {
   render: (name, props, options) => {
     let request = new XMLHttpRequest();
     let cpath = name.split('/');
@@ -14,5 +13,5 @@ const underscoreEngine = {
 }
 
 module.exports = {
-    underscoreEngine: underscoreEngine
+    ejsEngine: engine
 }

@@ -8,6 +8,7 @@ let changeCase = require("change-case");
 const storyTemplate = `
 const { jekyllEngine } = require("@bookshop/jekyll-engine");
 const { underscoreEngine } = require("@bookshop/underscore-engine");
+const { ejsEngine } = require("@bookshop/ejs-engine");
 const { svelteEngine } = require("@bookshop/svelte-engine");
 
 let SVELTE_APP;
@@ -66,7 +67,8 @@ const component = function(props) {
   }
 
   if (props.framework === "jekyll") jekyllEngine.render("<%- component %>", consolidatedProps, options);
-  if (props.framework === "ejs") underscoreEngine.render("<%- component %>", consolidatedProps, options);
+  if (props.framework === "ejs") ejsEngine.render("<%- component %>", consolidatedProps, options);
+  if (props.framework === "jst-ejs") underscoreEngine.render("<%- component %>", consolidatedProps, options);
   if (props.framework === "svelte") svelteEngine.render("<%- component %>", consolidatedProps, options);
 
   return '<div id="bookshop-rendered-elsewhere"></div>';
@@ -169,6 +171,7 @@ const findFrameworkFiles = context => {
 
   const files = {
     "jekyll": path.resolve(componentFolder, `${componentName}.jekyll.html`),
+    "underscore": path.resolve(componentFolder, `${componentName}.jst.ejs`),
     "ejs": path.resolve(componentFolder, `${componentName}.ejs`),
     "svelte": path.resolve(componentFolder, `${componentName}.svelte`)
   }

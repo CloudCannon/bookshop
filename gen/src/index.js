@@ -132,12 +132,16 @@ const mainPrompt = async () => {
           }
           return '❌';
       },
+      // Weirdly, the name matters, not the value. TODO: fix this eventually
       choices: [{
           name: "Jekyll",
           value: "jekyll"
       }, {
           name: "Svelte",
           value: "svelte"
+      }, {
+          name: "Underscore",
+          value: "Underscore"
       }, {
           name: "EJS",
           value: "EJS"
