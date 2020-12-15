@@ -19,6 +19,8 @@ npm run start
 
 Also, don't forget to `npm link @bookshop/ejs-engine`.
 
+**N.B.** This engine is transpiled (because ejs requires fs).
+
 ## Author
 
 👤 **@CloudCannon**
