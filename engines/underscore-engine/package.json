@@ -2,34 +2,22 @@
   "name": "@bookshop/underscore-engine",
   "version": "1.5.3",
   "description": "",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/cloudcannon/bookshop.git",
     "directory": "engines/underscore-engine"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\"",
-    "start": "webpack --watch",
-    "build": "webpack --mode=production"
+    "test": "echo \"Error: no test specified\""
   },
   "author": "@LiamBigelow",
   "license": "MIT",
   "dependencies": {
-    "@types/ejs": "^3.0.5",
     "ejs": "^3.1.5",
-    "path-browserify": "^1.0.1",
     "underscore": "^1.10.2"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.10",
-    "babel-loader": "^8.2.2",
-    "webpack": "^5.10.1",
-    "webpack-cli": "^4.2.0",
-    "webpack-node-externals": "^2.5.2"
   }
 }
