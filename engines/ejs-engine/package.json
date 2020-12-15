@@ -1,5 +1,5 @@
 {
-  "name": "@bookshop/underscore-engine",
+  "name": "@bookshop/ejs-engine",
   "version": "1.5.3",
   "description": "",
   "main": "dist/index.js",
