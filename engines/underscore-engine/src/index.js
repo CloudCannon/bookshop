@@ -1,8 +1,14 @@
 const _ = require("underscore");
+const ejs = require("ejs");
 
 const underscoreEngine = {
-  render: (component, props, options) => {
-    options.renderRoot.innerHTML = _.template(`<%= JST["${component}"](props) %>`)({props: props});
+  render: (name, props, options) => {
+    let request = new XMLHttpRequest();
+    let cpath = name.split('/');
+    let cname = cpath[cpath.length - 1];
+    request.open('GET', `/components/${name}/${cname}.ejs`, false);  // `false` makes the request synchronous
+    request.send(null);
+    options.renderRoot.innerHTML = ejs.render(request.responseText);
   }
 }
 
