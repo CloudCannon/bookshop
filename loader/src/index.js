@@ -66,7 +66,7 @@ const component = function(props) {
   }
 
   if (props.framework === "jekyll") jekyllEngine.render("<%- component %>", consolidatedProps, options);
-  if (props.framework === "jst-ejs") underscoreEngine.render("<%- component %>", consolidatedProps, options);
+  if (props.framework === "ejs") underscoreEngine.render("<%- component %>", consolidatedProps, options);
   if (props.framework === "svelte") svelteEngine.render("<%- component %>", consolidatedProps, options);
 
   return '<div id="bookshop-rendered-elsewhere"></div>';
