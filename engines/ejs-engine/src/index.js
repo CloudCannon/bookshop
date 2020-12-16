@@ -1,4 +1,4 @@
-const ejs = require("ejs");
+const ejs = require("./ejs");
 console.log('hello');
 
 const engine = {
