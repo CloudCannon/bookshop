@@ -1,5 +1,4 @@
 const ejs = require("./ejs");
-console.log('hello');
 
 const engine = {
   render: (name, props, options) => {
