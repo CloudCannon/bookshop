@@ -21,12 +21,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/preset-env": "^7.12.10",
-    "babel-loader": "^8.2.2",
-    "webpack": "^5.10.1",
-    "webpack-cli": "^4.2.0",
-    "webpack-node-externals": "^2.5.2"
-  }
+  "devDependencies": {}
 }
