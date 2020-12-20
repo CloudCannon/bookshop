@@ -11,7 +11,7 @@ function fetchComponent(name) {
 
 const engine = {
   render: (name, props, options) => {
-    options.renderRoot.innerHTML = ejs.render(fetchComponent(name), { props });
+    options.renderRoot.innerHTML = ejs.render(`<% include = window.include %>${fetchComponent(name)}`, { props });
   },
 };
 
