@@ -25,7 +25,6 @@ const engine = {
  * @return {string} EJS component string
  */
 window.include = (filename, props) => {
-  console.log(props);
   // https://stackoverflow.com/questions/1661197/what-characters-are-valid-for-javascript-variable-names
   const componentName = filename
     .match(/([a-zA-Z_$][0-9a-zA-Z_$]*)\.ejs/g)[0]
