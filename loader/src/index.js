@@ -67,8 +67,8 @@ const component = function(props) {
   }
 
   if (props.framework === "jekyll") jekyllEngine.render("<%- component %>", consolidatedProps, options);
-  if (props.framework === "jst-ejs") underscoreEngine.render("<%- component %>", consolidatedProps, options);
   if (props.framework === "ejs") ejsEngine.render("<%- component %>", consolidatedProps, options);
+  if (props.framework === "jst-ejs") underscoreEngine.render("<%- component %>", consolidatedProps, options);
   if (props.framework === "svelte") svelteEngine.render("<%- component %>", consolidatedProps, options);
 
   return '<div id="bookshop-rendered-elsewhere"></div>';
@@ -121,22 +121,18 @@ module.exports = function(source) {
 
   let {component, title, full} = getTitleFromPath(this);
 
-  if (hasMultipleFrameworks) {
-    data.defaults = {
-      framework: frameworks[0] || 'jekyll',
-      ...data.defaults
-    }
-  }
+  data.defaults = {
+    framework: frameworks[0] || "jekyll",
+    ...data.defaults,
+  };
 
   const defaultArgTypes = propsToArgTypes(data.defaults);
-  if (hasMultipleFrameworks) {
-    defaultArgTypes["framework"] = {
-      control: {
-        type: 'inline-radio',
-        options: frameworks
-      }
-    }
-  }
+  defaultArgTypes["framework"] = {
+    control: {
+      type: "inline-radio",
+      options: frameworks,
+    },
+  };
 
   let defaults = {
     args: JSON.stringify(propsToArgs(data.defaults)),
@@ -154,7 +150,6 @@ module.exports = function(source) {
     })
   }
 
-
   const componentKey = changeCase.snakeCase(component);
   let t = ejs.render(storyTemplate, { component, componentKey, title, full, defaults, stories, frameworks, sv });
 
@@ -165,13 +160,14 @@ module.exports = function(source) {
 /**
  * Check the webpack FS for what component files exist
  */
-const findFrameworkFiles = context => {
+const findFrameworkFiles = (context) => {
   const componentFolder = path.dirname(context.resourcePath);
-  const componentName = path.basename(context.resourcePath).split('.')[0];
+  const componentName = path.basename(context.resourcePath).split(".")[0];
 
   const files = {
     "jekyll": path.resolve(componentFolder, `${componentName}.jekyll.html`),
     "jst-ejs": path.resolve(componentFolder, `${componentName}.jst.ejs`),
+    "ejs": path.resolve(componentFolder, `${componentName}.ejs`),
     "svelte": path.resolve(componentFolder, `${componentName}.svelte`)
   }
 
@@ -209,11 +205,10 @@ const getTitleFromPath = context => {
 
   return {title, component, full: relativePath};
 }
-
 /**
  * Turn TOML fields into @storybook/controls argTypes
  */
-const propsToArgTypes = props => {
+const propsToArgTypes = (props) => {
   if (!props) return {};
   let argTypes = {};
   Object.entries(props).map(([key, val]) => {
@@ -223,125 +218,144 @@ const propsToArgTypes = props => {
       argTypes[item.key] = {
         control: {
           type: item.name,
-          options: item.options || null
+          options: item.options || null,
         },
         name: item.label || item.key,
-        description: findDocForProp(item.rawKey || item.key, item.rawOptions, props),
-        defaultValue: ''
-      }
+        description: findDocForProp(
+          item.rawKey || item.key,
+          item.rawOptions,
+          props
+        ),
+        defaultValue: "",
+      };
     }
   });
   return argTypes;
 };
 
-const propsToParameters = props => {
+const propsToParameters = (props) => {
   if (!props || !props._design) return {};
   return {
     design: {
-        type: 'figma',
-        url: props._design
-     }
-  }
-}
+      type: "figma",
+      url: props._design,
+    },
+  };
+};
 
 /**
  * Turn TOML fields into @storybook/controls args
  */
-const propsToArgs = props => {
+const propsToArgs = (props) => {
   if (!props) return {};
   let args = {};
   Object.entries(props).map(([key, val]) => {
     if (filterOutKey(key)) return;
     let propData = typeFromVal(key, val);
     for (let item of propData) {
-      args[item.key] = item.value
+      args[item.key] = item.value;
     }
   });
   return args;
 };
 
 const typeFromVal = (key, val) => {
-  if (typeof val === 'undefined') {
-    return [{
-          name:'text',
-          value: val,
-          key: key
-        }];
+  if (typeof val === "undefined") {
+    return [
+      {
+        name: "text",
+        value: val,
+        key: key,
+      },
+    ];
   }
-  if (typeof val === 'string') {
+  if (typeof val === "string") {
     return determineStringVal(key, val);
   }
-  if (typeof val === 'boolean') {
-    return [{
-          name:'boolean',
-          value: val,
-          key: key
-        }];
+  if (typeof val === "boolean") {
+    return [
+      {
+        name: "boolean",
+        value: val,
+        key: key,
+      },
+    ];
   }
-  if (typeof val === 'number') {
-    return [{
-          name:'number',
-          value: val,
-          key: key
-        }];
+  if (typeof val === "number") {
+    return [
+      {
+        name: "number",
+        value: val,
+        key: key,
+      },
+    ];
   }
   if (Array.isArray(val)) {
-    return [{
-          name:'array',
-          value: val,
-          key: key
-        }];
+    return [
+      {
+        name: "array",
+        value: val,
+        key: key,
+      },
+    ];
   }
   if (Object.keys(val).length) {
     return determineObjectType(key, val);
   }
-  return [{
-      name:'text',
+  return [
+    {
+      name: "text",
       value: val,
-      key: key
-    }];
-}
+      key: key,
+    },
+  ];
+};
 
 const determineObjectType = (key, val) => {
   let rawKey = key;
-  let splitKey = key.split('--'), enumType;
-  if (splitKey.length == 1) splitKey[1] = 'o';
+  let splitKey = key.split("--"),
+    enumType;
+  if (splitKey.length == 1) splitKey[1] = "o";
 
   [key, enumType] = splitKey;
 
-  if (enumType === 'preview') enumType = 'select'
+  if (enumType === "preview") enumType = "select";
 
   if (/^(select|radio|inline-radio)$/.test(enumType)) {
-    return [{
-        name:enumType,
-        value: val[Object.keys(val).find(v => !filterOutKey(v))],
+    return [
+      {
+        name: enumType,
+        value: val[Object.keys(val).find((v) => !filterOutKey(v))],
         options: capitalizeKeys(val),
         rawOptions: val,
         key: key,
-        rawKey: rawKey
-      }];
+        rawKey: rawKey,
+      },
+    ];
   }
 
   if (/^(multi-select|check|inline-check)$/.test(enumType)) {
-    return [{
-        name:enumType,
-        value: [val[Object.keys(val).find(v => !filterOutKey(v))]],
+    return [
+      {
+        name: enumType,
+        value: [val[Object.keys(val).find((v) => !filterOutKey(v))]],
         options: capitalizeKeys(val),
         rawOptions: val,
         key: key,
-        rawKey: rawKey
-      }];
+        rawKey: rawKey,
+      },
+    ];
   }
 
-  if (enumType == 'repeat' || enumType == 'o') {
+  if (enumType == "repeat" || enumType == "o") {
     let repeatControls = [];
 
     repeatControls.push({
-      name: 'radio',
+      name: "radio",
       key: `${key}&&object-info-field`,
       rawKey: `${rawKey}&&object-info-field`,
       label: `${key}`,
-      options: {}
+      options: {},
     });
 
     for (let [controlKey, controlVal] of Object.entries(val)) {
@@ -350,87 +364,97 @@ const determineObjectType = (key, val) => {
       for (let ik of innerKeys) {
         repeatControls.push({
           ...ik,
-          key: `${key}&&${ik['key']}`,
-          rawKey: `${rawKey}&&${ik['key']}`,
-          label: `${enumType == 'repeat' ? '🔁' : '↪️'} ${key}${enumType == 'repeat' ? '[n]' : ''}.${ik['key']}`
+          key: `${key}&&${ik["key"]}`,
+          rawKey: `${rawKey}&&${ik["key"]}`,
+          label: `${enumType == "repeat" ? "🔁" : "↪️"} ${key}${
+            enumType == "repeat" ? "[n]" : ""
+          }.${ik["key"]}`,
         });
       }
     }
-    if (enumType == 'repeat') {
+    if (enumType == "repeat") {
       repeatControls.push({
-        name: 'range',
+        name: "range",
         value: 3,
         key: `${key}&&repeat-count`,
         rawKey: `${rawKey}&&repeat-count`,
-        label: `Number of ${key}`
+        label: `Number of ${key}`,
       });
     }
     return repeatControls;
   }
 
-  return [{
-      name:'object',
+  return [
+    {
+      name: "object",
       value: val,
-      key: key
-    }];
-}
+      key: key,
+    },
+  ];
+};
 
 /**
  * Try and guess what input type the string represents.
  */
 const determineStringVal = (key, val) => {
   if (/#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})/i.test(val)) {
-    return [{
-          name:'color',
-          value: val,
-          key: key
-        }];
+    return [
+      {
+        name: "color",
+        value: val,
+        key: key,
+      },
+    ];
   }
-  if (val[0] === '{' || val[0] === '[') {
-    return [{
-          name:'object',
-          value: val,
-          key: key
-        }];
+  if (val[0] === "{" || val[0] === "[") {
+    return [
+      {
+        name: "object",
+        value: val,
+        key: key,
+      },
+    ];
   }
-  return [{
-      name:'text',
+  return [
+    {
+      name: "text",
       value: val,
-      key: key
-    }];
-}
+      key: key,
+    },
+  ];
+};
 
 /**
  * Filter out keys used for comments and whatnot
  */
-const filterOutKey = key => {
+const filterOutKey = (key) => {
   return /--doc|^_design/.test(key);
-}
+};
 
 /**
  * Capitalize keys in an object.
  * Use this when padding a set of options to storybook,
  * i.e. for a select box. Makes things prettier.
  */
-const capitalizeKeys = o => {
+const capitalizeKeys = (o) => {
   let output = {};
   for (let [key, val] of Object.entries(o)) {
     if (filterOutKey(key)) continue;
     output[changeCase.capitalCase(key)] = val;
   }
   return output;
-}
+};
 
 /**
  * When processing the TOML we turn comments into fields.
  * This function finds any of those fields if they exist.
  */
 const findDocForProp = (key, options, props) => {
-  key = key.replace(`&&object-info-field`, '&&');
+  key = key.replace(`&&object-info-field`, "&&");
   let docVal;
 
   if (options && Object.keys(options).length) {
-    docVal = options[`--doc`]
+    docVal = options[`--doc`];
     if (docVal) {
       return docVal;
     }
@@ -441,7 +465,7 @@ const findDocForProp = (key, options, props) => {
     return docVal;
   }
   return "";
-}
+};
 
 /**
  * Search for a prop deep within an object
@@ -449,7 +473,7 @@ const findDocForProp = (key, options, props) => {
  * @param  {Object} props Object to search
  */
 function drillForProp(key, props) {
-  return key.split('&&').reduce(function(prev, curr) {
-    return prev ? prev[curr] : null
-  }, props || self)
+  return key.split("&&").reduce(function (prev, curr) {
+    return prev ? prev[curr] : null;
+  }, props || self);
 }
