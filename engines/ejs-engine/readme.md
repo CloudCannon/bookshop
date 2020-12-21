@@ -10,6 +10,15 @@
 
 > An extension to bookshop that allows support for .ejs modules
 
+## Usage
+
+### Import Syntax
+
+Currently, the syntax for importing is: 
+```ejs
+<%- include("Components/button/button.ejs", { name: "BigIron" }) %>
+```
+
 ## Local Development
 
 ```sh
