@@ -30,7 +30,7 @@ window.include = (filename, props) => {
     .match(/([a-zA-Z_$][0-9a-zA-Z_$]*)\.ejs/g)[0]
     .replace(".ejs", "");
   const ejsComponent = fetchComponent(componentName);
-  return ejs.render(ejsComponent, props);
+  return ejs.render(ejsComponent, { props });
 };
 
 module.exports = {
