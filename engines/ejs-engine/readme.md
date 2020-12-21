@@ -16,7 +16,7 @@
 
 Currently, the syntax for importing is: 
 ```ejs
-<%- include("Components/button/button.ejs", { name: "BigIron" }) %>
+<%- include("Components/button/button.ejs", { text: "BigIron" }) %>
 ```
 
 ## Local Development
