@@ -8,6 +8,7 @@ let changeCase = require("change-case");
 const storyTemplate = `
 const { jekyllEngine } = require("@bookshop/jekyll-engine");
 const { underscoreEngine } = require("@bookshop/underscore-engine");
+const { ejsEngine } = require("@bookshop/ejs-engine");
 const { svelteEngine } = require("@bookshop/svelte-engine");
 
 let SVELTE_APP;
@@ -66,6 +67,7 @@ const component = function(props) {
   }
 
   if (props.framework === "jekyll") jekyllEngine.render("<%- component %>", consolidatedProps, options);
+  if (props.framework === "ejs") ejsEngine.render("<%- component %>", consolidatedProps, options);
   if (props.framework === "jst-ejs") underscoreEngine.render("<%- component %>", consolidatedProps, options);
   if (props.framework === "svelte") svelteEngine.render("<%- component %>", consolidatedProps, options);
 
@@ -119,22 +121,18 @@ module.exports = function(source) {
 
   let {component, title, full} = getTitleFromPath(this);
 
-  if (hasMultipleFrameworks) {
-    data.defaults = {
-      framework: frameworks[0] || 'jekyll',
-      ...data.defaults
-    }
-  }
+  data.defaults = {
+    framework: frameworks[0] || "jekyll",
+    ...data.defaults,
+  };
 
   const defaultArgTypes = propsToArgTypes(data.defaults);
-  if (hasMultipleFrameworks) {
-    defaultArgTypes["framework"] = {
-      control: {
-        type: 'inline-radio',
-        options: frameworks
-      }
-    }
-  }
+  defaultArgTypes["framework"] = {
+    control: {
+      type: "inline-radio",
+      options: frameworks,
+    },
+  };
 
   let defaults = {
     args: JSON.stringify(propsToArgs(data.defaults)),
@@ -152,7 +150,6 @@ module.exports = function(source) {
     })
   }
 
-
   const componentKey = changeCase.snakeCase(component);
   let t = ejs.render(storyTemplate, { component, componentKey, title, full, defaults, stories, frameworks, sv });
 
@@ -163,13 +160,14 @@ module.exports = function(source) {
 /**
  * Check the webpack FS for what component files exist
  */
-const findFrameworkFiles = context => {
+const findFrameworkFiles = (context) => {
   const componentFolder = path.dirname(context.resourcePath);
-  const componentName = path.basename(context.resourcePath).split('.')[0];
+  const componentName = path.basename(context.resourcePath).split(".")[0];
 
   const files = {
     "jekyll": path.resolve(componentFolder, `${componentName}.jekyll.html`),
     "jst-ejs": path.resolve(componentFolder, `${componentName}.jst.ejs`),
+    "ejs": path.resolve(componentFolder, `${componentName}.ejs`),
     "svelte": path.resolve(componentFolder, `${componentName}.svelte`)
   }
 

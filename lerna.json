@@ -2,6 +2,7 @@
   "packages": [
     "engines/jekyll-engine",
     "engines/underscore-engine",
+    "engines/ejs-engine",
     "engines/svelte-engine",
     "extractors/jekyll-extract",
     "loader",
