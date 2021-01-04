@@ -14,7 +14,7 @@
   "author": "@LiamBigelow",
   "license": "MIT",
   "dependencies": {
-    "@bookshop/ejs-engine": "file:../engines/ejs-engine",
+    "@bookshop/ejs-engine": "^1.6.0",
     "@bookshop/jekyll-engine": "^1.6.0",
     "@bookshop/svelte-engine": "^1.6.0",
     "@bookshop/underscore-engine": "^1.6.0",
