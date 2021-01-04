@@ -9,9 +9,11 @@ function fetchComponent(path) {
 
 const engine = {
   render: (name, props, options) => {
+    const nameParts = name.split("/");
+    const lastPart = nameParts[nameParts.length - 1];
     options.renderRoot.innerHTML = ejs.render(
       `<% include = window.include %>${fetchComponent(
-        `components/${name}/${name}.ejs`
+        `components/${name}/${lastPart}.ejs`
       )}`,
       { props }
     );
@@ -32,7 +34,8 @@ window.include = (path, props) => {
   const lastPart = parts[parts.length - 1].replace(".ejs", "");
 
   const ejsComponent = fetchComponent(
-    `${path.replace(".ejs", "").toLowerCase()}/${lastPart}.ejs`
+    `${path.toLowerCase()}`
+    // path.replace('Components', 'components')
   );
   return ejs.render(ejsComponent, { props });
 };
