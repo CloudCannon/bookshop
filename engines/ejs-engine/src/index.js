@@ -1,17 +1,20 @@
 const ejs = require("./ejs");
 
-function fetchComponent(name) {
+function fetchComponent(path) {
   let request = new XMLHttpRequest();
-  let cpath = name.split("/");
-  let cname = cpath[cpath.length - 1];
-  request.open("GET", `/components/${name}/${cname}.ejs`, false); // `false` makes the request synchronous
+  request.open("GET", `/${path}`, false); // `false` makes the request synchronous
   request.send(null);
   return request.responseText;
 }
 
 const engine = {
   render: (name, props, options) => {
-    options.renderRoot.innerHTML = ejs.render(`<% include = window.include %>${fetchComponent(name)}`, { props });
+    options.renderRoot.innerHTML = ejs.render(
+      `<% include = window.include %>${fetchComponent(
+        `components/${name}/${name}.ejs`
+      )}`,
+      { props }
+    );
   },
 };
 
@@ -24,12 +27,13 @@ const engine = {
  *
  * @return {string} EJS component string
  */
-window.include = (filename, props) => {
-  // https://stackoverflow.com/questions/1661197/what-characters-are-valid-for-javascript-variable-names
-  const componentName = filename
-    .match(/([a-zA-Z_$][0-9a-zA-Z_$]*)\.ejs/g)[0]
-    .replace(".ejs", "");
-  const ejsComponent = fetchComponent(componentName);
+window.include = (path, props) => {
+  const parts = path.split("/");
+  const lastPart = parts[parts.length - 1].replace(".ejs", "");
+
+  const ejsComponent = fetchComponent(
+    `${path.replace(".ejs", "").toLowerCase()}/${lastPart}.ejs`
+  );
   return ejs.render(ejsComponent, { props });
 };
 
