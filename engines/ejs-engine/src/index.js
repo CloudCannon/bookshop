@@ -30,9 +30,6 @@ const engine = {
  * @return {string} EJS component string
  */
 window.component = (path, props) => {
-  const parts = path.split("/");
-  const lastPart = parts[parts.length - 1].replace(".ejs", "");
-
   const ejsComponent = fetchComponent(
     `components/${path.toLowerCase()}`
   );
