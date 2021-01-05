@@ -90,14 +90,10 @@ module Bookshop
       return result
     end
 
-    def self.build_array_structures(site)
-      base_path = "_bookshop/components/"
-      if !site.theme.nil?
-        base_path = site.theme.root + "/_bookshop/components/"
-      end
+    def self.build_from_location(base_path, site)
       site.config["_select_data"] ||= {}
       site.config["_array_structures"] ||= {}
-      puts "📚 Parsing Stories..."
+      puts "📚 Parsing Stories from #{base_path}"
       Dir.glob("**/*.stories.{toml,tml,tom,tm}", base: base_path).each do |f|
         begin
           component = TomlRB.load_file(base_path + f)  
@@ -118,6 +114,16 @@ module Bookshop
             puts "🤔 Maybe your current _config.yml has conflicting array structures?"
           end
         }
+      end
+    end
+
+    def self.build_array_structures(site)
+      base_paths = [site.source + '/_bookshop/components/']
+      if !site.theme.nil?
+        base_paths.push(site.theme.root + "/_bookshop/components/")
+      end
+      base_paths.each do |base_path|
+        build_from_location(base_path, site)
       end
       puts "✅ Finshed Parsing Stories"
       #puts site.config["_array_structures"].inspect
