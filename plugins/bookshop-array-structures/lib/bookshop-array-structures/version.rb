@@ -1,5 +1,5 @@
 module Bookshop
   module Arraystructures
-    VERSION = "1.4.7"
+    VERSION = "1.6.1"
   end
 end
