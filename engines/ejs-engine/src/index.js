@@ -12,7 +12,8 @@ const engine = {
     const nameParts = name.split("/");
     const lastPart = nameParts[nameParts.length - 1];
     options.renderRoot.innerHTML = ejs.render(
-      `${fetchComponent(
+      // Include override (legacy)
+      `<% include = window.include%>${fetchComponent(
         `components/${name}/${lastPart}.ejs`
       )}`,
       { props }
@@ -32,6 +33,23 @@ const engine = {
 window.component = (path, props) => {
   const ejsComponent = fetchComponent(
     `components/${path.toLowerCase()}`
+  );
+  return ejs.render(ejsComponent, { props });
+};
+
+/**
+ *
+ * Legacy syntax support
+ *
+ * @deprecated
+ * @param {string} filename
+ * @param {Record<string, any>} props
+ *
+ * @return {string} EJS component string
+ */
+window.include = (path, props) => {
+  const ejsComponent = fetchComponent(
+    `${path.toLowerCase()}`
   );
   return ejs.render(ejsComponent, { props });
 };
