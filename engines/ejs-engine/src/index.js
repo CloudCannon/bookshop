@@ -31,10 +31,17 @@ const engine = {
  * @return {string} EJS component string
  */
 window.component = (path, props) => {
+  	// Handle that the full path is not provided (just component-name, e.g, component("button"))
+	const modifiedPathParts = path.split('/');
+	const lastPart = modifiedPathParts[modifiedPathParts.length - 1];
+  const newPath = `${path.toLowerCase().replace('.ejs', '')}/${lastPart}.ejs`;
+  
   const ejsComponent = fetchComponent(
-    `components/${path.toLowerCase()}`
+    `components/${newPath}`
   );
-  return ejs.render(ejsComponent, { props });
+
+  // include tag is necessary for a new component that imports a legacy component
+  return ejs.render(`<% include = window.include %>${ejsComponent}`, { props });
 };
 
 /**
@@ -51,7 +58,7 @@ window.include = (path, props) => {
   const ejsComponent = fetchComponent(
     `${path.toLowerCase()}`
   );
-  return ejs.render(ejsComponent, { props });
+  return ejs.render(`<% include = window.include%>${ejsComponent}`, { props });
 };
 
 module.exports = {
