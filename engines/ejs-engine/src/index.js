@@ -12,7 +12,8 @@ const engine = {
     const nameParts = name.split("/");
     const lastPart = nameParts[nameParts.length - 1];
     options.renderRoot.innerHTML = ejs.render(
-      `<% include = window.include %>${fetchComponent(
+      // Include override (legacy)
+      `<% include = window.include%>${fetchComponent(
         `components/${name}/${lastPart}.ejs`
       )}`,
       { props }
@@ -22,22 +23,42 @@ const engine = {
 
 /**
  *
- * Storybook handling for `include`
+ * Storybook handling for including other components
  *
  * @param {string} filename
  * @param {Record<string, any>} props
  *
  * @return {string} EJS component string
  */
-window.include = (path, props) => {
-  const parts = path.split("/");
-  const lastPart = parts[parts.length - 1].replace(".ejs", "");
+window.component = (path, props) => {
+  	// Handle that the full path is not provided (just component-name, e.g, component("button"))
+	const modifiedPathParts = path.split('/');
+	const lastPart = modifiedPathParts[modifiedPathParts.length - 1];
+  const newPath = `${path.replace('.ejs', '')}/${lastPart}.ejs`;
+  
+  const ejsComponent = fetchComponent(
+    `components/${newPath.toLowerCase()}`
+  );
 
+  // include tag is necessary for a new component that imports a legacy component
+  return ejs.render(`<% include = window.include %>${ejsComponent}`, { props });
+};
+
+/**
+ *
+ * Legacy syntax support
+ *
+ * @deprecated
+ * @param {string} filename
+ * @param {Record<string, any>} props
+ *
+ * @return {string} EJS component string
+ */
+window.include = (path, props) => {
   const ejsComponent = fetchComponent(
     `${path.toLowerCase()}`
-    // path.replace('Components', 'components')
   );
-  return ejs.render(ejsComponent, { props });
+  return ejs.render(`<% include = window.include%>${ejsComponent}`, { props });
 };
 
 module.exports = {
