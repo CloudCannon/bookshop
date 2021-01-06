@@ -14,6 +14,7 @@
   "author": "@LiamBigelow",
   "license": "MIT",
   "bin": {
+    "bookshop-gen": "src/index.js",
     "gen": "src/index.js"
   },
   "publishConfig": {
