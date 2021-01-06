@@ -34,10 +34,10 @@ window.component = (path, props) => {
   	// Handle that the full path is not provided (just component-name, e.g, component("button"))
 	const modifiedPathParts = path.split('/');
 	const lastPart = modifiedPathParts[modifiedPathParts.length - 1];
-  const newPath = `${path.toLowerCase().replace('.ejs', '')}/${lastPart}.ejs`;
+  const newPath = `${path.replace('.ejs', '')}/${lastPart}.ejs`;
   
   const ejsComponent = fetchComponent(
-    `components/${newPath}`
+    `components/${newPath.toLowerCase()}`
   );
 
   // include tag is necessary for a new component that imports a legacy component
