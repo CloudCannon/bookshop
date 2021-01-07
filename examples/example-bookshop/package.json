@@ -13,7 +13,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "start-storybook -p 4999",
     "build": "build-storybook -c .storybook -o ../../dist",
-    "gen": "gen"
+    "gen": "bookshop-gen"
   },
   "author": "@LiamBigelow",
   "license": "MIT",
