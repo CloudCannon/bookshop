@@ -3,3 +3,6 @@ node_modules
 .jekyll-cache
 _site
 *.gem
+engines/underscore-engine/dist/
+
+engines/ejs-engine/dist/

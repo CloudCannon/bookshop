@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/gen",
-  "version": "1.5.3",
+  "version": "1.6.2",
   "description": "",
   "main": "src/index.js",
   "repository": {
@@ -14,6 +14,7 @@
   "author": "@LiamBigelow",
   "license": "MIT",
   "bin": {
+    "bookshop-gen": "src/index.js",
     "gen": "src/index.js"
   },
   "publishConfig": {
