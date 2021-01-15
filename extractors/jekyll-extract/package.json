@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/jekyll-extract",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "",
   "main": "index.js",
   "repository": {
@@ -27,10 +27,10 @@
     "file-loader": "^6.0.0",
     "import-glob": "^1.5.0",
     "import-glob-keyed": "0.0.1",
+    "null-loader": "^4.0.1",
     "raw-loader": "^4.0.1",
     "string-replace-loader": "^2.3.0",
     "svelte": "^3.29.0",
-    "svelte-loader": "^2.13.6",
-    "null-loader": "^4.0.1"
+    "svelte-loader": "^2.13.6"
   }
 }
