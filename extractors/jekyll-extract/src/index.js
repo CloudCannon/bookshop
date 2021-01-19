@@ -168,13 +168,6 @@ if (sveltePath) {
             path: path.dirname(sveltePath),
             filename: path.basename(sveltePath)
         },
-        resolve: {
-            mainFields: ['svelte'],
-            alias: {
-                svelte: path.resolve('node_modules','svelte')
-            },
-            extensions: ['.mjs', '.js', '.svelte']
-        },
         module: {
             rules: [{
                 test: /svelte-files\.js$/,
