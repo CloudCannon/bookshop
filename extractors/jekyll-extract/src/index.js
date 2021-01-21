@@ -195,6 +195,9 @@ if (sveltePath) {
                         hydratable: true
                     }
                 }]
+            }, {
+                test: /\.html$/i,
+                loader: 'html-loader',
             }]
         }
     }, (err, stats) => {
