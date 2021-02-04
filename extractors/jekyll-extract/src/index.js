@@ -4,6 +4,7 @@ const {
     program
 } = require('commander');
 const path = require('path');
+const fs = require('fs');
 const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 const {
@@ -19,7 +20,7 @@ program
 program.parse(process.argv);
 
 let outputPath = path.resolve(process.cwd(), program.output);
-let libPath = path.resolve(process.cwd(), program.components);
+let libPath = fs.realpathSync(path.resolve(process.cwd(), program.components));
 let sveltePath = program.svelte ? path.resolve(process.cwd(), program.svelte) : '';
 
 if (!libPath) {
@@ -197,7 +198,7 @@ if (sveltePath) {
                 }]
             }, {
                 test: /\.html$/i,
-                loader: 'html-loader',
+                loader: require.resolve('html-loader'),
             }]
         }
     }, (err, stats) => {
