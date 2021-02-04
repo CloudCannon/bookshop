@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/svelte-engine",
-  "version": "1.6.8",
+  "version": "1.6.9",
   "description": "",
   "main": "src/index.js",
   "repository": {
@@ -15,5 +15,6 @@
   "license": "MIT",
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "3d892b272889229e724dd70d444a3475999a5e79"
 }

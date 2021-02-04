@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/gen",
-  "version": "1.6.8",
+  "version": "1.6.9",
   "description": "",
   "main": "src/index.js",
   "repository": {
@@ -23,5 +23,6 @@
   "dependencies": {
     "enquirer": "^2.3.6",
     "hygen": "^6.0.4"
-  }
+  },
+  "gitHead": "3d892b272889229e724dd70d444a3475999a5e79"
 }
