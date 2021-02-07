@@ -200,6 +200,11 @@ if (sveltePath) {
                 test: /\.html$/i,
                 loader: require.resolve('html-loader'),
             }]
+        },
+        watch: program.watch,
+        watchOptions: {
+            aggregateTimeout: 500,
+            ignored: ['.git/**', 'node_modules/**', 'dist/**']
         }
     }, (err, stats) => {
         if (err || stats.hasErrors()) {
