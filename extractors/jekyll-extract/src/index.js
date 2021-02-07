@@ -15,6 +15,7 @@ program
     .requiredOption('-c, --components <dir>', 'component library source')
     .option('-s, --svelte <dir>', 'svelte ', '')
     .option('-o, --output <dir>', 'output directory', '_bookshop')
+    .option('-d, --dev', 'Output sourcemaps', 'false')
     .option('-w, --watch', 'watch for changes', false);
 
 program.parse(process.argv);
@@ -161,7 +162,7 @@ if (sveltePath) {
 // Bundle svelte into prebuild JS
 if (sveltePath) {
     webpack({
-        mode: 'production',
+        mode: program.dev ? 'development' : 'production',
         entry: path.resolve(__dirname, 'svelte.js'),
         output: {
             library: 'bookshop_components',
@@ -222,7 +223,7 @@ if (sveltePath) {
 }
 
 webpack({
-    mode: 'production',
+    mode: program.dev ? 'development' : 'production',
     entry: path.resolve(__dirname, 'theme.js'),
     output: {
         path: outputPath,
