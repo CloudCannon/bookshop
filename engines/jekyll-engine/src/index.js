@@ -11,6 +11,7 @@ engine.plugin(require('./plugins/jsonify.js'));
 engine.plugin(require('./plugins/slugify-plugin.js'));
 engine.plugin(require('./plugins/svelte.js'));
 engine.plugin(require('./plugins/unbind.js'));
+engine.plugin(require('./plugins/highlight.js'));
 
 const jekyllEngine = {
   render: (component, props, options) => {
