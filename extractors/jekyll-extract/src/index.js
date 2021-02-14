@@ -4,6 +4,7 @@ const {
     program
 } = require('commander');
 const path = require('path');
+const { exec } = require('child_process');
 const fs = require('fs');
 const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
@@ -16,7 +17,8 @@ program
     .option('-s, --svelte <dir>', 'svelte ', '')
     .option('-o, --output <dir>', 'output directory', '_bookshop')
     .option('-d, --dev', 'Output sourcemaps', 'false')
-    .option('-w, --watch', 'watch for changes', false);
+    .option('-w, --watch', 'watch for changes', false)
+    .option('-r, --run <command>', 'run a command after build', '');
 
 program.parse(process.argv);
 
@@ -253,4 +255,14 @@ webpack({
     }
     console.log("Theme extracted to " + outputPath);
     if (!sveltePath) console.log("Raw Svelte files passed through to bookshop directory");
+    if (program.run) {
+        console.log(`Running "${program.run}"`);
+        exec(program.run, (err, stdout, stderr) => {
+        if (err) {
+            console.error(err)
+        } else {
+            console.log(stdout);
+        }
+        });
+    }
 });
