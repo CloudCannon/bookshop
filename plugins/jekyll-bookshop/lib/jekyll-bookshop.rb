@@ -62,7 +62,7 @@ module JekyllBookshop
 
     # Add the paths to find bookshop's styles
     def self.open_bookshop(site)
-      bookshop_theme_path = site.theme.root + '/_bookshop'
+      bookshop_theme_path = (site.theme ? site.theme.root : site.source) + '/_bookshop'
       bookshop_site_path = site.source + '/_bookshop'
       site.config['bookshop_theme_path'] = Pathname.new(bookshop_theme_path).cleanpath.to_s
       site.config['bookshop_site_path'] = Pathname.new(bookshop_site_path).cleanpath.to_s

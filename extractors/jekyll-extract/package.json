@@ -30,8 +30,12 @@
     "import-glob-keyed": "0.0.1",
     "null-loader": "^4.0.1",
     "raw-loader": "^4.0.1",
+    "replace-in-file": "^6.2.0",
     "string-replace-loader": "^2.3.0",
     "svelte": "^3.29.0",
     "svelte-loader": "^2.13.6"
+  },
+  "devDependencies": {
+    "replace-in-file-webpack-plugin": "^1.0.6"
   }
 }

@@ -8,6 +8,7 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
+const replace = require('replace-in-file');
 const {
     CleanWebpackPlugin
 } = require('clean-webpack-plugin');
@@ -24,6 +25,7 @@ program.parse(process.argv);
 
 let outputPath = path.resolve(process.cwd(), program.output);
 let libPath = fs.realpathSync(path.resolve(process.cwd(), program.components));
+
 let sveltePath = program.svelte ? path.resolve(process.cwd(), program.svelte) : '';
 
 if (!libPath) {
@@ -221,6 +223,14 @@ if (sveltePath) {
             }
         }
         console.log("Prebuilt Svelte extracted to " + sveltePath);
+        const regexSource = new RegExp(libPath.replace(/\/|-/g, "(\\/|_|-)"), 'g');
+        const options = {
+            files: sveltePath,
+            from: regexSource,
+            to: '',
+        };
+        replace.sync(options);
+        console.log("Prebuilt Svelte paths sanitized");
     });
 }
 
