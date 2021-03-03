@@ -1,5 +1,5 @@
 {
-  "name": "@bookshop/example-bookshop",
+  "name": "{{ project_name }}",
   "private": true,
   "version": "1.0.0",
   "description": "Kitchen sink example for the bookshop storybook",
@@ -13,9 +13,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "start-storybook -p 4999",
     "build": "build-storybook -c .storybook -o ../../dist",
-    "gen": "bookshop-gen"
+    "gen": "gen"
   },
-  "author": "@LiamBigelow",
+  "author": "{{ author }}",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.11.6",
@@ -51,6 +51,5 @@
     "style-loader": "^1.2.1",
     "svelte": "^3.25.1",
     "svelte-loader": "^2.13.6"
-  },
-  "dependencies": {}
+  }
 }

@@ -1,0 +1,30 @@
+[defaults]
+big = false
+heavy = false
+
+open = false
+hidden = false
+
+text = "Hello World"
+
+
+[standard]
+
+[big]
+big = true
+
+
+[heavy]
+heavy = true
+
+
+
+
+[open]
+open = true
+
+
+[hidden]
+hidden = true
+
+

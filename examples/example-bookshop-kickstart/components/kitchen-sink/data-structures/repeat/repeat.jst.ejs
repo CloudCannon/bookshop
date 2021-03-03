@@ -1,0 +1,5 @@
+<ol class="<%= ADDMODS('c-repeat', {}) %>">
+<% for(var i = 0; i < items.length; ++i) { %>
+    <li class="c-repeat__item"><%= items[i].message %> <span class="c-repeat__weight"><%= items[i].weight %></span></li>
+<% } %>
+</ol>
