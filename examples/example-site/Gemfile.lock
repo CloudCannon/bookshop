@@ -5,6 +5,12 @@ GIT
     jekyll-watch (2.2.1)
       listen (~> 3.0)
 
+PATH
+  remote: ../../plugins/jekyll-bookshop
+  specs:
+    jekyll-bookshop (2.0.0.pre.alpha.0)
+      jekyll (>= 3.7, < 5.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -67,6 +73,7 @@ PLATFORMS
 
 DEPENDENCIES
   jekyll (~> 4.1.1)
+  jekyll-bookshop!
   jekyll-watch!
 
 BUNDLED WITH

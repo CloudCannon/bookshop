@@ -76,9 +76,11 @@ module JekyllBookshop
       end
 
       output_css = if Jekyll.env == "production"
-        bookshop_scss_files.join("")
+        bookshop_scss_files.join("\n")
       else
-        "html:not([data-bookshop-hmr]) {#{bookshop_scss_files.join("")}}"
+"html:not([data-bookshop-hmr]) {
+#{bookshop_scss_files.join("\n")}
+}"
       end
 
       output_css

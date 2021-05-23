@@ -1,3 +1,6 @@
+# Bookshop v2
+Docs to come.
+
 # New theme connector
 As at 31st August 2020 
 

@@ -1,3 +1,0 @@
-# Bookshop Svelte Engine
-
-. . . 
