@@ -1,0 +1,10 @@
+$col: cyan;
+
+:root {
+    --design-min: 800;
+    --design-max: 900;
+}
+
+html, body {
+    color: $col;
+}

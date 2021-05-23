@@ -1,8 +1,0 @@
-[defaults]
-
-[defaults.alignment--inline-check] # Checkbox, but inline, key = value
-left = "left"
-right = "right"
-
-[standard]
-

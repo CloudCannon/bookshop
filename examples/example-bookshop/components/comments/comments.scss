@@ -1,0 +1,31 @@
+.c-comments { $c: &;
+
+    &__title {
+
+    }
+
+    &__author {
+
+    }
+
+    &__tags {
+        list-style-type: none;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        padding: 0;
+    }
+
+    &__tag {
+        background-color: $col;
+        padding: 0 1em;
+        margin: 0 .5em .3em 0;
+        height: 40px;
+        color: #fff;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+}

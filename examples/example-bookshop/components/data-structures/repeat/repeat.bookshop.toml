@@ -1,0 +1,9 @@
+[props]
+
+[[props.items]]
+message = "Line item"
+weight = 4
+
+[[props.items]]
+message = "Second Line item"
+weight = 6

@@ -1,8 +1,0 @@
-[defaults]
-
-[defaults.scheme--inline-radio] # Radio button, but inline, key = value
-http = "http://"
-https = "https://"
-
-[standard]
-

@@ -1,9 +1,0 @@
-[defaults]
-
-[defaults.age--radio] # Standard radio selector of key = value
-young = "<10"
-middle = ">10 && <50"
-old = ">50"
-
-[standard]
-

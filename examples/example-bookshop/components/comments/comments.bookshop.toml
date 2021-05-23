@@ -1,0 +1,7 @@
+[props]
+title = "Hello World" # Post Title
+author.select = ["CloudCannon", 'Guest']
+
+[[props.tags]]
+tag = "SSG"
+

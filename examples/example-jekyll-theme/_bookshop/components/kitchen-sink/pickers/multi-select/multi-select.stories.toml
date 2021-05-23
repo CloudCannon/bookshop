@@ -1,9 +1,0 @@
-[defaults]
-
-[defaults.fruit--multi-select] # Multi select of key = value
-apple = "Apple"
-banana = "Banana"
-orange = "Orange"
-
-[standard]
-
