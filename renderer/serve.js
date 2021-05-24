@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 const { Command } = require("commander");
 const sveltePlugin = require('esbuild-svelte');
 const path = require('path')
@@ -13,7 +15,8 @@ const program = new Command();
 async function run() {
     program.requiredOption("-p, --port <port>", "Port to serve the polymorph JS on");
     program.requiredOption("-b, --bookshop <path>", "Path to the bookshop to serve");
-    program.option("--stretcher", "Run the stretcher importer on SCSS.");
+    program.option("--fluidns <namespace>", "Namespace for postcss-fluidvars.");
+    program.option("--stretcher", "Run the legacy stretcher importer on SCSS.");
     program.parse(process.argv);
     const options = program.opts();
     const bookshopDir = path.join(process.cwd(), options.bookshop);
@@ -29,7 +32,8 @@ async function run() {
         port: options.port,
         sockets: [],
         currentMemoryFile: `console.log("Javascript has  not yet built");`,
-        runScssStretcher: options.stretcher
+        runScssStretcher: options.stretcher,
+        fluidns: options.fluidns
     };
 
     function fix_svelte_path() {
@@ -37,8 +41,12 @@ async function run() {
             name: 'fix_svelte_path',
             setup(b) {
                 const path = require('path')
+                const svelteFileLocation = require.resolve('svelte');
+                const svelteFolderLocation = path.dirname(svelteFileLocation);
+                const nodeFolderLocation = path.dirname(svelteFolderLocation);
+
                 b.onResolve({ filter: /^svelte$|^svelte\// }, args => {
-                    return { path: path.join(__dirname,'node_modules',args.path,'index.mjs') }
+                    return { path: path.join(nodeFolderLocation,args.path,'index.mjs') }
                 });
             }
         }
@@ -46,7 +54,7 @@ async function run() {
 
     const buildPolymorph = () => {
         require('esbuild').build({
-            entryPoints: ['lib/app.js'],
+            entryPoints: [path.join(__dirname, 'lib/app.js')],
             bundle: true,
             write: false,
             watch: {
@@ -72,7 +80,8 @@ async function run() {
                 }),
                 BookshopScssImport({
                     bookshopDir: globals.bookshopDir,
-                    runScssStretcher: globals.runScssStretcher
+                    runScssStretcher: globals.runScssStretcher,
+                    fluidns: globals.fluidns
                 }),
                 sveltePlugin({compileOptions: {css: true}})
             ],

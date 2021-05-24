@@ -43,7 +43,8 @@ const BookshopScssImport = (options) => ({
                 pluginData: {
                     resolveDir: args.resolveDir,
                     bookshopDir: options.bookshopDir,
-                    runScssStretcher: options.runScssStretcher
+                    runScssStretcher: options.runScssStretcher,
+                    fluidns: options.fluidns
                 },
             };
         });
@@ -71,7 +72,8 @@ const BookshopScssImport = (options) => ({
       `;
             const compiledSass = sass.renderSync({data: sassCode, importer: importers, quiet: true});
             const cssCode = compiledSass?.css ?? '// Failed to compile';
-            const postcssRunner = postcss([fluidvars()]).process(cssCode);
+            const fluidns = args.pluginData.fluidns || '';
+            const postcssRunner = postcss([fluidvars({namespace: fluidns})]).process(cssCode);
             const postcssCode = postcssRunner.css;
             const postcssWarnings = postcssRunner.warnings();
             postcssWarnings.forEach(warning => {

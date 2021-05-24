@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/renderer",
-  "version": "2.0.0-alpha.0",
+  "version": "2.0.0-alpha.7",
   "description": "Bookshop Renderer",
   "main": "serve.js",
   "scripts": {
@@ -8,16 +8,20 @@
   },
   "author": "",
   "license": "MIT",
+  "bin": {
+    "bookshop": "serve.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
-    "@iarna/toml": "^2.2.5",
     "@ltd/j-toml": "^1.12.2",
     "commander": "^7.2.0",
     "esbuild": "^0.11.23",
-    "esbuild-plugin-import-glob": "^0.1.1",
-    "esbuild-sass-plugin": "^1.4.0",
     "esbuild-svelte": "^0.5.1",
     "express": "^4.17.1",
     "express-ws": "^4.0.0",
+    "fast-glob": "^3.2.5",
     "js-yaml": "^4.1.0",
     "liquidjs": "^9.25.0",
     "postcss": "^8.3.0",
@@ -25,8 +29,6 @@
     "sass": "^1.34.0",
     "slugify": "^1.5.3",
     "stretcher": "^0.1.2",
-    "svelte": "^3.38.2",
-    "svelte-code-editor": "^1.0.1",
-    "toml": "^3.0.0"
+    "svelte": "^3.38.2"
   }
 }

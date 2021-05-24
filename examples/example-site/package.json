@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@bookshop/renderer": "file:../../renderer",
+    "postcss": "^8.3.0",
+    "postcss-fluidvars": "^1.0.0"
+  },
+  "scripts": {
+    "bookshop": "bookshop"
+  }
+}
