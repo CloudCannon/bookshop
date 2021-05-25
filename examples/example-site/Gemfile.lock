@@ -5,10 +5,17 @@ GIT
     jekyll-watch (2.2.1)
       listen (~> 3.0)
 
+GIT
+  remote: https://github.com/bglw/jekyll-postcss
+  revision: 9dcc0828676116bb253ef0d5e918521d61f7f860
+  branch: main
+  specs:
+    jekyll-postcss (0.4.0)
+
 PATH
   remote: ../../plugins/jekyll-bookshop
   specs:
-    jekyll-bookshop (2.0.0.pre.alpha.0)
+    jekyll-bookshop (2.0.0.pre.alpha.1)
       jekyll (>= 3.7, < 5.0)
 
 GEM
@@ -74,6 +81,7 @@ PLATFORMS
 DEPENDENCIES
   jekyll (~> 4.1.1)
   jekyll-bookshop!
+  jekyll-postcss!
   jekyll-watch!
 
 BUNDLED WITH

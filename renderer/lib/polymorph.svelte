@@ -184,7 +184,7 @@
     justify-content: flex-end;
     height: 50px;
     --background-body: #fff;
-    --background: #efefef;
+    --background: #ffffff;
     --background-alt: #f7f7f7;
     --selection: #9e9e9e;
     --text-main: #363636;
@@ -352,5 +352,16 @@ textarea {
     width: 100%;
     min-height: 40px;
     height: 140px;
+}
+
+.label, button, select, textarea {
+    border: solid 1px #ccc;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+ Helvetica, Arial, sans-serif,
+ "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+textarea {
+    font-family: monospace;
 }
 </style>
