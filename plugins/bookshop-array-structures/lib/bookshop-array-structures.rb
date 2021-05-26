@@ -1,4 +1,5 @@
 require "jekyll"
+require 'pathname'
 require "toml-rb"
 
 module Bookshop
@@ -18,12 +19,83 @@ module Bookshop
       return result
     end
 
-    def self.handle_story(story, site)
-      result = {};
-      story.each_pair {|key, value|
-          if result.has_key?(key) && storyname != "defaults"
+    def self.handle_props_object(props, result)
+    end
+
+    def self.handle_bookprops(value_obj, structure, value_context = nil)
+      structure["_select_data"] ||= {}
+      structure["_array_structures"] ||= {}
+      structure["_comments"] ||= {}
+      structure["value"] ||= {}
+      value_context = structure["value"] if value_context.nil?
+      value_obj.each_pair {|key, value|
+          if value_context.has_key?(key)
             next
           end
+
+          if value.is_a? Hash
+            comment =   value["--bookshop_comment"]         || 
+                        value["default--bookshop_comment"]  || 
+                        value["select--bookshop_comment"]   || 
+                        value["preview--bookshop_comment"]
+            if comment
+              structure["_comments"][key] = comment
+            end
+            unless value["default"].nil?
+              value_context[key] = value["default"]
+              next
+            end
+            if value["select"]
+              value_context[key] = nil
+              structure["_select_data"][key+"s"] = value["select"]
+              next
+            end
+            if value["preview"]
+              value_context[key] = nil
+              next
+            end
+            value_context[key] ||= {}
+            handle_bookprops(value, structure, value_context[key])
+            next
+          end
+
+          if value.is_a? Array
+            if value[0]&.is_a? Hash
+              if value[0]["--bookshop_comment"]
+                structure["_comments"][key] = value[0]["--bookshop_comment"]
+              end
+              
+              structure["_array_structures"][key] ||= {"values" => [{"value" => {}}]}
+              handle_bookprops( value[0], 
+                                structure["_array_structures"][key]["values"][0],
+                                structure["_array_structures"][key]["values"][0]["value"])
+              value_context[key] = []
+              next
+            end
+            value_context[key] = value
+          end
+
+          if [true, false].include? value
+            value_context[key] = value
+            next
+          end
+
+          if key.include? "--bookshop_comment"
+            actual_key = key.split("--").first
+            next if actual_key == ""
+            structure["_comments"][actual_key] = value
+            next
+          end
+          
+          value_context[key] = nil
+        }
+    end
+
+
+    def self.handle_legacy_story(story, site)
+      result = {};
+      story.each_pair {|key, value|
+          next unless result.has_key?(key) && storyname != "defaults"
 
           if key.include? "--repeat"
             new_key = key.split("--").first
@@ -71,6 +143,29 @@ module Bookshop
     end
 
     def self.transform_component(path, component, site)
+      unless component["defaults"].nil?
+        return transform_legacy_component(path, component, site)
+      end
+      result = { "value" => {} }
+      result["label"] = get_story_name(path)
+      result["value"]["_bookshop_name"] = get_component_type(path)
+      unless component["component"].nil?
+        result.merge!(component["component"])
+      end
+      unless component["props"].nil?
+        handle_bookprops(component["props"] || {}, result)
+      end
+      result["array_structures"] ||= [];
+      already_in_global_array = result["array_structures"].select{|value| value == 'bookshop_components'}.length > 0
+      if !already_in_global_array && !result["_hidden"]
+        result["array_structures"].push("bookshop_components")
+      end
+      result.delete("_hidden") unless result["_hidden"].nil?
+      return result
+    end
+
+    def self.transform_legacy_component(path, component, site)
+      puts "📚 Parsing legacy stories.toml config file"
       result = { "value" => {} }
       result["label"] = get_story_name(path)
       result["value"]["_component_type"] = get_component_type(path)
@@ -78,7 +173,7 @@ module Bookshop
         if storyname == "meta"
           result.merge!(story)
         else
-          result["value"].merge!(handle_story(story, site))
+          result["value"].merge!(handle_legacy_story(story, site))
         end
       }
       result["array_structures"] ||= [];
@@ -90,13 +185,37 @@ module Bookshop
       return result
     end
 
+    def self.rewrite_bookshop_toml(content)
+      rewritten_lines = content.split("\n")&.collect { |line|
+        if line =~ /^[a-z0-9\-_\.\s]+=.*?#.+?$/i
+          /#:(?<comment>[^#]+)$/i =~ line
+          /^\s*?(?<variable_name>[a-z0-9\-_\.]+)\s?=/i =~ line
+          next line unless comment && variable_name
+
+          next "#{variable_name}--bookshop_comment = \"#{comment.strip}\"\n#{line}"
+        elsif line =~ /^\s*?\[.*?#.+?$/i
+          /#:(?<comment>[^#]+)$/i =~ line
+          next line unless comment
+          next "#{line}\n--bookshop_comment = \"#{comment.strip}\""
+        end
+        line
+      }
+      rewritten_lines.join("\n")
+    end
+
+    def self.parse_bookshop_toml(content)
+      rewritten_content = rewrite_bookshop_toml(content)
+      return TomlRB.parse(rewritten_content)
+    end
+
     def self.build_from_location(base_path, site)
       site.config["_select_data"] ||= {}
       site.config["_array_structures"] ||= {}
       puts "📚 Parsing Stories from #{base_path}"
-      Dir.glob("**/*.stories.{toml,tml,tom,tm}", base: base_path).each do |f|
+      Dir.glob("**/*.{bookshop,stories}.{toml,tml,tom,tm}", base: base_path).each do |f|
         begin
-          component = TomlRB.load_file(base_path + f)  
+          raw_file = File.read(base_path + "/" + f)
+          component = parse_bookshop_toml(raw_file)
         rescue => exception
           puts "❌ Error Parsing Story: " + f
           puts exception
@@ -118,15 +237,13 @@ module Bookshop
     end
 
     def self.build_array_structures(site)
-      base_paths = [site.source + '/_bookshop/components/']
-      if !site.theme.nil?
-        base_paths.push(site.theme.root + "/_bookshop/components/")
+      bookshop_locations = site.config['bookshop_locations']&.collect do |location|
+        Pathname.new(location + "/components").cleanpath.to_s
       end
-      base_paths.each do |base_path|
+      bookshop_locations.each do |base_path|
         build_from_location(base_path, site)
       end
       puts "✅ Finshed Parsing Stories"
-      #puts site.config["_array_structures"].inspect
     end
   end
 end
