@@ -7,6 +7,7 @@ var slugify = require('slugify')
  */
 module.exports = function (Liquid) {
     this.registerFilter('slugify', (text) => {
-        return slugify(text).toLowerCase()
+        if (text && typeof text === 'string') return slugify(text).toLowerCase()
+        return text
     });
 }
