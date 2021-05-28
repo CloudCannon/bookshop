@@ -8,11 +8,16 @@ const componentMap = {
     ".jekyll.html": "jekyll",
     ".svelte": "svelte",
     ".scss": "scss",
-    ".bookshop.toml": "config",
-    ".stories.toml": "config", //TODO: Remove legacy bookshop config
+    ".bookshop.toml": "config"
 };
 const components = {};
 
+// TODO: Move
+const coreStyles = `
+.cm-gutters {
+    min-height: 300px !important;
+}
+`;
 
 const setupBookshopPolymorph = () => {
     window.bookshopPolymorph = true;
@@ -24,7 +29,7 @@ const setupBookshopPolymorph = () => {
     const head = document.getElementsByTagName('head')[0];
     const style = document.createElement('style');
     style.dataset.bookshopStyle = true;
-    style.innerHTML = bookshopStyles;
+    style.innerHTML = bookshopStyles + coreStyles;
     head.appendChild(style);
     window.polymorphStyle = style;
 
@@ -37,24 +42,26 @@ const setupBookshopPolymorph = () => {
         }
     });
 
-    const socket = new WebSocket('ws://localhost:8070/');
+    if (BOOKSHOP_HMR_AVAILABLE) {
+        const socket = new WebSocket(`ws://localhost:${BOOKSHOP_HMR_PORT}/`);
 
-    socket.addEventListener('open', function (event) {
-        socket.send('Hello Server!');
-    });
+        socket.addEventListener('open', function (event) {
+            socket.send('Hello Server!');
+        });
 
-    socket.addEventListener('message', function (event) {
-        if (event.data === "new-components") {
-            document.querySelectorAll('[data-bookshop-reload]').forEach(el => {
-                el.remove()
-            });
-            const head = document.getElementsByTagName('head')[0];
-            const script = document.createElement('script');
-            script.dataset.bookshopReload = true;
-            script.src = `http://localhost:8070/bookshop.js?q=${Date.now()}`;
-            head.appendChild(script);
-        }
-    });
+        socket.addEventListener('message', function (event) {
+            if (event.data === "new-components") {
+                document.querySelectorAll('[data-bookshop-reload]').forEach(el => {
+                    el.remove()
+                });
+                const head = document.getElementsByTagName('head')[0];
+                const script = document.createElement('script');
+                script.dataset.bookshopReload = true;
+                script.src = `http://localhost:${BOOKSHOP_HMR_PORT}/bookshop.js?q=${Date.now()}`;
+                head.appendChild(script);
+            }
+        });
+    }
 };
 
 const loadNewPolymorphComponents = () => {

@@ -64,12 +64,6 @@ const rewriteTag = function(token, src) {
 
     if (token.name && token.name === 'include_cached') raw = raw.replace(/include_cached/, 'include');
 
-    // TODO: Remove legacy bookshop support
-    if (token.name && token.name === 'component') {
-        raw = raw.replace(/component/, 'bookshop');
-        token.name = 'bookshop';
-    }
-
     if (token.name && token.name === 'bookshop') {
         token.name = 'include';
         raw = raw.replace(

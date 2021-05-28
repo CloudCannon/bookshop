@@ -1,20 +1,26 @@
 {
   "name": "@bookshop/renderer",
-  "version": "2.0.0-alpha.13",
+  "version": "2.0.0-alpha.15",
   "description": "Bookshop Renderer",
-  "main": "serve.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "bin": {
-    "bookshop": "serve.js"
+    "bookshop": "main.js"
   },
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
+    "@codemirror/basic-setup": "^0.18.2",
+    "@codemirror/commands": "^0.18.2",
+    "@codemirror/legacy-modes": "^0.18.0",
+    "@codemirror/state": "^0.18.7",
+    "@codemirror/stream-parser": "^0.18.2",
+    "@codemirror/view": "^0.18.13",
     "@ltd/j-toml": "^1.12.2",
     "commander": "^7.2.0",
     "esbuild": "^0.11.23",
@@ -28,7 +34,6 @@
     "postcss-fluidvars": "^1.0.1",
     "sass": "^1.34.0",
     "slugify": "^1.5.3",
-    "stretcher": "^0.1.2",
     "svelte": "^3.38.2"
   }
 }

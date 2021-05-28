@@ -4,27 +4,6 @@ const path = require('path');
 const sass = require('sass');
 const postcss = require('postcss');
 const fluidvars = require('postcss-fluidvars');
-const stretcher = require('stretcher');
-
-const stretcherImporter = function(url, prev, done) {
-    
-    url = url.replace(/.*\/stretcher/, '');
-    let fileContents = "";
-    try {
-        fileContents = fs.readFileSync(url);
-    } catch {
-        return {content: `@warn "Loading ${url} failed."`}
-    }
-
-    const {output, warnings} = stretcher(fileContents.toString());
-    if (warnings.length) {
-        for (warning of warnings) {
-            console.warn(`⚠️ WARN [${url}]: ${warning}`);
-        }
-    }
-
-    return {file: url, contents: output}
-}
 
 const BookshopScssImport = (options) => ({
     name: 'bookshop-scss-import',
@@ -34,8 +13,7 @@ const BookshopScssImport = (options) => ({
                 return; // Ignore unresolvable paths
             }
 
-            // TODO: remove "styles" — legacy bokshop support.
-            const loadFolders = `@(components|bookshop|styles)`;
+            const loadFolders = `@(components|bookshop)`;
             const fullPath = path.join(options.bookshopDir, `/${loadFolders}/**/*.scss`);
             return {
                 path: fullPath,
@@ -43,7 +21,6 @@ const BookshopScssImport = (options) => ({
                 pluginData: {
                     resolveDir: args.resolveDir,
                     bookshopDir: options.bookshopDir,
-                    runScssStretcher: options.runScssStretcher,
                     fluidns: options.fluidns
                 },
             };
@@ -51,20 +28,8 @@ const BookshopScssImport = (options) => ({
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-scss' }, async (args) => {
             const files = (await fastGlob(args.path, {
                 cwd: args.pluginData.resolveDir,
-            })).sort((a,b) => {
-                // TODO: remove custom styles sort — legacy bokshop support.
-                if (/styles\/[^\/]+\.scss$/.test(a)) a = `/Aardvark/${a}`;
-                if (/styles\/[^\/]+\.scss$/.test(b)) b = `/Aardvark/${b}`;
-                if (a > b) return 1;
-                if (a < b) return -1;
-                return 0;
-            });
+            })).sort();
             let importers = [], prepend = "";
-            // TODO: Remove legacy bookshop support.
-            if (args.pluginData.runScssStretcher) {
-                importers.push(stretcherImporter);
-                prepend = "/stretcher";
-            }
 
             const sassCode = `
         ${files .map((module, index) => `@import '${prepend}${module}'`)
