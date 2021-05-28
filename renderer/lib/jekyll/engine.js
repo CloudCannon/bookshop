@@ -13,7 +13,6 @@ const getEngine = (getFileFn) => {
                 return "Sync? " + file;
             },
             async readFile (file) {
-                console.log(`Looking for ${file}`);
                 let content = getFileFn(file, 'jekyll');
                 return rewriteIncludes(content);
             },
@@ -70,7 +69,6 @@ const rewriteTag = function(token, src) {
         raw = raw.replace(/component/, 'bookshop');
         token.name = 'bookshop';
     }
-    console.log(raw);
 
     if (token.name && token.name === 'bookshop') {
         token.name = 'include';
@@ -81,7 +79,6 @@ const rewriteTag = function(token, src) {
         }
         );
     }
-    console.log(raw);
 
     if (token.name && token.name.match(/^include/)) {
         raw = raw.replace(/=/g, ': ');

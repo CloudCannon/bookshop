@@ -19,12 +19,13 @@
     let outputHTML = '';
     let outputComponent = null;
     let outputProps = {};
+    let untouchedYamlProps = '# Nothing';
     let yamlProps = '# Nothing';
     let editYaml = false;
     let updateMsg = false;
 
     $: componentList = Object.keys(components);
-    $: updateComponent(selectedComponent, selectedFramework);
+    $: if (components) updateComponent(selectedComponent, selectedFramework)
     $: render(selectedComponent, yamlProps, componentList, selectedFramework);
     $: currentFrameworks = components[componentList[selectedComponent]] ? frameworkKeys(components[componentList[selectedComponent]]) : [];
     $: {
@@ -69,11 +70,13 @@
         
         const configData = toml.parse(components[c]?.config ?? "", 1, "\n", false);
         const editableProps = processProps(configData);
+        const updatedYamlProps = yaml.dump(editableProps ?? "", {
+            noRefs: true
+        });
 
-        if (prevSelectedComponent !== c) {
-            yamlProps = yaml.dump(editableProps ?? "", {
-                noRefs: true
-            });
+        if (prevSelectedComponent !== c || untouchedYamlProps !== updatedYamlProps) {
+            yamlProps = updatedYamlProps;
+            untouchedYamlProps = updatedYamlProps;
         }
 
         prevSelectedComponent = c;

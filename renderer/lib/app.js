@@ -44,7 +44,6 @@ const setupBookshopPolymorph = () => {
     });
 
     socket.addEventListener('message', function (event) {
-        console.log('Message from server ', event.data);
         if (event.data === "new-components") {
             document.querySelectorAll('[data-bookshop-reload]').forEach(el => {
                 el.remove()
