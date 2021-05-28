@@ -94,6 +94,9 @@ module JekyllBookshop
       bookshop_locations = site.config['bookshop_locations']&.collect do |location|
         Pathname.new(location + "/").cleanpath.to_s
       end
+      bookshop_locations = bookshop_locations.select do |location|
+        Dir.exist?(location)
+      end
 
       site.config['watch_dirs'] ||= [] # Paired with CloudCannon/jekyll-watch
       site.config['watch_dirs'].push(*bookshop_locations);

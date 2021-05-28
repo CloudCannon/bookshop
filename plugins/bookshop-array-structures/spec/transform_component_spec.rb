@@ -294,6 +294,8 @@ module Bookshop
           "_array_structures" => {
             "links" => {
               "values" => [{
+                "label" => "Link",
+                "icon" => "add_box",
                 "_comments" => {
                   "link_content" => "Inner comment",
                   "link_number" => "How Many?"
@@ -354,7 +356,7 @@ module Bookshop
         [[props.sections]]                    #: Top level blog info
         section_name = "Stats"                #: Navigation Label
         alignment.select = ["left", "right"]  #: Useful to alternate
-        [[props.sections.tags]]               #: Tags are used in search results
+        [[props.sections.tag_items]]          #: Tags are used in search results
         tag_name.select = ["good", "great"]   #: Single word only
         color.default = "#407AFC"             #: Not used on mobile
 
@@ -381,17 +383,21 @@ module Bookshop
           "_array_structures" => {
             "sections" => {
               "values" => [{
+                "label" => "Section",
+                "icon" => "add_box",
                 "_select_data" => {
                   "alignments" => ["left", "right"]
                 },
                 "_comments" => {
                   "section_name" => "Navigation Label",
                   "alignment" => "Useful to alternate",
-                  "tags" => "Tags are used in search results"
+                  "tag_items" => "Tags are used in search results"
                 },
                 "_array_structures" => {
-                  "tags" => {
+                  "tag_items" => {
                     "values" => [{
+                      "label" => "Tag Item",
+                      "icon" => "add_box",
                       "_select_data" => {
                         "tag_names" => ["good", "great"]
                       },
@@ -410,7 +416,7 @@ module Bookshop
                 "value" => {
                   "section_name" => nil,
                   "alignment" => nil,
-                  "tags" => []
+                  "tag_items" => []
                 }
               }]
             }

@@ -1,6 +1,7 @@
 require "jekyll"
-require 'pathname'
+require "pathname"
 require "toml-rb"
+require "dry/inflector"
 
 module Bookshop
   class ArrayStructures
@@ -28,6 +29,7 @@ module Bookshop
       structure["_comments"] ||= {}
       structure["value"] ||= {}
       value_context = structure["value"] if value_context.nil?
+      inflector = Dry::Inflector.new
       value_obj.each_pair {|key, value|
           if value_context.has_key?(key)
             next
@@ -47,7 +49,8 @@ module Bookshop
             end
             if value["select"]
               value_context[key] = nil
-              structure["_select_data"][key+"s"] = value["select"]
+              plural_key = inflector.pluralize(key)
+              structure["_select_data"][plural_key] = value["select"]
               next
             end
             if value["preview"]
@@ -64,8 +67,15 @@ module Bookshop
               if value[0]["--bookshop_comment"]
                 structure["_comments"][key] = value[0]["--bookshop_comment"]
               end
-              
-              structure["_array_structures"][key] ||= {"values" => [{"value" => {}}]}
+
+              singular_title = inflector.classify(key).gsub(/(.)([A-Z])/, '\1 \2')
+              structure["_array_structures"][key] ||= {
+                "values" => [{
+                  "label" => singular_title,
+                  "icon" => "add_box",
+                  "value" => {}
+                }]
+              }
               handle_bookprops( value[0], 
                                 structure["_array_structures"][key]["values"][0],
                                 structure["_array_structures"][key]["values"][0]["value"])
@@ -214,8 +224,12 @@ module Bookshop
       puts "📚 Parsing Stories from #{base_path}"
       Dir.glob("**/*.{bookshop,stories}.{toml,tml,tom,tm}", base: base_path).each do |f|
         begin
-          raw_file = File.read(base_path + "/" + f)
-          component = parse_bookshop_toml(raw_file)
+          if f =~ /bookshop/
+            raw_file = File.read(base_path + "/" + f)
+            component = parse_bookshop_toml(raw_file)
+          else
+            component = TomlRB.load_file(base_path + f)
+          end
         rescue => exception
           puts "❌ Error Parsing Story: " + f
           puts exception
@@ -239,6 +253,9 @@ module Bookshop
     def self.build_array_structures(site)
       bookshop_locations = site.config['bookshop_locations']&.collect do |location|
         Pathname.new(location + "/components").cleanpath.to_s
+      end
+      bookshop_locations = bookshop_locations.select do |location|
+        Dir.exist?(location)
       end
       bookshop_locations.each do |base_path|
         build_from_location(base_path, site)
