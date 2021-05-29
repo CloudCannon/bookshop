@@ -140,27 +140,43 @@
           bind:selectingComponent={selectingComponent} />
 
     <div class="component-info">
-        <button 
-            class="menu material-icons"
-            on:click={() => selectingComponent = true}>folder_open</button>
+        <div class="nav-pane">
+            <button 
+                class="menu material-icons"
+                on:click={() => selectingComponent = true}>folder_open</button>
+            <button 
+                class="menu material-icons" 
+                on:click={() => editYaml = !editYaml}>{editYaml ? 'vertical_align_top' : 'vertical_align_bottom'}</button>
+        </div>
+        <div class="content-pane">
 
-        <p class="component-title">
-            {hydratedComponents[selectedComponent]?.identity?.label}
-        </p>
+            <div class="component-title">
+                <span class="material-icons">{hydratedComponents[selectedComponent]?.identity?.icon}</span>
+                <span>{hydratedComponents[selectedComponent]?.identity?.label}</span>
+            </div>
 
-    {#if availableFrameworks.length > 1}
-        <select bind:value={selectedFramework}>
-        {#each availableFrameworks as framework}
-            <option value="{framework}">{framework}</option>
-        {/each}
-        </select>
-    {:else}
-        <p class="tag">{selectedFramework}</p>
-    {/if}
-    {#if selectedComponent !== 'nothing'}
-        <button on:click={() => editYaml = !editYaml}>{editYaml ? 'Hide' : 'Edit'} Props</button>
-    {/if}
-    <button on:click={() => selectingComponent = true}>Select component</button>
+            {#if editYaml}
+            <div class="component-data">
+                <p class="description">{hydratedComponents[selectedComponent]?.identity?.description}</p>
+
+                <p class="title">Frameworks</p>
+                <p class="label buttons">
+                {#each availableFrameworks as framework}
+                    <button 
+                        class:selected={selectedFramework === framework}
+                        on:click={() => {selectedFramework = framework}}>{framework}</button>
+                {/each}
+                </p>
+
+                <p class="title">Array Structures</p>
+                <p class="label">{hydratedComponents[selectedComponent]?.identity?.array_structures?.join(', ')}</p>
+
+                <p class="title">Tags</p>
+                <p class="label">{hydratedComponents[selectedComponent]?.identity?.tags?.join(', ')}</p>
+
+            </div>
+            {/if}
+        </div>
     </div>
 
     {#if editYaml}
@@ -189,14 +205,34 @@
     position: relative;
     background-color: #fff;
     box-sizing: border-box;
+    border-bottom: solid 1px #eee;
 }
 
 .component-info {
     width: 300px;
     min-width: 300px;
     box-sizing: border-box;
-    padding: 14px 14px 14px 44px;
+    padding: 0;
     position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.nav-pane {
+    background-color: #fafafa;
+    border-right: solid 1px #eee;
+    width: 44px;
+    min-width: 44px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.thin .nav-pane {
+    flex-direction: row;
+    width: auto;
 }
 
 .menu {
@@ -204,9 +240,6 @@
     -webkit-appearance: none;
     border: none;
     background: transparent;
-    position: absolute;
-    top: 12px;
-    left: 12px;
     cursor: pointer;
     font-size: 14px;
     width: 20px;
@@ -214,10 +247,65 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
 }
 
 .menu:hover {
     background-color: #eee;
+}
+
+.content-pane {
+    box-sizing: border-box;
+    padding: 14px;
+    width: 100%;
+}
+
+.component-data .description {
+    font-size: 12px;
+    color: rgb(65, 65, 65);
+    margin: 10px 0 16px 0;
+    max-width: 160px;
+}
+.component-data p {
+    margin: 0;
+}
+.component-data .title {
+    font-size: 12px;
+    font-weight: bold;
+}
+.component-data .label {
+    font-size: 12px;
+    font-weight: 600;
+    font-family: monospace;
+    color: rgb(176, 61, 0);
+    margin-bottom: 10px;
+}
+.component-data .label.buttons {
+    display: flex;
+}
+.component-data .label.buttons button {
+    padding: 0 5px 0 0;
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: monospace;
+    color: rgb(0, 135, 176);
+}
+.component-data .label.buttons button.selected {
+    color: rgb(176, 61, 0);
+}
+.component-data .label.buttons button:hover {
+    text-decoration: underline;
+}
+
+.material-icons {
+    font-size: 14px;
+    display: inline-block;
+    width: 20px;
 }
 
 .thin .component-info {
@@ -230,12 +318,9 @@
     font-size: 14px;
     font-weight: bold;
     margin: 0;
-}
-
-.tag {
-    display: block;
-    font-size: 12px;
-    font-family: monospace;
-    color: rgb(176, 61, 0);
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 228px;
 }
 </style>

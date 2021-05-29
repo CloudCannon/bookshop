@@ -7,6 +7,11 @@
 
     $: if (selectingComponent) list.focus();
 
+    const set = (c) => {
+        selectedComponent = c;
+        list.blur();
+    }
+
     const blurry = (e) => {
         if (e?.relatedTarget?.dataset?.blur !== "list-child") {
             selectingComponent = false;
@@ -26,7 +31,7 @@
         <li>
             <button class="component"
                 data-blur="list-child" 
-                on:mousedown={() => selectedComponent = key}
+                on:mousedown={set(key)}
                 on:blur={blurry}>
                 <span class="icon material-icons">{component?.identity?.icon}</span>
                 {component?.identity?.label}
