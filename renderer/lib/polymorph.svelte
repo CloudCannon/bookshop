@@ -92,7 +92,7 @@
         
         outputHTML = outputText;
     };
-    $: render(selectedComponent, yamlProps, selectedFramework);
+    $: if (hydratedComponents) render(selectedComponent, yamlProps, selectedFramework);
 
     const updateComponent = async (component, framework) => {
         if (component === 'nothing') return;

@@ -85,7 +85,7 @@ const loadNewPolymorphComponents = () => {
     }
 
     if (window.polymorphStyle) {
-        window.polymorphStyle.innerHTML = bookshopStyles;
+        window.polymorphStyle.innerHTML = bookshopStyles + coreStyles;
     }
 }
 
