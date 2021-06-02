@@ -47,7 +47,9 @@ const BookshopScssImport = (options) => ({
                     console.warn(`⛔️ POSTCSS[${warning.plugin}]: ${warning.text}`);
                 });
                 return { contents: postcssCode, loader: 'text', resolveDir: args.pluginData.resolveDir, watchFiles: files };
-            } catch {
+            } catch (e) {
+                console.error("Bookshop sass compilation failed:");
+                console.error(e.formatted);
                 return { contents: `[data-bookshop-polymorph] .polymorph::after {
                     content: "⛔️      Bookshop sass rendering failed     ⛔️";
                     text-align: center;
