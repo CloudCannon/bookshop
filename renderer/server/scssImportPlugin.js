@@ -29,22 +29,38 @@ const BookshopScssImport = (options) => ({
             const files = (await fastGlob(args.path, {
                 cwd: args.pluginData.resolveDir,
             })).sort();
-            let importers = [], prepend = "";
 
-            const sassCode = `
-        ${files .map((module, index) => `@import '${prepend}${module}'`)
-                .join(';')}
-      `;
-            const compiledSass = sass.renderSync({data: sassCode, importer: importers, quiet: true});
-            const cssCode = compiledSass?.css ?? '// Failed to compile';
-            const fluidns = args.pluginData.fluidns || '';
-            const postcssRunner = postcss([fluidvars({namespace: fluidns})]).process(cssCode);
-            const postcssCode = postcssRunner.css;
-            const postcssWarnings = postcssRunner.warnings();
-            postcssWarnings.forEach(warning => {
-                console.warn(`⛔️ POSTCSS[${warning.plugin}]: ${warning.text}`);
-            });
-            return { contents: postcssCode, loader: 'text', resolveDir: args.pluginData.resolveDir, watchFiles: files };
+            try {
+                let importers = [], prepend = "";
+
+                const sassCode = `
+            ${files .map((module, index) => `@import '${prepend}${module}'`)
+                    .join(';')}
+        `;
+                const compiledSass = sass.renderSync({data: sassCode, importer: importers, quiet: true});
+                const cssCode = compiledSass?.css ?? '// Failed to compile';
+                const fluidns = args.pluginData.fluidns || '';
+                const postcssRunner = postcss([fluidvars({namespace: fluidns})]).process(cssCode);
+                const postcssCode = postcssRunner.css;
+                const postcssWarnings = postcssRunner.warnings();
+                postcssWarnings.forEach(warning => {
+                    console.warn(`⛔️ POSTCSS[${warning.plugin}]: ${warning.text}`);
+                });
+                return { contents: postcssCode, loader: 'text', resolveDir: args.pluginData.resolveDir, watchFiles: files };
+            } catch {
+                return { contents: `[data-bookshop-polymorph] .polymorph::after {
+                    content: "⛔️      Bookshop sass rendering failed     ⛔️";
+                    text-align: center;
+                    white-space: pre;
+                    color: white;
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;
+                    width: 100%;
+                    padding: 10px;
+                    background-color: #960000;
+                }`, loader: 'text', resolveDir: args.pluginData.resolveDir, watchFiles: files };
+            }
         });
     },
 });
