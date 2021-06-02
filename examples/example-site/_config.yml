@@ -5,3 +5,5 @@ bookshop_locations:
 
 plugins:
   - jekyll-bookshop
+  - bookshop-array-structures
+  - cloudcannon-jekyll

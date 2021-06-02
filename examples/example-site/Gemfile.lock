@@ -15,7 +15,7 @@ GIT
 PATH
   remote: ../../plugins/bookshop-array-structures
   specs:
-    bookshop-array-structures (2.0.0.pre.alpha.4)
+    bookshop-array-structures (2.0.0.pre.alpha.6)
       dry-inflector (>= 0.1, < 1.0)
       jekyll (>= 3.7, < 5.0)
       toml-rb (>= 2.0, < 3.0)
@@ -23,7 +23,7 @@ PATH
 PATH
   remote: ../../plugins/jekyll-bookshop
   specs:
-    jekyll-bookshop (2.0.0.pre.alpha.4)
+    jekyll-bookshop (2.0.0.pre.alpha.6)
       jekyll (>= 3.7, < 5.0)
 
 GEM
