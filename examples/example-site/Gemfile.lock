@@ -13,9 +13,17 @@ GIT
     jekyll-postcss (0.4.0)
 
 PATH
+  remote: ../../plugins/bookshop-array-structures
+  specs:
+    bookshop-array-structures (2.0.0.pre.alpha.4)
+      dry-inflector (>= 0.1, < 1.0)
+      jekyll (>= 3.7, < 5.0)
+      toml-rb (>= 2.0, < 3.0)
+
+PATH
   remote: ../../plugins/jekyll-bookshop
   specs:
-    jekyll-bookshop (2.0.0.pre.alpha.1)
+    jekyll-bookshop (2.0.0.pre.alpha.4)
       jekyll (>= 3.7, < 5.0)
 
 GEM
@@ -23,8 +31,12 @@ GEM
   specs:
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
+    citrus (3.0.2)
+    cloudcannon-jekyll (1.6.1)
+      jekyll (>= 2.4.0, < 5)
     colorator (1.1.0)
     concurrent-ruby (1.1.8)
+    dry-inflector (0.2.0)
     em-websocket (0.5.2)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0.6.0)
@@ -73,12 +85,16 @@ GEM
       ffi (~> 1.9)
     terminal-table (1.8.0)
       unicode-display_width (~> 1.1, >= 1.1.1)
+    toml-rb (2.0.1)
+      citrus (~> 3.0, > 3.0)
     unicode-display_width (1.7.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  bookshop-array-structures!
+  cloudcannon-jekyll
   jekyll (~> 4.1.1)
   jekyll-bookshop!
   jekyll-postcss!
