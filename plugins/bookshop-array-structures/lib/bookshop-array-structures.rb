@@ -252,7 +252,7 @@ module Bookshop
 
     def self.build_array_structures(site)
       bookshop_locations = site.config['bookshop_locations']&.collect do |location|
-        Pathname.new(location + "/components").cleanpath.to_s
+        Pathname.new("#{site.source}/#{location}/components").cleanpath.to_s
       end
       bookshop_locations = bookshop_locations.select do |location|
         Dir.exist?(location)
