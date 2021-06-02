@@ -6,10 +6,7 @@ module JekyllBookshop
 
     # Look for includes in the built bookshop directory
     def tag_includes_dirs(context)
-      bookshop_locations = context['site']['bookshop_locations']&.collect do |location|
-        Pathname.new(location + "/components").cleanpath.to_s
-      end
-      bookshop_locations.freeze
+      context['site']['bookshop_component_locations'].freeze
     end
 
     # Support the bind syntax, spreading an object into params
@@ -91,19 +88,28 @@ module JekyllBookshop
 
     # Add the paths to find bookshop's styles
     def self.open_bookshop(site)
-      bookshop_locations = site.config['bookshop_locations']&.collect do |location|
-        Pathname.new(location + "/").cleanpath.to_s
+      base_bookshop_locations = site.config['bookshop_locations']&.collect do |location|
+        Pathname.new("#{site.source}/#{location}/").cleanpath.to_s
       end
-      bookshop_locations = bookshop_locations.select do |location|
+      base_bookshop_locations = base_bookshop_locations.select do |location|
         Dir.exist?(location)
+      end
+      bookshop_component_locations = base_bookshop_locations&.collect do |location|
+        Pathname.new("#{location}/components/").cleanpath.to_s
       end
 
       site.config['watch_dirs'] ||= [] # Paired with CloudCannon/jekyll-watch
-      site.config['watch_dirs'].push(*bookshop_locations);
+      site.config['watch_dirs'].push(*base_bookshop_locations);
 
       site.config['sass'] ||= {}
       site.config['sass']['load_paths'] ||= []
-      site.config['sass']['load_paths'].push(*bookshop_locations)
+      site.config['sass']['load_paths'].push(*base_bookshop_locations)
+
+      site.config['bookshop_locations'] = []
+      site.config['bookshop_locations'].push(*base_bookshop_locations)
+
+      site.config['bookshop_component_locations'] ||= []
+      site.config['bookshop_component_locations'].push(*bookshop_component_locations)
     end
   end
 
