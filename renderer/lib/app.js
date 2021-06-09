@@ -51,7 +51,11 @@ const setupBookshopPolymorph = () => {
             trigger: function (eventName, frontMatter) {
                 frontMatter = JSON.parse(frontMatter);
                 window.liveComponents.forEach(liveComponent => {
-                    data = liveComponent.propSource.split('.').reduce((o,i)=>o[i], frontMatter)
+                    if (liveComponent.propSource.length) {
+                        data = liveComponent.propSource.split('.').reduce((o,i)=>o[i], frontMatter)
+                    } else {
+                        data = frontMatter;
+                    }
                     liveComponent.component.$$set({
                         props: data
                     })
@@ -67,7 +71,7 @@ const setupBookshopPolymorph = () => {
             const componentPropSource = target.dataset.bookshopProps;
             target.innerHTML = "";
             window.liveComponents.push({
-                propSource: componentPropSource?.replace(/^page\./, ''),
+                propSource: componentPropSource?.replace(/^page(\.|$)/, ''),
                 component: new LiveComponent({
                     target: target,
                     props: {
