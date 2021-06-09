@@ -49,16 +49,16 @@ const setupBookshopPolymorph = () => {
         window.liveComponents = window.liveComponents || [];
         window.CloudCannon = {
             trigger: function (eventName, frontMatter) {
+                frontMatter = JSON.parse(frontMatter);
                 window.liveComponents.forEach(liveComponent => {
                     data = liveComponent.propSource.split('.').reduce((o,i)=>o[i], frontMatter)
                     liveComponent.component.$$set({
-                        props: frontMatter
+                        props: data
                     })
                 });
                 console.log(`Pushing a ${eventName}`);
             }
         }
-        window.top.CloudCannon = window.CloudCannon;
 
         const liveRenderTargets = document.querySelectorAll('[data-bookshop-live]');
         liveRenderTargets.forEach(target => {
