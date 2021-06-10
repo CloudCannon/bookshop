@@ -40,18 +40,7 @@
         setTimeout(() => {
             const svelteElements = document.querySelectorAll(`[data-bookshop-svelte-props]`);
             svelteElements.forEach((el) => {
-                try {
-                    const componentName = el.dataset.svelteSlab;
-                    const componentProps = JSON.parse(atob(el.dataset.bookshopSvelteProps));
-                    const svelteEl = hydratedComponents[componentName].frameworks.svelte;
-                    el.innerHTML = "";
-                    new svelteEl({
-                        target: el,
-                        props: componentProps
-                    });
-                } catch(e) {
-                    console.error("Bookshop svelte error", e);
-                }
+                el.innerHTML = `<p>Dynamic component ${el.dataset?.svelteSlab} cannot be rendered in the live editor yet.</p>`;
             });
         }, 1);
     };
