@@ -37,6 +37,15 @@
     // Pre-parse all of our TOML files
     const hydrate = (ogComponents) => {
         const o = {};
+        o['all_bookshop'] = {
+            identity: {
+                label: "All Components",
+                icon: "menu_book"
+            },
+            frameworks: {
+                'jekyll' : ''
+            }
+        }
         Object.entries(ogComponents).forEach(([key, component]) => {
             const config = component.config;
             delete component.config;
@@ -67,14 +76,35 @@
     }
 
     const render = async (component, data, framework) => {
-        let props;
-        try {
-            props = yaml.load(data);
-            yamlError = false;
-        } catch (e) {
-            props = {};
-            yamlError = true;
-            console.log(e);
+        if (component === 'all_bookshop') {
+            const bookshop_components = [];
+            for (const [bookshop_component_name, bookshop_component_data] of Object.entries(hydratedComponents)) {
+                if (bookshop_component_name === 'all_bookshop') continue;
+                const transformedConfig = processBookshopProps(bookshop_component_data?.parsedConfig);
+                const bookshop_component = await render(bookshop_component_name, transformedConfig, selectedFramework);
+                bookshop_components.push(`
+                    <div style="display: block;">
+                        <p style="font-family: monospace; font-size: 14px; font-weight: bold; padding: 8px 10px;">
+                            <span style="font-size: 16px; vertical-align: sub;" class="material-icons">${bookshop_component_data?.identity?.icon}</span>
+                            ${bookshop_component_data?.identity?.label || bookshop_component_name}
+                        </p>
+                        <div style="display: block; border-bottom: solid 1px #ccc; padding-bottom: 30px;">
+                            ${bookshop_component}
+                        </div>
+                    </div>`);
+            }
+            return bookshop_components.join('');
+        };
+        yamlError = false;
+        let props = data;
+        if (typeof data === 'string') {
+            try {
+                props = yaml.load(data);
+            } catch (e) {
+                props = {};
+                yamlError = true;
+                console.log(e);
+            }
         }
         let outputText;
         switch(framework) {
@@ -90,15 +120,37 @@
                 break;
         }
         
-        outputHTML = outputText;
+        return outputText;
     };
-    $: if (hydratedComponents) render(selectedComponent, yamlProps, selectedFramework);
+
+    const renderToHTML = async (component, data, framework) => {
+        outputHTML = await render(component, data, framework);
+        setTimeout(() => {
+            const svelteElements = document.querySelectorAll(`[data-bookshop-svelte-props]`);
+            svelteElements.forEach((el) => {
+                try {
+                    const componentName = el.dataset.svelteSlab;
+                    const componentProps = JSON.parse(atob(el.dataset.bookshopSvelteProps));
+                    const svelteEl = hydratedComponents[componentName].frameworks.svelte;
+                    el.innerHTML = "";
+                    new svelteEl({
+                        target: el,
+                        props: componentProps
+                    });
+                } catch(e) {
+                    console.error("Bookshop svelte error", e);
+                }
+            });
+        }, 1);
+    }
+
+    $: if (hydratedComponents) renderToHTML(selectedComponent, yamlProps, selectedFramework);
 
     const updateComponent = async (component, framework) => {
         if (component === 'nothing') return;
         availableFrameworks = Object.keys(hydratedComponents?.[component]?.frameworks || {});
         if (!hydratedComponents?.[component]?.frameworks?.[framework]) {
-            framework = selectedFramework = availableFrameworks[0];
+            framework = selectedFramework = availableFrameworks[0] || 'none';
         }
 
         const currentURL = new URL(window.location);
@@ -155,7 +207,7 @@
                 <span>{hydratedComponents[selectedComponent]?.identity?.label}</span>
             </div>
 
-            {#if editYaml}
+            {#if editYaml && hydratedComponents[selectedComponent]?.config}
             <div class="component-data">
                 <p class="description">{hydratedComponents[selectedComponent]?.identity?.description}</p>
 
@@ -179,7 +231,7 @@
         </div>
     </div>
 
-    {#if editYaml}
+    {#if editYaml && hydratedComponents[selectedComponent]?.config}
         <Editor code={untouchedYamlProps} error={yamlError} on:newcode={updateCode} />
     {/if}
 </div>
