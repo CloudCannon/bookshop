@@ -45,7 +45,7 @@ const setupBookshopPolymorph = () => {
         });
     })
     
-    if (window.inEditorMode || true) {
+    if (window.inEditorMode) {
         window.liveComponents = window.liveComponents || [];
         window.CloudCannon = {
             trigger: function (eventName, frontMatter) {
