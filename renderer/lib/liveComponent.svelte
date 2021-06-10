@@ -37,6 +37,23 @@
 
     const render = async (component, props) => {
         outputHTML = await jekyllEngine(getSourceFn(component, 'jekyll'), props);
+        setTimeout(() => {
+            const svelteElements = document.querySelectorAll(`[data-bookshop-svelte-props]`);
+            svelteElements.forEach((el) => {
+                try {
+                    const componentName = el.dataset.svelteSlab;
+                    const componentProps = JSON.parse(atob(el.dataset.bookshopSvelteProps));
+                    const svelteEl = hydratedComponents[componentName].frameworks.svelte;
+                    el.innerHTML = "";
+                    new svelteEl({
+                        target: el,
+                        props: componentProps
+                    });
+                } catch(e) {
+                    console.error("Bookshop svelte error", e);
+                }
+            });
+        }, 1);
     };
     $: if (hydratedComponents && props) render(selectedComponent, props);
 </script>
