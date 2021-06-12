@@ -25,7 +25,7 @@ module Bookshop
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("component/subcomponent/subcomponent.bookshop.toml", bookshop_config, {})
       
-      expected_structure = {
+      expected_structure = [{
         "array_structures" => [ "content_blocks", "bookshop_components" ],
         "label" => "Unique Component",
         "description" => "Unique Component Description",
@@ -34,7 +34,7 @@ module Bookshop
         "value" => {
           "_bookshop_name" => "component/subcomponent",
         }
-      }
+      }]
       diff = Hashdiff.diff(array_structure, expected_structure)
 
       expect(diff).must_equal []
@@ -48,13 +48,13 @@ module Bookshop
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("component/subcomponent/subcomponent.bookshop.toml", bookshop_config, {})
       
-      expected_structure = {
+      expected_structure = [{
         "array_structures" => [],
         "label" => "Component Subcomponent",
         "value" => {
           "_bookshop_name" => "component/subcomponent",
         }
-      }
+      }]
       diff = Hashdiff.diff(array_structure, expected_structure)
 
       expect(diff).must_equal []
@@ -62,7 +62,7 @@ module Bookshop
 
     it "should add select data" do
       bookshop_toml = <<~EOS
-        #{TestHelpers.props_bookshop_config}
+        #{TestHelpers.base_bookshop_config}
 
         [props]
         title = "Mr Fancy"
@@ -71,7 +71,7 @@ module Bookshop
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
       
-      expected_structure = TestHelpers.props_bookshop_output.merge!(
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
         {
           "_select_data" => {
             "alignments" => ["left", "right"]
@@ -82,7 +82,7 @@ module Bookshop
             "alignment" => nil
           }
         }
-      )
+      )]
 
       diff = Hashdiff.diff(expected_structure, array_structure)
       expect(diff).must_equal []
@@ -90,7 +90,7 @@ module Bookshop
 
     it "should pull through defaults" do
       bookshop_toml = <<~EOS
-        #{TestHelpers.props_bookshop_config}
+        #{TestHelpers.base_bookshop_config}
 
         [props]
         title.default = "Ananas"
@@ -100,7 +100,7 @@ module Bookshop
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
       
-      expected_structure = TestHelpers.props_bookshop_output.merge!(
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
         {
           "value" => {
             "_bookshop_name" => "a/b",
@@ -109,7 +109,7 @@ module Bookshop
             "is_okay" => true
           }
         }
-      )
+      )]
 
       diff = Hashdiff.diff(expected_structure, array_structure)
       expect(diff).must_equal []
@@ -117,7 +117,7 @@ module Bookshop
 
     it "should do nothing with preview" do
       bookshop_toml = <<~EOS
-        #{TestHelpers.props_bookshop_config}
+        #{TestHelpers.base_bookshop_config}
 
         [props]
         title.preview = ["a", "b", "c"]
@@ -125,14 +125,14 @@ module Bookshop
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
       
-      expected_structure = TestHelpers.props_bookshop_output.merge!(
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
         {
           "value" => {
             "_bookshop_name" => "a/b",
             "title" => nil
           }
         }
-      )
+      )]
 
       diff = Hashdiff.diff(expected_structure, array_structure)
       expect(diff).must_equal []
@@ -141,7 +141,7 @@ module Bookshop
 
     it "should handle nested special keys" do
       bookshop_toml = <<~EOS
-        #{TestHelpers.props_bookshop_config}
+        #{TestHelpers.base_bookshop_config}
 
         [props]
         item.nest.default = "Things" #: Nested
@@ -150,7 +150,7 @@ module Bookshop
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
 
-      expected_structure = TestHelpers.props_bookshop_output.merge!(
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
         {
           "_comments" => {
             "nest" => "Nested",
@@ -167,7 +167,7 @@ module Bookshop
             }
           }
         }
-      )
+      )]
 
       diff = Hashdiff.diff(expected_structure, array_structure)
       expect(diff).must_equal []
@@ -175,7 +175,7 @@ module Bookshop
 
     it "should handle nested comments" do
       bookshop_toml = <<~EOS
-        #{TestHelpers.props_bookshop_config}
+        #{TestHelpers.base_bookshop_config}
 
         [props]
         item.nest = "Things" #: Nested
@@ -183,7 +183,7 @@ module Bookshop
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
 
-      expected_structure = TestHelpers.props_bookshop_output.merge!(
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
         {
           "_comments" => {
             "nest" => "Nested"
@@ -195,7 +195,7 @@ module Bookshop
             }
           }
         }
-      )
+      )]
 
       diff = Hashdiff.diff(expected_structure, array_structure)
       expect(diff).must_equal []
@@ -203,7 +203,7 @@ module Bookshop
 
     it "should handle deep nesting" do
       bookshop_toml = <<~EOS
-        #{TestHelpers.props_bookshop_config}
+        #{TestHelpers.base_bookshop_config}
 
         [props]
         item.a.b.c.d.e.f.g = false #: This is deep
@@ -211,7 +211,7 @@ module Bookshop
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
 
-      expected_structure = TestHelpers.props_bookshop_output.merge!(
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
         {
           "_comments" => {
             "g" => "This is deep"
@@ -235,7 +235,7 @@ module Bookshop
             }
           }
         }
-      )
+      )]
 
       diff = Hashdiff.diff(expected_structure, array_structure)
       expect(diff).must_equal []
@@ -243,7 +243,7 @@ module Bookshop
 
     it "should handle mixed nesting" do
       bookshop_toml = <<~EOS
-        #{TestHelpers.props_bookshop_config}
+        #{TestHelpers.base_bookshop_config}
 
         [props]
         [props.author] #: Who wrote this?
@@ -252,7 +252,7 @@ module Bookshop
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
 
-      expected_structure = TestHelpers.props_bookshop_output.merge!(
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
         {
           "_comments" => {
             "author" => "Who wrote this?",
@@ -265,7 +265,7 @@ module Bookshop
             }
           }
         }
-      )
+      )]
 
       diff = Hashdiff.diff(expected_structure, array_structure)
       expect(diff).must_equal []
@@ -273,7 +273,7 @@ module Bookshop
 
     it "should create sub-array structures" do
       bookshop_toml = <<~EOS
-        #{TestHelpers.props_bookshop_config}
+        #{TestHelpers.base_bookshop_config}
 
         [[props.links]] #: Array of objects
         link_content = "I am a link" #: Inner comment
@@ -282,7 +282,7 @@ module Bookshop
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
 
-      expected_structure = TestHelpers.props_bookshop_output.merge!(
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
         {
           "_comments" => {
             "links" => "Array of objects"
@@ -310,15 +310,121 @@ module Bookshop
             }
           }
         }
-      )
+      )]
 
       diff = Hashdiff.diff(expected_structure, array_structure)
       expect(diff).must_equal []
     end
 
+    #####
+    it "should create a schema component" do
+      bookshop_toml = <<~EOS
+        #{TestHelpers.base_bookshop_config}
+        _template = true
+
+        [props]
+        title.default = "Ananas"
+        count_number.default = 4
+        author.name = "Tate"
+
+        [[props.info.links]] #: Array of objects
+        link_content = "I am a link" #: Inner comment
+        link_number.default = 3 #: How Many?
+        link_author.name = "Liam" #: Who made this link
+
+        [[props.info.links.items]]
+        clothing = "T-Shirt"
+        color = "Purple"
+      EOS
+      bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
+      array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
+
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
+        {
+          "_comments" => {
+            "links" => "Array of objects"
+          },
+          "_array_structures" => {
+            "links" => {
+              "values" => [{
+                "label" => "Link",
+                "icon" => "add_box",
+                "_comments" => {
+                  "link_content" => "Inner comment",
+                  "link_number" => "How Many?",
+                  "name" => "Who made this link"
+                },
+                "_select_data" => {},
+                "_array_structures" => {
+                  "items" => {
+                    "values" => [{
+                      "label" => "Item",
+                      "icon" => "add_box",
+                      "_comments" => {},
+                      "_select_data" => {},
+                      "_array_structures" => {},
+                      "value"=> {
+                        "clothing" => nil,
+                        "color" => nil
+                      }
+                    }]
+                  }
+                },
+                "value"=> {
+                  "link_content" => nil,
+                  "link_number" => 3,
+                  "link_author" => {
+                    "name" => nil
+                  },
+                  "items" => []
+                }
+              }]
+            }
+          },
+          "value" => {
+            "_bookshop_name" => "a/b",
+            "title" => "Ananas",
+            "count_number" => 4,
+            "info" => {
+              "links" => [],
+            },
+            "author" => {
+              "name" => nil
+            }
+          }
+        }
+      ), TestHelpers.props_bookshop_output.merge!(
+        {
+          "label" => "Templated Testing Component",
+          "_comments" => {
+            "info.links.__array_template" => "Array of objects",
+            "info.links.link_content.__template" => "Inner comment",
+            "info.links.link_number.__template" => "How Many?",
+            "info.links.link_author.name.__template" => "Who made this link"
+          },
+          "value" => {
+            "title.__template" => "{{title}}",
+            "count_number.__template" => "{{count_number}}",
+            "author.name.__template" => "{{name}}",
+            "info.links.__array_template" => "{{links}}",
+            "info.links.link_content.__template" => "{{link_content}}",
+            "info.links.link_number.__template" => "{{link_number}}",
+            "info.links.link_author.name.__template" => "{{name}}",
+            "info.links.items.__array_template" => "{{items}}",
+            "info.links.items.clothing.__template" => "{{clothing}}",
+            "info.links.items.color.__template" => "{{color}}",
+            "_bookshop_name" => "a/b.__template"
+          }
+        }
+      )]
+
+      diff = Hashdiff.diff(expected_structure, array_structure)
+      expect(diff).must_equal []
+    end #################
+
     it "should preserve TOML comments" do
       bookshop_toml = <<~EOS
-        #{TestHelpers.props_bookshop_config}
+        #{TestHelpers.base_bookshop_config}
 
         [props]
         title = "This is the title" #: Type the title here please
@@ -326,7 +432,7 @@ module Bookshop
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
       
-      expected_structure = TestHelpers.props_bookshop_output.merge!(
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
         {
           "_comments" => {
             "title" => "Type the title here please"
@@ -336,7 +442,7 @@ module Bookshop
             "title" => nil
           }
         }
-      )
+      )]
 
       diff = Hashdiff.diff(expected_structure, array_structure)
       expect(diff).must_equal []
@@ -344,7 +450,7 @@ module Bookshop
 
     it "should handle a complex example" do
       bookshop_toml = <<~EOS
-        #{TestHelpers.props_bookshop_config}
+        #{TestHelpers.base_bookshop_config}
 
         [props]
         title = "This is the title"           #: Used for the slug
@@ -367,7 +473,7 @@ module Bookshop
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
       
-      expected_structure = TestHelpers.props_bookshop_output.merge!(
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
         {
           "_comments" => {
             "title" => "Used for the slug",
@@ -437,7 +543,7 @@ module Bookshop
             }
           }
         }
-      )
+      )]
 
       diff = Hashdiff.diff(expected_structure, array_structure)
       expect(diff).must_equal []

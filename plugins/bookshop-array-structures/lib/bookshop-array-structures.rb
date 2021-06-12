@@ -171,7 +171,103 @@ module Bookshop
         result["array_structures"].push("bookshop_components")
       end
       result.delete("_hidden") unless result["_hidden"].nil?
-      return result
+      results = [result]
+      if result["_template"]
+        results.push(transform_template_component(result))
+      end
+      result.delete("_template")
+      return results
+    end
+
+    def self.transform_template_component(result)
+      schema_result = Marshal.load(Marshal.dump(result))
+      unwrap_structure_template(schema_result)
+      schema_result["value"] = templatize_values(schema_result["value"])
+      schema_result["_comments"] = templatize_comments(schema_result["_comments"])
+      schema_result["value"]["_bookshop_name"] = "#{schema_result["value"]["_bookshop_name"]}.__template"
+      schema_result["label"] = "Templated #{schema_result["label"]}"
+      schema_result["_array_structures"] = {}
+      schema_result["_select_data"] = {}
+      schema_result.delete("_template")
+      schema_result
+    end
+
+    # Breadth-first search through the structure, looking for keys
+    # that will match array structure or comments and flattening them
+    # into the root structure
+    def self.unwrap_structure_template(structure)
+      flattened_keys = {}
+      structure["value"].each_pair do |base_key, base_value|
+        flattened_keys[base_key] = base_value if base_key.start_with? "_"
+      end
+      flatten_hash(structure["value"]).each do |flat_key|
+        cascade_key = flat_key.split(".").last
+        matched_comment = structure.dig("_comments", cascade_key)
+        matched_substructure = structure.dig("_array_structures", cascade_key, "values", 0)
+
+        if matched_substructure
+          unwrap_structure_template(matched_substructure)
+          matched_substructure["value"].each_pair do |subkey, subvalue|
+            # Pull substructure's flat keys into this structure
+            flattened_keys["#{flat_key}.#{subkey}"] = subvalue
+          end
+          matched_substructure["_comments"].each_pair do |subkey, subcomment|
+            # Pull substructure's comments into this structure
+            structure["_comments"]["#{flat_key}.#{subkey}"] = subcomment
+          end
+          # Mark this key as an array so the include plugin knows to return
+          # a value and not a string
+          flattened_keys["#{flat_key}.__array_template"] = "{{#{cascade_key}}}"
+          if matched_comment
+            structure["_comments"].delete(cascade_key)
+            structure["_comments"]["#{flat_key}.__array_template"] = matched_comment
+          end
+        else
+          flattened_keys[flat_key] = ""
+          if matched_comment
+            structure["_comments"].delete(cascade_key)
+            structure["_comments"][flat_key] = matched_comment
+          end
+        end
+      end
+      structure["value"] = flattened_keys
+    end
+
+    # Recursively convert a hash into flat dot-notation keys
+    def self.flatten_hash(hash)
+      keys = [];
+      hash.each_pair do |k, v|
+        next if k.start_with? "_"
+        if v.is_a? Hash
+          flatten_hash(v).each do |ik|
+            keys.push("#{k}.#{ik}")
+          end
+        else
+          keys.push(k)
+        end
+      end
+      keys
+    end
+
+    def self.templatize_values(hash)
+      templated_hash = hash.dup
+      hash.each_key do |k|
+        next if k.start_with? "_"
+        next if k.end_with? "__array_template"
+        templated_hash.delete(k)
+        templated_hash["#{k}.__template"] = "{{#{k.split('.').last}}}"
+      end
+      templated_hash
+    end
+
+    def self.templatize_comments(hash)
+      templated_hash = hash.dup
+      hash.each_pair do |k, comment|
+        next if k.end_with? "__array_template"
+        templated_hash.delete(k)
+        templated_hash["#{k}.__template"] = comment
+      end
+      templated_hash
     end
 
     def self.transform_legacy_component(path, component, site)
@@ -192,7 +288,7 @@ module Bookshop
         result["array_structures"].push("components")
       end
       result.delete("_hidden") unless result["_hidden"].nil?
-      return result
+      return [result]
     end
 
     def self.rewrite_bookshop_toml(content)
@@ -235,17 +331,19 @@ module Bookshop
           puts exception
           next
         end
-        transformed_component = transform_component(f, component, site)
-        array_structures = transformed_component.delete("array_structures")
-        array_structures.each{|key|
-          begin
-            site.config["_array_structures"][key] ||= {}
-            site.config["_array_structures"][key]["values"] ||= []
-            site.config["_array_structures"][key]["values"].push(transformed_component)
-          rescue => exception
-            puts "❌ Error Adding Story to Array Structures: " + f
-            puts "🤔 Maybe your current _config.yml has conflicting array structures?"
-          end
+        transformed_components = transform_component(f, component, site)
+        transformed_components.each{|transformed_component|
+          array_structures = transformed_component.delete("array_structures")
+          array_structures.each{|key|
+            begin
+              site.config["_array_structures"][key] ||= {}
+              site.config["_array_structures"][key]["values"] ||= []
+              site.config["_array_structures"][key]["values"].push(transformed_component)
+            rescue => exception
+              puts "❌ Error Adding Story to Array Structures: " + f
+              puts "🤔 Maybe your current _config.yml has conflicting array structures?"
+            end
+          }
         }
       end
     end

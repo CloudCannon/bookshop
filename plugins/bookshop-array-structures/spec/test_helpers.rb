@@ -30,28 +30,14 @@ module Bookshop
             }
         end
 
-        def self.props_bookshop_config
-            return <<~EOS
-                [component]
-                array_structures = [ "content_blocks" ]
-                label = "Testing Component"
-                description = "Description of testing component"
-                icon = "nature_people"
-                tags = [ "one", "two", "three" ]
-            EOS
-        end
-
         def self.props_bookshop_output
-            return {
-                "array_structures" => [ "content_blocks", "bookshop_components" ],
-                "label" => "Testing Component",
-                "description" => "Description of testing component",
-                "icon" => "nature_people",
-                "tags" => [ "one", "two", "three" ],
-                "_comments" => {},
-                "_select_data" => {},
-                "_array_structures" => {}
-            }
+            return base_bookshop_output.merge!(
+                {
+                    "_comments" => {},
+                    "_select_data" => {},
+                    "_array_structures" => {}
+                }
+            )
         end
     end
 end
