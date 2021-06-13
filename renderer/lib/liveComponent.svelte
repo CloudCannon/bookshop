@@ -12,6 +12,12 @@
 
     // TODO: Decouple this from the jekyll engine again
     const getSourceFn = (componentName, type) => {
+        if (/__template/.test(componentName)) {
+            return `
+                <p>Templated component ${componentName.replace(".__template", "")} 
+                   cannot be shown in the live preview</p>
+            `;
+        }
         componentName = componentName.replace(/\/$/, '');
         return hydratedComponents[componentName]?.frameworks?.[type] ?? '';
     }
