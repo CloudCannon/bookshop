@@ -3,8 +3,8 @@ require_relative 'lib/bookshop-array-structures/version'
 Gem::Specification.new do |spec|
   spec.name          = "bookshop-array-structures"
   spec.version       = Bookshop::Arraystructures::VERSION
-  spec.authors       = ["Tate"]
-  spec.email         = ["tate@cloudcannon.com"]
+  spec.authors       = ["CloudCannon"]
+  spec.email         = ["support@cloudcannon.com"]
   spec.homepage      = "https://github.com/cloudcannon/bookshop"
   spec.summary       = "A Jekyll plugin to generate array structures from bookshop"
 
