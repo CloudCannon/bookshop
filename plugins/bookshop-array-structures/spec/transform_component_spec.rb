@@ -403,16 +403,16 @@ module Bookshop
             "info.links.link_author.name.__template" => "Who made this link"
           },
           "value" => {
-            "title.__template" => "{{title}}",
-            "count_number.__template" => "{{count_number}}",
-            "author.name.__template" => "{{name}}",
-            "info.links.__array_template" => "{{links}}",
-            "info.links.link_content.__template" => "{{link_content}}",
-            "info.links.link_number.__template" => "{{link_number}}",
-            "info.links.link_author.name.__template" => "{{name}}",
-            "info.links.items.__array_template" => "{{items}}",
-            "info.links.items.clothing.__template" => "{{clothing}}",
-            "info.links.items.color.__template" => "{{color}}",
+            "title.__template" => "{{ title }}",
+            "count_number.__template" => "{{ count_number }}",
+            "author.name.__template" => "{{ name }}",
+            "info.links.__array_template" => "{% assign links = site.links %}",
+            "info.links.link_content.__template" => "{{ link.link_content }}",
+            "info.links.link_number.__template" => "{{ link.link_number }}",
+            "info.links.link_author.name.__template" => "{{ link.name }}",
+            "info.links.items.__array_template" => "{% assign items = link.items %}",
+            "info.links.items.clothing.__template" => "{{ item.clothing }}",
+            "info.links.items.color.__template" => "{{ item.color }}",
             "_bookshop_name" => "a/b.__template"
           }
         }

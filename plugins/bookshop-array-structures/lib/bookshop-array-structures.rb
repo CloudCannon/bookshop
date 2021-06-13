@@ -181,7 +181,7 @@ module Bookshop
 
     def self.transform_template_component(result)
       schema_result = Marshal.load(Marshal.dump(result))
-      unwrap_structure_template(schema_result)
+      unwrap_structure_template(schema_result, "site")
       schema_result["value"] = templatize_values(schema_result["value"])
       schema_result["_comments"] = templatize_comments(schema_result["_comments"])
       schema_result["value"]["_bookshop_name"] = "#{schema_result["value"]["_bookshop_name"]}.__template"
@@ -195,7 +195,9 @@ module Bookshop
     # Breadth-first search through the structure, looking for keys
     # that will match array structure or comments and flattening them
     # into the root structure
-    def self.unwrap_structure_template(structure)
+    def self.unwrap_structure_template(structure, parent_scope)
+      inflector = Dry::Inflector.new
+      singular_parent_scope = inflector.singularize(parent_scope)
       flattened_keys = {}
       structure["value"].each_pair do |base_key, base_value|
         flattened_keys[base_key] = base_value if base_key.start_with? "_"
@@ -206,7 +208,7 @@ module Bookshop
         matched_substructure = structure.dig("_array_structures", cascade_key, "values", 0)
 
         if matched_substructure
-          unwrap_structure_template(matched_substructure)
+          unwrap_structure_template(matched_substructure, cascade_key)
           matched_substructure["value"].each_pair do |subkey, subvalue|
             # Pull substructure's flat keys into this structure
             flattened_keys["#{flat_key}.#{subkey}"] = subvalue
@@ -217,13 +219,17 @@ module Bookshop
           end
           # Mark this key as an array so the include plugin knows to return
           # a value and not a string
-          flattened_keys["#{flat_key}.__array_template"] = "{{#{cascade_key}}}"
+          flattened_keys["#{flat_key}.__array_template"] = "{% assign #{cascade_key} = #{singular_parent_scope}.#{cascade_key} %}"
           if matched_comment
             structure["_comments"].delete(cascade_key)
             structure["_comments"]["#{flat_key}.__array_template"] = matched_comment
           end
         else
-          flattened_keys[flat_key] = ""
+          key_parent_scope = ""
+          unless singular_parent_scope == "site"
+            key_parent_scope = "#{singular_parent_scope}."
+          end
+          flattened_keys[flat_key] = "{{ #{key_parent_scope}#{flat_key.split('.').last} }}"
           if matched_comment
             structure["_comments"].delete(cascade_key)
             structure["_comments"][flat_key] = matched_comment
@@ -251,11 +257,11 @@ module Bookshop
 
     def self.templatize_values(hash)
       templated_hash = hash.dup
-      hash.each_key do |k|
+      hash.each_pair do |k, v|
         next if k.start_with? "_"
         next if k.end_with? "__array_template"
         templated_hash.delete(k)
-        templated_hash["#{k}.__template"] = "{{#{k.split('.').last}}}"
+        templated_hash["#{k}.__template"] = v
       end
       templated_hash
     end
