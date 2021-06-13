@@ -208,6 +208,14 @@ module Bookshop
         matched_substructure = structure.dig("_array_structures", cascade_key, "values", 0)
 
         if matched_substructure
+          # Mark this key as an array so the include plugin knows to return
+          # a value and not a string
+          flattened_keys["#{flat_key}.__array_template"] = "{% assign #{cascade_key} = #{singular_parent_scope}.#{cascade_key} %}"
+          if matched_comment
+            structure["_comments"].delete(cascade_key)
+            structure["_comments"]["#{flat_key}.__array_template"] = matched_comment
+          end
+          
           unwrap_structure_template(matched_substructure, cascade_key)
           matched_substructure["value"].each_pair do |subkey, subvalue|
             # Pull substructure's flat keys into this structure
@@ -216,13 +224,6 @@ module Bookshop
           matched_substructure["_comments"].each_pair do |subkey, subcomment|
             # Pull substructure's comments into this structure
             structure["_comments"]["#{flat_key}.#{subkey}"] = subcomment
-          end
-          # Mark this key as an array so the include plugin knows to return
-          # a value and not a string
-          flattened_keys["#{flat_key}.__array_template"] = "{% assign #{cascade_key} = #{singular_parent_scope}.#{cascade_key} %}"
-          if matched_comment
-            structure["_comments"].delete(cascade_key)
-            structure["_comments"]["#{flat_key}.__array_template"] = matched_comment
           end
         else
           key_parent_scope = ""
@@ -259,9 +260,14 @@ module Bookshop
       templated_hash = hash.dup
       hash.each_pair do |k, v|
         next if k.start_with? "_"
-        next if k.end_with? "__array_template"
-        templated_hash.delete(k)
-        templated_hash["#{k}.__template"] = v
+        if k.end_with? "__array_template"
+          # Remove and re-add the array so position is preserved
+          templated_hash.delete(k)
+          templated_hash[k] = v
+        else
+          templated_hash.delete(k)
+          templated_hash["#{k}.__template"] = v
+        end
       end
       templated_hash
     end

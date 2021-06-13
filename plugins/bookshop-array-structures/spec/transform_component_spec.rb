@@ -316,7 +316,6 @@ module Bookshop
       expect(diff).must_equal []
     end
 
-    #####
     it "should create a schema component" do
       bookshop_toml = <<~EOS
         #{TestHelpers.base_bookshop_config}
@@ -420,7 +419,23 @@ module Bookshop
 
       diff = Hashdiff.diff(expected_structure, array_structure)
       expect(diff).must_equal []
-    end #################
+
+      # Check that the order is preserved
+      output_template_keys = array_structure[1]["value"].keys
+      expect(output_template_keys).must_equal [
+        "_bookshop_name",
+        "title.__template",
+        "count_number.__template",
+        "author.name.__template",
+        "info.links.__array_template",
+        "info.links.link_content.__template",
+        "info.links.link_number.__template",
+        "info.links.link_author.name.__template",
+        "info.links.items.__array_template",
+        "info.links.items.clothing.__template",
+        "info.links.items.color.__template"
+      ]
+    end
 
     it "should preserve TOML comments" do
       bookshop_toml = <<~EOS
