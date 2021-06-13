@@ -14,11 +14,11 @@ module JekyllBookshop
       param_hash = {}
       new_params = {}
       
-      template = params["__template"]
-      return Liquid::Template.parse(template).render(context) if template
+      template = params["__template"] || ""
+      return Liquid::Template.parse(template).render(context) if params.key? "__template"
 
-      array_template = params["__array_template"]
-      if array_template
+      array_template = params["__array_template"] || ""
+      if params.key? "__array_template"
           # We're adding a new root scope here and then removing it.
           # Who knows why, but assign and capture always add to the root scope.
           # Which is why this is hacked in, instead of using context.stack 🤷‍♂️
