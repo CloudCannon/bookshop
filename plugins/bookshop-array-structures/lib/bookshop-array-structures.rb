@@ -180,10 +180,12 @@ module Bookshop
     end
 
     def self.transform_template_component(result)
+      base_template_hash = {"pre.__template_code" => ""}
+      base_comment_hash = {"pre.__template_code" => "Helper liquid to run before the feilds below. Assigns and captures will be available"}
       schema_result = Marshal.load(Marshal.dump(result))
       unwrap_structure_template(schema_result, "site")
-      schema_result["value"] = templatize_values(schema_result["value"])
-      schema_result["_comments"] = templatize_comments(schema_result["_comments"])
+      schema_result["value"] = base_template_hash.merge! templatize_values(schema_result["value"])
+      schema_result["_comments"] = base_comment_hash.merge! templatize_comments(schema_result["_comments"])
       schema_result["value"]["_bookshop_name"] = "#{schema_result["value"]["_bookshop_name"]}.__template"
       schema_result["label"] = "Templated #{schema_result["label"]}"
       schema_result["_array_structures"] = {}

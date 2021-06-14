@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bookshop-array-structures (2.0.0.pre.alpha.9)
+    bookshop-array-structures (2.0.0.pre.alpha.11)
       dry-inflector (>= 0.1, < 1.0)
       jekyll (>= 3.7, < 5.0)
       toml-rb (>= 2.0, < 3.0)

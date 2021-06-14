@@ -14,8 +14,9 @@ module JekyllBookshop
       param_hash = {}
       new_params = {}
       
-      template = params["__template"] || ""
-      return Liquid::Template.parse(template).render(context) if params.key? "__template"
+      is_template = params.key?("__template") || params.key?("__template_code")
+      template = params["__template"] || params["__template_code"] || ""
+      return Liquid::Template.parse(template).render(context) if is_template
 
       array_template = params["__array_template"] || ""
       if params.key? "__array_template"
@@ -49,7 +50,8 @@ module JekyllBookshop
       end
 
       params.each_pair do |param, value|
-        if param.end_with? "_template"
+        is_template = param.end_with?("_template") || param.end_with?("_template_code")
+        if is_template
           param_root, param_remainder = param.split('.', 2)
           param_hash[param_root] ||= {}
           param_hash[param_root][param_remainder] = value
@@ -76,7 +78,9 @@ module JekyllBookshop
       end
 
       params.delete('bind')
+      context.scopes.push({}) # Do all expansion in an ephemeral root scope
       params = expand_param_templates(params, context, "")
+      context.scopes.pop()
 
       params
     end

@@ -396,12 +396,14 @@ module Bookshop
         {
           "label" => "Templated Testing Component",
           "_comments" => {
+            "pre.__template_code" => "Helper liquid to run before the feilds below. Assigns and captures will be available",
             "info.links.__array_template" => "Array of objects",
             "info.links.link_content.__template" => "Inner comment",
             "info.links.link_number.__template" => "How Many?",
             "info.links.link_author.name.__template" => "Who made this link"
           },
           "value" => {
+            "pre.__template_code" => "",
             "title.__template" => "{{ title }}",
             "count_number.__template" => "{{ count_number }}",
             "author.name.__template" => "{{ name }}",
@@ -423,6 +425,7 @@ module Bookshop
       # Check that the order is preserved
       output_template_keys = array_structure[1]["value"].keys
       expect(output_template_keys).must_equal [
+        "pre.__template_code",
         "_bookshop_name",
         "title.__template",
         "count_number.__template",
