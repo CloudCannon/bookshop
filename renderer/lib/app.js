@@ -49,7 +49,7 @@ const setupBookshopPolymorph = () => {
         window.liveComponents = window.liveComponents || [];
         window.CloudCannon = {
             trigger: function (eventName, frontMatter) {
-                frontMatter = JSON.parse(frontMatter);
+                if (typeof frontMatter === "string") frontMatter = JSON.parse(frontMatter);
                 window.liveComponents.forEach(liveComponent => {
                     if (liveComponent.propSource.length) {
                         data = liveComponent.propSource.split('.').reduce((o,i)=>o[i], frontMatter)
