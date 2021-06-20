@@ -138,7 +138,7 @@ module JekyllBookshop
       output_css = if Jekyll.env == "production"
         bookshop_scss_files.join("\n")
       else
-"html:not([data-bookshop-hmr]) {
+"@media all, bookshop {
 #{bookshop_scss_files.join("\n")}
 }"
       end

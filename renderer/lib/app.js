@@ -20,21 +20,41 @@ const coreStyles = `
 }
 `;
 
+/**
+ * Remove component styles from the compiled site CSS.
+ * These will be inside "@media all, bookshop {}" rules.
+ * We do this so we can then inject the component CSS onto the page ourselves.
+ */
+const stripBookshopStyles = () => {
+    [...document.styleSheets].forEach(ss => {
+        try {
+            bookshopRules = [];
+            [...ss.cssRules].forEach((rule, i) => {
+                if (/bookshop/.test(rule.conditionText)) {
+                    bookshopRules.unshift(i);
+                }
+            });
+            bookshopRules.forEach(i => ss.deleteRule(i));
+        } catch(e) {}
+    })
+};
+
 const setupBookshopPolymorph = () => {
+    const polymorphRenderTargets = document.querySelectorAll('[data-bookshop-polymorph]');
+    if (!polymorphRenderTargets.length) return;
+
     window.bookshopPolymorph = true;
-    console.log(`Setting up the bookshop polymorph`);    
-    
-    const rootEl = document.querySelector('html');
-    rootEl.setAttribute('data-bookshop-hmr', 'true');
+    console.log(`Setting up the bookshop polymorph`);
     
     const head = document.getElementsByTagName('head')[0];
     const style = document.createElement('style');
     style.dataset.bookshopStyle = true;
     style.innerHTML = bookshopStyles + coreStyles;
     head.appendChild(style);
-    window.polymorphStyle = style;
+    window.polymorphStyle = style;    
+
+    stripBookshopStyles();
     
-    const polymorphRenderTargets = document.querySelectorAll('[data-bookshop-polymorph]');
     polymorphRenderTargets.forEach(polymorphRenderTarget => {
         polymorphRenderTarget.innerHTML = "";
         new Polymorph({
