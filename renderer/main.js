@@ -17,6 +17,7 @@ async function run() {
     program.option("-p, --port <port>", "Port to serve the renderer JS on");
     program.option("-o, --output <filename>", "Build once and output final JS to given filename");
     program.option("--fluidns <namespace>", "Namespace for postcss-fluidvars");
+    program.option("--exclude <tags...>", "Component tags to exclude (space seperated)");
     program.option("--stretcher", "Run the legacy stretcher importer on SCSS");
     program.parse(process.argv);
     const options = program.opts();
@@ -30,6 +31,7 @@ async function run() {
             "\.bookshop\.toml",
             "\.svelte"
         ],
+        exclude: JSON.stringify(options.exclude || []),
         port: options.port,
         output: output,
         sockets: [],
@@ -60,10 +62,10 @@ async function run() {
             esbuildOptions.outfile = globals.output
             esbuildOptions.write = true;
             esbuildOptions.watch = false;
-            esbuildOptions.define = { BOOKSHOP_HMR_AVAILABLE: false, BOOKSHOP_HMR_PORT: 0 };
+            esbuildOptions.define = { BOOKSHOP_HMR_AVAILABLE: false, BOOKSHOP_HMR_PORT: 0, BOOKSHOP_EXCLUDE: globals.exclude };
         } else {
             esbuildOptions.write = false;
-            esbuildOptions.define = { BOOKSHOP_HMR_AVAILABLE: true, BOOKSHOP_HMR_PORT: globals.port };
+            esbuildOptions.define = { BOOKSHOP_HMR_AVAILABLE: true, BOOKSHOP_HMR_PORT: globals.port, BOOKSHOP_EXCLUDE: globals.exclude };
             esbuildOptions.watch = {
                 onRebuild(error, result) {
                     if (error) {

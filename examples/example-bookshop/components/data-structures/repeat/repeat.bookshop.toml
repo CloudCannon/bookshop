@@ -3,7 +3,7 @@ array_structures = [ "blocks" ]
 label = "Repeat"
 description = "Example bookshop repeat"
 icon = "view_agenda"
-tags = [ "Examples" ]
+tags = [ "Examples", "Structures" ]
 
 [props]
 

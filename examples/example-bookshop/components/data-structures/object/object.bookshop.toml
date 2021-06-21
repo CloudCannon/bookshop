@@ -3,7 +3,7 @@ array_structures = [ "blocks" ]
 label = "Object"
 description = "Example bookshop object"
 icon = "check_box_outline_blank"
-tags = [ "Examples" ]
+tags = [ "Examples", "Structures" ]
 
 [props]
 post.title = "Hello world"

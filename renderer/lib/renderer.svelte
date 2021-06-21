@@ -9,6 +9,7 @@
     const yaml = require('js-yaml');
 
     export let components = {};
+    export let exclude = [];
 
     let prevSelectedComponent = 'alsonothing';
     let selectedComponent = 'nothing';
@@ -50,6 +51,13 @@
             const config = component.config;
             delete component.config;
             const configData = toml.parse(config ?? "", 1, "\n", false);
+            let excludedTag = false;
+            configData?.component?.tags?.forEach(tag => {
+                if (exclude.indexOf(tag) >= 0) {
+                    excludedTag = true;
+                }
+            });
+            if (excludedTag) return;
             o[key] = {
                 identity: configData.component ?? {
                     label: key,

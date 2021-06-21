@@ -74,7 +74,8 @@ const setupBookshopRenderer = () => {
             new Renderer({
                 target: bookshopRenderTarget,
                 props: {
-                    components: components
+                    components: components,
+                    exclude: BOOKSHOP_EXCLUDE
                 }
             })
         );
