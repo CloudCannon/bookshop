@@ -186,7 +186,7 @@
     });
 </script>
 
-<div class="polymorph" class:thin={!editYaml}>
+<div class="bookshop-renderer" class:thin={!editYaml}>
     <List components={hydratedComponents} 
           bind:selectedComponent={selectedComponent}
           bind:selectingComponent={selectingComponent} />
@@ -244,12 +244,12 @@
 {:else if (outputComponent)}
 <svelte:component this={outputComponent} {...outputProps} />
 {:else}
-<p class="card">👋&nbsp; Hello, I am the polymorph. Select a component from the bookshop above.</p>
+<p class="card">👋&nbsp; Hello, I am the bookshop renderer. Select a component from the bookshop above.</p>
 {/if}
 
 <style>
 
-.polymorph {
+.bookshop-renderer {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
  Helvetica, Arial, sans-serif,
  "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";

@@ -50,7 +50,7 @@ const BookshopScssImport = (options) => ({
             } catch (e) {
                 console.error("Bookshop sass compilation failed:");
                 console.error(e.formatted);
-                return { contents: `[data-bookshop-polymorph] .polymorph::after {
+                return { contents: `.bookshop-renderer::after {
                     content: "⛔️      Bookshop sass rendering failed     ⛔️";
                     text-align: center;
                     white-space: pre;

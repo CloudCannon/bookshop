@@ -14,7 +14,7 @@ const program = new Command();
 
 async function run() {
     program.requiredOption("-b, --bookshop <path>", "Path to the bookshop to serve");
-    program.option("-p, --port <port>", "Port to serve the polymorph JS on");
+    program.option("-p, --port <port>", "Port to serve the renderer JS on");
     program.option("-o, --output <filename>", "Build once and output final JS to given filename");
     program.option("--fluidns <namespace>", "Namespace for postcss-fluidvars");
     program.option("--stretcher", "Run the legacy stretcher importer on SCSS");
@@ -54,7 +54,7 @@ async function run() {
         }
     }
 
-    const buildPolymorph = () => {
+    const buildRenderer = () => {
         const esbuildOptions = {};
         if (globals.output) {
             esbuildOptions.outfile = globals.output
@@ -67,7 +67,7 @@ async function run() {
             esbuildOptions.watch = {
                 onRebuild(error, result) {
                     if (error) {
-                        console.error('📚 Polymorph rebuild failed:', error)
+                        console.error('📚 Renderer rebuild failed:', error)
                     } else if (result.outputFiles[0]) {
                         updateNewFile(result.outputFiles[0])
                     }
@@ -100,7 +100,7 @@ async function run() {
         }).catch(() => process.exit(1))
         .then((result) => {
             if (result.errors.length) {
-                console.error('📚 Polymorph initial build failed:', result.errors)
+                console.error('📚 Renderer initial build failed:', result.errors)
             } else if (result.outputFiles?.[0]) {
                 updateNewFile(result.outputFiles[0])
             } else if (globals.output) {
@@ -109,7 +109,7 @@ async function run() {
         })
     }
 
-    const servePolymorph = () => {
+    const serveRenderer = () => {
         if (!globals.port || !globals.port.length) {
             console.error("📚 In serve mode and no port provided!");
             process.exit(1);
@@ -125,7 +125,7 @@ async function run() {
         });
         
         app.listen(globals.port, () => {
-            console.log(`📚 Bookshop Polymorph served at http://localhost:${globals.port}/bookshop.js`)
+            console.log(`📚 Bookshop Renderer served at http://localhost:${globals.port}/bookshop.js`)
         })
     }
 
@@ -139,8 +139,8 @@ async function run() {
         })
     }
 
-    buildPolymorph();
-    if (!globals.output) servePolymorph();
+    buildRenderer();
+    if (!globals.output) serveRenderer();
 }
 
 run();
