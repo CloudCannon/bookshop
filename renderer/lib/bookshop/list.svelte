@@ -24,11 +24,11 @@
      on:blur={blurry}
      bind:this={list}
      tabindex="-1">
-    <p><span class="icon material-icons main-icon">folder_open</span> Components</p>
-    <button class="material-icons">close</button>
+    <p class="animate"><span class="icon material-icons main-icon">folder_open</span> Components</p>
+    <button class="animate material-icons">close</button>
     <ul>
-    {#each Object.entries(components) as [key, component]}
-        <li>
+    {#each Object.entries(components) as [key, component], i}
+        <li class="animate" style="transition-delay: {i/70}s;">
             <button class="component"
                 data-blur="list-child" 
                 on:mousedown={set(key)}
@@ -53,9 +53,23 @@
         overflow-y: scroll;
         opacity: 0;
         pointer-events: none;
-        transform: translateX(-100%);
-        transition: transform 0.2s ease, opacity 0.2s ease 0.2s;
+        transition: opacity 0.2s ease 0.1s;
         padding-bottom: 40px;
+    }
+    .component-list.show {
+        opacity: 1;
+        pointer-events: all;
+        transition: opacity 0.2s ease;
+    }
+    .component-list:not(.show) .animate {
+        transform: translateX(-10px);
+        opacity: 0;
+        transition: transform 0.2s ease, opacity 0.2s ease !important;
+    }
+    .component-list.show .animate {
+        transform: translateX(0px);
+        opacity: 1;
+        transition: transform 0.2s ease, opacity 0.2s ease;
     }
     button.material-icons {
         appearance: none;
@@ -85,12 +99,6 @@
     }
     .main-icon {
         display: inline-block;
-    }
-    .component-list.show {
-        opacity: 1;
-        pointer-events: all;
-        transform: translateX(0);
-        transition: transform 0.2s ease, opacity 0s;
     }
     ul {
         list-style-type: none;

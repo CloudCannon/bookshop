@@ -1,3 +1,10 @@
+[component]
+array_structures = [ "blocks" ]
+label = "Object"
+description = "Example bookshop object"
+icon = "check_box_outline_blank"
+tags = [ "Examples" ]
+
 [props]
 post.title = "Hello world"
 post.author = "CloudCannon"

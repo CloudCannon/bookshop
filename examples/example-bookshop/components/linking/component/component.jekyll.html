@@ -4,6 +4,8 @@
         {{ include.name }}
     </h1>
 
-    {% bookshop linking/subcomponent text="I am a subcomponent" %}
+    {% if include.subtext %}
+        {% bookshop linking/subcomponent text=include.subtext %}
+    {% endif %}
 
 </div>

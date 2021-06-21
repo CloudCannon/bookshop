@@ -3,8 +3,6 @@ import bookshopStyles from `components.bookshop_scss`;
 import Polymorph from './polymorph.svelte';
 import LiveComponent from './liveComponent.svelte';
 
-console.log('Bookshop polymorph initialising.');
-
 const componentMap = {
     ".jekyll.html": "jekyll",
     ".svelte": "svelte",
@@ -18,7 +16,28 @@ const coreStyles = `
 .cm-gutters {
     min-height: 300px !important;
 }
+.polymorph .material-icons { 
+    opacity: 0;
+    animation: polymorph-icons 0.2s linear 0.5s forwards;
+}
+@keyframes polymorph-icons {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 `;
+
+const injectPageStyles = () => {
+    const head = document.getElementsByTagName('head')[0];
+    const style = document.createElement('style');
+    style.dataset.bookshopStyle = true;
+    style.innerHTML = bookshopStyles + coreStyles;
+    head.appendChild(style);
+    window.polymorphStyle = style; 
+}
 
 /**
  * Remove component styles from the compiled site CSS.
@@ -39,30 +58,26 @@ const stripBookshopStyles = () => {
     })
 };
 
-const setupBookshopPolymorph = () => {
-    const polymorphRenderTargets = document.querySelectorAll('[data-bookshop-polymorph]');
-    if (!polymorphRenderTargets.length) return;
+const setupBookshopRenderer = () => {
+    const bookshopRenderTargets = document.querySelectorAll('[data-bookshop-polymorph]');
+    if (!bookshopRenderTargets.length) return;
 
-    window.bookshopPolymorph = true;
-    console.log(`Setting up the bookshop polymorph`);
-    
-    const head = document.getElementsByTagName('head')[0];
-    const style = document.createElement('style');
-    style.dataset.bookshopStyle = true;
-    style.innerHTML = bookshopStyles + coreStyles;
-    head.appendChild(style);
-    window.polymorphStyle = style;    
+    window.bookshopRenderers = [];
+    console.log(`Setting up a new bookshop renderer.`);
 
+    injectPageStyles();
     stripBookshopStyles();
     
-    polymorphRenderTargets.forEach(polymorphRenderTarget => {
+    bookshopRenderTargets.forEach(polymorphRenderTarget => {
         polymorphRenderTarget.innerHTML = "";
-        new Polymorph({
-            target: polymorphRenderTarget,
-            props: {
-                components: components
-            }
-        });
+        window.bookshopRenderers.push(
+            new Polymorph({
+                target: polymorphRenderTarget,
+                props: {
+                    components: components
+                }
+            })
+        );
     })
     
     if (window.inEditorMode) {
@@ -139,12 +154,13 @@ const loadNewPolymorphComponents = () => {
             components[componentName][componentType] = source;
         }
     });
-    
-    if (window.polymorphRenderer) {
-        window.polymorphRenderer.$$set({
+
+    window.bookshopRenderers?.forEach(renderer => {
+        console.log(`Reloading bookshop renderer components`);
+        renderer.$$set({
             components: components
         });
-    }
+    })
     
     if (window.polymorphStyle) {
         window.polymorphStyle.innerHTML = bookshopStyles + coreStyles;
@@ -153,7 +169,7 @@ const loadNewPolymorphComponents = () => {
 
 loadNewPolymorphComponents();
 
-const selfIsFirstInstance = !!window.bookshopPolymorph;
-if (!selfIsFirstInstance) {
-    setupBookshopPolymorph();
+const selfIsFirstInstance = !window.bookshopRenderers;
+if (selfIsFirstInstance) {
+    setupBookshopRenderer();
 }

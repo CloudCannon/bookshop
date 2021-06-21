@@ -1,9 +1,9 @@
 [component]
-array_structures = [ "content_blocks" ]
-label = "Testing Component"
-description = "Description of testing component"
+array_structures = [ "blocks" ]
+label = "Complex"
+description = "Complex bookshop testing component"
 icon = "nature_people"
-tags = [ "one", "two", "three" ]
+tags = [ "Examples" ]
 
 [props]
 title = "This is the title"           #: Used for the slug

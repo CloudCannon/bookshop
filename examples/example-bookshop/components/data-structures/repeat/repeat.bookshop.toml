@@ -1,3 +1,10 @@
+[component]
+array_structures = [ "blocks" ]
+label = "Repeat"
+description = "Example bookshop repeat"
+icon = "view_agenda"
+tags = [ "Examples" ]
+
 [props]
 
 [[props.items]]

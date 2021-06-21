@@ -1,3 +1,10 @@
+[component]
+array_structures = [ "blocks" ]
+label = "Component Repeat"
+description = "Example bookshop top level component repeat"
+icon = "layers"
+tags = [ "Examples" ]
+
 [props]
 name = "Hello World"
 
