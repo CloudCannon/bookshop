@@ -132,7 +132,7 @@ module JekyllBookshop
       end
 
       bookshop_scss_files = bookshop_scss_files&.collect do |file|
-        "@import '#{file}';"
+        "@import \"#{file}\";"
       end
 
       output_css = if Jekyll.env == "production"
