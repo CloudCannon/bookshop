@@ -58,29 +58,7 @@ const stripBookshopStyles = () => {
     })
 };
 
-const setupBookshopRenderer = () => {
-    const bookshopRenderTargets = document.querySelectorAll('[data-bookshop-renderer]');
-    if (!bookshopRenderTargets.length) return;
-
-    window.bookshopRenderers = [];
-    console.log(`Setting up a new bookshop renderer.`);
-
-    injectPageStyles();
-    stripBookshopStyles();
-    
-    bookshopRenderTargets.forEach(bookshopRenderTarget => {
-        bookshopRenderTarget.innerHTML = "";
-        window.bookshopRenderers.push(
-            new Renderer({
-                target: bookshopRenderTarget,
-                props: {
-                    components: components,
-                    exclude: BOOKSHOP_EXCLUDE
-                }
-            })
-        );
-    })
-    
+const setupBookshopLive = () => {
     if (window.inEditorMode) {
         window.liveComponents = window.liveComponents || [];
         window.CloudCannon = {
@@ -119,6 +97,30 @@ const setupBookshopRenderer = () => {
             });
         });
     }
+}
+
+const setupBookshopRenderer = () => {
+    const bookshopRenderTargets = document.querySelectorAll('[data-bookshop-renderer]');
+    if (!bookshopRenderTargets.length) return;
+
+    window.bookshopRenderers = [];
+    console.log(`Setting up a new bookshop renderer.`);
+
+    injectPageStyles();
+    stripBookshopStyles();
+    
+    bookshopRenderTargets.forEach(bookshopRenderTarget => {
+        bookshopRenderTarget.innerHTML = "";
+        window.bookshopRenderers.push(
+            new Renderer({
+                target: bookshopRenderTarget,
+                props: {
+                    components: components,
+                    exclude: BOOKSHOP_EXCLUDE
+                }
+            })
+        );
+    })
     
     if (BOOKSHOP_HMR_AVAILABLE) {
         const socket = new WebSocket(`ws://localhost:${BOOKSHOP_HMR_PORT}/`);
@@ -173,4 +175,5 @@ loadNewRendererComponents();
 const selfIsFirstInstance = !window.bookshopRenderers;
 if (selfIsFirstInstance) {
     setupBookshopRenderer();
+    setupBookshopLive();
 }
