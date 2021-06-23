@@ -52,6 +52,7 @@
             delete component.config;
             const configData = toml.parse(config ?? "", 1, "\n", false);
             let excludedTag = false;
+            if (!configData?.component) return;
             configData?.component?.tags?.forEach(tag => {
                 if (exclude.indexOf(tag) >= 0) {
                     excludedTag = true;
