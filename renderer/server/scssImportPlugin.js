@@ -14,19 +14,19 @@ const BookshopScssImport = (options) => ({
             }
 
             const loadFolders = `@(components|bookshop)`;
-            const fullPath = path.join(options.bookshopDir, `/${loadFolders}/**/*.scss`);
+            const fullPaths = options.bookshopDirs.map(d => path.join(d, `/${loadFolders}/**/*.scss`));
             return {
-                path: fullPath,
+                path: 'bookshop',
                 namespace: 'bookshop-import-scss',
                 pluginData: {
                     resolveDir: args.resolveDir,
-                    bookshopDir: options.bookshopDir,
+                    fullPaths: fullPaths,
                     fluidns: options.fluidns
                 },
             };
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-scss' }, async (args) => {
-            const files = (await fastGlob(args.path, {
+            const files = (await fastGlob(args.pluginData.fullPaths, {
                 cwd: args.pluginData.resolveDir,
             })).sort();
 

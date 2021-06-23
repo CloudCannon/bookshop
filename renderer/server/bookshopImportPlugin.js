@@ -9,27 +9,34 @@ const BookshopImportGlob = (options) => ({
                 return; // Ignore unresolvable paths
             }
             const fileTypes = `@(${options.fileTypes.join("|")})`;
-            const fullPath = path.join(options.bookshopDir, `components/**/*${fileTypes}`);
+            const fullPaths = options.bookshopDirs.map(d => path.join(d, `components/**/*${fileTypes}`));
             return {
-                path: fullPath,
+                path: 'bookshop',
                 namespace: 'bookshop-import-glob',
                 pluginData: {
                     resolveDir: args.resolveDir,
-                    bookshopDir: options.bookshopDir
+                    fullPaths: fullPaths,
+                    bookshopDirs: options.bookshopDirs
                 },
             };
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-glob' }, async (args) => {
-            const files = (await fastGlob(args.path, {
+            const files = (await fastGlob(args.pluginData.fullPaths, {
                 cwd: args.pluginData.resolveDir,
             })).sort();
-            let importerCode = `
+            const sanitizePath = (inputPath) => {
+                args.pluginData.bookshopDirs.forEach(bookshopDir => {
+                    inputPath = inputPath.replace(bookshopDir, "")
+                });
+                return inputPath;
+            };
+            const importerCode = `
         ${files
                 .map((module, index) => `import module${index} from '${module}'`)
                 .join(';')}
 
         const modules = {${files
-                .map((module, index) => `"${module.replace(args.pluginData.bookshopDir, "")}": module${index}`)
+                .map((module, index) => `"${sanitizePath(module)}": module${index}`)
                 .join(',')}};
 
         export default modules

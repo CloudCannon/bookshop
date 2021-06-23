@@ -13,7 +13,7 @@ const expressWs = require('express-ws')(app);
 const program = new Command();
 
 async function run() {
-    program.requiredOption("-b, --bookshop <path>", "Path to the bookshop to serve");
+    program.requiredOption("-b, --bookshop <paths...>", "Paths to bookshops (space seperated)");
     program.option("-p, --port <port>", "Port to serve the renderer JS on");
     program.option("-o, --output <filename>", "Build once and output final JS to given filename");
     program.option("--fluidns <namespace>", "Namespace for postcss-fluidvars");
@@ -21,11 +21,11 @@ async function run() {
     program.option("--stretcher", "Run the legacy stretcher importer on SCSS");
     program.parse(process.argv);
     const options = program.opts();
-    const bookshopDir = path.join(process.cwd(), options.bookshop);
+    const bookshopDirs = options.bookshop.map(d => path.join(process.cwd(), d));
     const output = options.output && options.output.length ? path.join(process.cwd(), options.output) : false;
 
     const globals = {
-        bookshopDir: bookshopDir,
+        bookshopDirs: bookshopDirs,
         fileTypes: [
             "\.jekyll\.html",
             "\.bookshop\.toml",
@@ -89,11 +89,11 @@ async function run() {
             plugins: [
                 fix_svelte_path(),
                 BookshopImportGlobPlugin({
-                    bookshopDir: globals.bookshopDir,
+                    bookshopDirs: globals.bookshopDirs,
                     fileTypes: globals.fileTypes
                 }),
                 BookshopScssImport({
-                    bookshopDir: globals.bookshopDir,
+                    bookshopDirs: globals.bookshopDirs,
                     runScssStretcher: globals.runScssStretcher,
                     fluidns: globals.fluidns
                 }),
