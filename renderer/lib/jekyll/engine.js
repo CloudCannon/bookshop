@@ -4,6 +4,7 @@ import jsonify from './plugins/jsonify.js';
 import slugify from './plugins/slugify-plugin.js';
 import svelte from './plugins/svelte.js';
 import unbind from './plugins/unbind.js';
+import local from './plugins/local.js';
 import highlight from './plugins/highlight.js';
 
 const getEngine = (getFileFn) => {
@@ -33,6 +34,7 @@ const getEngine = (getFileFn) => {
     engine.plugin(slugify);
     engine.plugin(svelte);
     engine.plugin(unbind);
+    engine.plugin(local);
     engine.plugin(highlight);
 
     return async (source, props) => {

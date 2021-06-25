@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bookshop-array-structures (2.0.0.pre.alpha.11)
+    bookshop-array-structures (2.0.0.pre.alpha.14)
       dry-inflector (>= 0.1, < 1.0)
       jekyll (>= 3.7, < 5.0)
       toml-rb (>= 2.0, < 3.0)
@@ -22,7 +22,7 @@ GEM
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0.6.0)
     eventmachine (1.2.7)
-    ffi (1.15.1)
+    ffi (1.15.3)
     forwardable-extended (2.6.0)
     hashdiff (1.0.1)
     http_parser.rb (0.6.0)
