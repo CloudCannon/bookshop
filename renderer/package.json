@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/renderer",
-  "version": "2.0.0-alpha.36",
+  "version": "2.0.0-alpha.37",
   "description": "Bookshop Renderer",
   "main": "main.js",
   "scripts": {
@@ -28,6 +28,7 @@
     "express": "^4.17.1",
     "express-ws": "^4.0.0",
     "fast-glob": "^3.2.5",
+    "js-base64": "^3.6.1",
     "js-yaml": "^4.1.0",
     "liquidjs": "^9.25.0",
     "postcss": "^8.3.0",

@@ -1,5 +1,6 @@
 <script>
     import {onMount} from 'svelte';
+    import { Base64 } from 'js-base64';
     import Editor from './code-editor/editor.svelte';
     import List from './bookshop/list.svelte';
     import getJekyllEngine from './jekyll/engine';
@@ -139,7 +140,7 @@
             svelteElements.forEach((el) => {
                 try {
                     const componentName = el.dataset.svelteSlab;
-                    const componentProps = JSON.parse(atob(el.dataset.bookshopSvelteProps));
+                    const componentProps = JSON.parse(Base64.decode(el.dataset.bookshopSvelteProps));
                     const svelteEl = hydratedComponents[componentName].frameworks.svelte;
                     el.innerHTML = "";
                     new svelteEl({

@@ -1,3 +1,4 @@
+const {Base64} = require('js-base64');
 /**
  * Inside the plugin function, `this` refers to the Liquid instance.
  *
@@ -14,7 +15,7 @@ module.exports = function (Liquid) {
 		if (this.bindInclude) {
 			data = ctx.environments;
 		}
-		const props = btoa(JSON.stringify(data));
+		const props = Base64.encode(JSON.stringify(data));
 		return `<!-- START custom bookshop Svelte tag for ${this.svelteName} -->\n<div data-svelte-slab="${this.svelteName}" data-bookshop-svelte-props="${props}">`;
 	  }
 	});
