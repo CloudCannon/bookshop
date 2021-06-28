@@ -37,24 +37,24 @@ module Bookshop
 
           if value.is_a? Hash
             comment =   value["--bookshop_comment"]         || 
-                        value["default--bookshop_comment"]  || 
-                        value["select--bookshop_comment"]   || 
-                        value["preview--bookshop_comment"]
+                        value["select--bookshop_comment"]  || 
+                        value["preview--bookshop_comment"]   || 
+                        value["default--bookshop_comment"]
             if comment
               structure["_comments"][key] = comment
             end
-            unless value["default"].nil?
-              value_context[key] = value["default"]
-              next
-            end
             if value["select"]
-              value_context[key] = nil
+              value_context[key] = value["default"]
               plural_key = inflector.pluralize(key)
               structure["_select_data"][plural_key] = value["select"]
               next
             end
             if value["preview"]
-              value_context[key] = nil
+              value_context[key] = value["default"]
+              next
+            end
+            unless value["default"].nil?
+              value_context[key] = value["default"]
               next
             end
             value_context[key] ||= {}

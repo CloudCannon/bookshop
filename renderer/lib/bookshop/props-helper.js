@@ -1,11 +1,11 @@
 const processPropObject = (obj) => {
     for (const key of Object.keys(obj)) {
         if (obj[key]?.select && Array.isArray(obj[key].select)) {
-            obj[key] = obj[key].select[0]
+            obj[key] = obj[key].default || obj[key].select[0]
         }
         
         if (obj[key]?.preview && Array.isArray(obj[key].preview)) {
-            obj[key] = obj[key].preview[0]
+            obj[key] = obj[key].default || obj[key].preview[0]
         }
         
         if (obj[key]?.default) {

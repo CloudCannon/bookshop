@@ -88,6 +88,35 @@ module Bookshop
       expect(diff).must_equal []
     end
 
+    it "should add a select data default" do
+      bookshop_toml = <<~EOS
+        #{TestHelpers.base_bookshop_config}
+
+        [props]
+        title = "Mr Fancy"
+        alignment.select = ["left", "right"]
+        alignment.default = "left"
+      EOS
+      bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
+      array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
+      
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
+        {
+          "_select_data" => {
+            "alignments" => ["left", "right"]
+          },
+          "value" => {
+            "_bookshop_name" => "a/b",
+            "title" => nil,
+            "alignment" => "left"
+          }
+        }
+      )]
+
+      diff = Hashdiff.diff(expected_structure, array_structure)
+      expect(diff).must_equal []
+    end
+
     it "should pull through defaults" do
       bookshop_toml = <<~EOS
         #{TestHelpers.base_bookshop_config}
@@ -146,6 +175,7 @@ module Bookshop
         [props]
         item.nest.default = "Things" #: Nested
         item.nest-two.select = ["a", "b"] #: Grape
+        item.nest-two.default = "b"
       EOS
       bookshop_config = ArrayStructures.parse_bookshop_toml(bookshop_toml)
       array_structure = ArrayStructures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
@@ -163,7 +193,7 @@ module Bookshop
             "_bookshop_name" => "a/b",
             "item" => {
               "nest" => "Things",
-              "nest-two" => nil
+              "nest-two" => "b"
             }
           }
         }
@@ -480,6 +510,7 @@ module Bookshop
         [[props.sections]]                    #: Top level blog info
         section_name = "Stats"                #: Navigation Label
         alignment.select = ["left", "right"]  #: Useful to alternate
+        alignment.default = "left"            #: This comment should be dropped
         [[props.sections.tag_items]]          #: Tags are used in search results
         tag_name.select = ["good", "great"]   #: Single word only
         color.default = "#407AFC"             #: Not used on mobile
@@ -539,7 +570,7 @@ module Bookshop
                 },
                 "value" => {
                   "section_name" => nil,
-                  "alignment" => nil,
+                  "alignment" => "left",
                   "tag_items" => []
                 }
               }]
