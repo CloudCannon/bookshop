@@ -6,10 +6,24 @@ Bookshop is currently in an alpha of version 2.0, so breaking changes to the fol
 
 The best current example of a Bookshop 2.0 project can be found at [bglw/bookshop-example](https://github.com/bglw/bookshop-example). This repository should provide an in-situ example of all the concepts discussed below.
 
+# Table of Contents
+* [Configuration](#configuration)
+* [Component Structure](#component-structure)
+* [Component TOML Format](#component-toml-format)
+    * [TOML Schema Keys](#toml-schema-keys)
+        * [Default Values](#default-values)
+        * [Select Data](#select-data)
+        * [Structures](#structures)
+        * [Comments](#comments)
+* [Jekyll Configuration and Usage](#jekyll-configuration-and-usage)
+* [Bookshop Jekyll Templates](#bookshop-jekyll-templates)
+* [Styles](#styles)
+* [Bookshop Renderer](#bookshop-renderer)
+
 ## Configuration
 A bookshop project is expected to have the following structure:
 ```
-example-project/
+example-bookshop/
 ├─ bookshop/
 │  ├─ bookshop.config.js
 │  └─ **.scss
@@ -26,6 +40,15 @@ example-project/
   - These are global styles and variables. See [Styles](#styles).
 - `components/**`
   - These are the core component definitions. See [Component Structure](#component-structure).
+
+***
+
+Generally, your website will live alongside your bookshop project (either as seperate repositories, or a monorepo):
+```
+example-project/
+├─ example-website/
+└─ example-bookshop/
+```
 
 ## Component Structure
 Components live within the `components/` directory of your bookshop, inside a folder bearing their name. A component is defined with a `<name>.bookshop.toml` file in the [Component TOML Format](#component-toml-format). This file serves as the schema for the component, defining which properties it may be supplied.
@@ -107,17 +130,20 @@ The `[props]` block defines the component schema. This controls what properties 
 Within the TOML file there are a few formats for defining the schema. The two special keywords are `select` and `default` when defined within an object. These denote that the object they're within should be treated instead as a value with a specified behaviour.
 
 #### Default Values
+**The field `default` is a special keyword in bookshop, which denotes a field as having a default value when created in the CMS.**  
 By default, alphanumeric values in the TOML file are considered testing data, and new components created in a CMS interface will be initialized with empty inputs. If you do wish to give a field a default value, use `key.default`
 ```toml
 title.default = "Hello World"
 order_number.default = 50
 featured = false
 ```
-This will prepopulate the CMS. The default key is not required for boolean values, and the value specified in the TOML will be used as the default CMS value.  
+This will prepopulate a new component in the CMS with `title: "Hello World"` and `order_number: 50`.  
+The default key is not required for boolean values, the value specified in the TOML will be used as the default CMS value.  
 >ℹ️ _A default value in the TOML file does not provide a default value to the component itself. It is solely used to configure editing interfaces._
 
 #### Select Data
-The field `select` is a special keyword in bookshop, which denotes a field as drawing from select data (a dropdown). This key expects an array of options that will be used to populate the CMS.
+**The field `select` is a special keyword in bookshop, which denotes a field as drawing from select data (a dropdown).**  
+This key expects an array of options that will be used to populate the CMS.
 ```toml
 size.select = ["Large", "Medium", "Small"]
 ```
@@ -127,6 +153,7 @@ size.select = ["Large", "Medium", "Small"]
 size.default = "Medium"
 ```
 
+An object that doesn't contain the keys `select` or `default` will be treated as a normal object.
 #### Structures
 Constructing an array of objects in the TOML file defines a sub-schema for the CMS. Given the following structure:
 ```toml
@@ -219,28 +246,28 @@ Once an editor has added a component within the CMS, the index file might look s
 ## Bookshop Jekyll Templates
 _Note: In the future this section of the documentation will live in a separate location._
 
-For our button example, this is focusing on the `.jekyll.html` file.
+For our button example, let's look at the `button.jekyll.html` file.
 ```
 components/
 └─ button/
    └─ button.jekyll.html
 ```
-These files are namespaced for the static site generator when the filetype is ambiguous. Beyond the naming convention, these files are what you would expect when working with Jekyll. Our `button.jekyll.html` file might look like:
+These files are namespaced for the static site generator when the filetype is ambiguous, which is why the file is `button.jekyll.html` and not `button.html`. Beyond the naming convention, these files are what you would expect when working with Jekyll. Our `button.jekyll.html` file might look like:
 ```hbs
-<a href="{{ include.link_url }}">{{ include.text }}</a>
+<a class="c-button" href="{{ include.link_url }}">{{ include.text }}</a>
 ```
 This looks like a normal Jekyll / Liquid include because it is. While bookshop provides developer tooling, the website plugin only serves to tell Jekyll where to find component files. Loading and parsing these files goes through the normal Jekyll include flow.
 
 ## Styles
-Styles in bookshop use SCSS. This is currently implementation agnostic — the [Bookshop Renderer](#bookshop-renderer) uses Dart Sass, but the generator ingesting compoennts may use another implementation (i.e. Jekyll currently uses libsass).
+Styles in bookshop use SCSS. This is currently implementation agnostic — the [Bookshop Renderer](#bookshop-renderer) uses Dart Sass, but the generator ingesting components may use another implementation (i.e. Jekyll currently uses libsass).
 
-SCSS files within a project do not need to be individually referenced, and are instead loaded in alphabetical order. This starts with all SCSS files in the `bookshop/` folder, followed by all SCSS files in the `components/` folder structure.
+SCSS files within a project do not need to be individually referenced, and are instead loaded in alphabetical order. This starts with all SCSS files within `bookshop/`, followed by all SCSS files within `components/`.
 
 Importing these files is generator-specific. For Jekyll, the [jekyll-bookshop](plugins/jekyll-bookshop) plugin provides the tag `{% bookshop_scss %}` to be used in your main SCSS file. For example:
   
 
 >#### `assets/main.scss`
->```scss
+>```text
 >---
 ># Front matter dashes for Jekyll to process the file
 >---
@@ -256,7 +283,7 @@ Importing these files is generator-specific. For Jekyll, the [jekyll-bookshop](p
 >```
 
 ## Bookshop Renderer
-The bookshop renderer can be used to browse components in a location you define on your website. The renderer can be found on npm at [@bookshop/renderer](https://www.npmjs.com/package/@bookshop/renderer).
+The Bookshop renderer can be used to browse the components within your Bookshop. This package doesn't host a storybook-style application, but is designed to embed in any location on your website. The renderer can be found on npm at [@bookshop/renderer](https://www.npmjs.com/package/@bookshop/renderer).
 
 >#### `package.json`
 >```json
