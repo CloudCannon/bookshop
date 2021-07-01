@@ -1,9 +1,0 @@
-title: Example Component Site
-
-bookshop_locations:
-  - ../example-bookshop
-
-plugins:
-  - jekyll-bookshop
-  - bookshop-array-structures
-  - cloudcannon-jekyll

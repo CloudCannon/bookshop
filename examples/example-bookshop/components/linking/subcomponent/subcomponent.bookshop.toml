@@ -1,9 +1,0 @@
-[component]
-array_structures = [ "blocks" ]
-label = "Subcomponent"
-description = "Example bookshop subcomponent"
-icon = "select_all"
-tags = [ "Examples" ]
-
-[props]
-text = "Hello World"
