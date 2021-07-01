@@ -4,6 +4,8 @@ Bookshop currently supports Jekyll, and will support a wider array of static sit
 
 Bookshop is currently in an alpha of version 2.0, so breaking changes to the following formats are likely before a general release.
 
+The best current example of a Bookshop 2.0 project can be found at [bglw/bookshop-example](https://github.com/bglw/bookshop-example). This repository should provide an in-situ example of all the concepts discussed below.
+
 ## Configuration
 A bookshop project is expected to have the following structure:
 ```
@@ -148,11 +150,12 @@ type.select = ["Primary", "Secondary"] #: Defines button hierarchy
 ## Jekyll Configuration and Usage
 _Note: In the future this section of the documentation will live in a separate location._
 
-Jekyll ingests bookshop via the [jekyll-bookshop](plugins/jekyll-bookshop) plugin.
+Jekyll ingests bookshop via the [jekyll-bookshop](plugins/jekyll-bookshop) plugin. CloudCannon's editor is configured via the [bookshop-array-structures](plugins/bookshop-array-structures) plugin.
 >#### `Gemfile`
 >```ruby
 >group :jekyll_plugins do
 >  gem "jekyll-bookshop", ">= 2.0.0.pre.alpha"
+>  gem "bookshop-array-structures", ">= 2.0.0.pre.alpha"
 >end
 >```
 
@@ -160,12 +163,13 @@ Jekyll ingests bookshop via the [jekyll-bookshop](plugins/jekyll-bookshop) plugi
 >```ruby
 >plugins:
 >  - jekyll-bookshop
+>  - bookshop-array-structures
 >
 >bookshop_locations:
 >  - ../component-library
 >```
 
-To use components on the website, use the `{% bookshop %}` tag like you would an include.
+To use components directly in a template, use the `{% bookshop %}` tag like you would an include.
 >#### `index.html`
 >```liquid
 >...
@@ -174,6 +178,42 @@ To use components on the website, use the `{% bookshop %}` tag like you would an
 >  {% bookshop button label=page.cta_text link_url=page.cta_url %}
 ></div>
 >...
+>```
+
+To use components as an editor in CloudCannon, define a front matter key that matches a key specified in a component's `array_structures` metadata. For example:
+
+>#### `hero.bookshop.toml`
+>```toml
+>[component]
+>array_structures = [ "content_blocks" ]
+>```
+
+>#### `index.html`
+>```liquid
+>---
+>content_blocks:
+>---
+>
+>{% for block in page.content_blocks %}
+>    {% bookshop {{block._bookshop_name}} bind=block %}
+>{% endfor %}
+>```
+
+>ℹ️ _Bookshop tags can use the `bind=` parameter, which works like the spread operator in Javascript. Here, all keys within the object `block` are unwrapped and passed to the component directly. If you're used to a framework like Svelte, this is the equivalent of `<Component {...props} />`_
+
+Once an editor has added a component within the CMS, the index file might look something like the following:
+>#### `index.html`
+>```liquid
+>---
+>content_blocks:
+>  - _bookshop_name: hero
+>    title: Hello World
+>    image: /uploads/hero.png
+>---
+>
+>{% for block in page.content_blocks %}
+>    {% bookshop {{block._bookshop_name}} bind=block %}
+>{% endfor %}
 >```
 
 ## Bookshop Jekyll Templates
@@ -215,7 +255,30 @@ Importing these files is generator-specific. For Jekyll, the [jekyll-bookshop](p
 >
 >```
 
-
 ## Bookshop Renderer
+The bookshop renderer can be used to browse components in a location you define on your website. The renderer can be found on npm at [@bookshop/renderer](https://www.npmjs.com/package/@bookshop/renderer).
 
-## Using multiple bookshops
+>#### `package.json`
+>```json
+>---
+>{
+>    "scripts": {
+>        "bookshop-dev": "bookshop -p 6061 -b ./component-library"
+>    },
+>    "devDependencies": {
+>        "@bookshop/renderer": "^2.0.0-alpha.34"
+>    }
+>}
+>```
+
+With this setup, running `npm run bookshop-dev` will host the renderer javascript on port 6061. This can then be used on a page of your website with the following snippet:
+
+>#### `components.html`
+>```html
+><div data-bookshop-renderer></div>
+><script src="http://localhost:6061/bookshop.js"></script>
+><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+>```
+The `data-bookshop-renderer` element will be picked up and used to render a browsable component library from the directory specified in the `bookshop` command above. An example of this renderer can be seen at [full-fall.cloudvent.net/components](https://full-fall.cloudvent.net/components#all_bookshop:jekyll).
+
+Further documentation on this package is to come. For now, the [bglw/bookshop-example](https://github.com/bglw/bookshop-example) repository serves as an example of further usage.
