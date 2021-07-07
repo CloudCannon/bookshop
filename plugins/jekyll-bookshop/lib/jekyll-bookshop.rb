@@ -70,7 +70,7 @@ module JekyllBookshop
       params = super
 
       params.each do |key, value|
-        if key == 'bind'
+        if key == 'bind' && value.is_a?(Hash)
           valueHash = {}.merge(value)
           params = valueHash.merge(params)
           next
