@@ -4,6 +4,7 @@ import jsonify from './plugins/jsonify.js';
 import slugify from './plugins/slugify-plugin.js';
 import svelte from './plugins/svelte.js';
 import unbind from './plugins/unbind.js';
+import emulateJekyll from './plugins/emulate-jekyll.js';
 import local from './plugins/local.js';
 import highlight from './plugins/highlight.js';
 
@@ -13,9 +14,9 @@ const getEngine = (getFileFn) => {
             readFileSync (file) {
                 return "Sync? " + file;
             },
-            async readFile (file) {
+            async readFile (file, x) {
                 let content = getFileFn(file, 'jekyll');
-                return rewriteIncludes(content);
+                return rewriteIncludes(content, true);
             },
             existsSync () {
                 return true
@@ -34,18 +35,20 @@ const getEngine = (getFileFn) => {
     engine.plugin(slugify);
     engine.plugin(svelte);
     engine.plugin(unbind);
+    engine.plugin(emulateJekyll);
     engine.plugin(local);
     engine.plugin(highlight);
 
     return async (source, props) => {
         source = rewriteIncludes(source);
+        props = { include: props };
         return await engine.parseAndRender(source || "", props);
     }
 }
 
 export default getEngine;
 
-const rewriteIncludes = function(text) {
+const rewriteIncludes = function(text, isInclude) {
     text = text.toString();
     let tokenizer = new Tokenizer(text);
     let output = tokenizer.readTopLevelTokens();
@@ -54,7 +57,7 @@ const rewriteIncludes = function(text) {
     text = rewriteTag(tag, text);
     });
 
-    return `{% unbind %}${text}`;
+    return `{% unbind %}${isInclude ? "{% emulate_jekyll %}": ""}${text}`;
 };
 
 const rewriteTag = function(token, src) {
@@ -81,7 +84,7 @@ const rewriteTag = function(token, src) {
         raw = raw.replace(/include\s([^"'][^\s]+)/gi, 'include "$1"');
     }
 
-    raw = raw.replace(/\binclude\./gi, '');
+    //raw = raw.replace(/\binclude\./gi, '');
     
     return [
         src.substr(0, token.begin),

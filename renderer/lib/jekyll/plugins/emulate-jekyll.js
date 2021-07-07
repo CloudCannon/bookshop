@@ -4,18 +4,14 @@
  * @param Liquid: provides facilities to implement tags and filters.
  */
 module.exports = function (Liquid) {
-    this.registerTag('unbind', {
+    this.registerTag('emulate_jekyll', {
 	  parse: function(token){
 	  },
 	  render: function(ctx, hash) {
 		const lastScope = ctx.scopes.length - 1;
-		if (typeof ctx.scopes[lastScope].bind === 'object') {
-			ctx.scopes[lastScope] = {
-				...ctx.scopes[lastScope].bind,
-				...ctx.scopes[lastScope],
-				bind: null
-			}
-		}
+		ctx.scopes[lastScope] = {
+			include: ctx.scopes[lastScope]
+		};
 		return ``;
 	  }
 	});
