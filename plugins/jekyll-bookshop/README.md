@@ -105,3 +105,30 @@ To import these files in Jekyll, the [jekyll-bookshop](plugins/jekyll-bookshop) 
 >}
 >
 >```
+
+## Accessing Site Data
+
+A subset of site data is accessible to Bookshop components. Generally, site data and collection items should be available for use. To expose this data to the bookshop renderer, place the `{% bookshop_site_data %}` tag in your `<head>`. For example:
+
+```liquid
+<head>
+    <title>Website Title</title>
+    ...
+    {% bookshop_site_data %}
+</head>
+```
+
+With that, your bookshop components should be able to use `site.data.*` or `site.<collection>` when loaded in the bookshop renderer.  
+For collections, some fields from Jekyll may be absent. The following are guaranteed to exist (if applicable):
+
+- Anything in the front matter or Jekyll defaults
+- `item.category`
+- `item.tags`
+- `item.date`
+- `item.excerpt`
+- `item.content`
+- `item.url`
+- `item.slug`
+- `item.date`
+- `item.relative_path`
+- `item.permalink`
