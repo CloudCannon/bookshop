@@ -119,7 +119,7 @@
         let outputText;
         switch(framework) {
             case "jekyll":
-                outputText = await jekyllEngine(getSourceFn(component, 'jekyll'), props);
+                outputText = await jekyllEngine(getSourceFn(component, 'jekyll'), props, window.bookshopSiteData);
                 outputComponent = null;
                 outputProps = null;
                 break;

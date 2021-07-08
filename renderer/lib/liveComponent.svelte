@@ -42,7 +42,7 @@
     }
 
     const render = async (component, props) => {
-        outputHTML = await jekyllEngine(getSourceFn(component, 'jekyll'), props);
+        outputHTML = await jekyllEngine(getSourceFn(component, 'jekyll'), props, window.bookshopSiteData);
         setTimeout(() => {
             const svelteElements = document.querySelectorAll(`[data-bookshop-svelte-props]`);
             svelteElements.forEach((el) => {

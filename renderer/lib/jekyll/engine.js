@@ -39,9 +39,10 @@ const getEngine = (getFileFn) => {
     engine.plugin(local);
     engine.plugin(highlight);
 
-    return async (source, props) => {
+    return async (source, props, globals) => {
         source = rewriteIncludes(source);
-        props = { include: props };
+        if (typeof globals !== "object") globals = {};
+        props = { ...globals, include: props };
         return await engine.parseAndRender(source || "", props);
     }
 }
