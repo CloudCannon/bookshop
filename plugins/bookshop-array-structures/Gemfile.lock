@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bookshop-array-structures (2.0.0.pre.alpha.14)
+    bookshop-array-structures (2.0.0.pre.alpha.17)
       dry-inflector (>= 0.1, < 1.0)
       jekyll (>= 3.7, < 5.0)
       toml-rb (>= 2.0, < 3.0)
@@ -9,7 +9,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.7.0)
+    addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     ansi (1.5.0)
     ast (2.4.2)
@@ -17,7 +17,7 @@ GEM
     citrus (3.0.2)
     colorator (1.1.0)
     concurrent-ruby (1.1.9)
-    dry-inflector (0.2.0)
+    dry-inflector (0.2.1)
     em-websocket (0.5.2)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0.6.0)
