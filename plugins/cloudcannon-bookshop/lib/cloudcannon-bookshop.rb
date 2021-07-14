@@ -32,9 +32,7 @@ module CloudCannonBookshop
       value_context = structure["value"] if value_context.nil?
       inflector = Dry::Inflector.new
       value_obj.each_pair {|key, value|
-          if value_context.has_key?(key)
-            next
-          end
+          next if value_context.has_key?(key)
 
           if value.is_a? Hash
             comment =   value["--bookshop_comment"]         || 
@@ -67,6 +65,11 @@ module CloudCannonBookshop
             if value[0]&.is_a? Hash
               if value[0]["--bookshop_comment"]
                 structure["_comments"][key] = value[0]["--bookshop_comment"]
+              end
+
+              if structure["raw_fields"]&.include?(key)
+                value_context[key] = nil
+                next
               end
 
               singular_title = inflector.classify(key).gsub(/(.)([A-Z])/, '\1 \2')
@@ -123,6 +126,7 @@ module CloudCannonBookshop
         results.push(transform_template_component(result))
       end
       result.delete("_template")
+      result.delete("raw_fields")
       return results
     end
 

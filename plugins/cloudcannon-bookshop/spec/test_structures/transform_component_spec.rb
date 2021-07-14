@@ -346,6 +346,35 @@ module CloudCannonBookshop
       expect(diff).must_equal []
     end
 
+    it "should not create a sub-structure for raw fields" do
+      bookshop_toml = <<~EOS
+        #{TestHelpers.base_bookshop_config}
+        raw_fields = ["links"]
+
+        [[props.links]] #: Array of objects
+        link_content = "I am a link" #: Inner comment
+        link_number.default = 3 #: How Many?
+      EOS
+      bookshop_config = Structures.parse_bookshop_toml(bookshop_toml)
+      array_structure = Structures.transform_component("a/b/b.bookshop.toml", bookshop_config, {})
+
+      expected_structure = [TestHelpers.props_bookshop_output.merge!(
+        {
+          "_comments" => {
+            "links" => "Array of objects"
+          },
+          "value" => {
+            "_bookshop_name" => "a/b",
+            "links" => nil
+          },
+          "_array_structures" => {}
+        }
+      )]
+
+      diff = Hashdiff.diff(expected_structure, array_structure)
+      expect(diff).must_equal []
+    end
+
     it "should create a schema component" do
       bookshop_toml = <<~EOS
         #{TestHelpers.base_bookshop_config}
