@@ -13,7 +13,7 @@ module.exports = function (Liquid) {
 	  render: function(ctx, hash) {
 		let data = {};
 		if (this.bindInclude) {
-			data = ctx.environments.include;
+			data = ctx.scopes[ctx.scopes.length-1]?.include || ctx.environments.include;
 		}
 		const props = Base64.encode(JSON.stringify(data));
 		return `<!-- START custom bookshop Svelte tag for ${this.svelteName} -->\n<div data-svelte-slab="${this.svelteName}" data-bookshop-svelte-props="${props}">`;

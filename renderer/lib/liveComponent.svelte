@@ -1,5 +1,6 @@
 <script>
     import {onMount} from 'svelte';
+    import { Base64 } from 'js-base64';
     import getJekyllEngine from './jekyll/engine';
 
     export let components = {};
@@ -46,7 +47,18 @@
         setTimeout(() => {
             const svelteElements = document.querySelectorAll(`[data-bookshop-svelte-props]`);
             svelteElements.forEach((el) => {
-                el.innerHTML = `<p>Dynamic component ${el.dataset?.svelteSlab} cannot be rendered in the live editor yet.</p>`;
+                let componentProps = {};
+                if (el.dataset?.bookshopSvelteProps) {
+                    componentProps = JSON.parse(Base64.decode(el.dataset?.bookshopSvelteProps));
+                }
+                const svelteComponent = getSourceFn(el.dataset?.svelteSlab, "svelte");
+                el.innerHTML = "";
+                if (svelteComponent) {
+                    new svelteComponent({
+                        target: el,
+                        props: componentProps
+                    });
+                }
             });
         }, 1);
     };
