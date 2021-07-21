@@ -18,3 +18,7 @@ Liquid::Template.register_filter(JekyllBookshop::Filters)
 Jekyll::Hooks.register :site, :after_init do |site|
   JekyllBookshop::Styles.open_bookshop(site)
 end
+
+Jekyll::Hooks.register :site, :after_reset do |site|
+  JekyllBookshop::SiteData.extract(site)
+end

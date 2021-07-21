@@ -6,32 +6,11 @@ module CloudCannonBookshop
     def render(context)
       @site = context.registers[:site]
 
-      payload_collections = {}
-      @site.collections.each_pair do |collection, items|
-        payload_collections[collection] = items.docs.map do |doc|
-          doc.data.merge(hydrate_document_fields(doc))
-        end
-      end
-
-      payload_collections["data"] = @site.data
-      output_payload = {"site" => payload_collections}.to_json
+      output_payload = @site.data["bookshop_site_data"].to_json
 
       filename = "site-data"
       generate_file(filename, output_payload)
-      "<script>window.bookshopSiteData = #{output_payload};</script>"
-    end
-
-    def hydrate_document_fields(document)
-      keys = ["content", "url", "date", "relative_path", "permalink"]
-      hydrated_doc = {}
-      keys.each {|key| hydrated_doc[key] = document.send(key)}
-      hydrate_document_excerpt(document, hydrated_doc)
-    end
-
-    def hydrate_document_excerpt(document, hydrated_doc)
-      hydrated_doc.merge!({
-        "excerpt" => document.data["excerpt"].output
-      })
+      "<script>window.bookshopSiteDataAvailable = true;</script>"
     end
 
     def generate_file(filename, content)
