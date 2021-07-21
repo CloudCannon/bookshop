@@ -13,7 +13,7 @@ require "minitest/reporters"
 Minitest::Reporters.use!
 
 TEST_DIR     = File.join(__dir__, "..")
-SOURCE_DIR   = File.expand_path("fixture", TEST_DIR)
+SOURCE_DIR   = File.expand_path("fixture_site", TEST_DIR)
 DEST_DIR     = File.expand_path("destination", TEST_DIR)
 
 module CloudCannonBookshop
