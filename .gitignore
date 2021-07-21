@@ -3,4 +3,4 @@ node_modules
 .jekyll-cache
 _site
 *.gem
-generator-plugins/cloudcannon-bookshop/spec/destination
+generator-plugins/jekyll/cloudcannon-jekyll-bookshop/spec/destination

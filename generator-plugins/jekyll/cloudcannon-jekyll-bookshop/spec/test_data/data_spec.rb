@@ -1,14 +1,12 @@
-require_relative './test_helpers'
+require_relative '../helpers/test_helpers'
 
 module CloudCannonBookshop
   describe SiteData do
     SETUP = begin
-      @site = TestHelpers.fixture_site({})
-      @site.read
-      @site.process
+      @site = TestHelpers.setup_site({})
     end
     
-    it "should not crash I guess" do
+    it "should output bookshop site data" do
       output_data = JSON.parse TestHelpers.read_output_file("_cloudcannon/site-data.json")
 
       data_diff = Hashdiff.diff(output_data.dig("site", "data", "labels", 2), {
@@ -33,7 +31,7 @@ module CloudCannonBookshop
       })
       expect(collection_diff).must_equal []
     end
-    
+
     make_my_diffs_pretty!
   end
 end

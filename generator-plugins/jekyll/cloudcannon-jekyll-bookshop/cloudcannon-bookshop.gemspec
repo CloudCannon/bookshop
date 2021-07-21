@@ -22,5 +22,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "jekyll", ">= 3.7", "< 5.0"
   spec.add_dependency "toml-rb", ">= 2.0", "< 3.0"
+  spec.add_dependency "node-runner", ">= 1.0", "< 2.0"
   spec.add_dependency "dry-inflector", ">= 0.1", "< 1.0"
 end

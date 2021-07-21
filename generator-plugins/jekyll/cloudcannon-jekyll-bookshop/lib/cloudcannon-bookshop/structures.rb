@@ -1,6 +1,7 @@
 require "pathname"
 require "toml-rb"
 require "dry/inflector"
+require "node-runner"
 require_relative "structures/bookprops"
 
 module CloudCannonBookshop
@@ -27,21 +28,7 @@ module CloudCannonBookshop
     end
         
         def self.rewrite_bookshop_toml(content)
-          rewritten_lines = content.split("\n")&.collect { |line|
-            if line =~ /^[a-z0-9\-_\.\s]+=.*?#.+?$/i
-              /#:(?<comment>[^#]+)$/i =~ line
-              /^\s*?(?<variable_name>[a-z0-9\-_\.]+)\s?=/i =~ line
-              next line unless comment && variable_name
-              
-              next "#{variable_name}--bookshop_comment = \"#{comment.strip}\"\n#{line}"
-            elsif line =~ /^\s*?\[.*?#.+?$/i
-              /#:(?<comment>[^#]+)$/i =~ line
-              next line unless comment
-              next "#{line}\n--bookshop_comment = \"#{comment.strip}\""
-            end
-            line
-          }
-          rewritten_lines.join("\n")
+          @node_bookshop.RewriteTOML(content)
         end
         
         def self.parse_bookshop_toml(content)
@@ -53,38 +40,52 @@ module CloudCannonBookshop
           site.config["_select_data"] ||= {}
           site.config["_array_structures"] ||= {}
           puts "📚 Parsing Stories from #{base_path}"
+          threads = []
           Dir.glob("**/*.{bookshop,stories}.{toml,tml,tom,tm}", base: base_path).each do |f|
-            begin
-              if f =~ /bookshop/
-                raw_file = File.read(base_path + "/" + f)
-                component = parse_bookshop_toml(raw_file)
-              else
-                component = TomlRB.load_file(base_path + f)
-              end
-            rescue => exception
-              puts "❌ Error Parsing Story: " + f
-              puts exception
-              next
-            end
-            transformed_components = transform_component(f, component, site)
-            transformed_components.each{|transformed_component|
-              array_structures = transformed_component.delete("array_structures")
-              array_structures.each{|key|
-                begin
-                  site.config["_array_structures"][key] ||= {}
-                  site.config["_array_structures"][key]["values"] ||= []
-                  site.config["_array_structures"][key]["values"].push(transformed_component)
-                rescue => exception
-                  puts "❌ Error Adding Story to Array Structures: " + f
-                  puts "🤔 Maybe your current _config.yml has conflicting array structures?"
+            threads << Thread.new {
+              begin
+                if f =~ /bookshop/
+                  raw_file = File.read(base_path + "/" + f)
+                  component = parse_bookshop_toml(raw_file)
+                else
+                  component = TomlRB.load_file(base_path + f)
                 end
+              rescue => exception
+                puts "❌ Error Parsing Story: " + f
+                puts exception
+                next
+              end
+              transformed_components = transform_component(f, component, site)
+              @structure_count += transformed_components.size
+              transformed_components.each{|transformed_component|
+                array_structures = transformed_component.delete("array_structures")
+                array_structures.each{|key|
+                  begin
+                    site.config["_array_structures"][key] ||= {}
+                    site.config["_array_structures"][key]["values"] ||= []
+                    site.config["_array_structures"][key]["values"].push(transformed_component)
+                  rescue => exception
+                    puts "❌ Error Adding Story to Array Structures: " + f
+                    puts "🤔 Maybe your current _config.yml has conflicting array structures?"
+                  end
+                }
               }
             }
           end
+          threads.each(&:join)
         end
         
         def self.build_structures(site)
+          structure_start = Time.now
+
+          @structure_count = 0
           @inflector = Dry::Inflector.new
+          @node_bookshop = NodeRunner.new(
+            <<~JAVASCRIPT
+              const {RewriteTOML} = require('@bookshop/toml-narrator');
+            JAVASCRIPT
+          )
+
           bookshop_locations = site.config['bookshop_locations']&.collect do |location|
             Pathname.new("#{site.source}/#{location}/components").cleanpath.to_s
           end
@@ -94,7 +95,11 @@ module CloudCannonBookshop
           bookshop_locations&.each do |base_path|
             build_from_location(base_path, site)
           end
-          puts "✅ Finshed Parsing Stories"
+
+          elapsed_time = Time.now - structure_start
+          Jekyll.logger.info "Bookshop:",
+                             "#{@structure_count} structure#{@structure_count == 1 ? "" : "s"}
+                              built in #{elapsed_time.round(2)}s ✅"
         end
       end
     end

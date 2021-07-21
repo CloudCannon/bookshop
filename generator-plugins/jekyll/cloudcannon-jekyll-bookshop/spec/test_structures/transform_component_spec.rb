@@ -1,4 +1,4 @@
-require_relative './test_helpers'
+require_relative '../helpers/test_helpers'
 
 module CloudCannonBookshop
   describe Structures do

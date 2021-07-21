@@ -1,0 +1,20 @@
+{
+  "name": "@bookshop/toml-narrator",
+  "version": "2.0.0-alpha.43",
+  "description": "Rewrite Bookshop TOML files to preserve comments",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "@bglw",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6"
+  },
+  "jest": {
+    "setupFiles": ["./util/test-helpers.js"]
+  }
+}
