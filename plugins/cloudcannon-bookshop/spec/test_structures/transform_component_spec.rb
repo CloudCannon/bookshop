@@ -4,12 +4,12 @@ module CloudCannonBookshop
   describe Structures do
 
     it "should create pretty component names" do
-      label = Structures.get_story_name("component/subcomponent/subcomponent.jekyll.html")
+      label = Structures.get_default_component_name("component/subcomponent/subcomponent.jekyll.html")
       expect(label).must_equal "Component Subcomponent"
     end
 
     it "should get component key" do
-      key = Structures.get_component_type("a/b/c/c.svelte")
+      key = Structures.get_component_key("a/b/c/c.svelte")
       expect(key).must_equal "a/b/c"
     end
     
