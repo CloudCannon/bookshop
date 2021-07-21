@@ -4,6 +4,7 @@
 # (Copyright (c) 2014 GitHub, Inc. Licensened under the MIT).
 
 require_relative '../../lib/cloudcannon-bookshop'
+require_relative '../../../jekyll-bookshop/lib/jekyll-bookshop'
 require 'minitest/spec'
 require "minitest/autorun"
 require 'hashdiff'

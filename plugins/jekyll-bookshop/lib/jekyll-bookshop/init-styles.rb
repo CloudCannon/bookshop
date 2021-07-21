@@ -3,6 +3,7 @@ module JekyllBookshop
 
     # Add the paths to find bookshop's styles
     def self.open_bookshop(site)
+      return unless site.config['bookshop_locations']
       bookshop_base_locations = site.config['bookshop_locations']&.collect do |location|
         Pathname.new("#{site.source}/#{location}/").cleanpath.to_s
       end

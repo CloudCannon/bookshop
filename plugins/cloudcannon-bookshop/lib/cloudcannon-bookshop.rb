@@ -2,7 +2,7 @@ require "jekyll"
 require "pathname"
 require "toml-rb"
 require "dry/inflector"
-require_relative './cloudcannon-bookshop/tags/header'
+require_relative './cloudcannon-bookshop/output-site-data'
 
 module CloudCannonBookshop
   class Structures
@@ -311,4 +311,6 @@ Jekyll::Hooks.register :site, :after_init do |site|
   CloudCannonBookshop::Structures.build_structures(site)
 end
 
-Liquid::Template.register_tag("bookshop_site_data", CloudCannonBookshop::HeaderTag)
+Jekyll::Hooks.register :site, :post_write do |site|
+  CloudCannonBookshop::SiteData.output(site)
+end

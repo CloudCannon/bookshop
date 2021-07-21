@@ -1,7 +1,7 @@
 require_relative './test_helpers'
 
 module CloudCannonBookshop
-  describe HeaderTag do
+  describe SiteData do
     SETUP = begin
       @site = TestHelpers.fixture_site({})
       @site.read
