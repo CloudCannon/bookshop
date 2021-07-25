@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'lib/cloudcannon-bookshop/version'
+require_relative 'lib/cloudcannon-jekyll-bookshop/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "cloudcannon-bookshop"
-  spec.version       = CloudCannonBookshop::Arraystructures::VERSION
+  spec.name          = "cloudcannon-jekyll-bookshop"
+  spec.version       = CloudCannonJekyllBookshop::VERSION
   spec.authors       = ["Liam Bigelow"]
   spec.email         = ["liam@cloudcannon.com"]
   spec.homepage      = "https://github.com/cloudcannon/bookshop"

@@ -2,7 +2,7 @@
 
 require_relative "../helpers/test_helpers"
 
-module CloudCannonBookshop
+module CloudCannonJekyllBookshop
   describe SiteData do
     SETUP = begin
       @site = TestHelpers.setup_site({})

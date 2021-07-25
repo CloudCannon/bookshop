@@ -5,7 +5,7 @@ require "toml-rb"
 require "dry/inflector"
 require "node-runner"
 
-module CloudCannonBookshop
+module CloudCannonJekyllBookshop
   # Parses a bookshop and creates CloudCannon CMS structures
   class Structures
     def self.get_default_component_name(path)

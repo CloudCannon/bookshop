@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../../lib/cloudcannon-bookshop"
+require_relative "../../lib/cloudcannon-jekyll-bookshop"
 require_relative "../../../jekyll-bookshop/lib/jekyll-bookshop"
 require "cloudcannon-jekyll"
 require "minitest/spec"
@@ -14,7 +14,7 @@ TEST_DIR     = File.join(__dir__, "..")
 SOURCE_DIR   = File.expand_path("fixture_site", TEST_DIR)
 DEST_DIR     = File.expand_path("destination", TEST_DIR)
 
-module CloudCannonBookshop
+module CloudCannonJekyllBookshop
   class TestHelpers
     def self.clean(goodbye_dir)
       if goodbye_dir.include?(Dir.pwd) && File.exist?(goodbye_dir)

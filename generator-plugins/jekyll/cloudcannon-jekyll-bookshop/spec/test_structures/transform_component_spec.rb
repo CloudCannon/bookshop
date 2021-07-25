@@ -2,7 +2,7 @@
 
 require_relative "../helpers/test_helpers"
 
-module CloudCannonBookshop
+module CloudCannonJekyllBookshop
   describe Structures do
     it "should create pretty component names via node" do
       test_label = "component/subcomponent/subcomponent.jekyll.html"

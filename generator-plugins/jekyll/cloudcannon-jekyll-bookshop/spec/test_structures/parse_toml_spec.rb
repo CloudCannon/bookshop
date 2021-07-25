@@ -2,7 +2,7 @@
 
 require_relative "../helpers/test_helpers"
 
-module CloudCannonBookshop
+module CloudCannonJekyllBookshop
   describe Structures do
     it "should rewrite comments via node" do
       bookshop_toml = "a = \"#b\" #: c"

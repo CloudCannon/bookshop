@@ -3,7 +3,7 @@
 require "json/ext"
 require_relative "./page-without-a-file"
 
-module CloudCannonBookshop
+module CloudCannonJekyllBookshop
   class SiteData
     def self.output(site)
       @site = site

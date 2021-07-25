@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cloudcannon-bookshop (2.0.0.pre.alpha.17)
+    cloudcannon-jekyll-bookshop (2.0.0.pre.alpha.17)
       dry-inflector (>= 0.1, < 1.0)
       jekyll (>= 3.7, < 5.0)
       node-runner (>= 1.0, < 2.0)
@@ -107,8 +107,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  cloudcannon-bookshop!
   cloudcannon-jekyll (>= 2.0, < 3.0)
+  cloudcannon-jekyll-bookshop!
   hashdiff
   minitest
   minitest-reporters

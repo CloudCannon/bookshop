@@ -24,4 +24,4 @@ AllCops:
 
 Naming/MemoizedInstanceVariableName:
   Exclude:
-    - lib/cloudcannon-bookshop/page-without-a-file.rb
+    - lib/cloudcannon-jekyll-bookshop/page-without-a-file.rb

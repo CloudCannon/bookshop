@@ -2,7 +2,7 @@
 
 require_relative "../helpers/test_helpers"
 
-module CloudCannonBookshop
+module CloudCannonJekyllBookshop
   describe Structures do
     OUTPUT_SETUP = begin
       @site = TestHelpers.setup_site({})
