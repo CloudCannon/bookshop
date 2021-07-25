@@ -13,7 +13,7 @@ module CloudCannonBookshop
       expect(rewritten_toml).must_equal expected_toml
     end
     
-    it "should preserve comments in a TOML file" do
+    it "should preserve comments in a TOML file via node" do
       bookshop_toml = <<~EOS
       [props]
       blog = false                #: Comment on a boolean
