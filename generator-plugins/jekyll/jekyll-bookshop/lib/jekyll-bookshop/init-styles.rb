@@ -6,7 +6,7 @@ module JekyllBookshop
     def self.open_bookshop(site)
       return unless site.config["bookshop_locations"]
 
-      bookshop_base_locations = filter_bookshops(site.config["bookshop_locations"])
+      bookshop_base_locations = filter_bookshops(site.source, site.config["bookshop_locations"])
       bookshop_component_locations = bookshop_base_locations&.collect do |location|
         Pathname.new("#{location}/components/").cleanpath.to_s
       end
@@ -20,9 +20,9 @@ module JekyllBookshop
       apply_array(site.config, "bookshop_component_locations", bookshop_component_locations)
     end
 
-    def self.filter_bookshops(locations)
+    def self.filter_bookshops(src, locations)
       mapped_locations = locations&.collect do |location|
-        Pathname.new("#{site.source}/#{location}/").cleanpath.to_s
+        Pathname.new("#{src}/#{location}/").cleanpath.to_s
       end
       mapped_locations.select do |location|
         Dir.exist?(location)
