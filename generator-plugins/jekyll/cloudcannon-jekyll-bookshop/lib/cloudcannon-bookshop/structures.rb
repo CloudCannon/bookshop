@@ -32,6 +32,8 @@ module CloudCannonBookshop
       site.config["_select_data"] ||= {}
       site.config["_array_structures"] ||= {}
       puts "📚 Parsing Stories from #{base_path}"
+      Jekyll.logger.info "Bookshop:",
+      "Parsing Stories from #{base_path}"
       threads = []
       Dir.glob("**/*.{bookshop,stories}.{toml,tml,tom,tm}", base: base_path).each do |f|
         threads << Thread.new {
