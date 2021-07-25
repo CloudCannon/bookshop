@@ -21,3 +21,7 @@ AllCops:
     - script/**/*
     - vendor/**/*
     - gemfiles/**/*
+
+Layout/LineLength:
+  Exclude:
+    - spec/output_spec.rb
