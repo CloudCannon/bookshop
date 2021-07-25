@@ -1,0 +1,27 @@
+{
+  "name": "@bookshop/cloudcannon-structures",
+  "version": "2.0.0-alpha.43",
+  "description": "Convert a Bookshop object into a CloudCannon structure",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "@bglw",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@bookshop/toml-narrator": "file:../toml-narrator",
+    "@ltd/j-toml": "^1.12.2",
+    "jest": "^27.0.6"
+  },
+  "jest": {
+    "setupFiles": [
+      "./util/test-helpers.js"
+    ]
+  },
+  "dependencies": {
+    "pluralize": "^8.0.0"
+  }
+}
