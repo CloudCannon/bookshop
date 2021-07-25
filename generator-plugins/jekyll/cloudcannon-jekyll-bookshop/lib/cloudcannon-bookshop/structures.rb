@@ -31,9 +31,8 @@ module CloudCannonBookshop
     def self.build_from_location(base_path, site)
       site.config["_select_data"] ||= {}
       site.config["_array_structures"] ||= {}
-      puts "📚 Parsing Stories from #{base_path}"
       Jekyll.logger.info "Bookshop:",
-      "Parsing Stories from #{base_path}"
+                         "Parsing Stories from #{base_path}"
       threads = []
       Dir.glob("**/*.{bookshop,stories}.{toml,tml,tom,tm}", base: base_path).each do |f|
         threads << Thread.new {
@@ -45,7 +44,8 @@ module CloudCannonBookshop
               component = TomlRB.load_file(base_path + f)
             end
           rescue => exception
-            puts "❌ Error Parsing Story: " + f
+            Jekyll.logger.error "Bookshop:",
+                                "❌ Error Parsing Story: #{f}"
             puts exception
             next
           end
@@ -59,8 +59,10 @@ module CloudCannonBookshop
                 site.config["_array_structures"][key]["values"] ||= []
                 site.config["_array_structures"][key]["values"].push(transformed_component)
               rescue => exception
-                puts "❌ Error Adding Story to Array Structures: " + f
-                puts "🤔 Maybe your current _config.yml has conflicting array structures?"
+                Jekyll.logger.error "Bookshop:",
+                                    "❌ Error Adding Story to Array Structures: #{f}"
+                Jekyll.logger.error "",
+                                    "🤔 Maybe your current _config.yml has conflicting array structures?"
               end
             }
           }

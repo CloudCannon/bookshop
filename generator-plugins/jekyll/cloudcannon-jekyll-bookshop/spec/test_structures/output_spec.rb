@@ -1,8 +1,8 @@
 require_relative '../helpers/test_helpers'
 
 module CloudCannonBookshop
-  describe SiteData do
-    SETUP = begin
+  describe Structures do
+    OUTPUT_SETUP = begin
       @site = TestHelpers.setup_site({})
     end
     
