@@ -11,7 +11,7 @@ module CloudCannonBookshop
 
       output_payload = @site.data["_bookshop_site_data"].to_json
 
-      filename = "site-data"
+      filename = "bookshop-site-data"
       generate_file(filename, output_payload)
     end
 

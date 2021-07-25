@@ -9,7 +9,7 @@ module CloudCannonBookshop
     end
 
     it "should output bookshop site data" do
-      output_data = JSON.parse TestHelpers.read_output_file("_cloudcannon/site-data.json")
+      output_data = JSON.parse TestHelpers.read_output_file("_cloudcannon/bookshop-site-data.json")
 
       data_diff = Hashdiff.diff(output_data.dig("site", "data", "labels", 2), {
         "text" => "Data File Three",
