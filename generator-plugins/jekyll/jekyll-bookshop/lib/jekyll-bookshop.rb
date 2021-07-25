@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "jekyll"
 require "pathname"
 require "dry/inflector"
@@ -7,7 +9,6 @@ require_relative "jekyll-bookshop/tags/style-tag"
 require_relative "jekyll-bookshop/init-styles"
 require_relative "jekyll-bookshop/filters"
 require_relative "jekyll-bookshop/site-data"
-
 
 Liquid::Template.register_tag("bookshop", JekyllBookshop::Tag)
 Liquid::Template.register_tag("bookshop_scss", JekyllBookshop::StyleTag)
