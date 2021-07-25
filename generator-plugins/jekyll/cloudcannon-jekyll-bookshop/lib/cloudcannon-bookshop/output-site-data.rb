@@ -1,5 +1,7 @@
-require 'json/ext'
-require_relative './page-without-a-file'
+# frozen_string_literal: true
+
+require "json/ext"
+require_relative "./page-without-a-file"
 
 module CloudCannonBookshop
   class SiteData

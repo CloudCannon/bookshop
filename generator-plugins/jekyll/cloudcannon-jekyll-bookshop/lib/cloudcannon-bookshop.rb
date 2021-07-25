@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require "jekyll"
-require_relative './cloudcannon-bookshop/output-site-data'
-require_relative './cloudcannon-bookshop/structures'
+require_relative "./cloudcannon-bookshop/output-site-data"
+require_relative "./cloudcannon-bookshop/structures"
 
 Jekyll::Hooks.register :site, :after_init do |site|
   CloudCannonBookshop::Structures.build_structures(site)

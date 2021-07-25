@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'lib/cloudcannon-bookshop/version'
 
 Gem::Specification.new do |spec|
@@ -25,4 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "node-runner", ">= 1.0", "< 2.0"
   spec.add_dependency "dry-inflector", ">= 0.1", "< 1.0"
   spec.add_development_dependency "cloudcannon-jekyll", ">= 2.0", "< 3.0"
+  spec.add_development_dependency "rubocop", "~> 0.80"
+  spec.add_development_dependency "rubocop-jekyll", "~> 0.11"
 end
