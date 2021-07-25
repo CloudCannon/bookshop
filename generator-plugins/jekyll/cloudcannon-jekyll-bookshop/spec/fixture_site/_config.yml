@@ -1,0 +1,4 @@
+collections:
+  - name: "posts"
+    label: "Posts"
+    output: true

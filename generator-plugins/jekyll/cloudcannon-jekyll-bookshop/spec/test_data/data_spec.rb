@@ -25,7 +25,7 @@ module CloudCannonBookshop
         "tags"=>[],
         "excerpt"=>"<h1 id=\"hello-world\">Hello World</h1>\n",
         "content"=>"<h1 id=\"hello-world\">Hello World</h1>\n",
-        "url"=>"/posts/2021-01-01-hello-world.html",
+        "url"=>"/posts/2021-01-01-hello-world",
         "relative_path"=>"_posts/2021-01-01-hello-world.md",
         "permalink"=>nil
       })

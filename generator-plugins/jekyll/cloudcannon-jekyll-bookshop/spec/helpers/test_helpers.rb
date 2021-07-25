@@ -1,5 +1,6 @@
 require_relative '../../lib/cloudcannon-bookshop'
 require_relative '../../../jekyll-bookshop/lib/jekyll-bookshop'
+require 'cloudcannon-jekyll'
 require 'minitest/spec'
 require 'minitest/autorun'
 require 'hashdiff'
@@ -19,7 +20,7 @@ module CloudCannonBookshop
         Pathname.new(goodbye_dir).rmtree
       end
     end
-
+    
     def self.setup_site(config = {})
       teardown_site
       site = fixture_site(config)
@@ -27,11 +28,11 @@ module CloudCannonBookshop
       site.process
       site
     end
-
+    
     def self.teardown_site
       clean(DEST_DIR)
     end
-
+    
     def self.fixture_site(config = {})
       Jekyll::Site.new(
         Jekyll::Utils.deep_merge_hashes(
@@ -42,7 +43,13 @@ module CloudCannonBookshop
             "disable_disk_cache"  => true,
             "bookshop_locations"  => [
               "../fixture_bookshop"
-            ]
+            ],
+            "collections"         => {
+              "posts" => { 
+                "output" => true,
+                "permalink" => "/:collection/:name"
+              }
+            }
           ),
           config
         )

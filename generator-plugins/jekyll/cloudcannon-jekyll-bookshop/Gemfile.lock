@@ -16,6 +16,8 @@ GEM
     ast (2.4.2)
     builder (3.2.4)
     citrus (3.0.2)
+    cloudcannon-jekyll (2.0.1)
+      jekyll (>= 2.4.0, < 5)
     colorator (1.1.0)
     concurrent-ruby (1.1.9)
     dry-inflector (0.2.1)
@@ -101,6 +103,7 @@ PLATFORMS
 
 DEPENDENCIES
   cloudcannon-bookshop!
+  cloudcannon-jekyll (>= 2.0, < 3.0)
   hashdiff
   minitest
   minitest-reporters
