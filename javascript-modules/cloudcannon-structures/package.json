@@ -6,6 +6,9 @@
   "scripts": {
     "test": "jest"
   },
+  "files": [
+    "main.js"
+  ],
   "author": "@bglw",
   "license": "MIT",
   "publishConfig": {
@@ -23,5 +26,8 @@
   },
   "dependencies": {
     "pluralize": "^8.0.0"
-  }
+  },
+  "bundledDependencies": [
+    "pluralize"
+  ]
 }

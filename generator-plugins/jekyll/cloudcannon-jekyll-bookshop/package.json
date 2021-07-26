@@ -1,8 +1,0 @@
-{
-  "name": "cloudcannon-jekyll-bookshop",
-  "private": true,
-  "dependencies": {
-    "@bookshop/cloudcannon-structures": "file:../../../javascript-modules/cloudcannon-structures",
-    "@bookshop/toml-narrator": "file:../../../javascript-modules/toml-narrator"
-  }
-}

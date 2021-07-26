@@ -6,6 +6,9 @@
   "scripts": {
     "test": "jest"
   },
+  "files": [
+    "main.js"
+  ],
   "author": "@bglw",
   "license": "MIT",
   "publishConfig": {
@@ -15,6 +18,8 @@
     "jest": "^27.0.6"
   },
   "jest": {
-    "setupFiles": ["./util/test-helpers.js"]
+    "setupFiles": [
+      "./util/test-helpers.js"
+    ]
   }
 }
