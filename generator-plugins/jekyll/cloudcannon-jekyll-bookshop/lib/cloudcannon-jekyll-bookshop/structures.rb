@@ -76,8 +76,8 @@ module CloudCannonJekyllBookshop
       @inflector = Dry::Inflector.new
       @node_bookshop = NodeRunner.new(
         <<~JAVASCRIPT
-          const {Version: TNVersion, RewriteTOML} = require('@bookshop/toml-narrator');
-          const {Version: CSVersion, TransformComponent, GetComponentKey, NiceLabel} = require('@bookshop/cloudcannon-structures');
+          const {Version: TNVersion, RewriteTOML} = require('#{__dir__}/../../node_modules/@bookshop/toml-narrator');
+          const {Version: CSVersion, TransformComponent, GetComponentKey, NiceLabel} = require('#{__dir__}/../../node_modules/@bookshop/cloudcannon-structures');
         JAVASCRIPT
       )
     end
