@@ -32,7 +32,7 @@ const run = async () => {
             console.log(`* * Vendoring done`);
             process.exit(0);
         case 'git':
-            steps.updateGit(version);
+            steps.updateGit(packages.version);
             process.exit(0);
     }
 
