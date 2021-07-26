@@ -1,4 +1,6 @@
+var pkg = require('./package.json');
 module.exports = {
+    Version: () => pkg.version,
     RewriteTOML: (input_toml) => {
         return input_toml.split(`\n`).map(line => {
             // some_variable.etc = "some value" #: Some comment

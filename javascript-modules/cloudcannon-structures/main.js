@@ -1,3 +1,4 @@
+var pkg = require('./package.json');
 const pluralize = require('pluralize');
 
 // Generates the bookshop key used to reference this component
@@ -143,6 +144,7 @@ const GetCommentFromObject = (object) => {
 }
 
 module.exports = {
+    Version: () => pkg.version,
     TransformComponent,
     GetComponentKey,
     NiceLabel,
