@@ -40,6 +40,8 @@ const run = async () => {
     }
     console.log(box(`Publishing ${version}`));
 
+    steps.ensureReady();
+
     console.log(`* Setting versions`);
     versionNpm(Object.keys(packages.npm), version);
     versionGems(Object.keys(packages.rubygems), version);
@@ -77,11 +79,20 @@ const run = async () => {
         process.exit(1);
     }
 
+    updateGit(version);
+
     console.log(`\n` + box(`All packages published:
                      ⇛ ${publishSuccesses.join('\n⇛ ')}`));
 }
 
 const steps = {
+    ensureReady: async () => {
+        const gitStatus = execSync('git status --porcelain', {stdio: "pipe"});
+        if (gitStatus.toString().length) {
+            console.error(box(`Git is dirty. Please commit or stash your changes first.`));
+            process.exit(1);
+        }
+    },
     test: async (packages) => {
         process.stdout.write(`* * `);
         const npmTestResults = await testNPM(Object.keys(packages.npm));
@@ -97,6 +108,13 @@ const steps = {
                              You can re-run whatever command you used to publish.`));
             process.exit(1);
         }
+    },
+    updateGit: async (version) => {
+        console.log(`* * Updating git`);
+        execSync(`git add -A && git commit -m "Releasing ${version}"`);
+        execSync(`git tag -a ${version} -m "Releasing ${version}"`);
+        execSync(`git push && git push --tags`);
+        console.log(`* * * Git updated`);
     }
 }
 
