@@ -31,6 +31,9 @@ const run = async () => {
             vendorGems(packages.rubygems, packages.version);
             console.log(`* * Vendoring done`);
             process.exit(0);
+        case 'git':
+            steps.updateGit(version);
+            process.exit(0);
     }
 
     if (!checkVersion(version)) {
@@ -79,7 +82,7 @@ const run = async () => {
         process.exit(1);
     }
 
-    updateGit(version);
+    steps.updateGit(version);
 
     console.log(`\n` + box(`All packages published:
                      ⇛ ${publishSuccesses.join('\n⇛ ')}`));
