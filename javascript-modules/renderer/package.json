@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/renderer",
-  "version": "2.0.0-alpha.43",
+  "version": "2.0.0-alpha.51",
   "description": "Bookshop Renderer",
   "main": "main.js",
   "scripts": {

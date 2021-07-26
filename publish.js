@@ -41,8 +41,8 @@ const run = async () => {
     console.log(box(`Publishing ${version}`));
 
     console.log(`* Setting versions`);
-    versionNpm(Object.keys(packages.npm, version));
-    versionGems(Object.keys(packages.rubygems, version));
+    versionNpm(Object.keys(packages.npm), version);
+    versionGems(Object.keys(packages.rubygems), version);
     console.log(`* * Versions set`);
 
     console.log(`* Vendoring`);
@@ -64,21 +64,21 @@ const run = async () => {
     console.log(`* * Publishing...`);
     const npmPublishResults = await publishNPM(Object.keys(packages.npm), version, otp);
     const gemPublishResults = await publishGems(Object.keys(packages.rubygems), version);
-    const publishFailures = [...npmPublishResults, ...gemPublishResults].filter(r => r.err).map(r => r.pkg).join('\n* * ⇛ ');
-    const publishSuccesses = [...npmPublishResults, ...gemPublishResults].filter(r => !r.err).map(r => `${pad(`[${r.version}]`, 20)} ${r.pkg}`).join('\n⇛ ');
+    const publishFailures = [...npmPublishResults, ...gemPublishResults].filter(r => r.err).map(r => r.pkg);
+    const publishSuccesses = [...npmPublishResults, ...gemPublishResults].filter(r => !r.err).map(r => `${pad(`[${r.version}]`, 20)} ${r.pkg}`);
 
     if (publishFailures.length) {
         console.error(`* * Publishing failed for the following packages:`);
-        console.error(`* * ⇛ ${publishFailures}`);
+        console.error(`* * ⇛ ${publishFailures.join('\n* * ⇛ ')}`);
         console.error(`* * The following packages __have__ been published:`);
-        console.error(`* * ⇛ ${publishSuccesses}`);
+        console.error(`* * ⇛ ${publishSuccesses.join('\n* * ⇛ ')}`);
         console.log(`\n` + box(`Publishing hit an error. Versions have been changed.
                          To re-run this publish, use \`./publish.js current\``));
         process.exit(1);
     }
 
     console.log(`\n` + box(`All packages published:
-                     ⇛ ${publishSuccesses}`));
+                     ⇛ ${publishSuccesses.join('\n⇛ ')}`));
 }
 
 const steps = {
@@ -142,7 +142,7 @@ const publishNPM = async (pkgs, version, otp) => {
     const releases = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
             try {
-                const cmd = `cd ${pkg} && npm publish --dry-run --access public --otp ${otp}`;
+                const cmd = `cd ${pkg} && npm publish --access public --otp ${otp}`;
                 console.log(`\n$: ${cmd}`);
                 execSync(cmd, {stdio: "inherit"});
                 resolve({pkg, version, err: null});
@@ -165,7 +165,7 @@ const publishGems = async (pkgs, version) => {
                 execSync(cmd, {stdio: "inherit"})
                 cmd = `gem push ${pkg}/${packageName}-${gemVersion}.gem`;
                 console.log(`\n$: ${cmd}`);
-                //execSync(cmd, {stdio: "inherit"})
+                execSync(cmd, {stdio: "inherit"})
                 execSync(`rm ${pkg}/*.gem`);
                 resolve({pkg, version: gemVersion, err: null});
             } catch (err) {

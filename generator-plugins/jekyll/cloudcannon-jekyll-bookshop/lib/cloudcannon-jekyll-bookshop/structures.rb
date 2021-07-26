@@ -30,7 +30,7 @@ module CloudCannonJekyllBookshop
         component = parse_bookshop_toml(path)
       rescue StandardError => e
         Jekyll.logger.error "Bookshop:",
-                            "❌ Error Parsing Story: #{f}"
+                            "❌ Error Parsing Story: #{e}"
         Jekyll.logger.error "",
                             e.message
       end
