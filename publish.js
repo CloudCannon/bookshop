@@ -137,7 +137,7 @@ const testNPM = async (pkgs) => {
     const tests = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
             try {
-                execSync(`npm --prefix ${pkg} test`, {stdio: "ignore"});
+                execSync(`yarn --cwd ${pkg} test`, {stdio: "ignore"});
                 resolve({pkg, err: null});
                 process.stdout.write('👏 ');
             } catch (err) {
@@ -172,7 +172,7 @@ const publishNPM = async (pkgs, version, otp) => {
     const releases = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
             try {
-                const cmd = `cd ${pkg} && npm publish --access public --otp ${otp}`;
+                const cmd = `yarn --cwd ${pkg} publish --access public --otp ${otp}`;
                 console.log(`\n$: ${cmd}`);
                 execSync(cmd, {stdio: "inherit"});
                 resolve({pkg, version, err: null});
@@ -214,7 +214,7 @@ const checkVersion = ver => /^\d+\.\d+\.\d+(-[a-z]+\.\d+)?$/.test(ver);
 
 const versionNpm = (pkgs, version) => {
     pkgs.forEach(pkg => {
-        const npmBump = execSync(`npm --prefix ${pkg} version ${version} --allow-same-version --no-git-tag-version --no-commit-hooks`);
+        const npmBump = execSync(`yarn --cwd ${pkg} version --new-version ${version} --allow-same-version --no-git-tag-version --no-commit-hooks`);
         if (npmBump.stderr) {
             console.error(box(`npm version bump failed:
                                ${npmBump.stderr}`));
@@ -254,7 +254,7 @@ const vendorGems = async (gems, version) => {
         if (opts.vendor_from_npm && opts.vendor_from_npm.length) {
             execSync(`rm -r ${target}/node_modules && mkdir -p ${target}/node_modules/@bookshop`);
             opts.vendor_from_npm.forEach(pkg => {
-                execSync(`cd ${pkg} && npm pack`);
+                execSync(`cd ${pkg} && yarn pack`);
                 execSync(`cd ${pkg} && tar -Pxzf *.tgz`);
                 execSync(`cd ${pkg} && cp -R package ${target}/node_modules/@bookshop/${path.basename(pkg)}`);
                 execSync(`cd ${pkg} && rm *.tgz && rm -r package`);
