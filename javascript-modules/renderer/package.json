@@ -36,5 +36,10 @@
     "sass": "^1.34.0",
     "slugify": "^1.5.3",
     "svelte": "^3.38.2"
+  },
+  "engines": {
+    "npm": "please-use-yarn",
+    "node": "^14.16",
+    "yarn": "^1.22"
   }
 }

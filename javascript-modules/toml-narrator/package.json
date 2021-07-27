@@ -21,5 +21,10 @@
     "setupFiles": [
       "./util/test-helpers.js"
     ]
+  },
+  "engines": {
+    "npm": "please-use-yarn",
+    "node": "^14.16",
+    "yarn": "^1.22"
   }
 }
