@@ -1,5 +1,6 @@
 var pkg = require('./package.json');
-const pluralize = require('pluralize');
+// Pluralize is vendored for distribution to the generator plugins
+const pluralize = require('./vendored-pluralize.js');
 
 // Generates the bookshop key used to reference this component
 // Turns "a/b/b.bookshop.toml" into "a/b"

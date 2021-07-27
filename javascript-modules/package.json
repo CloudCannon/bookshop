@@ -1,0 +1,11 @@
+{
+    "private": true,
+    "workspaces": [
+        "cloudcannon-structures", 
+        "renderer",
+        "toml-narrator"
+    ],
+    "scripts": {
+        "prepare": "./cloudcannon-structures/vendor-hoisted-pluralize"
+    }
+}

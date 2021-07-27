@@ -7,7 +7,8 @@
     "test": "jest"
   },
   "files": [
-    "main.js"
+    "main.js",
+    "vendored-pluralize.js"
   ],
   "author": "@bglw",
   "license": "MIT",
@@ -17,17 +18,12 @@
   "devDependencies": {
     "@bookshop/toml-narrator": "file:../toml-narrator",
     "@ltd/j-toml": "^1.12.2",
-    "jest": "^27.0.6"
+    "jest": "^27.0.6",
+    "pluralize": "^8.0.0"
   },
   "jest": {
     "setupFiles": [
       "./util/test-helpers.js"
     ]
-  },
-  "dependencies": {
-    "pluralize": "^8.0.0"
-  },
-  "bundledDependencies": [
-    "pluralize"
-  ]
+  }
 }
