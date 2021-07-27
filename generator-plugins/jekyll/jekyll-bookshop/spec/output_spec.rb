@@ -4,7 +4,7 @@ require_relative "./helpers/test_helpers"
 
 module JekyllBookshop
   describe Tag do
-    SETUP = begin
+    OUTPUT_SETUP = begin
       @site = TestHelpers.setup_site({})
     end
 

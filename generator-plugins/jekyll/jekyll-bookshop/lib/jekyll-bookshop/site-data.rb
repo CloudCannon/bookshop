@@ -20,6 +20,9 @@ module JekyllBookshop
       end
 
       @site.data["_bookshop_site_data"] = { "site" => payload_collections }
+
+      update_renderer_pages
+
       Jekyll.logger.info "Bookshop:",
                          "Bookshop site data generated"
     end
@@ -35,6 +38,18 @@ module JekyllBookshop
       hydrated_doc.merge!({
         "excerpt" => document.data["excerpt"].output,
       })
+    end
+
+    def self.update_renderer_pages
+      @site.pages.each do |page|
+        next unless @site.data["_bookshop_data_pages"]&.include?(page.url)
+
+        page.output = page.output.gsub(
+          %r!bookshop_renderer_site_data = null!,
+          "bookshop_renderer_site_data = #{@site.data["_bookshop_site_data"].to_json}"
+        )
+      end
+      @site.data["_bookshop_data_pages"] = nil
     end
   end
 end
