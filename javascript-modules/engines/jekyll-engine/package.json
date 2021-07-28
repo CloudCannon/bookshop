@@ -1,0 +1,22 @@
+{
+  "name": "@bookshop/jekyll-engine",
+  "version": "2.0.0-alpha.53",
+  "description": "Bookshop frontend Jekyll renderer",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "@bglw",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6"
+  },
+  "engines": {
+    "npm": "please-use-yarn",
+    "node": "^14.16",
+    "yarn": "^1.22"
+  }
+}
