@@ -44,7 +44,8 @@ example-bookshop/
 Generally, your website will live alongside your bookshop project (either as seperate repositories, or a monorepo):
 ```
 example-project/
-├─ example-website/
+├─ example-website-1/
+├─ example-website-2/
 └─ example-bookshop/
 ```
 
