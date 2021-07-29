@@ -3,6 +3,7 @@
     "workspaces": [
         "builder",
         "cloudcannon-structures", 
+        "live",
         "renderer",
         "toml-narrator",
         "engines/jekyll-engine"

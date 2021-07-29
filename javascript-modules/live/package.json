@@ -1,0 +1,23 @@
+{
+  "name": "@bookshop/live",
+  "version": "2.0.0-alpha.53",
+  "description": "Live component renderer for editing from a CMS",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --maxWorkers 3"
+  },
+  "author": "@bglw",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6"
+  },
+  "engines": {
+    "npm": "please-use-yarn",
+    "node": "^14.16",
+    "yarn": "^1.22"
+  }
+}
