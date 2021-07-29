@@ -1,0 +1,28 @@
+{
+  "name": "@bookshop/builder",
+  "version": "2.0.0-alpha.53",
+  "description": "esbuild wrapper for bringing bookshop components and engines throught to a frontend",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --maxWorkers 3"
+  },
+  "author": "@bglw",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6"
+  },
+  "jest": {
+    "setupFiles": [
+      "./.test/common.js"
+    ]
+  },
+  "engines": {
+    "npm": "please-use-yarn",
+    "node": "^14.16",
+    "yarn": "^1.22"
+  }
+}
