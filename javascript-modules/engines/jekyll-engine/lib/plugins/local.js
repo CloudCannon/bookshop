@@ -1,11 +1,10 @@
-const { Tokenizer, assert } = require('liquidjs');
+import { Tokenizer, assert } from 'liquidjs';
 
 /**
-* Inside the plugin function, `this` refers to the Liquid instance.
-*
-* @param Liquid: provides facilities to implement tags and filters.
+* Liquidjs implementation of https://github.com/bglw/jekyll-local-assign
+* Assigns variables that don't live on the global scope
 */
-module.exports = function (Liquid) {
+export default function (Liquid) {
     this.registerTag('local', {
         parse: function (token) {
             const tokenizer = new Tokenizer(token.args, this.liquid.options.operatorsTrie);

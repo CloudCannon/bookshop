@@ -1,9 +1,11 @@
-const {Base64} = require('js-base64');
+import * as JSB from 'js-base64';
+const Base64 = JSB.Base64;
+
 /**
  * Liquidjs handler for https://github.com/CloudCannon/svelte-slabs
  * TODO: remove once these plugins are configurable.
  */
-module.exports = function (Liquid) {
+ export default function (Liquid) {
     this.registerTag('svelte', {
 	  parse: function(token){
 	  	this.svelteName = token.args.split(' ')[0];

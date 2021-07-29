@@ -2,9 +2,11 @@
   "name": "@bookshop/jekyll-engine",
   "version": "2.0.0-alpha.53",
   "description": "Bookshop frontend Jekyll renderer",
+  "type":"module",
+  "sideEffects": false,
   "main": "main.js",
   "scripts": {
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "author": "@bglw",
   "license": "MIT",
@@ -13,6 +15,12 @@
   },
   "devDependencies": {
     "jest": "^27.0.6"
+  },
+  "dependencies": {
+    "esbuild": "^0.11.23",
+    "liquidjs": "^9.25.0",
+    "slugify": "^1.5.3",
+    "js-base64": "^3.6.1"
   },
   "engines": {
     "npm": "please-use-yarn",

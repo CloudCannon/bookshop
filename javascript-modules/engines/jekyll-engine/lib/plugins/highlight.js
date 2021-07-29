@@ -1,9 +1,8 @@
 /**
- * Inside the plugin function, `this` refers to the Liquid instance.
- *
- * @param Liquid: provides facilities to implement tags and filters.
+ * Rough skeleton for the highlight tag in Jekyll.
+ * This won't perform any code highlighting, but should create the same outer DOM structure.
  */
-module.exports = function (Liquid) {
+ export default function (Liquid) {
     this.registerTag('highlight', {
 	  parse: function(token){
         this.lang = token.args.split(' ')[0];

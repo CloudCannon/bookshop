@@ -3,7 +3,8 @@
     "workspaces": [
         "cloudcannon-structures", 
         "renderer",
-        "toml-narrator"
+        "toml-narrator",
+        "engines/jekyll-engine"
     ],
     "scripts": {
         "prepare": "./cloudcannon-structures/vendor-hoisted-pluralize"

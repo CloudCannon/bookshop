@@ -3,7 +3,7 @@
  * This plugin takes the last context and nests it into an object named include,
  * which results in behaviour matching that of Jekyll includes.
  */
-module.exports = function (Liquid) {
+export default function (Liquid) {
     this.registerTag('emulate_jekyll', {
 	  parse: function(token){
 	  },

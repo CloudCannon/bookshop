@@ -1,4 +1,4 @@
-const { Tokenizer } = require('liquidjs');
+import { Tokenizer } from 'liquidjs';
 
 const rewriteTag = function(token, src) {
     let raw = token.getText();
@@ -35,7 +35,7 @@ const rewriteTag = function(token, src) {
     ].join('');
 }
 
-module.exports = function(text, opts) {
+export default function(text, opts) {
     opts = {
         isInclude: false,
         expandBindSyntax: true,

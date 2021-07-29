@@ -1,9 +1,9 @@
 /**
- * Inside the plugin function, `this` refers to the Liquid instance.
- *
- * @param Liquid: provides facilities to implement tags and filters.
+ * Liquidjs shim to support the bind syntax that jekyll-bookshop allows
+ * i.e. {% bookshop <component> bind=<object> %}
+ * Looks for an object on the current scope named bind, and spreads it out into the current scope.
  */
-module.exports = function (Liquid) {
+ export default function (Liquid) {
     this.registerTag('unbind', {
 	  parse: function(token){
 	  },
