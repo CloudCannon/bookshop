@@ -5,7 +5,7 @@
   "type": "module",
   "main": "bookshopStylePlugin.js",
   "scripts": {
-    "test": "ava"
+    "test": "ava -v"
   },
   "author": "@bglw",
   "license": "MIT",

@@ -6,7 +6,7 @@ import postcss from 'postcss';
 import postcssConfig from 'postcss-load-config';
 
 const sassImport = (filePath) => `@import '${filePath}';`;
-const mapDirs = (dirs, seg) => dirs.map(d => path.join(d, `/${seg}/**/*.scss`));
+const mapDirs = (dirs = [], seg) => dirs.map(d => path.join(d, `/${seg}/**/*.scss`));
 
 const sortBookshopFiles = (a, b) => {
     const m = /\/shared\//;
@@ -52,7 +52,6 @@ export default (options) => ({
                 ...mapDirs(bookshopDirs, "shared/styles"),
                 ...mapDirs(bookshopDirs, "components")
             ];
-            if (fullPaths.length === 0) return;
             return {
                 path: '_',
                 namespace: 'bookshop-styles-import',
@@ -64,6 +63,9 @@ export default (options) => ({
             };
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-styles-import' }, async (args) => {
+            if (args.pluginData.fullPaths.length === 0) {
+                return { contents: "", loader: 'text' };
+            }
             const files = (await fastGlob(args.pluginData.fullPaths, {
                 cwd: args.pluginData.resolveDir,
             })).sort(sortBookshopFiles);

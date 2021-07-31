@@ -25,7 +25,7 @@ const bundledEngine = ([engine, data], engineIndex) => {
 export default (options) => ({
     name: 'bookshop-config-import',
     setup: (build) => {
-        build.onResolve({ filter: /^__bookshop_state__$/ }, async (args) => {
+        build.onResolve({ filter: /^__bookshop_engines__$/ }, async (args) => {
             const primaryBookshopDir = options?.bookshopDirs?.[0];
             if (!primaryBookshopDir) return;
             return {

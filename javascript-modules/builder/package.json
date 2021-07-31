@@ -5,7 +5,7 @@
   "type": "module",
   "main": "main.js",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --maxWorkers 3"
+    "test": "ava -v"
   },
   "author": "@bglw",
   "license": "MIT",
@@ -13,12 +13,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "jest": "^27.0.6"
-  },
-  "jest": {
-    "setupFiles": [
-      "./.test/common.js"
-    ]
+    "ava": "^3.15.0"
   },
   "engines": {
     "npm": "please-use-yarn",

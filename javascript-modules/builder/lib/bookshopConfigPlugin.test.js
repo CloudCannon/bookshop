@@ -1,23 +1,24 @@
+import test from 'ava';
 import path from 'path';
+import {stubExternalPlugin} from '../.test/common.js';
 import bookshopConfigPlugin from './bookshopConfigPlugin.js';
 import esbuild from 'esbuild';
 
-test('bookshopConfigPlugin should be defined', () => {
-    expect(bookshopConfigPlugin).toBeDefined();
+test('bookshopConfigPlugin should be defined', t => {
+    t.truthy(bookshopConfigPlugin);
 });
 
-test('build @bookshop/jekyll-engine without failures', async () => {
-    const dir = __dirname(import.meta.url);
+test('build @bookshop/jekyll-engine without failures', async t => {
     let result = await esbuild.build({
         stdin: {
-            contents: `import bookshop from "__bookshop_state__";
+            contents: `import bookshop from "__bookshop_engines__";
             console.log(bookshop);`,
-            resolveDir: dir,
+            resolveDir: process.cwd(),
             sourcefile: 'virtual.js'
         },
         plugins: [
             bookshopConfigPlugin({
-                bookshopDirs: [path.join(dir, '../.test/fixtures')]
+                bookshopDirs: [path.join(process.cwd(), './.test/fixtures')]
             }),
             stubExternalPlugin("skip-bookshop-globs", /^__bookshop_glob__/),
             stubExternalPlugin("skip-bookshop-globs", /^@bookshop/)
@@ -27,10 +28,8 @@ test('build @bookshop/jekyll-engine without failures', async () => {
         bundle: true
     });
     
-    expect(result.errors.length).toBe(0);
-    expect(result.warnings.length).toBe(0);
-    expect(result.outputFiles[0].text).toContain([
-        `import {Engine as Engine0} from "@bookshop/jekyll-engine";`,
-        `import Engine0Files from "__bookshop_glob__(.jekyll.html)";`
-    ].join('\n'));
+    t.is(result.errors.length, 0);
+    t.is(result.warnings.length, 0);
+    t.regex(result.outputFiles[0].text, /import {Engine as Engine0} from "@bookshop\/jekyll-engine";/);
+    t.regex(result.outputFiles[0].text, /import Engine0Files from "__bookshop_glob__\(.jekyll.html\)";/);
 });
