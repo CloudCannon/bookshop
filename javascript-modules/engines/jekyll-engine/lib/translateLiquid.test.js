@@ -34,13 +34,13 @@ test("rewrite include_cached tags", t => {
 
 test("rewrite bookshop tags", t => {
     const input = `{% bookshop component prop=page.item %}`;
-    const expected = `{% include "component" prop: page.item %}`;
+    const expected = `{% include "_bookshop_component" prop: page.item %}`;
     t.is(translateLiquid(input, {expandBindSyntax: false}), expected);
 });
 
 test("ignore variables named include", t => {
     const input = `{% bookshop component bind=include %}`;
-    const expected = `{% include "component" bind: include %}`;
+    const expected = `{% include "_bookshop_component" bind: include %}`;
     t.is(translateLiquid(input, {expandBindSyntax: false}), expected);
 });
 

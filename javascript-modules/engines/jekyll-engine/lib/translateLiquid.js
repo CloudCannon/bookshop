@@ -16,7 +16,7 @@ const rewriteTag = function(token, src) {
         raw = raw.replace(
         /bookshop (\S+)/,
         (_, component) => {
-            return `include ${component}`
+            return `include _bookshop_${component}`
         }
         );
     }

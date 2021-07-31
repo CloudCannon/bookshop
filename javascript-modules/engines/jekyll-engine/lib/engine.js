@@ -53,7 +53,16 @@ export class Engine {
     }
 
     async retrieveInclude(file) {
-        const content = this.files?.[file] || "";
+        let content;
+        if (/^_bookshop_/.test(file)) {
+            content = this.getComponent(file.replace(/^_bookshop_/, ""));
+        } else {
+            content = this.files?.[file];
+        }
+        if (!content && content !== "") {
+            console.warn(`[jekyll-engine] No file found for ${file}`);
+            return "";
+        }
         return translateLiquid(content, {isInclude: true});
     }
 
@@ -63,7 +72,17 @@ export class Engine {
         });
     }
 
-    async render(source, props, globals) {
+    getComponent(name) {
+        const key = `components/${name}/${name}.jekyll.html`;
+        return this.files?.[key];
+    }
+
+    async render(name, props, globals) {
+        let source = this.getComponent(name);
+        if (!source) {
+            console.warn(`[jekyll-engine] No component found for ${name}`);
+            return "";
+        }
         source = translateLiquid(source, {});
         if (!globals || typeof globals !== "object") globals = {};
         props = { ...globals, include: props };
