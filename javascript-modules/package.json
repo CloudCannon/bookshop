@@ -5,6 +5,7 @@
         "cloudcannon-structures", 
         "live",
         "renderer",
+        "styles",
         "toml-narrator",
         "engines/jekyll-engine"
     ],
