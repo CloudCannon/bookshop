@@ -1,3 +1,4 @@
+import test from 'ava';
 import { Engine } from './main.js';
 
 const files = {
@@ -7,32 +8,32 @@ const files = {
 
 const je = new Engine({files});
 
-test("basic rendering", async () => {
+test("basic rendering", async t => {
     const rendered = await je.render("{{ include.title }}", { title: "test" });
-    expect(rendered).toBe("test");
+    t.is(rendered, "test");
 });
 
-test("should render an include", async () => {
+test("should render an include", async t => {
     const rendered = await je.render(`{% include title-include title="Hello World" %}`);
-    expect(rendered).toBe("<h1>Hello World</h1>");
+    t.is(rendered, "<h1>Hello World</h1>");
 });
 
-test("should not pass through unscoped props", async () => {
+test("should not pass through unscoped props", async t => {
     const rendered = await je.render(`{% include title-global title="Hello World" %}`);
-    expect(rendered).toBe("<h1></h1>");
+    t.is(rendered, "<h1></h1>");
 });
 
-test("should pass through global data", async () => {
+test("should pass through global data", async t => {
     const rendered = await je.render(`{% include title-global %}`, {}, { title: "test" });
-    expect(rendered).toBe("<h1>test</h1>");
+    t.is(rendered, "<h1>test</h1>");
 });
 
-test("should implement bind syntax", async () => {
+test("should implement bind syntax", async t => {
     const rendered = await je.render(`{% include title-include bind=include %}`, { title: "nested" });
-    expect(rendered).toBe("<h1>nested</h1>");
+    t.is(rendered, "<h1>nested</h1>");
 });
 
-test("should handle deep binds", async () => {
+test("should handle deep binds", async t => {
     const rendered = await je.render(`{% include title-include bind=include.book %}`, { book: { title: "Bookshop" } });
-    expect(rendered).toBe("<h1>Bookshop</h1>");
+    t.is(rendered, "<h1>Bookshop</h1>");
 });
