@@ -1,16 +1,18 @@
+const test = require('ava');
+const {f} = require('./util/_test-helpers');
 const {RewriteTOML} = require('./main');
 
-test("should do nothing if nothing needs to be done", () => {
+test("should do nothing if nothing needs to be done", t => {
   bookshop_toml = f`
   a = "b"
   `
   expected_toml = f`
   a = "b"
   `
-  expect(RewriteTOML(bookshop_toml)).toBe(expected_toml);
+  t.is(RewriteTOML(bookshop_toml), expected_toml);
 });
 
-test("should rewrite a plain comment", () => {
+test("should rewrite a plain comment", t => {
   bookshop_toml = f`
   blog = false #: Comment on a boolean
   `
@@ -18,10 +20,10 @@ test("should rewrite a plain comment", () => {
   blog--bookshop_comment = "Comment on a boolean"
   blog = false #: Comment on a boolean
   `
-  expect(RewriteTOML(bookshop_toml)).toBe(expected_toml);
+  t.is(RewriteTOML(bookshop_toml), expected_toml);
 });
 
-test("should rewrite a string comment", () => {
+test("should rewrite a string comment", t => {
   bookshop_toml = f`
   blog = "Blog Title" #: Comment on a string
   `
@@ -29,10 +31,10 @@ test("should rewrite a string comment", () => {
   blog--bookshop_comment = "Comment on a string"
   blog = "Blog Title" #: Comment on a string
   `
-  expect(RewriteTOML(bookshop_toml)).toBe(expected_toml);
+  t.is(RewriteTOML(bookshop_toml), expected_toml);
 });
 
-test("should rewrite a nested comment", () => {
+test("should rewrite a nested comment", t => {
   bookshop_toml = f`
   blog.title = "Blog Title" #: Nested comment
   `
@@ -40,20 +42,20 @@ test("should rewrite a nested comment", () => {
   blog.title--bookshop_comment = "Nested comment"
   blog.title = "Blog Title" #: Nested comment
   `
-  expect(RewriteTOML(bookshop_toml)).toBe(expected_toml);
+  t.is(RewriteTOML(bookshop_toml), expected_toml);
 });
 
-test("should not rewrite a non-comment hashtag", () => {
+test("should not rewrite a non-comment hashtag", t => {
   bookshop_toml = f`
   color = "#407AFC"
   `
   expected_toml = f`
   color = "#407AFC"
   `
-  expect(RewriteTOML(bookshop_toml)).toBe(expected_toml);
+  t.is(RewriteTOML(bookshop_toml), expected_toml);
 });
 
-test("should pick up a second hashtag after a non-comment hashtag", () => {
+test("should pick up a second hashtag after a non-comment hashtag", t => {
   bookshop_toml = f`
   color = "#407AFC" #: Color comment
   `
@@ -61,10 +63,10 @@ test("should pick up a second hashtag after a non-comment hashtag", () => {
   color--bookshop_comment = "Color comment"
   color = "#407AFC" #: Color comment
   `
-  expect(RewriteTOML(bookshop_toml)).toBe(expected_toml);
+  t.is(RewriteTOML(bookshop_toml), expected_toml);
 });
 
-test("should rewrite a commented array", () => {
+test("should rewrite a commented array", t => {
   bookshop_toml = f`
   links = ["a", "b"] #: Array Comment
   `
@@ -72,10 +74,10 @@ test("should rewrite a commented array", () => {
   links--bookshop_comment = "Array Comment"
   links = ["a", "b"] #: Array Comment
   `
-  expect(RewriteTOML(bookshop_toml)).toBe(expected_toml);
+  t.is(RewriteTOML(bookshop_toml), expected_toml);
 });
 
-test("should rewrite an object heading", () => {
+test("should rewrite an object heading", t => {
   bookshop_toml = f`
   [thing.inner] #: Hello from a heading
   `
@@ -83,10 +85,10 @@ test("should rewrite an object heading", () => {
   [thing.inner] #: Hello from a heading
   --bookshop_comment = "Hello from a heading"
   `
-  expect(RewriteTOML(bookshop_toml)).toBe(expected_toml);
+  t.is(RewriteTOML(bookshop_toml), expected_toml);
 });
 
-test("should rewrite an array heading", () => {
+test("should rewrite an array heading", t => {
   bookshop_toml = f`
   [[thing.inner]] #: Hello from an array heading
   `
@@ -94,5 +96,5 @@ test("should rewrite an array heading", () => {
   [[thing.inner]] #: Hello from an array heading
   --bookshop_comment = "Hello from an array heading"
   `
-  expect(RewriteTOML(bookshop_toml)).toBe(expected_toml);
+  t.is(RewriteTOML(bookshop_toml), expected_toml);
 });
