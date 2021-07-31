@@ -1,57 +1,52 @@
+import test from 'ava';
 import path from 'path';
 import bookshopStylePlugin from './bookshopStylePlugin.js'
 import esbuild from 'esbuild';
 
-test('bookshopStylePlugin should be defined', () => {
-    expect(bookshopStylePlugin).toBeDefined();
-});
-
-const getCssResult = async () => {
-    const dir = __dirname(import.meta.url);
-    return await esbuild.build({
+let compiledCSS = null;
+test.before(async t => {
+    compiledCSS = await esbuild.build({
         stdin: {
             contents: `import files from "__bookshop_styles__";console.log(files);`,
-            resolveDir: dir,
+            resolveDir: process.cwd(),
             sourcefile: 'virtual.js'
         },
         plugins: [
             bookshopStylePlugin({
-                bookshopDirs: [path.join(dir, './.test/fixtures')]
+                bookshopDirs: [path.join(process.cwd(), './.test/fixtures')]
             }),
         ],
         format: 'esm',
         write: false,
         bundle: true
     });
-}
-
-test('import and compile css', async () => {
-    const result = await getCssResult();
-
-    expect(result.errors.length).toBe(0);
-    expect(result.warnings.length).toBe(0);
-
-    expect(result.outputFiles[0].text).toContain(`palevioletred`);
-    expect(result.outputFiles[0].text).toContain(`palegoldenrod`);
 });
 
-test('sort shared css above component css', async () => {
-    const result = await getCssResult();
+test('bookshopStylePlugin should be defined', async t => {
+    t.truthy(bookshopStylePlugin);
+});
 
+test('css should compile without errors or warnings', async t => {
+    t.is(compiledCSS.errors.length, 0);
+    t.is(compiledCSS.warnings.length, 0);
+});
+
+test('css should compile components', async t => {
+    t.regex(compiledCSS.outputFiles[0].text, /palevioletred/);
+    t.regex(compiledCSS.outputFiles[0].text, /palegoldenrod/);
+});
+
+test('sort shared css above component css', async t => {
     const matcher = /content: "shared";.*content: "component";/;
-    expect(result.outputFiles[0].text).toMatch(matcher);
+    t.regex(compiledCSS.outputFiles[0].text, matcher);
 });
 
-test('sort css files alphabetically', async () => {
-    const result = await getCssResult();
-
+test('sort css files alphabetically', async t => {
     const matcher = /palevioletred.*palegoldenrod/;
-    expect(result.outputFiles[0].text).toMatch(matcher);
+    t.regex(compiledCSS.outputFiles[0].text, matcher);
 });
 
-test('discover and run postcss', async () => {
-    const result = await getCssResult();
-
+test('discover and run postcss', async t => {
     const matcher = /--14-30: clamp/;
-    expect(result.outputFiles[0].text).toMatch(matcher);
+    t.regex(compiledCSS.outputFiles[0].text, matcher);
 });
