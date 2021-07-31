@@ -1,17 +1,19 @@
+const test = require('ava');
+const helpers = require('./util/_test-helpers');
 const Testables = require('./main');
 
-test("should create pretty component names", () => {
-  const label = Testables.NiceLabel(Testables.GetComponentKey(base_bookshop_path));
-  expect(label).toBe("Component Subcomponent");
+test("should create pretty component names", t => {
+  const label = Testables.NiceLabel(Testables.GetComponentKey(helpers.base_bookshop_path));
+  t.is(label, "Component Subcomponent");
 });
 
-test("should get component key", () => {
+test("should get component key", t => {
   const key = Testables.GetComponentKey("a/b/c/c.svelte");
-  expect(key).toBe("a/b/c");
+  t.is(key, "a/b/c");
 });
 
-test("should merge component definitions", () => {
-  const bookshop_component = loadTestTOML(f`
+test("should merge component definitions", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.f`
   [component]
   array_structures = [ "content_blocks" ]
   label = "Unique Component"
@@ -19,9 +21,9 @@ test("should merge component definitions", () => {
   icon = "nature_people"
   tags = [ "one", "two", "three" ]
   `);
-  const bookshop_structure = Testables.TransformComponent(base_bookshop_path, bookshop_component)
+  const bookshop_structure = Testables.TransformComponent(helpers.base_bookshop_path, bookshop_component)
   
-  expect(bookshop_structure).toEqual([{
+  t.deepEqual(bookshop_structure, [{
     "array_structures": [ "content_blocks", "bookshop_components" ],
     "label": "Unique Component",
     "description": "Unique Component Description",
@@ -33,14 +35,14 @@ test("should merge component definitions", () => {
   }]);
 });
 
-test("should hide hidden components", () => {
-  const bookshop_component = loadTestTOML(f`
+test("should hide hidden components", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.f`
   [component]
   _hidden = true
   `);
-  const bookshop_structure = Testables.TransformComponent(base_bookshop_path, bookshop_component)
+  const bookshop_structure = Testables.TransformComponent(helpers.base_bookshop_path, bookshop_component)
   
-  expect(bookshop_structure).toEqual([{
+  t.deepEqual(bookshop_structure, [{
     "array_structures": [],
     "label": "Component Subcomponent",
     "value": {
@@ -49,17 +51,17 @@ test("should hide hidden components", () => {
   }]);
 });
 
-test("should add select data", () => {
-  const bookshop_component = loadTestTOML(base_bookshop_config + f`
+test("should add select data", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   [props]
   title = "Mr Fancy"
   alignment.select = ["left", "right"]
   `);
   const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
   
-  expect(bookshop_structure).toEqual([
+  t.deepEqual(bookshop_structure, [
     {
-      ...base_bookshop_output,
+      ...helpers.base_bookshop_output,
       "_select_data": {
         "alignments": ["left", "right"]
       },
@@ -72,8 +74,8 @@ test("should add select data", () => {
   ]);
 });
 
-test("should add a select data default", () => {
-  const bookshop_component = loadTestTOML(base_bookshop_config + f`
+test("should add a select data default", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   [props]
   title = "Mr Fancy"
   alignment.select = ["left", "right"]
@@ -81,9 +83,9 @@ test("should add a select data default", () => {
   `);
   const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
   
-  expect(bookshop_structure).toEqual([
+  t.deepEqual(bookshop_structure, [
     {
-      ...base_bookshop_output,
+      ...helpers.base_bookshop_output,
       "_select_data": {
         "alignments": ["left", "right"]
       },
@@ -96,8 +98,8 @@ test("should add a select data default", () => {
   ]);
 });
 
-test("should pull through defaults", () => {
-  const bookshop_component = loadTestTOML(base_bookshop_config + f`
+test("should pull through defaults", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   [props]
   title.default = "Ananas"
   count_number.default = 4
@@ -105,9 +107,9 @@ test("should pull through defaults", () => {
   `);
   const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
   
-  expect(bookshop_structure).toEqual([
+  t.deepEqual(bookshop_structure, [
     {
-      ...base_bookshop_output,
+      ...helpers.base_bookshop_output,
       "value": {
         "_bookshop_name": "a/b",
         "title": "Ananas",
@@ -118,16 +120,16 @@ test("should pull through defaults", () => {
   ]);
 });
 
-test("should do nothing with preview", () => {
-  const bookshop_component = loadTestTOML(base_bookshop_config + f`
+test("should do nothing with preview", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   [props]
   title.preview = ["a", "b", "c"]
   `);
   const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
   
-  expect(bookshop_structure).toEqual([
+  t.deepEqual(bookshop_structure, [
     {
-      ...base_bookshop_output,
+      ...helpers.base_bookshop_output,
       "value": {
         "_bookshop_name": "a/b",
         "title": null
@@ -136,8 +138,8 @@ test("should do nothing with preview", () => {
   ]);
 });
 
-test("should handle nested special keys", () => {
-  const bookshop_component = loadTestTOML(base_bookshop_config + f`
+test("should handle nested special keys", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   [props]
   item.nest.default = "Things" #: Nested
   item.nest-two.select = ["a", "b"] #: Grape
@@ -145,9 +147,9 @@ test("should handle nested special keys", () => {
   `);
   const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
   
-  expect(bookshop_structure).toEqual([
+  t.deepEqual(bookshop_structure, [
     {
-      ...base_bookshop_output,
+      ...helpers.base_bookshop_output,
       "_comments": {
         "nest": "Nested",
         "nest-two": "Grape"
@@ -166,17 +168,17 @@ test("should handle nested special keys", () => {
   ]);
 });
 
-test("should handle nested comments", () => {
-  const bookshop_component = loadTestTOML(base_bookshop_config + f`
+test("should handle nested comments", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   
   [props]
   item.nest = "Things" #: Nested
   `);
   const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
   
-  expect(bookshop_structure).toEqual([
+  t.deepEqual(bookshop_structure, [
     {
-      ...base_bookshop_output,
+      ...helpers.base_bookshop_output,
       "_comments": {
         "nest": "Nested"
       },
@@ -192,17 +194,17 @@ test("should handle nested comments", () => {
 });
 
 
-test("should handle deep nesting", () => {
-  const bookshop_component = loadTestTOML(base_bookshop_config + f`
+test("should handle deep nesting", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   
   [props]
   item.a.b.c.d.e.f.g = false #: This is deep
   `);
   const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
   
-  expect(bookshop_structure).toEqual([
+  t.deepEqual(bookshop_structure, [
     {
-      ...base_bookshop_output,
+      ...helpers.base_bookshop_output,
       "_comments": {
         "g": "This is deep"
       },
@@ -230,8 +232,8 @@ test("should handle deep nesting", () => {
 });
 
 
-test("should handle mixed nesting", () => {
-  const bookshop_component = loadTestTOML(base_bookshop_config + f`
+test("should handle mixed nesting", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   
   [props]
   [props.author] #: Who wrote this?
@@ -239,9 +241,9 @@ test("should handle mixed nesting", () => {
   `);
   const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
   
-  expect(bookshop_structure).toEqual([
+  t.deepEqual(bookshop_structure, [
     {
-      ...base_bookshop_output,
+      ...helpers.base_bookshop_output,
       "_comments": {
         "author": "Who wrote this?",
         "name": "Last name"
@@ -258,8 +260,8 @@ test("should handle mixed nesting", () => {
 });
 
 
-test("should create sub-array structures", () => {
-  const bookshop_component = loadTestTOML(base_bookshop_config + f`
+test("should create sub-array structures", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   
   [[props.links]] #: Array of objects
   link_content = "I am a link" #: Inner comment
@@ -267,9 +269,9 @@ test("should create sub-array structures", () => {
   `);
   const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
   
-  expect(bookshop_structure).toEqual([
+  t.deepEqual(bookshop_structure, [
     {
-      ...base_bookshop_output,
+      ...helpers.base_bookshop_output,
       "_comments": {
         "links": "Array of objects"
       },
@@ -300,8 +302,8 @@ test("should create sub-array structures", () => {
   
 });
 
-test("should not create a sub-structure for raw fields", () => {
-  const bookshop_component = loadTestTOML(base_bookshop_config + f`
+test("should not create a sub-structure for raw fields", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   raw_fields = ["links"]
   
   [[props.links]] #: Array of objects
@@ -310,9 +312,9 @@ test("should not create a sub-structure for raw fields", () => {
   `);
   const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
   
-  expect(bookshop_structure).toEqual([
+  t.deepEqual(bookshop_structure, [
     {
-      ...base_bookshop_output,
+      ...helpers.base_bookshop_output,
       "_comments": {
         "links": "Array of objects"
       },
@@ -326,17 +328,17 @@ test("should not create a sub-structure for raw fields", () => {
   
 });
 
-test("should preserve TOML comments", () => {
-  const bookshop_component = loadTestTOML(base_bookshop_config + f`
+test("should preserve TOML comments", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   
   [props]
   title = "This is the title" #: Type the title here please
   `);
   const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
   
-  expect(bookshop_structure).toEqual([
+  t.deepEqual(bookshop_structure, [
     {
-      ...base_bookshop_output,
+      ...helpers.base_bookshop_output,
       "_comments": {
         "title": "Type the title here please"
       },
@@ -350,8 +352,8 @@ test("should preserve TOML comments", () => {
 });
 
 
-test("should handle a complex example", () => {
-  const bookshop_component = loadTestTOML(base_bookshop_config + f`
+test("should handle a complex example", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   
   [props]
   title = "This is the title"           #: Used for the slug
@@ -374,9 +376,9 @@ test("should handle a complex example", () => {
   `);
   const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
   
-  expect(bookshop_structure).toEqual([
+  t.deepEqual(bookshop_structure, [
     {
-      ...base_bookshop_output,
+      ...helpers.base_bookshop_output,
       "_comments": {
         "title": "Used for the slug",
         "big": "Whether to show the image or not",
