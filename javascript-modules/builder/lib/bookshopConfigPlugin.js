@@ -43,8 +43,7 @@ export default (options) => ({
             const output = `
 const engines = [];
 ${engines.map(bundledEngine).join('\n')}
-import components from "__bookshop_glob__(.bookshop.toml)";
-export default {engines, components};
+export default engines;
             `;
             return { contents: output, resolveDir: args.pluginData.resolveDir };
         });
