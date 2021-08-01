@@ -1,8 +1,6 @@
 import path from "path";
 import Builder from "@bookshop/builder";
 import { Command } from "commander";
-import sveltePlugin from "esbuild-svelte";
-import svelteFixPlugin from "./lib/build/svelteFixPlugin.js"
 import {__dirname} from "./lib/build/util.js"
 
 const program = new Command();
@@ -18,7 +16,6 @@ async function run() {
 
     const builderOptions = {
         esbuild: {
-            plugins: [svelteFixPlugin],
             outfile: outputFile,
             entryPoints: [path.join(__dirname(import.meta.url), 'lib/app/app.js')]
         },
