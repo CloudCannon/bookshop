@@ -13,6 +13,14 @@ const files = {
 
 const je = new Engine({files});
 
+test("should find components", async t => {
+    t.is(je.hasComponent('title'), true);
+});
+
+test("should not find components", async t => {
+    t.is(je.hasComponent('subtitle'), false);
+});
+
 test("basic rendering", async t => {
     const rendered = await je.render("title", { title: "test" });
     t.is(rendered, "<h1>test</h1>");

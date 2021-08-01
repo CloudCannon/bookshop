@@ -20,6 +20,7 @@ export class Engine {
             ...options,
         };
 
+        this.key = 'jekyll';
         this.name = options.name;
         this.files = options.files;
         this.plugins = options.plugins || [];
@@ -72,9 +73,18 @@ export class Engine {
         });
     }
 
+    getComponentKey(name) {
+        return `components/${name}/${name}.jekyll.html`;
+    }
+
     getComponent(name) {
-        const key = `components/${name}/${name}.jekyll.html`;
+        const key = this.getComponentKey(name);
         return this.files?.[key];
+    }
+
+    hasComponent(name) {
+        const key = this.getComponentKey(name);
+        return !!this.files?.[key];
     }
 
     async render(name, props, globals) {

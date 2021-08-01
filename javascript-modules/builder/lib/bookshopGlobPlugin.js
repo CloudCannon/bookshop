@@ -25,12 +25,6 @@ export default (options) => ({
             const files = (await fastGlob(`components/**/*@${args.path}`, {
                 cwd: args.pluginData.resolveDir,
             })).sort();
-            // const sanitizePath = (inputPath) => {
-            //     args.pluginData.bookshopDirs.forEach(bookshopDir => {
-            //         inputPath = inputPath.replace(bookshopDir, "")
-            //     });
-            //     return inputPath;
-            // };
             const output = `
             const files = {};
             ${files.map(importFile).join('\n')}

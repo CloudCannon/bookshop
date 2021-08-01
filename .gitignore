@@ -10,3 +10,4 @@ package/
 yarn-error.log
 vendored-pluralize.js
 javascript-modules/live/.test/manual/index.js
+javascript-modules/browser/.test/manual/index.js

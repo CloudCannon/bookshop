@@ -1,0 +1,36 @@
+{
+  "name": "@bookshop/browser",
+  "version": "2.0.0-alpha.53",
+  "description": "Component browser for bookshop components",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "ava -v --node-arguments=\"--experimental-json-modules\"",
+    "manual-test": "node main.js -b .test/fixtures -o .test/manual/index.js && cd .test/manual && python -m SimpleHTTPServer"
+  },
+  "author": "@bglw",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "ava": "^3.15.0",
+    "fast-glob": "^3.2.7"
+  },
+  "engines": {
+    "npm": "please-use-yarn",
+    "node": "^14.16",
+    "yarn": "^1.22"
+  },
+  "dependencies": {
+    "@codemirror/basic-setup": "^0.18.2",
+    "@codemirror/commands": "^0.18.3",
+    "@codemirror/legacy-modes": "^0.18.1",
+    "@codemirror/state": "^0.18.7",
+    "@codemirror/stream-parser": "^0.18.2",
+    "@codemirror/view": "^0.18.19",
+    "@material-design-icons/svg": "^0.2.7",
+    "commander": "^8.1.0",
+    "esbuild-svelte": "^0.5.3"
+  }
+}

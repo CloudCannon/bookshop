@@ -5,7 +5,7 @@ const pluralize = require('./vendored-pluralize.js');
 // Generates the bookshop key used to reference this component
 // Turns "a/b/b.bookshop.toml" into "a/b"
 const GetComponentKey = (componentPath) => {
-    let base = componentPath.split(".")[0];
+    let base = componentPath.replace(/^.*components\//, '').split(".")[0];
     let parts = base.split("/");
     const l = parts.length;
     if (l >= 2 && parts[l-1] === parts[l-2]) {
