@@ -5,7 +5,7 @@ const fs = require('fs');
 const execSync = require('child_process').execSync;
 const readline = require('readline');
 
-const packages = require('./bookshop-packages.json');
+const packages = require('../bookshop-packages.json');
 const ver = process.argv[2];
 
 const run = async () => {
@@ -68,7 +68,7 @@ const run = async () => {
     console.log(`* * Tests passed`);
 
     packages.version = version;
-    fs.writeFileSync(path.join(__dirname, 'bookshop-packages.json'), JSON.stringify(packages, null, 2));
+    fs.writeFileSync(path.join(__dirname, '../bookshop-packages.json'), JSON.stringify(packages, null, 2));
     console.log(`* * bookshop-packages.json updated`);
 
     console.log(`* Publishing packages`);
@@ -227,7 +227,7 @@ const formatGemVersion = (ver) => ver.replace(/-/, '.pre.');
 const versionGems = (gems, version) => {
     gems.forEach(gem => {
         const packageName = path.basename(gem);
-        const packageVersionFile = path.join(__dirname, gem, `lib/${packageName}/version.rb`);
+        const packageVersionFile = path.join(__dirname, '../', gem, `lib/${packageName}/version.rb`);
         let versionFileContents = fs.readFileSync(packageVersionFile, 'utf8');
         if (!/VERSION/.test(versionFileContents)) {
             console.error(box(`${packageName} version.rb file does not contain a VERSION constant.`));
@@ -250,7 +250,7 @@ const nextVersion = (ver) => {
 // TODO: async & error handling
 const vendorGems = async (gems, version) => {
     Object.entries(gems).forEach(([gem, opts]) => {
-        const target = path.join(__dirname, gem);
+        const target = path.join(__dirname, '../', gem);
         if (opts.vendor_from_npm && opts.vendor_from_npm.length) {
             execSync(`rm -rf ${target}/node_modules && mkdir -p ${target}/node_modules/@bookshop`);
             opts.vendor_from_npm.forEach(pkg => {

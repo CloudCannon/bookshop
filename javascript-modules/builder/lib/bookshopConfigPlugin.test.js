@@ -30,6 +30,6 @@ test('build @bookshop/jekyll-engine without failures', async t => {
     
     t.is(result.errors.length, 0);
     t.is(result.warnings.length, 0);
-    t.regex(result.outputFiles[0].text, /import {Engine as Engine0} from "@bookshop\/jekyll-engine";/);
+    t.regex(result.outputFiles[0].text, /import {\s*Engine as Engine0\s*} from "@bookshop\/jekyll-engine";/);
     t.regex(result.outputFiles[0].text, /import Engine0Files from "__bookshop_glob__\(.jekyll.html\)";/);
 });

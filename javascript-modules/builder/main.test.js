@@ -17,10 +17,11 @@ test('should shake the tree', async t => {
     });
     t.is(result.errors.length, 0);
     t.is(result.warnings.length, 0);
-    t.is(result.outputFiles[0].text, `// ../engines/jekyll-engine/lib/builder.js
+    const fileWithoutComments = result.outputFiles[0].text.replace(/^\/\/.*$/gm, '//');
+    t.is(fileWithoutComments, `//
 var extensions = [".jekyll.html"];
 
-// .test/fixtures/virtual.js
+//
 console.log(extensions);
 `);
 });
