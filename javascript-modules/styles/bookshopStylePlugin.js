@@ -26,10 +26,7 @@ const findPostcssConfig = async (primaryBookshopDir) => {
         const bookshopPostcssPath = path.join(primaryBookshopDir, 'bookshop/*postcss*');
         const postcssFiles = (await fastGlob(bookshopPostcssPath));
         if (postcssFiles.length) {
-            console.log("WEW");
             config = await postcssConfig({}, path.join(primaryBookshopDir, 'bookshop'));
-            console.log("WEW");
-            console.log(config);
         } else {
             config = await postcssConfig();
         }
