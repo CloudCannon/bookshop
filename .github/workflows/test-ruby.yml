@@ -21,16 +21,16 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
-        working-directory: ./generator-plugins/jekyll-bookshop
+        working-directory: ./generator-plugins/jekyll/jekyll-bookshop
     - name: Set up cloudcannon-jekyll-bookshop Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
-        working-directory: ./generator-plugins/cloudcannon-jekyll-bookshop
+        working-directory: ./generator-plugins/jekyll/cloudcannon-jekyll-bookshop
     - name: Run jekyll-bookshop tests
       run: bundle exec rake test
-      working-directory: ./generator-plugins/jekyll-bookshop
+      working-directory: ./generator-plugins/jekyll/jekyll-bookshop
     - name: Run cloudcannon-jekyll-bookshop tests
       run: bundle exec rake test
-      working-directory: ./generator-plugins/cloudcannon-jekyll-bookshop
+      working-directory: ./generator-plugins/jekyll/cloudcannon-jekyll-bookshop
