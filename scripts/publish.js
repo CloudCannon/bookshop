@@ -214,13 +214,14 @@ const checkVersion = ver => /^\d+\.\d+\.\d+(-[a-z]+\.\d+)?$/.test(ver);
 
 const versionNpm = (pkgs, version) => {
     pkgs.forEach(pkg => {
-        const yarnBump = execSync(`cd ${pkg} && yarn version ${version}`);
-        if (yarnBump.stderr) {
+        const npmBump = execSync(`npm --prefix ${pkg} version ${version} --allow-same-version --no-git-tag-version --no-commit-hooks`);
+        if (npmBump.stderr) {
             console.error(box(`yarn version bump failed:
-                               ${yarnBump.stderr}`));
+                               ${npmBump.stderr}`));
             process.exit(1);
         }
     });
+    execSync(`cd javascript-modules && yarn up '@bookshop/*@${version}'`);
 };
 
 const formatGemVersion = (ver) => ver.replace(/-/, '.pre.');
