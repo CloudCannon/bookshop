@@ -16,12 +16,14 @@ module CloudCannonJekyllBookshop
       })
       expect(data_diff).must_equal []
 
-      collection_diff = Hashdiff.diff(output_data.dig("site", "posts", 1), {
+      first_post = output_data.dig("site", "posts", 1)
+      expect(first_post["date"]).must_match(/2021-01-01 00:00:00/)
+      first_post.delete "date" # Skip strict date check due to timezone issues across machines
+      collection_diff = Hashdiff.diff(first_post, {
         "draft"         => false,
         "categories"    => [],
         "title"         => "Hello World",
         "image"         => "https://placekitten.com/120/120",
-        "date"          => "2021-01-01 00:00:00 +1300",
         "slug"          => "hello-world",
         "ext"           => ".md",
         "tags"          => [],
