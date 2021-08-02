@@ -3,3 +3,11 @@ node_modules
 .jekyll-cache
 _site
 *.gem
+generator-plugins/jekyll/cloudcannon-jekyll-bookshop/spec/destination
+generator-plugins/jekyll/jekyll-bookshop/spec/destination
+*.tgz
+package/
+yarn-error.log
+vendored-pluralize.js
+javascript-modules/live/.test/manual/index.js
+javascript-modules/browser/.test/manual/index.js

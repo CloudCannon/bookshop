@@ -1,0 +1,27 @@
+require: rubocop-jekyll
+
+inherit_gem:
+  rubocop-jekyll: .rubocop.yml
+
+AllCops:
+  TargetRubyVersion: 2.4
+  Include:
+    - lib/**/*.rb
+    - spec/**/*.rb
+
+  Exclude:
+    - .gitignore
+    - .rspec
+    - .rubocop.yml
+    - .travis.yml
+    - Gemfile.lock
+    - HISTORY.md
+    - LICENSE.txt
+    - README.md
+    - script/**/*
+    - vendor/**/*
+    - gemfiles/**/*
+
+Layout/LineLength:
+  Exclude:
+    - spec/output_spec.rb

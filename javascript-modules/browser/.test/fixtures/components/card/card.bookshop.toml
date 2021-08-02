@@ -1,0 +1,6 @@
+[component]
+label = "Card"
+icon = "nature_people"
+
+[props]
+text = "This is some text"

@@ -1,0 +1,18 @@
+{
+    "private": true,
+    "workspaces": [
+        "browser",
+        "builder",
+        "cloudcannon-structures", 
+        "live",
+        "styles",
+        "toml-narrator",
+        "engines/jekyll-engine"
+    ],
+    "scripts": {
+        "prepare": "./cloudcannon-structures/vendor-hoisted-pluralize"
+    },
+    "engines": {
+      "npm": "please-use-yarn"
+    }
+}

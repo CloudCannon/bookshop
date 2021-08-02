@@ -1,0 +1,17 @@
+[component]
+array_structures = [ "item_array_structure" ]
+label = "Item Label"
+description = "Item Description"
+icon = "flare"
+tags = ["Item Tag"]
+
+[props]
+one = "one" #: One
+two = false
+three.default = "three" #: Three
+four = ["four"]
+five.select = ["5", "five", "V"] #: Five
+five.default = "5"
+[[six]] #: Six
+seven = "seven" #: Seven
+eight.select = ["eight", "ate"]

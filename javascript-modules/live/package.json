@@ -1,0 +1,22 @@
+{
+  "name": "@bookshop/live",
+  "version": "2.0.0-alpha.53",
+  "description": "Live component renderer for editing from a CMS",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "ava -v",
+    "manual-test": "node main.js -b .test/fixtures -o .test/manual/index.js && cd .test/manual && python -m SimpleHTTPServer"
+  },
+  "author": "@bglw",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "ava": "^3.15.0"
+  },
+  "engines": {
+    "npm": "please-use-yarn"
+  }
+}

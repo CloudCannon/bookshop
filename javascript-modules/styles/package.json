@@ -1,0 +1,28 @@
+{
+  "name": "@bookshop/styles",
+  "version": "2.0.0-alpha.53",
+  "description": "Bookshop style importer for esbuild",
+  "type": "module",
+  "main": "bookshopStylePlugin.js",
+  "scripts": {
+    "test": "ava -v"
+  },
+  "author": "@bglw",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "ava": "^3.15.0",
+    "postcss-fluidvars": "^1.1.2"
+  },
+  "engines": {
+    "npm": "please-use-yarn"
+  },
+  "dependencies": {
+    "fast-glob": "^3.2.7",
+    "postcss": "^8.3.6",
+    "postcss-load-config": "^3.1.0",
+    "sass": "^1.37.0"
+  }
+}
