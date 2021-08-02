@@ -18,7 +18,12 @@ export default (options) => ({
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-file' }, async (args) => {
             const filePath = path.join(args.pluginData.resolveDir, args.path);
             const fileContents = await fs.readFile(filePath, 'utf8');
-            return { contents: fileContents, loader: 'text', resolveDir: args.pluginData.resolveDir };
+            return { 
+                contents: fileContents, 
+                loader: 'text', 
+                resolveDir: args.pluginData.resolveDir,
+                watchFiles: [filePath]
+            };
         });
     },
 });

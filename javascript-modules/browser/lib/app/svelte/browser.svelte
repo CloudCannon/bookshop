@@ -41,13 +41,14 @@
         
         const newComponentSelected = previousComponent !== component;
         const newComponentConfig = baseYaml !== componentDetail.yaml;
+        console.log(editedYaml, baseYaml, componentDetail.yaml);
         if (newComponentSelected || newComponentConfig) {
             editedYaml = baseYaml = componentDetail.yaml;
         }
         
         previousComponent = component;
     }
-    $: refreshComponent(selectedComponent, framework);
+    $: if (hydratedComponents) refreshComponent(selectedComponent, framework);
     
     const render = async (component, yamlProps, framework) => {
         if (framework === 'none') return;

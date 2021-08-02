@@ -6,7 +6,8 @@
   "main": "main.js",
   "scripts": {
     "test": "ava -v --node-arguments=\"--experimental-json-modules\"",
-    "manual-test": "node main.js -b .test/fixtures -o .test/manual/index.js && cd .test/manual && python -m SimpleHTTPServer"
+    "manual-test-serve": "cd .test/manual && python -m SimpleHTTPServer",
+    "manual-test-watch": "node main.js -b .test/fixtures -p 7923"
   },
   "author": "@bglw",
   "license": "MIT",
@@ -31,6 +32,8 @@
     "@codemirror/view": "^0.18.19",
     "@material-design-icons/svg": "^0.2.7",
     "commander": "^8.1.0",
-    "esbuild-svelte": "^0.5.3"
+    "esbuild-svelte": "^0.5.3",
+    "express": "^4.17.1",
+    "express-ws": "^5.0.2"
   }
 }
