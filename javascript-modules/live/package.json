@@ -17,8 +17,6 @@
     "ava": "^3.15.0"
   },
   "engines": {
-    "npm": "please-use-yarn",
-    "node": "^14.16",
-    "yarn": "^1.22"
+    "npm": "please-use-yarn"
   }
 }

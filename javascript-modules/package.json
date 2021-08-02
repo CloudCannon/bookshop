@@ -13,8 +13,6 @@
         "prepare": "./cloudcannon-structures/vendor-hoisted-pluralize"
     },
     "engines": {
-      "npm": "please-use-yarn",
-      "node": "^14.16",
-      "yarn": "^1.22"
+      "npm": "please-use-yarn"
     }
 }

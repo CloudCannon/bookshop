@@ -22,8 +22,6 @@
     "pluralize": "^8.0.0"
   },
   "engines": {
-    "npm": "please-use-yarn",
-    "node": "^14.16",
-    "yarn": "^1.22"
+    "npm": "please-use-yarn"
   }
 }

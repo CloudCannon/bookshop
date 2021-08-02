@@ -17,9 +17,7 @@
     "postcss-fluidvars": "^1.1.2"
   },
   "engines": {
-    "npm": "please-use-yarn",
-    "node": "^14.16",
-    "yarn": "^1.22"
+    "npm": "please-use-yarn"
   },
   "dependencies": {
     "fast-glob": "^3.2.7",
