@@ -1,4 +1,8 @@
 # Bookshop
+
+[![Javascript](https://github.com/CloudCannon/bookshop/actions/workflows/test-node.yml/badge.svg?branch=main)](https://github.com/CloudCannon/bookshop/actions/workflows/test-node.yml)
+[![Ruby](https://github.com/CloudCannon/bookshop/actions/workflows/test-ruby.yml/badge.svg?branch=main)](https://github.com/CloudCannon/bookshop/actions/workflows/test-ruby.yml)
+
 Bookshop is a component development workflow for static websites.  
 Bookshop currently supports Jekyll, and will support a wider array of static site generators in the near future.
 
