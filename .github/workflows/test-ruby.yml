@@ -24,7 +24,7 @@ jobs:
       run: yarn install --frozen-lockfile
       working-directory: ./javascript-modules
     - name: Vendor node modules into ruby packages
-      run: ./publish.js vendor
+      run: ./scripts/publish.js vendor
     - name: Set up jekyll-bookshop Ruby
       uses: ruby/setup-ruby@v1
       with:
