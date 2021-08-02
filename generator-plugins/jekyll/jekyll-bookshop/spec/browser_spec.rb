@@ -8,32 +8,31 @@ module JekyllBookshop
       @site = TestHelpers.setup_site({})
     end
 
-    it "should render the bookshop renderer element" do
+    it "should render the bookshop browser element" do
       output_file = TestHelpers.read_output_file("index.html")
 
-      target = "<div data-bookshop-renderer></div>"
+      target = "<div data-bookshop-browser></div>"
       expect(output_file).must_match %r!#{Regexp.quote(target)}!
     end
 
-    it "should render the bookshop renderer dependencies" do
+    it "should render the bookshop browser dependencies" do
       output_file = TestHelpers.read_output_file("index.html")
 
-      target = "<script src=\"http://localhost:1234/bookshop.js\"></script>
-<link href=\"http://localhost:1234/renderer.css\" rel=\"stylesheet\">"
+      target = "<script src=\"//localhost:1234/bookshop.js\"></script>"
       expect(output_file).must_match %r!#{Regexp.quote(target)}!
     end
 
     it "should render the bookshop data script" do
       output_file = TestHelpers.read_output_file("index.html")
 
-      target = "window.bookshop_renderer_site_data"
+      target = "window.bookshop_browser_site_data"
       expect(output_file).must_match %r!#{Regexp.quote(target)}!
     end
 
     it "should have hydrated the bookshop data script" do
       output_file = TestHelpers.read_output_file("index.html")
 
-      target = "<script>window.bookshop_renderer_site_data = null;</script>"
+      target = "<script>window.bookshop_browser_site_data = null;</script>"
       expect(output_file).wont_match %r!#{Regexp.quote(target)}!
     end
 
