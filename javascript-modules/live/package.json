@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/live",
-  "version": "2.0.0-alpha.53",
+  "version": "2.0.0-beta.1",
   "description": "Live component renderer for editing from a CMS",
   "type": "module",
   "main": "main.js",

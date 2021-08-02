@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/cloudcannon-structures",
-  "version": "2.0.0-alpha.53",
+  "version": "2.0.0-beta.1",
   "description": "Convert a Bookshop object into a CloudCannon structure",
   "main": "main.js",
   "scripts": {
