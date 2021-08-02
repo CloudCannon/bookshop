@@ -252,7 +252,7 @@ const vendorGems = async (gems, version) => {
     Object.entries(gems).forEach(([gem, opts]) => {
         const target = path.join(__dirname, gem);
         if (opts.vendor_from_npm && opts.vendor_from_npm.length) {
-            execSync(`rm -r ${target}/node_modules && mkdir -p ${target}/node_modules/@bookshop`);
+            execSync(`rm -rf ${target}/node_modules && mkdir -p ${target}/node_modules/@bookshop`);
             opts.vendor_from_npm.forEach(pkg => {
                 execSync(`cd ${pkg} && yarn pack`);
                 execSync(`cd ${pkg} && tar -Pxzf *.tgz`);
