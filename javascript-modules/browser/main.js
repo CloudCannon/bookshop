@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import path from "path";
 import Builder from "@bookshop/builder";
 import { Command } from "commander";
