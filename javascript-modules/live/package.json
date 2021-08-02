@@ -5,7 +5,7 @@
   "type": "module",
   "main": "main.js",
   "scripts": {
-    "test": "ava -v",
+    "test": "nyc ava -v",
     "manual-test": "node main.js -b .test/fixtures -o .test/manual/index.js && cd .test/manual && python -m SimpleHTTPServer"
   },
   "bin": {
@@ -17,7 +17,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "ava": "^3.15.0"
+    "ava": "^3.15.0",
+    "nyc": "^15.1.0"
   },
   "dependencies": {
     "@bookshop/builder": "2.0.0-beta.4"

@@ -4,7 +4,7 @@
   "description": "Convert a Bookshop object into a CloudCannon structure",
   "main": "main.js",
   "scripts": {
-    "test": "ava -v"
+    "test": "nyc ava -v"
   },
   "files": [
     "main.js",
@@ -19,6 +19,7 @@
     "@bookshop/toml-narrator": "2.0.0-beta.4",
     "@ltd/j-toml": "^1.12.2",
     "ava": "^3.15.0",
+    "nyc": "^15.1.0",
     "pluralize": "^8.0.0"
   },
   "stableVersion": "2.0.0-beta.3"

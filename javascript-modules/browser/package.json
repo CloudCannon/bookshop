@@ -5,7 +5,7 @@
   "type": "module",
   "main": "main.js",
   "scripts": {
-    "test": "ava -v --node-arguments=\"--experimental-json-modules\"",
+    "test": "nyc ava -v --node-arguments=\"--experimental-json-modules\"",
     "manual-test-serve": "cd .test/manual && python -m SimpleHTTPServer",
     "manual-test-watch": "node main.js -b .test/fixtures -p 7923"
   },
@@ -19,7 +19,8 @@
   },
   "devDependencies": {
     "ava": "^3.15.0",
-    "fast-glob": "^3.2.7"
+    "fast-glob": "^3.2.7",
+    "nyc": "^15.1.0"
   },
   "dependencies": {
     "@bookshop/builder": "2.0.0-beta.4",

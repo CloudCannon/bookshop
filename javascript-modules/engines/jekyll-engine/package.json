@@ -6,7 +6,7 @@
   "sideEffects": false,
   "main": "main.js",
   "scripts": {
-    "test": "ava -v"
+    "test": "nyc ava -v"
   },
   "author": "@bglw",
   "license": "MIT",
@@ -14,7 +14,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "ava": "^3.15.0"
+    "ava": "^3.15.0",
+    "nyc": "^15.1.0"
   },
   "dependencies": {
     "esbuild": "^0.11.23",

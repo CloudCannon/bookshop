@@ -4,7 +4,7 @@
   "description": "Rewrite Bookshop TOML files to preserve comments",
   "main": "main.js",
   "scripts": {
-    "test": "ava -v"
+    "test": "nyc ava -v"
   },
   "files": [
     "main.js"
@@ -15,7 +15,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "ava": "^3.15.0"
+    "ava": "^3.15.0",
+    "nyc": "^15.1.0"
   },
   "stableVersion": "2.0.0-beta.3"
 }

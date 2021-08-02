@@ -19,3 +19,5 @@ package-lock.json
 !**/.yarn/sdks
 !**/.yarn/versions
 .pnp.*
+.nyc_output
+coverage
