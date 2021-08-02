@@ -10,7 +10,7 @@
         "engines/jekyll-engine"
     ],
     "scripts": {
-        "prepare": "./cloudcannon-structures/vendor-hoisted-pluralize"
+        "postinstall": "./cloudcannon-structures/vendor-hoisted-pluralize"
     },
     "engines": {
         "npm": "please-use-yarn"
