@@ -254,22 +254,11 @@ const vendorGems = async (gems, version) => {
         if (opts.vendor_from_npm && opts.vendor_from_npm.length) {
             execSync(`rm -r ${target}/node_modules && mkdir -p ${target}/node_modules/@bookshop`);
             opts.vendor_from_npm.forEach(pkg => {
-                let cmd = `cd ${pkg} && yarn pack`;
-                console.log(`\n$:${cmd}`);
-                execSync(cmd, {stdio: "inherit"});
-                cmd = `cd ${pkg} && tar -Pxzf *.tgz`;
-                console.log(`\n$:${cmd}`);
-                execSync(cmd, {stdio: "inherit"});
-                cmd = `cd ${pkg} && cp -R package ${target}/node_modules/@bookshop/${path.basename(pkg)}`;
-                console.log(`\n$:${cmd}`);
-                execSync(cmd, {stdio: "inherit"});
-                cmd = `cd ${pkg} && rm *.tgz && rm -r package`;
-                console.log(`\n$:${cmd}`);
-                execSync(cmd, {stdio: "inherit"});
+                execSync(`cd ${pkg} && yarn pack`);
+                execSync(`cd ${pkg} && tar -Pxzf *.tgz`);
+                execSync(`cd ${pkg} && cp -R package ${target}/node_modules/@bookshop/${path.basename(pkg)}`);
+                execSync(`cd ${pkg} && rm *.tgz && rm -r package`);
             });
-            cmd = `ls -R ${target}/node_modules/`;
-            console.log(`\n\n$:${cmd}`);
-            execSync(cmd, {stdio: "inherit"});
         }
     });
 };
@@ -289,6 +278,7 @@ const box = (str) => {
     lines.push(`╚═${max.replace(/./g, '═')}═╝`);
     return lines.join('\n');
 }
+
 
 const question = async (q) => {
     return await new Promise((resolve, reject) => {
