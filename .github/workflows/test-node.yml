@@ -27,3 +27,5 @@ jobs:
         working-directory: ${{ env.cwd }}
       - run: yarn workspaces run test
         working-directory: ${{ env.cwd }}
+      - name: Run tests without hoisted packages
+        run: ./scripts/hoistless-test.js
