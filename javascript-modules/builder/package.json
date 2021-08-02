@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/builder",
-  "version": "2.0.0-beta.4",
+  "version": "2.0.0-beta.5",
   "description": "esbuild wrapper for bringing bookshop components and engines throught to a frontend",
   "type": "module",
   "main": "main.js",
@@ -13,12 +13,12 @@
     "access": "public"
   },
   "devDependencies": {
-    "@bookshop/jekyll-engine": "2.0.0-beta.4",
+    "@bookshop/jekyll-engine": "2.0.0-beta.5",
     "ava": "^3.15.0",
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/styles": "2.0.0-beta.4",
+    "@bookshop/styles": "2.0.0-beta.5",
     "esbuild": "^0.12.17"
   },
   "stableVersion": "2.0.0-beta.3"
