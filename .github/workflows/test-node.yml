@@ -23,9 +23,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --immutable
         working-directory: ${{ env.cwd }}
-      - run: yarn workspaces run test
+      - run: yarn workspaces foreach run test
         working-directory: ${{ env.cwd }}
       - name: Run tests without hoisted packages
         run: ./scripts/hoistless-test.js
