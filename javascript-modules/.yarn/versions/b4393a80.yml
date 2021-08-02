@@ -1,0 +1,7 @@
+undecided:
+  - "@bookshop/browser"
+  - "@bookshop/builder"
+  - "@bookshop/cloudcannon-structures"
+  - "@bookshop/jekyll-engine"
+  - "@bookshop/live"
+  - "@bookshop/styles"
