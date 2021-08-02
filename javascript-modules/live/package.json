@@ -8,6 +8,9 @@
     "test": "ava -v",
     "manual-test": "node main.js -b .test/fixtures -o .test/manual/index.js && cd .test/manual && python -m SimpleHTTPServer"
   },
+  "bin": {
+    "bookshop-live": "main.js"
+  },
   "author": "@bglw",
   "license": "MIT",
   "publishConfig": {

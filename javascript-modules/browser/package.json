@@ -9,6 +9,9 @@
     "manual-test-serve": "cd .test/manual && python -m SimpleHTTPServer",
     "manual-test-watch": "node main.js -b .test/fixtures -p 7923"
   },
+  "bin": {
+    "bookshop-browser": "main.js"
+  },
   "author": "@bglw",
   "license": "MIT",
   "publishConfig": {
