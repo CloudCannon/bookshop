@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/browser",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "Component browser for bookshop components",
   "type": "module",
   "main": "main.js",
