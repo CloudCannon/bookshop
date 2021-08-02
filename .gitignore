@@ -12,3 +12,10 @@ vendored-pluralize.js
 javascript-modules/live/.test/manual/index.js
 javascript-modules/browser/.test/manual/index.js
 package-lock.json
+**/.yarn/*
+!**/.yarn/patches
+!**/.yarn/releases
+!**/.yarn/plugins
+!**/.yarn/sdks
+!**/.yarn/versions
+.pnp.*
