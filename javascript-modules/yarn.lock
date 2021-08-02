@@ -71,7 +71,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/cloudcannon-structures@workspace:cloudcannon-structures"
   dependencies:
-    "@bookshop/toml-narrator": "file:../toml-narrator"
+    "@bookshop/toml-narrator": 2.0.0-beta.4
     "@ltd/j-toml": ^1.12.2
     ava: ^3.15.0
     pluralize: ^8.0.0
@@ -115,14 +115,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/toml-narrator@file:../toml-narrator::locator=%40bookshop%2Fcloudcannon-structures%40workspace%3Acloudcannon-structures":
-  version: 2.0.0-beta.3
-  resolution: "@bookshop/toml-narrator@file:../toml-narrator#../toml-narrator::hash=fe50df&locator=%40bookshop%2Fcloudcannon-structures%40workspace%3Acloudcannon-structures"
-  checksum: 81f42337ce3c464725b78fc7c8d02b5355c27baf346a7795809085763d0d48f4bcaa3a485f3ffc0e4d2b495d1e4367792105e0ccb00f140fcfcd0ba11180a4b8
-  languageName: node
-  linkType: hard
-
-"@bookshop/toml-narrator@workspace:toml-narrator":
+"@bookshop/toml-narrator@2.0.0-beta.4, @bookshop/toml-narrator@workspace:toml-narrator":
   version: 0.0.0-use.local
   resolution: "@bookshop/toml-narrator@workspace:toml-narrator"
   dependencies:

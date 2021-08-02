@@ -21,7 +21,7 @@ jobs:
       with:
         node-version: 14.x
     - name: Install node dependencies
-      run: yarn install --frozen-lockfile
+      run: yarn install --immutable
       working-directory: ./javascript-modules
     - name: Vendor node modules into ruby packages
       run: ./scripts/publish.js vendor
