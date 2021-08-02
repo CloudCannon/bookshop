@@ -18,8 +18,5 @@
   },
   "devDependencies": {
     "ava": "^3.15.0"
-  },
-  "engines": {
-    "npm": "please-use-yarn"
   }
 }

@@ -21,9 +21,6 @@
     "ava": "^3.15.0",
     "fast-glob": "^3.2.7"
   },
-  "engines": {
-    "npm": "please-use-yarn"
-  },
   "dependencies": {
     "@codemirror/basic-setup": "^0.18.2",
     "@codemirror/commands": "^0.18.3",

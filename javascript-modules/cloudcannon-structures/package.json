@@ -20,8 +20,5 @@
     "@ltd/j-toml": "^1.12.2",
     "ava": "^3.15.0",
     "pluralize": "^8.0.0"
-  },
-  "engines": {
-    "npm": "please-use-yarn"
   }
 }
