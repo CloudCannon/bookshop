@@ -172,7 +172,7 @@ const publishNPM = async (pkgs, version, otp) => {
     const releases = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
             try {
-                const cmd = `yarn --cwd ${pkg} publish --access public --otp ${otp}`;
+                const cmd = `yarn --cwd ${pkg} publish --non-interactive --access public --otp ${otp}`;
                 console.log(`\n$: ${cmd}`);
                 execSync(cmd, {stdio: "inherit"});
                 resolve({pkg, version, err: null});
