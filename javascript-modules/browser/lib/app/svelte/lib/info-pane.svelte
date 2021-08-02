@@ -1,5 +1,5 @@
 <script>
-    import {iconSvg} from './helpers.js';
+    import {iconSvg} from './icons.js';
 
     export let selectingComponent = false;
     export let component = {};

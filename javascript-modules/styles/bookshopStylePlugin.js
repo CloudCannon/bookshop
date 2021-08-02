@@ -26,7 +26,10 @@ const findPostcssConfig = async (primaryBookshopDir) => {
         const bookshopPostcssPath = path.join(primaryBookshopDir, 'bookshop/*postcss*');
         const postcssFiles = (await fastGlob(bookshopPostcssPath));
         if (postcssFiles.length) {
+            console.log("WEW");
             config = await postcssConfig({}, path.join(primaryBookshopDir, 'bookshop'));
+            console.log("WEW");
+            console.log(config);
         } else {
             config = await postcssConfig();
         }
@@ -37,6 +40,8 @@ const findPostcssConfig = async (primaryBookshopDir) => {
                 `• Try changing the extension of your file from .js to .cjs`,
                 `• postcss.config.cjs should be handled correctly in any modern postcss implementation.`
             ].join(`\n`));
+        } else if (e?.code === "MODULE_NOT_FOUND"){
+            console.warn(e);
         }
         config = null;
     }

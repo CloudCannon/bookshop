@@ -13,7 +13,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "ava": "^3.15.0"
+    "ava": "^3.15.0",
+    "postcss-fluidvars": "^1.1.2"
   },
   "engines": {
     "npm": "please-use-yarn",

@@ -10,8 +10,12 @@
     "generator-plugins/jekyll/jekyll-bookshop": {}
   },
   "npm": {
+    "javascript-modules/browser": {},
+    "javascript-modules/builder": {},
     "javascript-modules/cloudcannon-structures": {},
-    "javascript-modules/renderer": {},
+    "javascript-modules/engines/jekyll-engine": {},
+    "javascript-modules/live": {},
+    "javascript-modules/styles": {},
     "javascript-modules/toml-narrator": {}
   }
 }
