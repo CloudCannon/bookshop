@@ -214,10 +214,10 @@ const checkVersion = ver => /^\d+\.\d+\.\d+(-[a-z]+\.\d+)?$/.test(ver);
 
 const versionNpm = (pkgs, version) => {
     pkgs.forEach(pkg => {
-        const npmBump = execSync(`yarn --cwd ${pkg} version --new-version ${version} --allow-same-version --no-git-tag-version --no-commit-hooks`);
-        if (npmBump.stderr) {
-            console.error(box(`npm version bump failed:
-                               ${npmBump.stderr}`));
+        const yarnBump = execSync(`cd ${pkg} && yarn version ${version}`);
+        if (yarnBump.stderr) {
+            console.error(box(`yarn version bump failed:
+                               ${yarnBump.stderr}`));
             process.exit(1);
         }
     });
