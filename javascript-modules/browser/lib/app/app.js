@@ -23,6 +23,7 @@ const registerBrowserClass = () => {
             this.styles = styles;
             this.components = components;
             this.elements = [];
+            this.globalData = window.bookshop_browser_site_data || {};
             this.init();
         }
 
@@ -36,7 +37,6 @@ const registerBrowserClass = () => {
             const excludeTags = excludeString ? excludeString.split(',') : [];
             return {
                 dom: el,
-                scriptSource: el.dataset.bookshopBrowser,
                 excludeTags: excludeTags,
                 browserApp: null
             }
@@ -55,6 +55,7 @@ const registerBrowserClass = () => {
                     props: {
                         engines: this.engines,
                         components: this.components,
+                        globalData: this.globalData,
                         exclude: el.excludeTags
                     }
                 })

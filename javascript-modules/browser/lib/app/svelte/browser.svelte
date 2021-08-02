@@ -7,6 +7,7 @@
     
     export let engines = [];
     export let components = {};
+    export let globalData = {};
     export let exclude = [];
     
     let editProps = true;
@@ -41,7 +42,6 @@
         
         const newComponentSelected = previousComponent !== component;
         const newComponentConfig = baseYaml !== componentDetail.yaml;
-        console.log(editedYaml, baseYaml, componentDetail.yaml);
         if (newComponentSelected || newComponentConfig) {
             editedYaml = baseYaml = componentDetail.yaml;
         }
@@ -63,7 +63,7 @@
         yamlError = err;
         if (yamlError) return;
 
-        outputHTML = await engine.render(component, props);
+        outputHTML = await engine.render(component, props, globalData);
         if (!outputHTML) console.warn(`Engine ${framework} returned nothing for ${component}.`);
     }
     $: if (hydratedComponents) render(selectedComponent, editedYaml, framework);
