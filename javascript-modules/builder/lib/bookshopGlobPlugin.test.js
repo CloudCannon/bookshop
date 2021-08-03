@@ -32,15 +32,20 @@ test('import components', async t => {
     t.is(result.errors.length, 0);
     t.is(result.warnings.length, 0);
     
-    let m = /import file0 from "__bookshop_file__components\/card\/card.jekyll.html";/;
+    let m = /import file0 from "__bookshop_file__components\/card\/card\.jekyll\.html";/;
     t.regex(result.outputFiles[0].text, m);
     
-    m = /files\["components\/card\/card.jekyll.html"\] = file0;/;
+    m = /files\["components\/card\/card\.jekyll\.html"\] = file0;/;
     t.regex(result.outputFiles[0].text, m);
     
-    m = /import file1 from "__bookshop_file__components\/dos\/dos.jekyll.html";/;
+    m = /import file\d from "__bookshop_file__components\/dos\/dos\.jekyll\.html";/;
     t.regex(result.outputFiles[0].text, m);
     
-    m = /files\["components\/dos\/dos.jekyll.html"\] = file1;/;
+    m = /files\["components\/dos\/dos\.jekyll\.html"\] = file\d;/;
     t.regex(result.outputFiles[0].text, m);
+
+    m = /__bookshop_file__components\/clash\/clash\.jekyll\.html/g;
+    t.deepEqual(result.outputFiles[0].text.match(m), [
+        "__bookshop_file__components/clash/clash.jekyll.html"
+    ], "don't reference duplicate files twice");
 });

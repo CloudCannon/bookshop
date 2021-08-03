@@ -28,10 +28,11 @@ export default (options) => ({
             });
             const globResults = await Promise.all(globs);
             const files = [].concat.apply([], globResults).sort();
+            const uniqueFiles = Array.from(new Set(files));
 
             const output = `
             const files = {};
-            ${files.map(importFile).join('\n')}
+            ${uniqueFiles.map(importFile).join('\n')}
 
             export default files;
             `;

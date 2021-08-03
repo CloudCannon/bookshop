@@ -38,12 +38,15 @@ test('should import styles', async t => {
             write: false,
             format: 'esm'
         },
-        bookshopDirs: [path.join(process.cwd(), './.test/fixtures')]
+        bookshopDirs: [
+            path.join(process.cwd(), './.test/fixtures'),
+            path.join(process.cwd(), './.test/second-fixtures')
+        ]
     });
     t.is(result.errors.length, 0);
     t.is(result.warnings.length, 0);
     t.is(result.outputFiles[0].text, `// bookshop-styles-import:_
-var __default = "p {\\n  color: palegoldenrod;\\n}";
+var __default = "p {\\n  color: palegoldenrod;\\n}\\n\\np {\\n  color: coral;\\n}\\n\\np {\\n  color: chocolate;\\n}\\n\\np {\\n  color: darksalmon;\\n}";
 
 // .test/fixtures/virtual.js
 console.log(__default);
