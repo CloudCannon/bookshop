@@ -2,6 +2,7 @@ import test from 'ava';
 import { Engine } from './main.js';
 
 const component = (k) => `components/${k}/${k}.jekyll.html`;
+const shared = (k) => `shared/${k}.jekyll.html`;
 const files = {
     [component('title')]: "<h1>{{ include.title }}</h1>",
     [component('global-title')]: "<h1>{{ title }}</h1>",
@@ -9,6 +10,8 @@ const files = {
     [component('include-global-title')]: "{% bookshop global-title title=\"Hello World\" %}",
     [component('include-title-bind')]: "{% bookshop title bind=include %}",
     [component('include-title-deep-bind')]: "{% bookshop title bind=include.book %}",
+    [component('uses-helper')]: "{% bookshop_include helper help=include.label %}",
+    [shared('helper')]: "<span data-helper=\"{{include.help}}\"></span>",
 }
 
 const je = new Engine({files});
@@ -49,4 +52,9 @@ test("should implement bind syntax", async t => {
 test("should handle deep binds", async t => {
     const rendered = await je.render("include-title-deep-bind", { book: { title: "Bookshop" } });
     t.is(rendered, "<h1>Bookshop</h1>");
+});
+
+test("should render bookshop_includes", async t => {
+    const rendered = await je.render("uses-helper", { label: "include-testing" });
+    t.is(rendered, "<span data-helper=\"include-testing\"></span>");
 });

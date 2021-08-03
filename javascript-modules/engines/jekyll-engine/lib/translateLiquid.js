@@ -10,6 +10,17 @@ const rewriteTag = function(token, src) {
     // Cached includes can be treated as includes
     if (token.name && token.name === 'include_cached') raw = raw.replace(/include_cached/, 'include');
 
+    // Rewrite bookshop_include tag to standard includes — within bookshop they're first class
+    if (token.name && token.name === 'bookshop_include') {
+        token.name = 'include';
+        raw = raw.replace(
+        /bookshop_include (\S+)/,
+        (_, component) => {
+            return `include _bookshop_include_${component}`
+        }
+        );
+    }
+
     // Rewrite bookshop tag to standard includes — within bookshop they're first class
     if (token.name && token.name === 'bookshop') {
         token.name = 'include';

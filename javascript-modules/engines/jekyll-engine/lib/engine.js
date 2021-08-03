@@ -55,7 +55,9 @@ export class Engine {
 
     async retrieveInclude(file) {
         let content;
-        if (/^_bookshop_/.test(file)) {
+        if (/^_bookshop_include_/.test(file)) {
+            content = this.getShared(file.replace(/^_bookshop_include_/, ""));
+        } else if (/^_bookshop_/.test(file)) {
             content = this.getComponent(file.replace(/^_bookshop_/, ""));
         } else {
             content = this.files?.[file];
@@ -71,6 +73,11 @@ export class Engine {
         this.plugins.forEach(plugin => {
             this.liquid.plugin(plugin);
         });
+    }
+
+    getShared(name) {
+        const key = `shared/${name}.jekyll.html`
+        return this.files?.[key];
     }
 
     getComponentKey(name) {
