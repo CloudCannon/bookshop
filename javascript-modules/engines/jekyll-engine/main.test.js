@@ -2,7 +2,7 @@ import test from 'ava';
 import { Engine } from './main.js';
 
 const component = (k) => `components/${k}/${k}.jekyll.html`;
-const shared = (k) => `shared/${k}.jekyll.html`;
+const shared = (k) => `shared/jekyll/${k}.jekyll.html`;
 const files = {
     [component('title')]: "<h1>{{ include.title }}</h1>",
     [component('global-title')]: "<h1>{{ title }}</h1>",

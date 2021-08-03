@@ -76,7 +76,7 @@ export class Engine {
     }
 
     getShared(name) {
-        const key = `shared/${name}.jekyll.html`
+        const key = `shared/jekyll/${name}.jekyll.html`
         return this.files?.[key];
     }
 
