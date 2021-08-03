@@ -4,12 +4,9 @@ import {stubExternalPlugin} from '../.test/common.js';
 import bookshopGlobPlugin from './bookshopGlobPlugin.js'
 import esbuild from 'esbuild';
 
-test('bookshopGlobPlugin should be defined', t => {
-    t.truthy(bookshopGlobPlugin);
-});
-
-test('import components', async t => {
-    let result = await esbuild.build({
+let esbuildOutput = "";
+test.before(async t => {
+    esbuildOutput = await esbuild.build({
         stdin: {
             contents: `import files from "__bookshop_glob__(.jekyll.html)";`,
             resolveDir: process.cwd(),
@@ -28,24 +25,44 @@ test('import components', async t => {
         write: false,
         bundle: true
     });
-    
-    t.is(result.errors.length, 0);
-    t.is(result.warnings.length, 0);
-    
+});
+
+test('bookshopGlobPlugin should be defined', t => {
+    t.truthy(bookshopGlobPlugin);
+});
+
+test('build without warnings or errors', async t => {
+    t.is(esbuildOutput.errors.length, 0);
+    t.is(esbuildOutput.warnings.length, 0);
+});
+
+test('import a component to the files object', async t => {
     let m = /import file0 from "__bookshop_file__components\/card\/card\.jekyll\.html";/;
-    t.regex(result.outputFiles[0].text, m);
+    t.regex(esbuildOutput.outputFiles[0].text, m);
     
     m = /files\["components\/card\/card\.jekyll\.html"\] = file0;/;
-    t.regex(result.outputFiles[0].text, m);
-    
-    m = /import file\d from "__bookshop_file__components\/dos\/dos\.jekyll\.html";/;
-    t.regex(result.outputFiles[0].text, m);
+    t.regex(esbuildOutput.outputFiles[0].text, m);
+});
+
+test('import a component from a secondary bookshop', async t => {
+    let m = /import file\d from "__bookshop_file__components\/dos\/dos\.jekyll\.html";/;
+    t.regex(esbuildOutput.outputFiles[0].text, m);
     
     m = /files\["components\/dos\/dos\.jekyll\.html"\] = file\d;/;
-    t.regex(result.outputFiles[0].text, m);
+    t.regex(esbuildOutput.outputFiles[0].text, m);
+});
 
-    m = /__bookshop_file__components\/clash\/clash\.jekyll\.html/g;
-    t.deepEqual(result.outputFiles[0].text.match(m), [
+test('Reference clashed components only once', async t => {
+    let m = /__bookshop_file__components\/clash\/clash\.jekyll\.html/g;
+    t.deepEqual(esbuildOutput.outputFiles[0].text.match(m), [
         "__bookshop_file__components/clash/clash.jekyll.html"
     ], "don't reference duplicate files twice");
+});
+
+test('import a file from the shared directory', async t => {
+    let m = /import file\d from "__bookshop_file__shared\/jekyll\/title\.jekyll\.html";/;
+    t.regex(esbuildOutput.outputFiles[0].text, m);
+    
+    m = /files\["shared\/jekyll\/title\.jekyll\.html"\] = file\d;/;
+    t.regex(esbuildOutput.outputFiles[0].text, m);
 });

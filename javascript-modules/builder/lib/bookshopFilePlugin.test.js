@@ -110,3 +110,26 @@ test('respect order of bookshopDirs', async t => {
     t.is(result.warnings.length, 0);
     t.regex(result.outputFiles[0].text, /<p>bookshop-b<\/p>/);
 });
+
+test('import a shared file', async t => {
+    let result = await esbuild.build({
+        stdin: {
+            contents: `import file from "__bookshop_file__shared/jekyll/title.jekyll.html";
+            console.log(file);`,
+            resolveDir: process.cwd(),
+            sourcefile: 'virtual.js'
+        },
+        plugins: [
+            bookshopFilePlugin({
+                bookshopDirs: [path.join(process.cwd(), './.test/fixtures')]
+            })
+        ],
+        format: 'esm',
+        write: false,
+        bundle: true
+    });
+    
+    t.is(result.errors.length, 0);
+    t.is(result.warnings.length, 0);
+    t.regex(result.outputFiles[0].text, /<h1>{{ include.title }}<\/h1>/);
+});

@@ -22,7 +22,7 @@ export default (options) => ({
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-glob' }, async (args) => {
             const globs = args.pluginData.resolveDirs.map(dir => {
-                return fastGlob(`components/**/*@${args.path}`, {
+                return fastGlob(`@(components|shared)/**/*@${args.path}`, {
                     cwd: dir,
                 });
             });
