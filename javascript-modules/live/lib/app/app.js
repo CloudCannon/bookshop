@@ -17,7 +17,7 @@ window.BookshopLive = class BookshopLive {
 
     async fetchGlobalData(path) {
         const dataReq = await fetch(path);
-        const data = await data.json();
+        const data = await dataReq.json();
         Object.assign(this.globalData, data);
     }
 
