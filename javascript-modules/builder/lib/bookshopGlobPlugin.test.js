@@ -17,7 +17,10 @@ test('import components', async t => {
         },
         plugins: [
             bookshopGlobPlugin({
-                bookshopDirs: [path.join(process.cwd(), './.test/fixtures')]
+                bookshopDirs: [
+                    path.join(process.cwd(), './.test/fixtures'),
+                    path.join(process.cwd(), './.test/second-fixtures')
+                ]
             }),
             stubExternalPlugin("skip-bookshop-files", /^__bookshop_file__/)
         ],
@@ -33,5 +36,11 @@ test('import components', async t => {
     t.regex(result.outputFiles[0].text, m);
     
     m = /files\["components\/card\/card.jekyll.html"\] = file0;/;
+    t.regex(result.outputFiles[0].text, m);
+    
+    m = /import file1 from "__bookshop_file__components\/dos\/dos.jekyll.html";/;
+    t.regex(result.outputFiles[0].text, m);
+    
+    m = /files\["components\/dos\/dos.jekyll.html"\] = file1;/;
     t.regex(result.outputFiles[0].text, m);
 });

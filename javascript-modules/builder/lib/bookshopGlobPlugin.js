@@ -11,20 +11,24 @@ export default (options) => ({
     name: 'bookshop-glob',
     setup: (build) => {
         build.onResolve({ filter: /^__bookshop_glob__/ }, async (args) => {
-            const primaryBookshopDir = options?.bookshopDirs?.[0];
-            if (!primaryBookshopDir) return;
+            if (!options?.bookshopDirs?.length) return;
             return {
                 path: args.path.replace(/^__bookshop_glob__/, ''),
                 namespace: 'bookshop-import-glob',
                 pluginData: {
-                    resolveDir: path.join(primaryBookshopDir)
+                    resolveDirs: options.bookshopDirs
                 },
             };
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-glob' }, async (args) => {
-            const files = (await fastGlob(`components/**/*@${args.path}`, {
-                cwd: args.pluginData.resolveDir,
-            })).sort();
+            const globs = args.pluginData.resolveDirs.map(dir => {
+                return fastGlob(`components/**/*@${args.path}`, {
+                    cwd: dir,
+                });
+            });
+            const globResults = await Promise.all(globs);
+            const files = [].concat.apply([], globResults).sort();
+
             const output = `
             const files = {};
             ${files.map(importFile).join('\n')}
