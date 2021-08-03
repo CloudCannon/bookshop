@@ -32,7 +32,7 @@ export default (options) => ({
                 path: 'bookshop.config.js',
                 namespace: 'bookshop-import-config',
                 pluginData: {
-                    resolveDir: path.join(primaryBookshopDir, 'bookshop')
+                    resolveDir: path.join(primaryBookshopDir, 'bookshop'),
                 },
             };
         });
@@ -45,7 +45,7 @@ const engines = [];
 ${engines.map(bundledEngine).join('\n')}
 export default engines;
             `;
-            return { contents: output, resolveDir: args.pluginData.resolveDir };
+            return { contents: output, resolveDir: process.cwd() };
         });
     },
 });
