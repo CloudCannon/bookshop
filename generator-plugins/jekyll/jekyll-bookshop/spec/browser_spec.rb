@@ -39,7 +39,7 @@ module JekyllBookshop
     it "should render the initialization snippet" do
       output_file = TestHelpers.read_output_file("index.html")
 
-      target = "<script>window.BookshopBrowser = new window.BookshopBrowserClass(); window.BookshopBrowser.render();</script>"
+      target = "new window.BookshopBrowserClass"
       expect(output_file).must_match %r!#{Regexp.quote(target)}!
     end
 

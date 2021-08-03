@@ -11,7 +11,7 @@ module CloudCannonJekyllBookshop
     it "should initialize a new BookshopLive" do
       output_file = TestHelpers.read_output_file("index.html")
 
-      target = "new window.BookshopLive()"
+      target = "new window.BookshopLive"
       expect(output_file).must_match %r!#{Regexp.quote(target)}!
     end
 
