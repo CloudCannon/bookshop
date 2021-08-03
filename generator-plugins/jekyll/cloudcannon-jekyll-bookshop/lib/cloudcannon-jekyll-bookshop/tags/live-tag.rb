@@ -17,7 +17,9 @@ window.addEventListener('load', function() {
     const script = document.createElement('script');
     script.src = `/#{@script}`;
     script.onload = function() {
-      window.bookshopLive = new window.BookshopLive();
+      window.bookshopLive = new window.BookshopLive({
+        remoteGlobals: ['/_cloudcannon/bookshop-site-data.json']
+      });
       window.CloudCannon = {
         trigger: function (eventName, frontMatter) {
             if (typeof frontMatter === 'string') frontMatter = JSON.parse(frontMatter);

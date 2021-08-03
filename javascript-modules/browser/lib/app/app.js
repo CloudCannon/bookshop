@@ -18,15 +18,19 @@ const connectBrowserSockets = () => {
 
 const registerBrowserClass = () => {
     window.BookshopBrowserClass = class BookshopBrowser {
-        constructor() {
+        constructor(options) {
             this.engines = engines;
             this.styles = styles;
             this.components = components;
             this.elements = [];
 
-            // TODO: This should be configured by the engine(s)
-            // In this case, jekyll-bookshop
-            this.globalData = window.bookshop_browser_site_data || {};
+            this.globalData = {};
+            options?.globals?.forEach(global => {
+                if (global && typeof global === 'object') {
+                    Object.assign(this.globalData, global);
+                }
+            });
+
             this.init();
         }
 

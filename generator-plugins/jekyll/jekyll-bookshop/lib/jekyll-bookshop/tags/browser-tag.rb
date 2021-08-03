@@ -22,7 +22,12 @@ module JekyllBookshop
       "<div data-bookshop-browser></div>
 <script>window.bookshop_browser_site_data = null;</script>
 <script src=\"//#{@host}\"></script>
-<script>window.BookshopBrowser = new window.BookshopBrowserClass(); window.BookshopBrowser.render();</script>"
+<script>
+  window.BookshopBrowser = new window.BookshopBrowserClass({
+    globals: [window.bookshop_browser_site_data]
+  }); 
+  window.BookshopBrowser.render();
+</script>"
     end
   end
 end

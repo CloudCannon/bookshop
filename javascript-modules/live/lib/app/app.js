@@ -1,8 +1,11 @@
 import engines from `__bookshop_engines__`;
 window.BookshopLive = class BookshopLive {
-    constructor() {
+    constructor(options) {
         this.engines = engines;
         this.elements = [];
+        this.globalData = {};
+        options?.remoteGlobals?.forEach(this.fetchGlobalData.bind(this));
+
         this.init();
     }
 
@@ -10,6 +13,12 @@ window.BookshopLive = class BookshopLive {
         const liveRenderTargets = document.querySelectorAll('[data-bookshop-live]');
         this.elements = [...liveRenderTargets].map(this.readElement);
         this.data = {};
+    }
+
+    async fetchGlobalData(path) {
+        const dataReq = await fetch(path);
+        const data = await data.json();
+        Object.assign(this.globalData, data);
     }
 
     readElement(el) {
@@ -24,7 +33,7 @@ window.BookshopLive = class BookshopLive {
     async renderElement(el) {
         const data = this.dig(el.componentPropSource);
         if (!data) return;
-        const rendered = await this.engines[0].render(el.componentName, data);
+        const rendered = await this.engines[0].render(el.componentName, data, this.globalData);
         el.dom.innerHTML = rendered;
     }
 
