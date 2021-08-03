@@ -15,6 +15,13 @@ module JekyllBookshop
       expect(output_file).must_match %r!#{Regexp.quote(target)}!
     end
 
+    it "should render a shared include" do
+      output_file = TestHelpers.read_output_file("index.html")
+
+      target = '<span data-helper="ruby-spec"></span>'
+      expect(output_file).must_match %r!#{Regexp.quote(target)}!
+    end
+
     it "should work with interpolation and bind syntax" do
       output_file = TestHelpers.read_output_file("index.html")
 
