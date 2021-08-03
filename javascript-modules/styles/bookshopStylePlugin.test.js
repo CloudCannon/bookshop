@@ -13,7 +13,10 @@ test.before(async t => {
         },
         plugins: [
             bookshopStylePlugin({
-                bookshopDirs: [path.join(process.cwd(), './.test/fixtures')]
+                bookshopDirs: [
+                    path.join(process.cwd(), './.test/fixtures'),
+                    path.join(process.cwd(), './.test/second-fixtures')
+                ]
             }),
         ],
         format: 'esm',
@@ -48,5 +51,10 @@ test('sort css files alphabetically', async t => {
 
 test('discover and run postcss', async t => {
     const matcher = /--14-30: clamp/;
+    t.regex(compiledCSS.outputFiles[0].text, matcher);
+});
+
+test('compile secondary bookshops', async t => {
+    const matcher = /darksalmon/;
     t.regex(compiledCSS.outputFiles[0].text, matcher);
 });
