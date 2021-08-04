@@ -1,9 +1,9 @@
 import path from 'path';
 import fs from 'fs';
-import bookshopComponentPlugin from './lib/bookshopComponentPlugin.js';
-import bookshopConfigPlugin from './lib/bookshopConfigPlugin.js';
-import bookshopFilePlugin from './lib/bookshopFilePlugin.js';
-import bookshopGlobPlugin from './lib/bookshopGlobPlugin.js'
+import bookshopComponentPlugin from './lib/plugins/bookshopComponentPlugin.js';
+import bookshopConfigPlugin from './lib/plugins/bookshopConfigPlugin.js';
+import bookshopFilePlugin from './lib/plugins/bookshopFilePlugin.js';
+import bookshopGlobPlugin from './lib/plugins/bookshopGlobPlugin.js'
 import bookshopStylesPlugin from '@bookshop/styles';
 import esbuild from 'esbuild';
 
