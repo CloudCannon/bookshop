@@ -32,8 +32,14 @@ module JekyllBookshop
     it "should compile SCSS" do
       output_file = TestHelpers.read_output_file("index.css")
 
-      target = "@media all, bookshop { .c-block { position: relative; } .c-item { color: pink; font-weight: 800; } }"
+      target = "@media all, bookshop"
       expect(output_file).must_match %r!#{Regexp.quote(target)}!
+    end
+
+    it "should sort shared SCSS above component SCSS" do
+      output_file = TestHelpers.read_output_file("index.css")
+
+      expect(output_file).must_match %r!c-global.*c-block!
     end
 
     make_my_diffs_pretty!

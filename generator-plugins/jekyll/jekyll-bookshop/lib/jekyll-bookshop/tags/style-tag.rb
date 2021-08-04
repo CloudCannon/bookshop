@@ -18,7 +18,20 @@ module JekyllBookshop
         "@import \"#{file}\";"
       end
 
-      "@media all, bookshop {#{bookshop_scss_files.join("\n")}}"
+      bookshop_scss_files.sort! do |a, b| 
+        a_shared = a.match(%r!"shared\/!)
+        b_shared = b.match(%r!"shared\/!)
+        case
+        when a_shared && !b_shared
+          -1
+        when !a_shared && b_shared
+          1
+        else
+          a <=> b
+        end
+      end
+
+      "@media all, bookshop {#{bookshop_scss_files.join("")}}"
     end
   end
 end
