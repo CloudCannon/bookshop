@@ -1,0 +1,83 @@
+= Bookshop Browser
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+:toc-placement!:
+
+toc::[]
+
+[.lead]
+The Bookshop browser is an embedded component library on your website, allowing you to browse and experiment with components within the context of your site.
+
+== Configuration
+
+To install the Bookshop browser as a development dependency, run: +
+`npm i -D @bookshop/browser`
+
+== Building the browser
+
+In your local development environment, run: +
+`npx bookshop-browser -b ./components -p 6061`
+
+[cols="2", options="header"]
+|===
+|Flag
+|Purpose
+
+|-b, --bookshop
+|Bookshop directories to build into the browser.
+
+|-p, --port
+|Local port to host the browser javascript on
+
+|-o, --output
+|File path to save a javascript file to
+|===
+
+This is best used in an npm script, eg:
+```json
+{
+    "scripts": {
+        "start": "bookshop-browser -b ./components -p 6061"
+    }
+}
+```
+
+TIP: You can supply the `-b` flag multiple times if you want to merge bookshops.
+
+NOTE: One of port _or_ output must be supplied, not both. If a port is supplied, the browser will watch files. If an output is supplied, the browser will build once and exit.
+
+== Integration
+
+The bookshop generator frameworks provide helpers for embedding the Bookshop browser on your website.
+
+=== Jekyll
+
+Within Jekyll, the *jekyll-bookshop* plugin provides a `bookshop_browser` tag to embed the browser on a given page.
+
+.*components.html*
+```liquid
+{% bookshop_browser localhost:6061/bookshop.js %}
+```
+
+NOTE: Make sure the port number matches the port number you supplied to the `bookshop-browser` command earlier.
+
+=== Hosting a component library
+
+If you built the Bookshop browser javascript to a file, you can reference that file instead:
+
+```
+npx bookshop-browser -b ./components -o ./src/assets/bookshop.js
+```
+```
+{% if jekyll.environment == "production" %}
+    {% bookshop_browser /assets/bookshop.js %}
+{% else %}
+    {% bookshop_browser localhost:6061/bookshop.js %}
+{% endif %}
+```
