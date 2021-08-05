@@ -6,23 +6,35 @@
     export let selectingComponent = true;
     export let framework = "none";
 
-    let list;
+    let list, input, searchTerm = "";
 
-    $: if (selectingComponent && list) list.focus();
+    const init = () => {
+        input.focus();
+    }
+
+    $: if (selectingComponent && list) init();
 
     const set = (c) => {
         selectedComponent = c;
         if (!components[c]?.frameworks?.includes(framework)) {
             framework = components[c]?.frameworks?.[0] ?? "none";
         }
-        list.blur();
+        blurry();
     }
 
     const blurry = (e) => {
+        searchTerm = "";
         if (e?.relatedTarget?.dataset?.blur !== "list-child") {
             selectingComponent = false;
         }
     }
+
+    const filter = (list, term) => list.filter(([k, c]) => {
+        console.log(term);
+        if (!term) return true;
+        let searchKey = (k + c?.identity?.label).toLowerCase();
+        return searchKey.includes(term.toLowerCase());
+    });
 </script>
 
 <div class="component-list"
@@ -32,8 +44,11 @@
      tabindex="-1">
     <p class="title animate bookshop-icon-string">{@html iconSvg("folder_open")} Components</p>
     <button class="animate close">{@html iconSvg("close")}</button>
+    <div class="search animate">
+        <input data-blur="list-child" on:blur={blurry} bind:this={input} type="text" bind:value={searchTerm} placeholder="Search">
+    </div>
     <ul>
-    {#each Object.entries(components) as [key, component], i}
+    {#each filter(Object.entries(components), searchTerm) as [key, component], i}
         <li class="animate" style="transition-delay: {i/70}s;">
             <button class="component bookshop-icon-string"
                 data-blur="list-child" 
@@ -99,12 +114,24 @@
     .title {
         color: inherit;
     }
+    .search {
+        padding: 0 14px 14px;
+        display: flex;
+        justify-content: stretch;
+    }
+    input {
+        appearance: none;
+        border: none;
+        border-bottom: solid 1px #aaa;
+        border-radius: 2px;
+        padding: 4px 8px;
+        width: 100%;
+    }
     p {
         font-weight: bold;
         font-size: 14px;
         margin: 0;
         padding: 14px;
-        background-color: #c2b4b4;
     }
     ul {
         list-style-type: none;
