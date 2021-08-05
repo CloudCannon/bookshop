@@ -1,6 +1,7 @@
 <script>
     import {onMount} from 'svelte';
     import {hydrateComponents, updateUrl, loadYaml} from './lib/helpers.js';
+    import {iconSvg} from './lib/icons.js';
     import Library from './lib/library.svelte';
     import InfoPane from './lib/info-pane.svelte';
     import Editor from './lib/code-editor/editor.svelte';
@@ -49,13 +50,30 @@
         previousComponent = component;
     }
     $: if (hydratedComponents) refreshComponent(selectedComponent, framework);
-    
+
+    const renderAllComponents = async (engine) => {
+        const componentPromises = Object.entries(hydratedComponents).filter(([key]) => key !== 'all_bookshop').map(async ([key, component]) => {
+            const html = await engine.render(key, component.props, globalData);
+            return {component, html}
+        });
+        const components = await Promise.all(componentPromises);
+        const rendered = components.map(({component, html}) => {
+            return `<div data-bookshop-browser-section>${iconSvg(component.identity.icon)} ${component.identity.label}</div>${html}`   
+        });
+        return rendered.join('');
+    }
+
     const render = async (component, yamlProps, framework) => {
         if (framework === 'none') return;
         const engine = engines.filter(e => e.key === framework)[0];
         if (!engine) {
             console.warn(`Engine ${framework} not found.`);
             outputHTML = "";
+            return;
+        }
+
+        if (component === "all_bookshop") {
+            outputHTML = await renderAllComponents(engine);
             return;
         }
 
@@ -122,6 +140,25 @@
 
     :global(.bookshop-browser :where(.cm-gutters, .cm-content)) {
         min-height: 300px !important;
+    }
+
+    :global([data-bookshop-browser-section]) {
+        display: flex;
+        align-items: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Helvetica, Arial, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        font-size: 12px;
+        width: 100%;
+        padding: 12px 0 4px;
+        border-top: solid 1px transparent;
+        border-bottom: solid 1px transparent;
+    }
+
+    :global([data-bookshop-browser-section]:hover) {
+        background-color: #eee;
+        border-top: solid 1px #aaa;
+        border-bottom: solid 1px #aaa;
     }
 </style>
 

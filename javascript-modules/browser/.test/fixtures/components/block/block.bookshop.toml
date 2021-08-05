@@ -1,0 +1,9 @@
+[component]
+label = "Block"
+icon = "apps"
+
+[[props.cards]]
+text = "This is some text"
+
+[[props.cards]]
+text = "This is some more text"
