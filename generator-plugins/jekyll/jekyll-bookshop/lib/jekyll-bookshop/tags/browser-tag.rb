@@ -9,7 +9,6 @@ module JekyllBookshop
 
     def render(context)
       return unless @host
-      return if Jekyll.env == "production"
 
       site = context.registers[:site]
       page = context.registers[:page]
