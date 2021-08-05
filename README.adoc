@@ -24,3 +24,5 @@ The best current example of a Bookshop 2.0 project can be found at https://githu
 For learning Bookshop conventions, see the link:guides/conventions.adoc[Conventions Guide]
 
 For setting up Bookshop with Jekyll, see the link:guides/jekyll.adoc[Jekyll Guide]
+
+For setting up the Bookshop component browser, see the link:guides/browser.adoc[Browser Guide]
