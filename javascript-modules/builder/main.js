@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import { filterBookshops, loadConfig } from './lib/bookshopHelper.js';
 import bookshopComponentPlugin from './lib/plugins/bookshopComponentPlugin.js';
 import bookshopConfigPlugin from './lib/plugins/bookshopConfigPlugin.js';
 import bookshopFilePlugin from './lib/plugins/bookshopFilePlugin.js';
@@ -19,15 +20,9 @@ export default async (options) => {
         ...(options.esbuild || {})
     }
 
-    if (!options.bookshopDirs?.length) {
-        throw new Error('No bookshop directories supplied — nothing to build.');
-    }
-    const suppliedBookshopDirs = options.bookshopDirs;
-    options.bookshopDirs = suppliedBookshopDirs?.filter(dir => {return fs.existsSync(dir)});
-    if (!options.bookshopDirs?.length) {
-        console.error(`Could find any of ${suppliedBookshopDirs.join(", ")}`);
-        throw new Error('Referenced bookshop directories were not found on disk — nothing to build.');
-    }
+    options.bookshopDirs = filterBookshops(options.bookshopDirs);
+    options.bookshopConfig = await loadConfig(options.bookshopDirs[0]);
+    console.log(options.bookshopConfig);
 
     const plugins = esbuildOptions.plugins || [];
     plugins.push(bookshopComponentPlugin(options));
