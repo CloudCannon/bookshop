@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/jekyll-engine",
-  "version": "2.0.0-beta.12",
+  "version": "2.0.0-beta.13",
   "description": "Bookshop frontend Jekyll renderer",
   "type": "module",
   "sideEffects": false,
