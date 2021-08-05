@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/toml-narrator",
-  "version": "2.0.0-beta.14",
+  "version": "2.0.0-beta.15",
   "description": "Rewrite Bookshop TOML files to preserve comments",
   "main": "main.js",
   "scripts": {
