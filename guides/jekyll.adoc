@@ -1,0 +1,102 @@
+= Bookshop Conventions
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+:toc-placement!:
+
+toc::[]
+
+== Jekyll Configuration
+
+To use Bookshop with Jekyll, the primary dependency is the `jekyll-bookshop` gem.
+
+.*Gemfile*
+```ruby
+group :jekyll_plugins do
+  gem "jekyll-bookshop", ">= 2.0.0.pre.beta"
+end
+```
+
+Within your Jekyll config, specify the path to your bookshop project. 
+
+TIP: If you specify multiple paths, the components will be merged.
+
+TIP: Paths that don't exist will be skipped. If you specify local and production paths, the one that exists will be used.
+
+.*_config.yml*
+```yaml
+plugins:
+  - jekyll-bookshop
+
+bookshop_locations:
+  - ../component-library
+```
+
+== Writing components
+
+Let's look at an example `button.jekyll.html` file.
+```
+components/
+└─ button/
+   └─ button.jekyll.html
+```
+These files are namespaced for the static site generator when the filetype is ambiguous, which is why the file is `button.jekyll.html` and not `button.html`. Beyond the naming convention, these files are what you would expect when working with Jekyll. Our `button.jekyll.html` file might look like:
+```hbs
+<a class="c-button" href="{{ include.link_url }}">{{ include.text }}</a>
+```
+This looks like a normal Jekyll include because it is. While bookshop provides developer tooling, the job of jekyll-bookshop is to tell Jekyll where to find component files. Loading and parsing these files goes through the normal Jekyll include flow.
+
+== Using components
+
+To use components directly in a template, use the `{% bookshop %}` tag like you would an include.
+
+.*index.html*
+```liquid
+...
+<div class="hero">
+  {% bookshop hero title=page.title image=page.image %}
+  {% bookshop button label=page.cta_text link_url=page.cta_url %}
+</div>
+...
+```
+
+Much like includes, a variable can be used to render the component:
+
+.*index.html*
+```liquid
+---
+components:
+  - _bookshop_name: hero
+    title: "Hello World"
+    image: /image.png
+  - _bookshop_name: button
+    cta_text: "Get Started"
+    link_url: /
+---
+<div class="hero">
+  {% for props in page.components %}
+    {% bookshop {{props._bookshop_name}} bind=props %}
+  {% endfor %}
+</div>
+```
+
+TIP: _Bookshop tags can use the `bind=` parameter, which works like the spread operator in Javascript. Here, all keys within the object `props` are unwrapped and passed to the component directly. If you're used to a framework like Svelte, this is the equivalent of `<Component {...props} />`_
+
+== Importing styles
+
+To import Bookshop styles in Jekyll, the plugin provides the tag `{% bookshop_scss %}` to be used in your main SCSS file. For example:
+
+.*assets/main.scss*
+```text
+---
+# Front matter dashes for Jekyll to process the file
+---
+
+{% bookshop_scss %} // Import all bookshop styles
+
+```

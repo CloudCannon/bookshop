@@ -1,0 +1,26 @@
+= Bookshop
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+https://github.com/CloudCannon/bookshop/actions/workflows/test-node.yml[image:https://github.com/CloudCannon/bookshop/actions/workflows/test-node.yml/badge.svg?branch=main[Javascript Test Status]]
+https://github.com/CloudCannon/bookshop/actions/workflows/test-ruby.yml[image:https://github.com/CloudCannon/bookshop/actions/workflows/test-ruby.yml/badge.svg?branch=main[Ruby Test Status]]
+
+[.lead]
+Bookshop is a component development workflow for static websites. Bookshop currently supports Jekyll, and will support a wider array of static site generators in the near future.
+
+---
+
+Bookshop is currently in a beta of version 2.0, some small changes to the configuration are possible prior to general release.
+
+The best current example of a Bookshop 2.0 project can be found at https://github.com/bglw/bookshop-example[bglw/bookshop-example], which should provide an in-situ example of the concepts discussed below.
+
+== Guides
+
+For learning Bookshop conventions, see the link:guides/conventions.adoc[Conventions Guide]
+
+For setting up Bookshop with Jekyll, see the link:guides/jekyll.adoc[Jekyll Guide]

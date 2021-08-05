@@ -1,0 +1,202 @@
+= Bookshop Conventions
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+:toc-placement!:
+
+toc::[]
+
+== Configuration
+
+A basic bookshop project is expected to have the following structure:
+```text
+component-library/
+├─ bookshop/
+│  └─ bookshop.config.js
+├─ components/
+│  └─ component-name/
+│     ├─ component-name.bookshop.toml
+│     ├─ component-name.scss
+│     └─ component-name.<framework
+└─ shared/
+   └─ styles/
+      └─ **.scss
+```
+
+For a Jekyll bookshop project, your configuration file might look like:
+
+.*bookshop.config.js*
+```javascript
+module.exports = {
+    engines: {
+        "@bookshop/jekyll-engine": {}
+    }
+}
+```
+
+Generally, your website will live alongside your bookshop project _(either as seperate repositories, or a monorepo)_:
+```text
+example-project/
+├─ example-website-1/
+├─ example-website-2/
+└─ component-library/
+```
+
+== Component Structure
+
+Components live within the `components/` directory, inside a folder bearing their name. A component is defined with a `<name>.bookshop.toml` file in the <<Component TOML Format>>. This file serves as the schema for the component, defining which properties it may be supplied.
+
+For example, a `button` component would be defined at:
+```text
+components/
+└─ button/
+   ├─ button.bookshop.toml
+   ├─ button.scss
+   └─ button.<framework
+```
+
+Components may also be nested within folders, which are then referenced as part of the component name. For example, the following structure would define the components `button/large` and `button/small` _(But *not* `button`)_:
+```text
+components/
+└─ button/
+   ├─ large/
+   │  └─ large.bookshop.toml
+   └─ small/
+      └─ small.bookshop.toml
+```
+
+Alongside the bookshop TOML file, the component files are provided. For the button example, this might look like:
+```text
+components/
+└─ button/
+   ├─ button.bookshop.toml
+   ├─ button.jekyll.html
+   ├─ button.scss
+   └─ button.svelte
+```
+
+`button.jekyll.html` and `button.svelte` are both implementations of the `button` component markup, but they share the same SCSS file and TOML schema. Bookshop is designed to span static site generators, so in the future you might also write a `button.hugo.html` and a `button.jsx`, depending on the generators your component library is targeting.  
+
+== Component TOML Format
+
+A bookshop TOML file defines the schema for a given component. This schema is then used when previewing components in the bookshop, and for configuring editing interfaces.
+
+The component TOML file for our button might look like the following:
+
+.*button.bookshop.toml*
+```toml
+[component]
+array_structures = [ "editor_components" ]
+label = "Button"
+description = "Outbound CTA links"
+icon = "smart_button"
+tags = [ "Subcomponents", "CTAs" ]
+
+[props]
+label.default = "Get Started"
+type.select = ["Standard", "Outline"]
+type.default = "Standard"
+link_url = "/"
+open_in_new_tab = false
+```
+
+The `[component]` block defines this component, and is used to configure page building interfaces. The fields are the following:
+
+array_structures:: Used to configure editing interfaces
+label:: Editor-friendly name
+description:: Editor-friendly description
+icon:: Material icon name
+tags:: Tags for filtering
+
+The `[props]` block defines the component schema. This controls what properties it can receive, and is used to configure editing interfaces. The props of our button file above would correspond to the following usage in Jekyll:
+
+```liquid
+{% bookshop button 
+    label="Get Started" 
+    type="Standard" 
+    link_url="/" 
+    open_in_new_tab=false %}
+```
+
+=== TOML Schema Keys
+
+Within the TOML file, two special keywords are `select` and `default` within an object. These denote that the object they're within should be treated instead as a value with a specified behaviour.
+
+==== Default Values
+
+*The field `default` is a special keyword in bookshop, which denotes a field as having a default value when created in the CMS.*
+
+By default, alphanumeric values in the TOML file are considered testing data, and new components created in a CMS interface will be initialized with empty inputs. If you do wish to give a field a default value, use `key.default`
+```toml
+title.default = "Hello World"
+order_number.default = 50
+featured = false
+```
+This will prepopulate a new component in the CMS with `title: "Hello World"` and `order_number: 50`.  
+The default key is not required for boolean values, the value specified in the TOML will be used as the default CMS value.  
+
+NOTE: _A default value in the TOML file does not provide a default value to the component itself. It is solely used to configure editing interfaces._
+
+==== Select Data
+
+*The field `select` is a special keyword in bookshop, which denotes a field as drawing from select data (a dropdown).*
+
+This key expects an array of options that will be used to populate the CMS.
+```toml
+size.select = ["Large", "Medium", "Small"]
+```
+In this example, the component might then receive the property `size="Large"`. Dropdowns are initialized empty, if you wish to also define a default selected state, combine the `select` and `default` keywords:
+```toml
+size.select = ["Large", "Medium", "Small"]
+size.default = "Medium"
+```
+
+==== Objects
+
+An object that doesn't contain the keys `select` or `default` will be treated as a normal object.
+```toml
+[props]
+post.name = "Hello World"
+
+# is equivalent to
+
+[props]
+[props.post]
+name = "Hello World"
+```
+
+==== Structures
+
+Constructing an array of objects in the TOML file defines a sub-schema for the CMS. Given the following structure:
+```toml
+[props]
+title = "Hello World"
+
+[[props.buttons]]
+label.default = "Get Started"
+link_url = "/app"
+```
+The CMS should provide an array named `buttons` within the component, to which buttons may be added or removed. Within these objects, all bookshop schema keys behave the same, and these sub-structures may define their own sub-structures again, i.e. with `\[[props.buttons.styles]]`
+
+NOTE: The first array item in the TOML file will be used to build the schema for the sub-structure.
+
+NOTE: A structure array will be initialized empty.
+
+==== Comments
+
+Editor-facing comments can be defined for a key via a comment starting with `#:` on the same line. For example:
+```toml
+title = "Hello World" #: Looks best under 35 characters
+type.select = ["Primary", "Secondary"] #: Defines button hierarchy
+```
+
+== Styles
+
+SCSS files within a project do not need to be individually referenced, and are instead loaded automatically. Styles within `shared/` are loaded before styles within `/components` — within each folder, files are loaded alphabetically.
+
+CAUTION: Bookshop SCSS is implementation agnostic. Bookshop interfaces use Dart Sass, but the generator ingesting components may use another implementation (i.e. Jekyll currently uses libsass).
