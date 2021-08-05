@@ -1,4 +1,4 @@
-= Bookshop Browser
+= Bookshop Component Browser
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -12,7 +12,9 @@ endif::[]
 toc::[]
 
 [.lead]
-The Bookshop browser is an embedded component library on your website, allowing you to browse and experiment with components within the context of your site.
+The Bookshop component browser is an embedded component library on your website, allowing you to browse and experiment with components within the context of your site.
+
+A hosted example of the browser can be found here: https://full-fall.cloudvent.net/components
 
 == Configuration
 
@@ -22,7 +24,7 @@ To install the Bookshop browser as a development dependency, run: +
 == Building the browser
 
 In your local development environment, run: +
-`npx bookshop-browser -b ./components -p 6061`
+`npx bookshop-browser -b ./path/to/components -p 6061`
 
 [cols="2", options="header"]
 |===
@@ -43,7 +45,7 @@ This is best used in an npm script, eg:
 ```json
 {
     "scripts": {
-        "start": "bookshop-browser -b ./components -p 6061"
+        "start": "bookshop-browser -b ./path/to/components -p 6061"
     }
 }
 ```
@@ -72,7 +74,7 @@ NOTE: Make sure the port number matches the port number you supplied to the `boo
 If you built the Bookshop browser javascript to a file, you can reference that file instead:
 
 ```
-npx bookshop-browser -b ./components -o ./src/assets/bookshop.js
+npx bookshop-browser -b ./path/tocomponents -o ./path/to/assets/bookshop.js
 ```
 ```
 {% if jekyll.environment == "production" %}
