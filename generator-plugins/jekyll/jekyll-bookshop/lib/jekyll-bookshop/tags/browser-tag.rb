@@ -7,8 +7,25 @@ module JekyllBookshop
       @host = markup.strip
     end
 
+    def self.transformHostString(host)
+      case
+        when host =~ %r!^:\d+$!
+          "http://localhost#{host}/bookshop.js"
+        when host =~ %r!^\d+$!
+          "http://localhost:#{host}/bookshop.js"
+        when host =~ %r!^localhost:\d+$!
+          "http://#{host}/bookshop.js"
+        when host =~ %r!^/!
+          host
+        else
+          "//#{host}"
+      end
+    end
+
     def render(context)
       return unless @host
+
+      host = BrowserTag.transformHostString(@host)
 
       site = context.registers[:site]
       page = context.registers[:page]
@@ -20,7 +37,7 @@ module JekyllBookshop
 
       "<div data-bookshop-browser></div>
 <script>window.bookshop_browser_site_data = null;</script>
-<script src=\"//#{@host}\"></script>
+<script src=\"#{host}\"></script>
 <script>
   window.BookshopBrowser = new window.BookshopBrowserClass({
     globals: [window.bookshop_browser_site_data]

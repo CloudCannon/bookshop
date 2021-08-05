@@ -62,7 +62,7 @@ Within Jekyll, the *jekyll-bookshop* plugin provides a `bookshop_browser` tag to
 
 .*components.html*
 ```liquid
-{% bookshop_browser localhost:6061/bookshop.js %}
+{% bookshop_browser :6061 %}
 ```
 
 NOTE: Make sure the port number matches the port number you supplied to the `bookshop-browser` command earlier.
@@ -78,6 +78,6 @@ npx bookshop-browser -b ./components -o ./src/assets/bookshop.js
 {% if jekyll.environment == "production" %}
     {% bookshop_browser /assets/bookshop.js %}
 {% else %}
-    {% bookshop_browser localhost:6061/bookshop.js %}
+    {% bookshop_browser :6061 %}
 {% endif %}
 ```

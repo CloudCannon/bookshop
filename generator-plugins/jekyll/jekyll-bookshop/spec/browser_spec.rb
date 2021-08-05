@@ -18,7 +18,7 @@ module JekyllBookshop
     it "should render the bookshop browser dependencies" do
       output_file = TestHelpers.read_output_file("index.html")
 
-      target = "<script src=\"//localhost:1234/bookshop.js\"></script>"
+      target = "<script src=\"http://localhost:1234/bookshop.js\"></script>"
       expect(output_file).must_match %r!#{Regexp.quote(target)}!
     end
 
