@@ -26,6 +26,7 @@ module CloudCannonJekyllBookshop
             "description"       => "Item Description",
             "icon"              => "flare",
             "tags"              => ["Item Tag"],
+            "_instance_values"  => {},
             "_select_data"      => {
               "fives" => %w(5 five V),
             },

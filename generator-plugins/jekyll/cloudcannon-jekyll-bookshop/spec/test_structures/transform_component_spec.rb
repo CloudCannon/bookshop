@@ -33,6 +33,7 @@ module CloudCannonJekyllBookshop
             "nest"     => "Nested",
             "nest-two" => "Grape",
           },
+          "_instance_values" => {},
           "_select_data" => {
             "nest-twos" => %w(a b),
           },

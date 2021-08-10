@@ -138,6 +138,32 @@ test("should do nothing with preview", t => {
   ]);
 });
 
+test("should add instance values", t => {
+  const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
+  [props]
+  title = "Mr Fancy"
+  _identity.instance = "UUID"
+  date.instance = "NOW"
+  `);
+  const bookshop_structure = Testables.TransformComponent("a/b/b.bookshop.toml", bookshop_component)
+  
+  t.deepEqual(bookshop_structure, [
+    {
+      ...helpers.base_bookshop_output,
+      "_instance_values": {
+        "_identity": "UUID",
+        "date": "NOW"
+      },
+      "value": {
+        "_bookshop_name": "a/b",
+        "title": null,
+        "_identity": null,
+        "date": null
+      }
+    }
+  ]);
+});
+
 test("should handle nested special keys", t => {
   const bookshop_component = helpers.loadTestTOML(helpers.base_bookshop_config + helpers.f`
   [props]
@@ -288,6 +314,7 @@ test("should create sub-array structures", t => {
               "link_content": "Inner comment",
               "link_number": "How Many?"
             },
+            "_instance_values": {},
             "_select_data": {},
             "_array_structures": {},
             "value": {
@@ -369,6 +396,7 @@ test("should handle a complex example", t => {
   [[props.sections.tag_items]]          #: Tags are used in search results
   tag_name.select = ["good", "great"]   #: Single word only
   color.default = "#407AFC"             #: Not used on mobile
+  date.instance = "NOW"                 #: Used for the date
   
   [props.category]                      #: Shown on archive pages
   label = "Popular"                     #: Search label
@@ -395,6 +423,7 @@ test("should handle a complex example", t => {
           "values": [{
             "label": "Section",
             "icon": "add_box",
+            "_instance_values": {},
             "_select_data": {
               "alignments": ["left", "right"]
             },
@@ -408,6 +437,9 @@ test("should handle a complex example", t => {
                 "values": [{
                   "label": "Tag Item",
                   "icon": "add_box",
+                  "_instance_values": {
+                    "date": "NOW"
+                  },
                   "_select_data": {
                     "tag_names": ["good", "great"]
                   },
@@ -418,7 +450,8 @@ test("should handle a complex example", t => {
                   "_array_structures": {},
                   "value": {
                     "tag_name": null,
-                    "color": "#407AFC"
+                    "color": "#407AFC",
+                    "date": null
                   }
                 }]
               }
