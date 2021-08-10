@@ -3,19 +3,15 @@ import yaml from 'js-yaml';
 
 const processPropObject = (obj) => {
     for (const key of Object.keys(obj)) {
-        if (obj[key]?.select && Array.isArray(obj[key].select)) {
+        if (obj[key]?.instance) {
+            obj[key] = obj[key].instance
+        } else if (obj[key]?.select && Array.isArray(obj[key].select)) {
             obj[key] = obj[key].default || obj[key].select[0]
-        }
-        
-        if (obj[key]?.preview && Array.isArray(obj[key].preview)) {
+        } else if (obj[key]?.preview && Array.isArray(obj[key].preview)) {
             obj[key] = obj[key].default || obj[key].preview[0]
-        }
-        
-        if (obj[key]?.default) {
+        } else if (obj[key]?.default) {
             obj[key] = obj[key].default
-        }
-        
-        if (Array.isArray(obj[key])) {
+        } else if (Array.isArray(obj[key])) {
             obj[key].forEach((arr_obj, index) => {
                 obj[key][index] = processPropObject(arr_obj);
             })
