@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cloudcannon-jekyll-bookshop (2.0.0.pre.beta.19)
+    cloudcannon-jekyll-bookshop (2.0.0.pre.beta.20)
       dry-inflector (>= 0.1, < 1.0)
       jekyll (>= 3.7, < 5.0)
       node-runner (>= 1.0, < 2.0)
