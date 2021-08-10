@@ -46,7 +46,7 @@ module JekyllBookshop
 
         page.output = page.output.gsub(
           %r!bookshop_browser_site_data = null!,
-          "bookshop_browser_site_data = #{@site.data["_bookshop_site_data"].to_json}"
+          "bookshop_browser_site_data = #{@site.data["_bookshop_site_data"].to_json.gsub(%r!</script!i, "<\\/script")}"
         )
       end
       @site.data["_bookshop_data_pages"] = nil
