@@ -50,7 +50,7 @@ const TransformComponent = (path, component) => {
 // Recursive function for processing the [props] section of a bookshop component spec,
 // and populating sub-structures, comments, select data, et cetera.
 const TransformComponentProps = (props, structure, value_context) => {
-    ["_select_data","_array_structures","_comments","value"].forEach(k => {
+    ["_select_data","_array_structures","_comments","_instance_values","value"].forEach(k => {
         structure[k] = structure[k] || {};
     });
 
@@ -91,6 +91,12 @@ const TransformObject = (key, obj, structure, value_context) => {
     const comment = GetCommentFromObject(obj);
     if (comment) {
         structure["_comments"][key] = comment;
+    }
+
+    if (Object.hasOwnProperty.call(obj, "instance")) {
+        value_context[key] = null;
+        structure["_instance_values"][key] = obj["instance"]
+        return
     }
 
     if (Object.hasOwnProperty.call(obj, "select")) {

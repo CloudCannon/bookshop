@@ -23,6 +23,7 @@ module.exports = {
         "description": "Description of testing component",
         "icon": "nature_people",
         "tags": [ "one", "two", "three" ],
+        "_instance_values": {},
         "_select_data": {},
         "_array_structures": {},
         "_comments": {},

@@ -36,6 +36,12 @@ module JekyllBookshop
       expect(output_file).wont_match %r!#{Regexp.quote(target)}!
     end
 
+    it "should escape script tags" do
+      output_file = TestHelpers.read_output_file("index.html")
+
+      expect(output_file).wont_match %r!</script>.*</script>!
+    end
+
     it "should render the initialization snippet" do
       output_file = TestHelpers.read_output_file("index.html")
 

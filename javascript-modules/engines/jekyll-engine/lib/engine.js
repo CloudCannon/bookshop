@@ -81,7 +81,8 @@ export class Engine {
     }
 
     getComponentKey(name) {
-        return `components/${name}/${name}.jekyll.html`;
+        const base = name.split("/").reverse()[0];
+        return `components/${name}/${base}.jekyll.html`;
     }
 
     getComponent(name) {

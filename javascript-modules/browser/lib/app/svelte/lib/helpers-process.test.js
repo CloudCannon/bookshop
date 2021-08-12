@@ -41,7 +41,6 @@ test("should collapse a select to a default is present", t => {
     t.deepEqual(processBookshopProps(input), {type: 'b'});
 });
 
-
 test("should collapse a preview to its first option", t => {
     const input = {
         props: {
@@ -51,6 +50,17 @@ test("should collapse a preview to its first option", t => {
         }
     }
     t.deepEqual(processBookshopProps(input), {type: 'a'});
+});
+
+test("should collapse an instance to its value", t => {
+    const input = {
+        props: {
+            id: {
+                instance: "UUID"
+            }
+        }
+    }
+    t.deepEqual(processBookshopProps(input), {id: 'UUID'});
 });
 
 test("should collapse a preview to a default is present", t => {
