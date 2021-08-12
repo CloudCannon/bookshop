@@ -22,7 +22,6 @@ export default async (options) => {
 
     options.bookshopDirs = filterBookshops(options.bookshopDirs);
     options.bookshopConfig = await loadConfig(options.bookshopDirs[0]);
-    console.log(options.bookshopConfig);
 
     const plugins = esbuildOptions.plugins || [];
     plugins.push(bookshopComponentPlugin(options));
