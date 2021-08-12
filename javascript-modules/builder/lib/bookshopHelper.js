@@ -7,7 +7,7 @@ export const filterBookshops = (bookshopDirectories = []) => {
     }
     const filteredDirectories = bookshopDirectories.filter(dir => {return fs.existsSync(dir)});
     if (!filteredDirectories.length) {
-        console.error(`Could find any of ${bookshopDirectories.join(", ")}`);
+        console.error(`Could not find any of ${bookshopDirectories.join(", ")}`);
         throw new Error('Referenced bookshop directories were not found on disk — nothing to build.');
     }
     return filteredDirectories;
