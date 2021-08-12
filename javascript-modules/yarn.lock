@@ -354,6 +354,7 @@ __metadata:
     esbuild: ^0.11.23
     esbuild-svelte: ^0.5.3
     nyc: ^15.1.0
+    svelte: ^3.42.1
   languageName: unknown
   linkType: soft
 
@@ -4636,6 +4637,13 @@ resolve@^1.10.0:
   version: 3.41.0
   resolution: "svelte@npm:3.41.0"
   checksum: 8f639e79e5efc6658d81a343adae9f6899c58b2e77afb50d861768c79a2931a3d302ed8d7224528f2328aefa8183630441eb9225c2b55ce9e037b1bb50a9c434
+  languageName: node
+  linkType: hard
+
+"svelte@npm:^3.42.1":
+  version: 3.42.1
+  resolution: "svelte@npm:3.42.1"
+  checksum: 7be8632cff97e29fd8c15d5eed99c036b169ab06be87fd8d00de9b8cd457146d38efda42377e82d867e0f72ca536009c02be47ddadb1616e8920071a97de9363
   languageName: node
   linkType: hard
 

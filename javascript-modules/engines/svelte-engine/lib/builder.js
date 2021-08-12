@@ -1,5 +1,5 @@
 import sveltePlugin from "esbuild-svelte";
-import svelteFixPlugin from "./lib/build/svelteFixPlugin.js";
+import svelteFixPlugin from "./svelteFixPlugin.js";
 
 export const extensions = [".svelte"];
 

@@ -38,7 +38,7 @@ export class Engine {
             return "";
         }
         if (!globals || typeof globals !== "object") globals = {};
-        props = { ...globals, include: props };
+        props = { ...globals, ...props };
         new source({target, props});
     }
 }
