@@ -17,7 +17,7 @@ export const loadConfig = async (bookshopDirectory = "") => {
     const primaryConfig = path.join(bookshopDirectory, 'bookshop/bookshop.config.js');
     const config = await import(primaryConfig);
     const engineImports = Object.keys(config.default.engines).map((engineName) => {
-        return import(engineName);
+        return import(`${engineName}/build`);
     });
     const engines = await Promise.all(engineImports);
     return {engines};

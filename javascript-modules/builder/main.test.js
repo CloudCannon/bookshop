@@ -6,7 +6,7 @@ test('should shake the tree', async t => {
     let result = await Builder({
         esbuild: {
             stdin: {
-                contents: `import { extensions } from "@bookshop/jekyll-engine";
+                contents: `import { extensions } from "@bookshop/jekyll-engine/build";
                 console.log(extensions);`,
                 resolveDir: path.join(process.cwd(), './.test/fixtures'),
                 sourcefile: 'virtual.js'
@@ -85,4 +85,26 @@ test('should import engines from first valid bookshop directory', async t => {
     t.is(result.errors.length, 0);
     t.is(result.warnings.length, 0);
     t.regex(result.outputFiles[0].text, /Jekyll Engine Fixtures Folder/);
+});
+
+test('should import files', async t => {
+    let result = await Builder({
+        esbuild: {
+            stdin: {
+                contents: `import engines from "__bookshop_engines__";
+                console.log(engines);`,
+                resolveDir: process.cwd(),
+                sourcefile: 'virtual.js'
+            },
+            write: false,
+            format: 'esm'
+        },
+        bookshopDirs: [
+            path.join(process.cwd(), './.test/fixtures'),
+            path.join(process.cwd(), './.test/second-fixtures')
+        ]
+    });
+    t.is(result.errors.length, 0);
+    t.is(result.warnings.length, 0);
+    t.regex(result.outputFiles[0].text, /<p>dos<\/p>/);
 });

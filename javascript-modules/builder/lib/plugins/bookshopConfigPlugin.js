@@ -1,7 +1,7 @@
 import path from 'path';
 
 const importEngineConfig = async ([engine, data]) => {
-    data.__engine = await import(engine);
+    data.__engine = await import(`${engine}/build`);
 }
 
 const joinExtensions = (extensions) => {

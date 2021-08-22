@@ -17,6 +17,7 @@ export default async (options) => {
         write: true,
         watch: false,
         plugins: [],
+        loader: {},
         ...(options.esbuild || {})
     }
 
@@ -29,6 +30,16 @@ export default async (options) => {
     plugins.push(bookshopFilePlugin(options));
     plugins.push(bookshopGlobPlugin(options));
     plugins.push(bookshopStylesPlugin(options));
+
+    options.bookshopConfig?.engines?.forEach(engine => {
+        engine?.buildPlugins?.forEach(plugin => {
+            plugins.push(plugin);
+        });
+        esbuildOptions.loader = {
+            ...esbuildOptions.loader,
+            ...(engine?.buildLoaders || {})
+        };
+    });
 
     return await esbuild.build({
         ...esbuildOptions,

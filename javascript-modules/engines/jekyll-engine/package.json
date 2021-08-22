@@ -5,6 +5,10 @@
   "type": "module",
   "sideEffects": false,
   "main": "main.js",
+  "exports": {
+    ".": "./main.js",
+    "./build": "./build.js"
+  },
   "scripts": {
     "test": "nyc ava -v"
   },
