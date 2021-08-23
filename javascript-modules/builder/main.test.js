@@ -108,3 +108,24 @@ test('should import files', async t => {
     t.is(result.warnings.length, 0);
     t.regex(result.outputFiles[0].text, /<p>dos<\/p>/);
 });
+
+test('should import TOML files', async t => {
+    let result = await Builder({
+        esbuild: {
+            stdin: {
+                contents: `import components from "__bookshop_components__";
+                console.log(components);`,
+                resolveDir: process.cwd(),
+                sourcefile: 'virtual.js'
+            },
+            write: false,
+            format: 'esm'
+        },
+        bookshopDirs: [
+            path.join(process.cwd(), './.test/fixtures')
+        ]
+    });
+    t.is(result.errors.length, 0);
+    t.is(result.warnings.length, 0);
+    t.regex(result.outputFiles[0].text, /Card Component TOML/);
+});
