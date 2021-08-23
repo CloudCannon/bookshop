@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/cloudcannon-structures",
-  "version": "2.0.0-beta.20",
+  "version": "2.0.0-beta.21",
   "description": "Convert a Bookshop object into a CloudCannon structure",
   "main": "main.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@bookshop/toml-narrator": "2.0.0-beta.20",
+    "@bookshop/toml-narrator": "2.0.0-beta.21",
     "@ltd/j-toml": "^1.12.2",
     "ava": "^3.15.0",
     "nyc": "^15.1.0",
