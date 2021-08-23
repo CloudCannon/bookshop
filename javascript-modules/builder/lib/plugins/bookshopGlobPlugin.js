@@ -3,7 +3,7 @@ import fastGlob from 'fast-glob';
 
 const importFile = (file, index) => {
     return `
-    import file${index} from '__bookshop_file__${file}';
+    import file${index} from '${file}__bookshop_file__';
     files['${file}'] = file${index};`
 }
 

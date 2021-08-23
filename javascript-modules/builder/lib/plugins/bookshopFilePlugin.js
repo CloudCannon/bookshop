@@ -22,10 +22,10 @@ const loadFileFromBookshops = async (bookshops, file) => {
 export default (options) => ({
     name: 'bookshop-file',
     setup: (build) => {
-        build.onResolve({ filter: /^__bookshop_file__/ }, async (args) => {
+        build.onResolve({ filter: /__bookshop_file__$/ }, async (args) => {
             if (!options?.bookshopDirs?.length) return;
             return {
-                path: args.path.replace(/^__bookshop_file__/, ''),
+                path: args.path.replace(/__bookshop_file__$/, ''),
                 namespace: 'bookshop-import-file',
                 pluginData: {
                     resolveDirs: options.bookshopDirs

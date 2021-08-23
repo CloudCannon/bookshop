@@ -10,7 +10,7 @@ test('bookshopFilePlugin should be defined', t => {
 test('import a component as text', async t => {
     let result = await esbuild.build({
         stdin: {
-            contents: `import file from "__bookshop_file__components/card/card.jekyll.html";
+            contents: `import file from "components/card/card.jekyll.html__bookshop_file__";
             console.log(file);`,
             resolveDir: process.cwd(),
             sourcefile: 'virtual.js'
@@ -39,7 +39,7 @@ test('import a component as text', async t => {
 test('import a component from a secondary bookshop', async t => {
     let result = await esbuild.build({
         stdin: {
-            contents: `import file from "__bookshop_file__components/dos/dos.jekyll.html";
+            contents: `import file from "components/dos/dos.jekyll.html__bookshop_file__";
             console.log(file);`,
             resolveDir: process.cwd(),
             sourcefile: 'virtual.js'
@@ -68,7 +68,7 @@ test('import a component from a secondary bookshop', async t => {
 test('import a clashing component from the primary bookshop', async t => {
     let result = await esbuild.build({
         stdin: {
-            contents: `import file from "__bookshop_file__components/clash/clash.jekyll.html";
+            contents: `import file from "components/clash/clash.jekyll.html__bookshop_file__";
             console.log(file);`,
             resolveDir: process.cwd(),
             sourcefile: 'virtual.js'
@@ -97,7 +97,7 @@ test('import a clashing component from the primary bookshop', async t => {
 test('respect order of bookshopDirs', async t => {
     let result = await esbuild.build({
         stdin: {
-            contents: `import file from "__bookshop_file__components/clash/clash.jekyll.html";
+            contents: `import file from "components/clash/clash.jekyll.html__bookshop_file__";
             console.log(file);`,
             resolveDir: process.cwd(),
             sourcefile: 'virtual.js'
@@ -126,7 +126,7 @@ test('respect order of bookshopDirs', async t => {
 test('import a shared file', async t => {
     let result = await esbuild.build({
         stdin: {
-            contents: `import file from "__bookshop_file__shared/jekyll/title.jekyll.html";
+            contents: `import file from "shared/jekyll/title.jekyll.html__bookshop_file__";
             console.log(file);`,
             resolveDir: process.cwd(),
             sourcefile: 'virtual.js'

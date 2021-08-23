@@ -19,7 +19,7 @@ test.before(async t => {
                     path.join(process.cwd(), './.test/second-fixtures')
                 ]
             }),
-            stubExternalPlugin("skip-bookshop-files", /^__bookshop_file__/)
+            stubExternalPlugin("skip-bookshop-files", /__bookshop_file__$/)
         ],
         format: 'esm',
         write: false,
@@ -37,7 +37,7 @@ test('build without warnings or errors', async t => {
 });
 
 test('import a component to the files object', async t => {
-    let m = /import file0 from "__bookshop_file__components\/card\/card\.jekyll\.html";/;
+    let m = /import file0 from "components\/card\/card\.jekyll\.html__bookshop_file__";/;
     t.regex(esbuildOutput.outputFiles[0].text, m);
     
     m = /files\["components\/card\/card\.jekyll\.html"\] = file0;/;
@@ -45,7 +45,7 @@ test('import a component to the files object', async t => {
 });
 
 test('import a component from a secondary bookshop', async t => {
-    let m = /import file\d from "__bookshop_file__components\/dos\/dos\.jekyll\.html";/;
+    let m = /import file\d from "components\/dos\/dos\.jekyll\.html__bookshop_file__";/;
     t.regex(esbuildOutput.outputFiles[0].text, m);
     
     m = /files\["components\/dos\/dos\.jekyll\.html"\] = file\d;/;
@@ -53,14 +53,14 @@ test('import a component from a secondary bookshop', async t => {
 });
 
 test('Reference clashed components only once', async t => {
-    let m = /__bookshop_file__components\/clash\/clash\.jekyll\.html/g;
+    let m = /components\/clash\/clash\.jekyll\.html__bookshop_file__/g;
     t.deepEqual(esbuildOutput.outputFiles[0].text.match(m), [
-        "__bookshop_file__components/clash/clash.jekyll.html"
+        "components/clash/clash.jekyll.html__bookshop_file__"
     ], "don't reference duplicate files twice");
 });
 
 test('import a file from the shared directory', async t => {
-    let m = /import file\d from "__bookshop_file__shared\/jekyll\/title\.jekyll\.html";/;
+    let m = /import file\d from "shared\/jekyll\/title\.jekyll\.html__bookshop_file__";/;
     t.regex(esbuildOutput.outputFiles[0].text, m);
     
     m = /files\["shared\/jekyll\/title\.jekyll\.html"\] = file\d;/;
