@@ -17,7 +17,9 @@ export default async (options) => {
         write: true,
         watch: false,
         plugins: [],
-        loader: {},
+        loader: {
+            ".bookshop.toml": "text",
+        },
         ...(options.esbuild || {})
     }
 
