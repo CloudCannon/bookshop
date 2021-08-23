@@ -23,9 +23,12 @@
     let selectedComponent = "nothing";
     let previousComponent = "nothing";
     let framework = "none";
+    let previousFramework = "none";
+    let activeEngine = {};
     
     let hydratedComponents = null;
     $: {
+        activeEngine?.destroy?.(renderTarget);
         hydratedComponents = hydrateComponents(components, engines, exclude);
         console.log(`Components Updated.`);
     }
@@ -42,19 +45,29 @@
         updateUrl(component, framework);
         
         const newComponentSelected = previousComponent !== component;
+        const newFrameworkSelected = previousFramework !== framework;
         const newComponentConfig = baseYaml !== componentDetail.yaml;
         if (newComponentSelected || newComponentConfig) {
             editedYaml = baseYaml = componentDetail.yaml;
         }
 
-        if (newComponentSelected) {
-            renderTarget.innerHTML = ''; // TODO: Call engine.destroy()
+        if (newComponentSelected || newFrameworkSelected) {
+            destroyPreviousComponent();
+            renderTarget.innerHTML = ''; // Clean up in case destroy() didn't
             renderMap = {};
         }
         
         previousComponent = component;
+        previousFramework = framework;
     }
     $: if (hydratedComponents) refreshComponent(selectedComponent, framework);
+
+    const destroyPreviousComponent = () => {
+        const previousEngine = engines.filter(e => e.key === previousFramework)[0];
+        if (previousEngine) {
+            previousEngine.destroy?.(renderTarget, previousComponent);
+        }
+    }
 
     const buildComponentLadder = () => {
         Object.entries(hydratedComponents).filter(([key]) => key !== 'all_bookshop').forEach(([key, component]) => {
@@ -91,6 +104,7 @@
         yamlError = err;
         if (yamlError) return;
 
+        activeEngine = engine;
         await engine.render(renderTarget, component, props, globalData);
     }
     $: if (hydratedComponents) render(selectedComponent, editedYaml, framework);
