@@ -17,11 +17,10 @@ export default async (options) => {
         write: true,
         watch: false,
         plugins: [],
-        loader: {
-            ".bookshop.toml": "text",
-        },
+        loader: {},
         ...(options.esbuild || {})
     }
+    esbuildOptions.loader[".bookshop.toml"] = "text";
 
     options.bookshopDirs = filterBookshops(options.bookshopDirs);
     options.bookshopConfig = await loadConfig(options.bookshopDirs[0]);
