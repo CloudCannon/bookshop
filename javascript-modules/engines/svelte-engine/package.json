@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/svelte-engine",
-  "version": "2.0.0-beta.16",
+  "version": "2.0.0-beta.20",
   "description": "Bookshop frontend Svelte renderer",
   "type": "module",
   "sideEffects": false,
@@ -18,6 +18,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@bookshop/builder": "2.0.0-beta.20",
     "ava": "^3.15.0",
     "nyc": "^15.1.0"
   },
