@@ -137,7 +137,7 @@ const testNPM = async (pkgs) => {
     const tests = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
             try {
-                execSync(`yarn --cwd ${pkg} test`, {stdio: "ignore"});
+                execSync(`cd ${pkg} && yarn test`, {stdio: "ignore"});
                 resolve({pkg, err: null});
                 process.stdout.write('👏 ');
             } catch (err) {

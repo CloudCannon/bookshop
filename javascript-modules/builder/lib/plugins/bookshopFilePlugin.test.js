@@ -23,6 +23,9 @@ test('import a component as text', async t => {
                 ]
             })
         ],
+        loader: {
+            ".jekyll.html": "text"
+        },
         format: 'esm',
         write: false,
         bundle: true
@@ -49,6 +52,9 @@ test('import a component from a secondary bookshop', async t => {
                 ]
             })
         ],
+        loader: {
+            ".jekyll.html": "text"
+        },
         format: 'esm',
         write: false,
         bundle: true
@@ -75,6 +81,9 @@ test('import a clashing component from the primary bookshop', async t => {
                 ]
             })
         ],
+        loader: {
+            ".jekyll.html": "text"
+        },
         format: 'esm',
         write: false,
         bundle: true
@@ -101,6 +110,9 @@ test('respect order of bookshopDirs', async t => {
                 ]
             })
         ],
+        loader: {
+            ".jekyll.html": "text"
+        },
         format: 'esm',
         write: false,
         bundle: true
@@ -124,6 +136,9 @@ test('import a shared file', async t => {
                 bookshopDirs: [path.join(process.cwd(), './.test/fixtures')]
             })
         ],
+        loader: {
+            ".jekyll.html": "text"
+        },
         format: 'esm',
         write: false,
         bundle: true

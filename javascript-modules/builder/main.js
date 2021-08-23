@@ -1,18 +1,28 @@
 import path from 'path';
-import bookshopComponentPlugin from './lib/bookshopComponentPlugin.js';
-import bookshopConfigPlugin from './lib/bookshopConfigPlugin.js';
-import bookshopFilePlugin from './lib/bookshopFilePlugin.js';
-import bookshopGlobPlugin from './lib/bookshopGlobPlugin.js'
+import fs from 'fs';
+import { filterBookshops, loadConfig } from './lib/bookshopHelper.js';
+import bookshopComponentPlugin from './lib/plugins/bookshopComponentPlugin.js';
+import bookshopConfigPlugin from './lib/plugins/bookshopConfigPlugin.js';
+import bookshopFilePlugin from './lib/plugins/bookshopFilePlugin.js';
+import bookshopGlobPlugin from './lib/plugins/bookshopGlobPlugin.js'
 import bookshopStylesPlugin from '@bookshop/styles';
 import esbuild from 'esbuild';
 
 export default async (options) => {
+    options = {
+        bookshopDirs: [],
+        ...options
+    }
     const esbuildOptions = {
         write: true,
         watch: false,
         plugins: [],
-        ...(options?.esbuild || {})
+        loader: {},
+        ...(options.esbuild || {})
     }
+
+    options.bookshopDirs = filterBookshops(options.bookshopDirs);
+    options.bookshopConfig = await loadConfig(options.bookshopDirs[0]);
 
     const plugins = esbuildOptions.plugins || [];
     plugins.push(bookshopComponentPlugin(options));
@@ -20,6 +30,16 @@ export default async (options) => {
     plugins.push(bookshopFilePlugin(options));
     plugins.push(bookshopGlobPlugin(options));
     plugins.push(bookshopStylesPlugin(options));
+
+    options.bookshopConfig?.engines?.forEach(engine => {
+        engine?.buildPlugins?.forEach(plugin => {
+            plugins.push(plugin);
+        });
+        esbuildOptions.loader = {
+            ...esbuildOptions.loader,
+            ...(engine?.buildLoaders || {})
+        };
+    });
 
     return await esbuild.build({
         ...esbuildOptions,

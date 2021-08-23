@@ -95,7 +95,7 @@ export class Engine {
         return !!this.files?.[key];
     }
 
-    async render(name, props, globals) {
+    async render(target, name, props, globals) {
         let source = this.getComponent(name);
         if (!source) {
             console.warn(`[jekyll-engine] No component found for ${name}`);
@@ -104,7 +104,7 @@ export class Engine {
         source = translateLiquid(source, {});
         if (!globals || typeof globals !== "object") globals = {};
         props = { ...globals, include: props };
-        return await this.liquid.parseAndRender(source || "", props);
+        target.innerHTML = await this.liquid.parseAndRender(source || "", props);
     }
 
     loader() {

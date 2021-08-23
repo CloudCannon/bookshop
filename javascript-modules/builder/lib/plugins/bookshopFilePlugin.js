@@ -1,20 +1,19 @@
 import fs from 'fs/promises';
+import fsc from 'fs';
 import path from 'path';
 
 const loadFileFromBookshops = async (bookshops, file) => {
     for (const dir of bookshops) {
         const filePath = path.join(dir, file);
         try {
-            const fileContents = await fs.readFile(filePath, 'utf8');
+            await fs.access(filePath, fsc.constants.R_OK);
             return {
-                fileContents: fileContents,
                 resolveDir: dir,
                 filePath: filePath
             }
         } catch (e) {}
     }
     return {
-        fileContents: "",
         resolveDir: "",
         filePath: ""
     }
@@ -34,11 +33,16 @@ export default (options) => ({
             };
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-file' }, async (args) => {
-            const {fileContents, resolveDir, filePath} = await loadFileFromBookshops(args.pluginData.resolveDirs, args.path);
+            const {resolveDir, filePath} = await loadFileFromBookshops(args.pluginData.resolveDirs, args.path);
+            if (!filePath) return {contents: ""};
+
+            const fileContents = [
+                `import file from "./${args.path}";`,
+                `export default file;`
+            ].join('\n');
 
             return { 
                 contents: fileContents, 
-                loader: 'text', 
                 resolveDir: resolveDir,
                 watchFiles: [filePath]
             };

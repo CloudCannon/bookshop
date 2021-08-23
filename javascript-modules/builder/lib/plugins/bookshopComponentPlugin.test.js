@@ -1,6 +1,6 @@
 import test from 'ava';
 import path from 'path';
-import {stubExternalPlugin} from '../.test/common.js';
+import {stubExternalPlugin} from '../../.test/common.js';
 import bookshopComponentPlugin from './bookshopComponentPlugin.js';
 import esbuild from 'esbuild';
 

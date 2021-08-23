@@ -11,6 +11,8 @@
     export let globalData = {};
     export let exclude = [];
     
+    let renderTarget, renderMap = {};
+
     let editProps = true;
     
     let baseYaml = '# Nothing';     // What is currently on disk
@@ -21,8 +23,6 @@
     let selectedComponent = "nothing";
     let previousComponent = "nothing";
     let framework = "none";
-
-    let outputHTML = "";
     
     let hydratedComponents = null;
     $: {
@@ -46,21 +46,33 @@
         if (newComponentSelected || newComponentConfig) {
             editedYaml = baseYaml = componentDetail.yaml;
         }
+
+        if (newComponentSelected) {
+            renderTarget.innerHTML = ''; // TODO: Call engine.destroy()
+            renderMap = {};
+        }
         
         previousComponent = component;
     }
     $: if (hydratedComponents) refreshComponent(selectedComponent, framework);
 
+    const buildComponentLadder = () => {
+        Object.entries(hydratedComponents).filter(([key]) => key !== 'all_bookshop').forEach(([key, component]) => {
+            const sectionLabel = `<div data-bookshop-browser-section>${iconSvg(component.identity.icon)} ${component.identity.label}</div>`;
+            renderTarget.insertAdjacentHTML('beforeend', sectionLabel);
+
+            const el = document.createElement('div');
+            renderMap[key] = el;
+            renderTarget.appendChild(el);
+        });
+    }
+
     const renderAllComponents = async (engine) => {
-        const componentPromises = Object.entries(hydratedComponents).filter(([key]) => key !== 'all_bookshop').map(async ([key, component]) => {
-            const html = await engine.render(key, component.props, globalData);
-            return {component, html}
+        if (!renderTarget.innerHTML) buildComponentLadder();
+        const componentPromises = Object.entries(hydratedComponents).filter(([key]) => key !== 'all_bookshop').map(([key, component]) => {
+            return engine.render(renderMap[key], key, component.props, globalData);
         });
-        const components = await Promise.all(componentPromises);
-        const rendered = components.map(({component, html}) => {
-            return `<div data-bookshop-browser-section>${iconSvg(component.identity.icon)} ${component.identity.label}</div>${html}`   
-        });
-        return rendered.join('');
+        await Promise.all(componentPromises);
     }
 
     const render = async (component, yamlProps, framework) => {
@@ -68,21 +80,18 @@
         const engine = engines.filter(e => e.key === framework)[0];
         if (!engine) {
             console.warn(`Engine ${framework} not found.`);
-            outputHTML = "";
             return;
         }
 
         if (component === "all_bookshop") {
-            outputHTML = await renderAllComponents(engine);
-            return;
+            return await renderAllComponents(engine);
         }
 
         let {props, err} = loadYaml(yamlProps);
         yamlError = err;
         if (yamlError) return;
 
-        outputHTML = await engine.render(component, props, globalData);
-        if (!outputHTML) console.warn(`Engine ${framework} returned nothing for ${component}.`);
+        await engine.render(renderTarget, component, props, globalData);
     }
     $: if (hydratedComponents) render(selectedComponent, editedYaml, framework);
 
@@ -100,7 +109,8 @@
         }
     });
 </script>
-<div class="bookshop-browser">
+
+<div class="bookshop-browser-menus">
     <Library components={hydratedComponents}
         bind:selectedComponent={selectedComponent}
         bind:selectingComponent={selectingComponent}
@@ -116,12 +126,10 @@
     {/if}
 </div>
 
-{#if outputHTML}
-{@html outputHTML}
-{/if}
+<div class="bookshop-browser" bind:this={renderTarget}></div>
 
 <style>
-    .bookshop-browser {
+    .bookshop-browser-menus {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
         Helvetica, Arial, sans-serif,
         "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -138,7 +146,7 @@
         align-items: center;
     }
 
-    :global(.bookshop-browser :where(.cm-gutters, .cm-content)) {
+    :global(.bookshop-browser-menus :where(.cm-gutters, .cm-content)) {
         min-height: 300px !important;
     }
 

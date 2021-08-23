@@ -1,5 +1,5 @@
 export default {
     engines: {
-        "@bookshop/jekyll-engine": { name: "Jekyll Test" }
+        "@bookshop/jekyll-engine": { name: "Jekyll Engine Fixtures Folder" }
     }
 }
