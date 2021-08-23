@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/live",
-  "version": "2.0.0-beta.22",
+  "version": "2.0.0-beta.23",
   "description": "Live component renderer for editing from a CMS",
   "type": "module",
   "main": "main.js",
@@ -21,7 +21,7 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/builder": "2.0.0-beta.22",
+    "@bookshop/builder": "2.0.0-beta.23",
     "commander": "^8.1.0"
   },
   "stableVersion": "2.0.0-beta.3"
