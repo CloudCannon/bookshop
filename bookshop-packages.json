@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0-beta.21",
+  "version": "2.0.0-beta.22",
   "rubygems": {
     "generator-plugins/jekyll/cloudcannon-jekyll-bookshop": {
       "vendor_from_npm": [
