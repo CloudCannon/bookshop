@@ -1,7 +1,14 @@
 import path from 'path';
 
 const importEngineConfig = async ([engine, data]) => {
-    data.__engine = await import(`${engine}/build`);
+    const __engine = await import(`${engine}/build`);
+    return [
+        engine,
+        {
+            ...data,
+            __engine
+        }
+    ];
 }
 
 const joinExtensions = (extensions) => {
@@ -38,8 +45,8 @@ export default (options) => ({
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-config' }, async (args) => {
             const {default: config} = await import(path.join(args.pluginData.resolveDir, args.path));
-            const engines = Object.entries(config?.engines) || {};
-            await Promise.all(engines.map(importEngineConfig));
+            let engines = Object.entries(config?.engines) || [];
+            engines = await Promise.all(engines.map(importEngineConfig));
             const output = `
 const engines = [];
 ${engines.map(bundledEngine).join('\n')}
