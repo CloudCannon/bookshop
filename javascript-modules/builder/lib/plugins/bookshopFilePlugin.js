@@ -25,7 +25,7 @@ export default (options) => ({
         build.onResolve({ filter: /__bookshop_file__$/ }, async (args) => {
             if (!options?.bookshopDirs?.length) return;
             return {
-                path: args.path.replace(/__bookshop_file__$/, ''),
+                path: args.path,
                 namespace: 'bookshop-import-file',
                 pluginData: {
                     resolveDirs: options.bookshopDirs
@@ -33,11 +33,12 @@ export default (options) => ({
             };
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-file' }, async (args) => {
-            const {resolveDir, filePath} = await loadFileFromBookshops(args.pluginData.resolveDirs, args.path);
+            const path = args.path.replace(/__bookshop_file__$/, '');
+            const {resolveDir, filePath} = await loadFileFromBookshops(args.pluginData.resolveDirs, path);
             if (!filePath) return {contents: ""};
 
             const fileContents = [
-                `import file from "./${args.path}";`,
+                `import file from "./${path}";`,
                 `export default file;`
             ].join('\n');
 
