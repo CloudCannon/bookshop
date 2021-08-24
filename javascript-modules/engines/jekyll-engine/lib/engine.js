@@ -6,7 +6,6 @@ import translateLiquid from './translateLiquid.js';
  */
 import jsonify from './plugins/jsonify.js';
 import slugify from './plugins/slugify-plugin.js';
-import svelte from './plugins/svelte.js';
 import unbind from './plugins/unbind.js';
 import emulateJekyll from './plugins/emulate-jekyll.js';
 import local from './plugins/local.js';
@@ -24,7 +23,7 @@ export class Engine {
         this.name = options.name;
         this.files = options.files;
         this.plugins = options.plugins || [];
-        this.plugins.push(jsonify, slugify, svelte, unbind, emulateJekyll, local, highlight);
+        this.plugins.push(jsonify, slugify, unbind, emulateJekyll, local, highlight);
 
         this.initializeLiquid();
         this.applyLiquidPlugins();
