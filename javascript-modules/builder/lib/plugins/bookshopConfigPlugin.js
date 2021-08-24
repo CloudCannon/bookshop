@@ -46,6 +46,9 @@ export default (options) => ({
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-config' }, async (args) => {
             const {default: config} = await import(path.join(args.pluginData.resolveDir, args.path));
             let engines = Object.entries(config?.engines) || [];
+            if (options?.onlyEngines?.length) {
+                engines = engines.filter(([engine]) => options.onlyEngines.includes(engine));
+            }
             engines = await Promise.all(engines.map(importEngineConfig));
             const output = `
 const engines = [];

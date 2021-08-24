@@ -67,11 +67,14 @@ export const hydrateComponents = (components, engines, exclude = []) => {
             });
         }
 
-        hydrated[componentKey] = {
-            identity: parsedComponent.component,
-            props: transformedComponentProps,
-            yaml: componentYaml,
-            frameworks: engines.filter(engine => engine.hasComponent(componentKey)).map(engine => engine.key)
+        const matchedFrameworks = engines.filter(engine => engine.hasComponent(componentKey)).map(engine => engine.key);
+        if (matchedFrameworks.length) {
+            hydrated[componentKey] = {
+                identity: parsedComponent.component,
+                props: transformedComponentProps,
+                yaml: componentYaml,
+                frameworks: matchedFrameworks
+            }
         }
     });
     return hydrated;
