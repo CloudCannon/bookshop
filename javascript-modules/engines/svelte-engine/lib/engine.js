@@ -10,7 +10,7 @@ export class Engine {
         this.key = 'svelte';
         this.name = options.name;
         this.files = options.files;
-        this.activeApps = {};
+        this.activeApps = [];
     }
 
     getShared(name) {
@@ -36,30 +36,48 @@ export class Engine {
         if (!globals || typeof globals !== "object") globals = {};
         props = { ...globals, ...props };
 
-        if (this.activeApps[target]?.name === name) {
-            return this.update(target, props);
+        const matchingApps = this.activeApps
+            .filter(app => app.app?.$$?.root === target && app.name === name);
+        if (matchingApps.length) {
+            matchingApps.forEach(app => {
+                this.update(app.app, props);
+            });
+            return this.clean();
         }
 
         let source = this.getComponent(name);
         if (!source) {
             console.warn(`[svelte-engine] No component found for ${name}`);
-            return "";
+            return this.clean();
         }
-        this.activeApps[target] = {
+        this.activeApps.push({
             name,
             app: new source({target, props})
-        };
+        });
+        this.clean();
     }
 
-    update(target, props) {
-        if (!this.activeApps[target]?.app) return;
-        this.activeApps[target].app?.$$set?.(props);
+    update(app, props) {
+        app.$$set?.(props);
     }
 
     destroy(target, name) {
-        if (!name || this.activeApps[target]?.name === name) {
-            this.activeApps[target].app?.$destroy?.();
+        for (let i = this.activeApps.length - 1; i >= 0; i--) {
+            const app = this.activeApps[i];
+            if (app.app.$$?.root === target && (!name || app.name === name)) {
+                app.app.$destroy();
+                this.activeApps.splice(i, 1);
+            }
         }
-        delete this.activeApps[target];
+    }
+
+    clean() {
+        for (let i = this.activeApps.length - 1; i >= 0; i--) {
+            const app = this.activeApps[i];
+            if (app.app.$$?.root?.parentNode === null) {
+                app.app.$destroy();
+                this.activeApps.splice(i, 1);
+            }
+        }
     }
 }
