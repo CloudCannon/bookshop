@@ -15,19 +15,37 @@ const joinExtensions = (extensions) => {
     return `(${extensions.join('|')})`;
 }
 
-const bundledEngine = ([engine, data], engineIndex) => {
-    const __engine = data.__engine;
-    delete data.__engine;
-    const engineKey = `Engine${engineIndex}`;
-    return `
-    import {Engine as ${engineKey}} from '${engine}';
-    import ${engineKey}Files from "__bookshop_glob__${joinExtensions(__engine.extensions)}";
+const bundledEngine = (resolveDir) => {
+    return ([engine, data], engineIndex) => {
+        const __engine = data.__engine;
+        delete data.__engine;
+        const engineKey = `Engine${engineIndex}`;
+        data.plugins = data.plugins || [];
+        return `
+        import {Engine as ${engineKey}} from '${engine}';
+        import ${engineKey}Files from "__bookshop_glob__${joinExtensions(__engine.extensions)}";
 
-    engines.push(new ${engineKey}({
-        ...${JSON.stringify(data)},
-        files: ${engineKey}Files
-    }));`;
+        const ${engineKey}Plugins = [];
+        ${data.plugins.map(bundledPlugin(resolveDir, engineKey)).join('\n')}
+
+        engines.push(new ${engineKey}({
+            ...${JSON.stringify(data)},
+            files: ${engineKey}Files,
+            plugins: ${engineKey}Plugins
+        }));`;
+    }
 }
+
+const bundledPlugin = (resolveDir, engineKey) => {
+    return (plugin, pluginIndex) => {
+        const pluginPath = plugin[0] === "." ? path.join(resolveDir, plugin) : plugin;
+        const pluginKey = `${engineKey}Plugin${pluginIndex}`;
+        return `
+        import ${pluginKey} from '${pluginPath}';
+        ${engineKey}Plugins.push(${pluginKey});`;
+    }
+}
+
 
 export default (options) => ({
     name: 'bookshop-config-import',
@@ -52,7 +70,7 @@ export default (options) => ({
             engines = await Promise.all(engines.map(importEngineConfig));
             const output = `
 const engines = [];
-${engines.map(bundledEngine).join('\n')}
+${engines.map(bundledEngine(args.pluginData.resolveDir)).join('\n')}
 export default engines;
             `;
             return { contents: output, resolveDir: process.cwd() };
