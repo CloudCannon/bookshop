@@ -3,21 +3,21 @@ import styles from `__bookshop_styles__`;
 import components from `__bookshop_components__`;
 
 import Browser from './svelte/browser.svelte';
-import BrowserSockets from './sockets.js'
+import BookshopBrowserSockets from './sockets.js'
 
-if (window.BookshopBrowser) {
-    window.BookshopBrowser.engines = engines;
-    window.BookshopBrowser.styles = styles;
-    window.BookshopBrowser.components = components;
-    window.BookshopBrowser.render();
+if (window.bookshopBrowser) {
+    window.bookshopBrowser.engines = engines;
+    window.bookshopBrowser.styles = styles;
+    window.bookshopBrowser.components = components;
+    window.bookshopBrowser.render();
 }
 
 const connectBrowserSockets = () => {
-    window.BookshopBrowserSockets = new BrowserSockets();
+    window.bookshopBrowserSockets = new BookshopBrowserSockets();
 }
 
 const registerBrowserClass = () => {
-    window.BookshopBrowserClass = class BookshopBrowser {
+    window.BookshopBrowser = class BookshopBrowser {
         constructor(options) {
             this.engines = engines;
             this.styles = styles;
@@ -111,7 +111,7 @@ const registerBrowserClass = () => {
     }
 }
 
-if (!window.BookshopBrowserClass) {
+if (!window.BookshopBrowser) {
     registerBrowserClass();
 
     if (BOOKSHOP_HMR_PORT) {

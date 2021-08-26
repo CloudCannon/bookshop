@@ -1,4 +1,4 @@
-export default class BrowserSockets {
+export default class BookshopBrowserSockets {
     constructor() {
         this.head = document.querySelector('head');
         this.host = `localhost:${BOOKSHOP_HMR_PORT}`;

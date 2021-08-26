@@ -39,10 +39,10 @@ module JekyllBookshop
 <script>window.bookshop_browser_site_data = null;</script>
 <script src=\"#{host}\"></script>
 <script>
-  window.BookshopBrowser = new window.BookshopBrowserClass({
+  window.bookshopBrowser = new window.BookshopBrowser({
     globals: [window.bookshop_browser_site_data]
   }); 
-  window.BookshopBrowser.render();
+  window.bookshopBrowser.render();
 </script>"
     end
   end
