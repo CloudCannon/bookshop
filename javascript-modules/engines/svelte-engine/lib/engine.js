@@ -19,7 +19,8 @@ export class Engine {
     }
 
     getComponentKey(name) {
-        return `components/${name}/${name}.svelte`;
+        const base = name.split("/").reverse()[0];
+        return `components/${name}/${base}.svelte`;
     }
 
     getComponent(name) {
