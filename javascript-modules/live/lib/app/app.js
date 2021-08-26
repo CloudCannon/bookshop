@@ -33,8 +33,8 @@ window.BookshopLive = class BookshopLive {
     async renderElement(el) {
         const data = this.dig(el.componentPropSource);
         if (!data) return;
-        const rendered = await this.engines[0].render(el.componentName, data, this.globalData);
-        el.dom.innerHTML = rendered;
+        el.dom.innerHTML = "";
+        this.engines[0].render(el.dom, el.componentName, data, this.globalData);
     }
 
     update(data) {
