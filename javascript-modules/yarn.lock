@@ -305,6 +305,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@bookshop/eleventy-engine@workspace:engines/eleventy-engine":
+  version: 0.0.0-use.local
+  resolution: "@bookshop/eleventy-engine@workspace:engines/eleventy-engine"
+  dependencies:
+    ava: ^3.15.0
+    esbuild: ^0.11.23
+    liquidjs: ^9.25.0
+    nyc: ^15.1.0
+  languageName: unknown
+  linkType: soft
+
 "@bookshop/jekyll-engine@2.0.0-beta.27, @bookshop/jekyll-engine@workspace:engines/jekyll-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/jekyll-engine@workspace:engines/jekyll-engine"

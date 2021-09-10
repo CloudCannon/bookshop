@@ -8,6 +8,7 @@
         "styles",
         "toml-narrator",
         "engines/jekyll-engine",
+        "engines/eleventy-engine",
         "engines/svelte-engine"
     ],
     "scripts": {
