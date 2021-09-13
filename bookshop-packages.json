@@ -15,7 +15,9 @@
     "javascript-modules/bookshop-sass": {},
     "javascript-modules/cloudcannon-structures": {},
     "javascript-modules/engines/jekyll-engine": {},
+    "javascript-modules/engines/eleventy-engine": {},
     "javascript-modules/engines/svelte-engine": {},
+    "javascript-modules/generator-plugins/eleventy/eleventy-bookshop": {},
     "javascript-modules/live": {},
     "javascript-modules/styles": {},
     "javascript-modules/toml-narrator": {}

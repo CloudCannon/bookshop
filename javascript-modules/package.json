@@ -5,6 +5,7 @@
         "builder",
         "bookshop-sass",
         "cloudcannon-structures",
+        "generator-plugins/eleventy/eleventy-bookshop",
         "live",
         "styles",
         "toml-narrator",
