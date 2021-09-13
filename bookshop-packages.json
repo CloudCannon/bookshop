@@ -12,6 +12,7 @@
   "npm": {
     "javascript-modules/browser": {},
     "javascript-modules/builder": {},
+    "javascript-modules/bookshop-sass": {},
     "javascript-modules/cloudcannon-structures": {},
     "javascript-modules/engines/jekyll-engine": {},
     "javascript-modules/engines/svelte-engine": {},

@@ -3,6 +3,7 @@
     "workspaces": [
         "browser",
         "builder",
+        "bookshop-sass",
         "cloudcannon-structures",
         "live",
         "styles",
