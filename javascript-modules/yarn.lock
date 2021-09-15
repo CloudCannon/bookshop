@@ -293,7 +293,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/cloudcannon-structures@workspace:cloudcannon-structures":
+"@bookshop/cloudcannon-eleventy-bookshop@workspace:generator-plugins/eleventy/cloudcannon-eleventy-bookshop":
+  version: 0.0.0-use.local
+  resolution: "@bookshop/cloudcannon-eleventy-bookshop@workspace:generator-plugins/eleventy/cloudcannon-eleventy-bookshop"
+  dependencies:
+    "@bookshop/cloudcannon-structures": 2.0.0-beta.27
+    "@bookshop/toml-narrator": 2.0.0-beta.27
+    ava: ^3.15.0
+    fast-glob: ^3.2.7
+    nyc: ^15.1.0
+  languageName: unknown
+  linkType: soft
+
+"@bookshop/cloudcannon-structures@2.0.0-beta.27, @bookshop/cloudcannon-structures@workspace:cloudcannon-structures":
   version: 0.0.0-use.local
   resolution: "@bookshop/cloudcannon-structures@workspace:cloudcannon-structures"
   dependencies:
@@ -302,6 +314,15 @@ __metadata:
     ava: ^3.15.0
     nyc: ^15.1.0
     pluralize: ^8.0.0
+  languageName: unknown
+  linkType: soft
+
+"@bookshop/eleventy-bookshop@workspace:generator-plugins/eleventy/eleventy-bookshop":
+  version: 0.0.0-use.local
+  resolution: "@bookshop/eleventy-bookshop@workspace:generator-plugins/eleventy/eleventy-bookshop"
+  dependencies:
+    ava: ^3.15.0
+    nyc: ^15.1.0
   languageName: unknown
   linkType: soft
 
@@ -339,6 +360,20 @@ __metadata:
     nyc: ^15.1.0
   bin:
     bookshop-live: main.js
+  languageName: unknown
+  linkType: soft
+
+"@bookshop/sass@workspace:bookshop-sass":
+  version: 0.0.0-use.local
+  resolution: "@bookshop/sass@workspace:bookshop-sass"
+  dependencies:
+    "@bookshop/builder": 2.0.0-beta.27
+    ava: ^3.15.0
+    commander: ^8.1.0
+    fast-glob: ^3.2.7
+    nyc: ^15.1.0
+  bin:
+    bookshop-sass: main.js
   languageName: unknown
   linkType: soft
 
