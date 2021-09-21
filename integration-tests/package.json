@@ -1,0 +1,14 @@
+{
+  "name": "integration-tests",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "cucumber-js --parallel 4"
+  },
+  "author": "@bglw",
+  "license": "MIT",
+  "devDependencies": {
+    "@cucumber/cucumber": "^7.3.1",
+    "uuid": "^8.3.2"
+  }
+}

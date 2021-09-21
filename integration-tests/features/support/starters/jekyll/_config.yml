@@ -1,0 +1,6 @@
+bookshop_locations:
+  - ../component-library
+
+plugins:
+  - jekyll-bookshop
+  - cloudcannon-jekyll-bookshop
