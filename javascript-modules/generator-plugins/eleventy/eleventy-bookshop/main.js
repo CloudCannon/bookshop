@@ -23,9 +23,12 @@ const bookshopTagHandler = (locations, baseLocation) => (liquidEngine) => {
             console.error(`Bookshop: Could not find component ${component} in any of [ ${locations.join(',')} ]`);
             process.exit(1);
         },
-        render: function (ctx, hash) {
+        render: async function (ctx, hash) {
+            // Support the bookshop bind property
+            ctx.push({...(hash.bind || {})});
             const tpl = liquidEngine.parse(this.output);
-            const output = tpl[0].render(ctx);
+            const output = await tpl[0].render(ctx);
+            ctx.pop();
             return output;
         }
     };

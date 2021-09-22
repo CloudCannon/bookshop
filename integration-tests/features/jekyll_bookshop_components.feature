@@ -84,3 +84,24 @@ Feature: Basic Jekyll Bookshop
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "<h1>🩳</h1>"
     And site/_site/index.html should contain the text "<span>🪣</span>"
+
+  Scenario: Jekyll bookshop tags can use the bind syntax
+    Given a component-lib/components/card/card.jekyll.html file containing:
+      """
+      <h1>{{ include.title }}</h1>
+      <p>{{ include.description }}</p>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      card:
+        title: "🧻"
+        description: "⛳"
+      ---
+      {% bookshop card bind=page.card %}
+      """
+    When I run "bundle exec jekyll build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Bookshop site data generated"
+    And site/_site/index.html should contain the text "<h1>🧻</h1>"
+    And site/_site/index.html should contain the text "<p>⛳</p>"

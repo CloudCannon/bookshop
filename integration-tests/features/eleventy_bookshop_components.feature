@@ -86,3 +86,24 @@ Feature: Basic Eleventy Bookshop
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "<h1>🩳</h1>"
     And site/_site/index.html should contain the text "<span>🪣</span>"
+
+  Scenario: Eleventy bookshop tags can use the bind syntax
+    Given a component-lib/components/card/card.eleventy.liquid file containing:
+      """
+      <h1>{{ title }}</h1>
+      <p>{{ description }}</p>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      card:
+        title: "🧻"
+        description: "⛳"
+      ---
+      {% bookshop "card" bind: card %}
+      """
+    When I run "npm install && npm start" in the site directory
+    Then stderr should be empty
+    And stdout should contain "v0.12.1"
+    And site/_site/index.html should contain the text "<h1>🧻</h1>"
+    And site/_site/index.html should contain the text "<p>⛳</p>"
