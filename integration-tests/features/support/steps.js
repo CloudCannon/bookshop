@@ -3,10 +3,7 @@ const { Given, When, Then } = require("@cucumber/cucumber");
 const assert = require("assert").strict;
 
 const debugStep = (log) => {
-  console.log("\n\nDebug output:")
-  console.log(log);
-  console.log("Exiting...");
-  process.exit(1);
+  console.log(`\n\n--- DEBUG OUTPUT:\n\n\n${log}\n\n--- END DEBUG OUTPUT\n`)
 }
 
 Given(/^the file tree:$/i, function (input) {
@@ -41,7 +38,8 @@ Then(/^(stdout|stderr) should (not )?be empty$/i, function (stream, negation) {
   else assert.strictEqual(this[stream], "");
 });
 
-Then(/^(stdout|stderr) should (not )?contain "(.+)"$/i, function (stream, negation, contents) {
+Then(/^(debug )?(stdout|stderr) should (not )?contain "(.+)"$/i, function (debug,stream, negation, contents) {
+  if (debug) debugStep(this[stream]);
   const contains = this[stream].includes(contents);
   if (negation) assert.ok(!contains, `${stream} does not contain ${contents}`);
   else assert.ok(contains, `${stream} contains ${contents}`);

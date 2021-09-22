@@ -25,7 +25,9 @@ const bookshopTagHandler = (locations, baseLocation) => (liquidEngine) => {
         },
         render: function (scope, hash) {
             const tpl = liquidEngine.parse(this.output);
-            const output = liquidEngine.render(tpl, scope);
+            // TODO: This feels wrong. Does 11ty ever give us multiple contexts?
+            // TODO: Ideally we should be able to pass the whole scope to liquidjs
+            const output = liquidEngine.render(tpl, scope.contexts[0]);
             return output;
         }
     };
