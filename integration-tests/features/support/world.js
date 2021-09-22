@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { setWorldConstructor, Before, After, BeforeAll } = require("@cucumber/cucumber");
+const { setWorldConstructor, Before, After } = require("@cucumber/cucumber");
 const { v4: uuidv4 } = require('uuid');
 const { exec } = require('child_process');
 const FileTree = require('./filetree.js');

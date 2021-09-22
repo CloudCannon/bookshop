@@ -6,7 +6,7 @@ module.exports = function (eleventyConfig) {
 	eleventyConfig.setDataDeepMerge(true);
 
 	eleventyConfig.addPlugin(pluginBookshop({
-		bookshopLocations: ["./testing-bookshop"]
+		bookshopLocations: ["../component-lib"]
 	}));
 
 	eleventyConfig.cloudcannonOptions = {
