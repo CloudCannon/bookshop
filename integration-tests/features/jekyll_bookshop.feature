@@ -43,7 +43,6 @@ Feature: Basic Jekyll Bookshop
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "Bookshop: Result 🧄"
 
-
   Scenario: Jekyll components can use the page front matter
     Given a component-lib/components/title/title.jekyll.html file containing:
       """
@@ -60,3 +59,28 @@ Feature: Basic Jekyll Bookshop
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "Bookshop: Result 👍"
+
+  Scenario: Jekyll components can use further Jekyll components
+    Given a component-lib/components/hero/hero.jekyll.html file containing:
+      """
+      <h1>{{ include.text }}</h1>
+      {% bookshop tag tag=include.tag %}
+      """
+    And a component-lib/components/tag/tag.jekyll.html file containing:
+      """
+      <span>{{ include.tag.label }}</span>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      title_text: "🩳"
+      tag:
+        label: "🪣"
+      ---
+      {% bookshop hero text=page.title_text tag=page.tag %}
+      """
+    When I run "bundle exec jekyll build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Bookshop site data generated"
+    And site/_site/index.html should contain the text "<h1>🩳</h1>"
+    And site/_site/index.html should contain the text "<span>🪣</span>"

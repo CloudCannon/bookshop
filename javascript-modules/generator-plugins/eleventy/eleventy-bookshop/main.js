@@ -23,11 +23,9 @@ const bookshopTagHandler = (locations, baseLocation) => (liquidEngine) => {
             console.error(`Bookshop: Could not find component ${component} in any of [ ${locations.join(',')} ]`);
             process.exit(1);
         },
-        render: function (scope, hash) {
+        render: function (ctx, hash) {
             const tpl = liquidEngine.parse(this.output);
-            // TODO: This feels wrong. Does 11ty ever give us multiple contexts?
-            // TODO: Ideally we should be able to pass the whole scope to liquidjs
-            const output = liquidEngine.render(tpl, scope.contexts[0]);
+            const output = tpl[0].render(ctx);
             return output;
         }
     };

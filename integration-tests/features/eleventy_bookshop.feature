@@ -60,3 +60,29 @@ Feature: Basic Eleventy Bookshop
     Then stderr should be empty
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "Bookshop: Result 🛗"
+
+  Scenario: Eleventy components can use further Eleventy components
+    Given a component-lib/components/hero/hero.eleventy.liquid file containing:
+      """
+      <h1>{{ text }}</h1>
+      {% bookshop "tag" tagprop: herotag %}
+      """
+    And a component-lib/components/tag/tag.eleventy.liquid file containing:
+      """
+      <span>{{ tagprop.label }}</span>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      title_text: "🩳"
+      hero:
+        tag:
+          label: "🪣"
+      ---
+      {% bookshop "hero" text: title_text herotag: hero.tag %}
+      """
+    When I run "npm install && npm start" in the site directory
+    Then stderr should be empty
+    And stdout should contain "v0.12.1"
+    And site/_site/index.html should contain the text "<h1>🩳</h1>"
+    And site/_site/index.html should contain the text "<span>🪣</span>"
