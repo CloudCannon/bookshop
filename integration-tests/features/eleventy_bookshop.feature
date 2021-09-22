@@ -22,6 +22,7 @@ Feature: Basic Eleventy Bookshop
 
   Scenario: Tests are functional
     When I run "npm install && npm start" in the site directory
-    Then stdout should contain "v0.12.1"
+    Then stderr should be empty
+    And stdout should contain "v0.12.1"
     And site/_site/index.html should exist
     And site/_site/index.html should contain the text "Hello World"

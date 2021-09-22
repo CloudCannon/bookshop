@@ -27,6 +27,11 @@ Then(/^(\S+) should (not )?contain the text "(.+)"$/i, function (file, negation,
   else assert.ok(contains, `${file} contains ${contents}`);
 });
 
+Then(/^(stdout|stderr) should (not )?be empty$/i, function (stream, negation) {
+  if (negation) assert.notStrictEqual(this[stream], "")
+  else assert.strictEqual(this[stream], "");
+});
+
 Then(/^(stdout|stderr) should contain "(.+)"$/i, function (file, negation) {
   // const exists = this.fileExists(file);
   // if (negation) assert.ok(!exists, `${file} does not exist`);

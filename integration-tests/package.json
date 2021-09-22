@@ -3,10 +3,13 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "cucumber-js --parallel 4"
+    "test": "node prep.js && cucumber-js --parallel 4"
   },
   "author": "@bglw",
   "license": "MIT",
+  "dependencies": {
+    "@11ty/eleventy": "^0.12.1"
+  },
   "devDependencies": {
     "@cucumber/cucumber": "^7.3.1",
     "uuid": "^8.3.2"

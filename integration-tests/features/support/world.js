@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { setWorldConstructor, Before, After } = require("@cucumber/cucumber");
+const { setWorldConstructor, Before, After, BeforeAll } = require("@cucumber/cucumber");
 const { v4: uuidv4 } = require('uuid');
 const { exec } = require('child_process');
 const FileTree = require('./filetree.js');
@@ -19,8 +19,8 @@ class CustomWorld {
     this.variable = 0;
     this.tmp_dir = null;
     this.commandError = null;
-    this.commandStdout = null;
-    this.commandStderr = null;
+    this.stdout = null;
+    this.stderr = null;
   }
 
   buildFileTree(input) {
@@ -51,9 +51,9 @@ class CustomWorld {
     const fullPath = path.join(this.tmp_dir, dir);
     return new Promise((resolve, reject) => {
       exec(command, { cwd: fullPath }, (error, stdout, stderr) => {
-        this.commandError = error;
-        this.commandStdout = stdout;
-        this.commandStderr = stderr;
+        this.commandError = error || "";
+        this.stdout = stdout || "";
+        this.stderr = stderr || "";
         resolve();
       });
     });
