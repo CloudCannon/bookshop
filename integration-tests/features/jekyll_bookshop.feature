@@ -11,7 +11,12 @@ Feature: Basic Jekyll Bookshop
       site/
         _config.yml from starters/jekyll/_config.yml
         Gemfile from starters/jekyll/Gemfile
-        index.html from starters/jekyll/index.html
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      ---
+      <h1>Hello World!</h1>
       """
 
   Scenario: Tests are functional

@@ -27,7 +27,7 @@ module.exports = function (eleventyConfig) {
         file.components = TransformComponent(file.path, file.contents);
     });
 
-    console.log(files);
-    console.log(structureCount);
-    process.exit(1);
+    // console.log(files);
+    // console.log(structureCount);
+    // process.exit(1);
 };

@@ -27,10 +27,16 @@ class CustomWorld {
     const tree = new FileTree(input);
     tree.parse().forEach(file => {
       const fullCreatePath = path.join(this.tmp_dir, file.create);
-      const fullFromPath = path.join(__dirname, file.from);
+      const fullFromPath = path.join(__dirname, '../', file.from);
       fs.mkdirSync(path.dirname(fullCreatePath), { recursive: true });
       fs.copyFileSync(fullFromPath, fullCreatePath);
     });
+  }
+
+  createFile(filePath, input) {
+    const fullPath = path.join(this.tmp_dir, filePath);
+    fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+    fs.writeFileSync(fullPath, input);
   }
 
   fileExists(name) {

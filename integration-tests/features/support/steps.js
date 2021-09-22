@@ -6,6 +6,10 @@ Given(/^the file tree:$/i, function (input) {
   this.buildFileTree(input);
 });
 
+Given(/^an? (\S+) file containing:$/i, function (filepath, input) {
+  this.createFile(filepath, input);
+});
+
 When(/^I run "(.+)" in the (\S+) directory$/i, {timeout: 60 * 1000}, async function (command, dir) {
   await this.runCommand(command, dir);
 });
