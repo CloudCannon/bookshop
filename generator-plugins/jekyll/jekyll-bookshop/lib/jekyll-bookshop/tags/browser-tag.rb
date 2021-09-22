@@ -15,7 +15,7 @@ module JekyllBookshop
           "http://localhost:#{host}/bookshop.js"
         when host =~ %r!^localhost:\d+$!
           "http://#{host}/bookshop.js"
-        when host =~ %r!^/!
+        when host =~ %r!^/|https?://!
           host
         else
           "//#{host}"

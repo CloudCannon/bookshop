@@ -3,7 +3,8 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "node prep.js && cucumber-js --parallel 4"
+    "test": "node prep.js && cucumber-js --parallel 4 --tags \"not @skip\"",
+    "test:skipped": "node prep.js && cucumber-js --parallel 4 --tags \"@skip\""
   },
   "author": "@bglw",
   "license": "MIT",
