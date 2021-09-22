@@ -105,3 +105,25 @@ Feature: Basic Jekyll Bookshop
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "<h1>🧻</h1>"
     And site/_site/index.html should contain the text "<p>⛳</p>"
+
+  Scenario: Jekyll bookshop tags should support dynamic names
+    Given a component-lib/components/a/a.jekyll.html file containing "🅰️{{include.e}}"
+    And a component-lib/components/b/b.jekyll.html file containing "🅱️{{include.e}}"
+    And a site/index.html file containing:
+      """
+      ---
+      components:
+        - _name: a
+          e: 🫀
+        - _name: b
+          e: 🫑
+      ---
+      {% for component in page.components %}
+      {% bookshop {{component._name}} bind=component %}
+      {% endfor %}
+      """
+    When I run "bundle exec jekyll build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Bookshop site data generated"
+    And site/_site/index.html should contain the text "🅰️🫀"
+    And site/_site/index.html should contain the text "🅱️🫑"

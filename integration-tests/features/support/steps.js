@@ -10,6 +10,10 @@ Given(/^the file tree:$/i, function (input) {
   this.buildFileTree(input);
 });
 
+Given(/^an? (\S+) file containing "(.+)"$/i, function (filepath, input) {
+  this.createFile(filepath, input);
+});
+
 Given(/^an? (\S+) file containing:$/i, function (filepath, input) {
   this.createFile(filepath, input);
 });

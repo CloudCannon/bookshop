@@ -107,3 +107,25 @@ Feature: Basic Eleventy Bookshop
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "<h1>🧻</h1>"
     And site/_site/index.html should contain the text "<p>⛳</p>"
+
+  Scenario: Eleventy bookshop tags should support dynamic names
+    Given a component-lib/components/a/a.eleventy.liquid file containing "🅰️{{e}}"
+    And a component-lib/components/b/b.eleventy.liquid file containing "🅱️{{e}}"
+    And a site/index.html file containing:
+      """
+      ---
+      components:
+        - _name: a
+          e: 🫀
+        - _name: b
+          e: 🫑
+      ---
+      {% for component in components %}
+      {% bookshop {{component._name}} bind: component %}
+      {% endfor %}
+      """
+    When I run "npm install && npm start" in the site directory
+    Then stderr should be empty
+    And stdout should contain "v0.12.1"
+    And site/_site/index.html should contain the text "🅰️🫀"
+    And site/_site/index.html should contain the text "🅱️🫑"
