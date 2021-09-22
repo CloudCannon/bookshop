@@ -6,7 +6,7 @@ const { exec } = require('child_process');
 const FileTree = require('./filetree.js');
 
 Before(function () {
-  this.tmp_dir = path.join(process.cwd(), `bookshop-test-dir/${uuidv4()}`);
+  this.tmp_dir = path.join(process.cwd(), `.bookshop-tmp-test-dir/${uuidv4()}`);
   fs.mkdirSync(this.tmp_dir, { recursive: true });
 });
 
