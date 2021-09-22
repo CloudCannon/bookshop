@@ -64,6 +64,7 @@ const outputFile = async (filePath, fileContents) => {
     const wrappedStyles = `@media all, bookshop {\n\n${styles}\n\n}`;
 
     console.log(`📚 Writing styles to ${path.basename(filePath)}`);
+    await fs.mkdir(path.dirname(filePath), {recursive: true});
     return fs.writeFile(filePath, wrappedStyles);
 }
 
