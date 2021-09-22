@@ -6,7 +6,11 @@ const getComponentKey = (name) => {
     return `components/${name}/${base}.eleventy.liquid`;
 }
 
-const bookshopTagHandler = (locations, baseLocation) => (liquidEngine) => {
+const getIncludeKey = (name) => {
+    return `shared/eleventy/${name}.eleventy.liquid`;
+}
+
+const bookshopTagHandler = (tagType, locations, baseLocation) => (liquidEngine) => {
     return {
         parse: function (tagToken, remainingTokens) {
             const [, component, args] = tagToken.args.match(/^['"]?([^\s'"]+)['"]?\s(.*)$/);
@@ -21,27 +25,29 @@ const bookshopTagHandler = (locations, baseLocation) => (liquidEngine) => {
                 component = component.replace(/^{{(.*)}}$/, "$1").trim();
                 component = ctx.get(component) || this.component;
             }
-            const componentKey = getComponentKey(component);
-            let bookshopTagAsInclude = null;
+            const componentKey = tagType === 'include' ?
+                getIncludeKey(component) :
+                getComponentKey(component);
 
+            let convertedBookshopTag = null;
             for (let location of locations) {
                 const componentPath = path.join(baseLocation, location, componentKey);
                 if (fs.existsSync(componentPath)) {
                     // TODO: Parse this based on the configured _includes dir
                     const relativeIncludePath = path.join('../', location, componentKey);
-                    bookshopTagAsInclude = `{% include ${relativeIncludePath} ${this.args} %}`;
+                    convertedBookshopTag = `{% include ${relativeIncludePath} ${this.args} %}`;
                     break;
                 }
             };
 
-            if (!bookshopTagAsInclude) {
+            if (!convertedBookshopTag) {
                 console.error(`Bookshop: Could not find component ${component} in any of [ ${locations.join(',')} ]`);
                 process.exit(1);
             }
 
             // Support the bookshop bind property
             ctx.push({...(hash.bind || {})});
-            const tpl = liquidEngine.parse(bookshopTagAsInclude);
+            const tpl = liquidEngine.parse(convertedBookshopTag);
             const output = await tpl[0].render(ctx);
             ctx.pop();
             return output;
@@ -55,6 +61,7 @@ module.exports = (bookshopConfig) => {
     const baseLocation = path.dirname(module.parent.filename);
     return function (eleventyConfig) {
         eleventyConfig.bookshopOptions = { locations, baseLocation };
-        eleventyConfig.addLiquidTag("bookshop", bookshopTagHandler(locations, baseLocation));
+        eleventyConfig.addLiquidTag("bookshop", bookshopTagHandler('component', locations, baseLocation));
+        eleventyConfig.addLiquidTag("bookshop_include", bookshopTagHandler('include', locations, baseLocation));
     };
 }
