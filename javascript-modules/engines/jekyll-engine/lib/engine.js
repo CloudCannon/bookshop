@@ -1,4 +1,3 @@
-import {DiffDOM} from "diff-dom"
 import { Liquid } from 'liquidjs';
 import translateLiquid from './translateLiquid.js';
 
@@ -28,8 +27,6 @@ export class Engine {
 
         this.initializeLiquid();
         this.applyLiquidPlugins();
-
-        this.dd = new DiffDOM();
     }
 
     initializeLiquid() {
@@ -106,12 +103,7 @@ export class Engine {
         source = translateLiquid(source, {});
         if (!globals || typeof globals !== "object") globals = {};
         props = { ...globals, include: props };
-        const newHTML = await this.liquid.parseAndRender(source || "", props);
-
-        const [pre,post] = target.cloneNode().outerHTML.split('></');
-        const diff = this.dd.diff(target, `${pre}>${newHTML}</${post}`);
-        console.log(diff);
-        this.dd.apply(target, diff);
+        target.innerHTML = await this.liquid.parseAndRender(source || "", props);
     }
 
     loader() {

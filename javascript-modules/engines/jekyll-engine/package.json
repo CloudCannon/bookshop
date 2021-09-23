@@ -22,7 +22,6 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "diff-dom": "^4.2.2",
     "esbuild": "^0.11.23",
     "js-base64": "^3.6.1",
     "liquidjs": "^9.25.0",
