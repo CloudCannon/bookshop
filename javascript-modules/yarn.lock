@@ -310,6 +310,7 @@ __metadata:
   resolution: "@bookshop/jekyll-engine@workspace:engines/jekyll-engine"
   dependencies:
     ava: ^3.15.0
+    diff-dom: ^4.2.2
     esbuild: ^0.11.23
     js-base64: ^3.6.1
     liquidjs: ^9.25.0
@@ -1752,6 +1753,13 @@ __metadata:
   version: 1.0.4
   resolution: "destroy@npm:1.0.4"
   checksum: da9ab4961dc61677c709da0c25ef01733042614453924d65636a7db37308fef8a24cd1e07172e61173d471ca175371295fbc984b0af5b2b4ff47cd57bd784c03
+  languageName: node
+  linkType: hard
+
+"diff-dom@npm:^4.2.2":
+  version: 4.2.2
+  resolution: "diff-dom@npm:4.2.2"
+  checksum: 22ced926e88835e8fd15001c11f25323af1f809d91cdafcd7e40a6fdf6f38296d05ea42ed4c6d202048e877cec72fa1c2965ff2d27e16bd5e7da1b25b18631c7
   languageName: node
   linkType: hard
 
