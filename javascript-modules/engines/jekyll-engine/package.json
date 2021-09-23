@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/jekyll-engine",
-  "version": "2.0.0-beta.27",
+  "version": "2.0.0-beta.28",
   "description": "Bookshop frontend Jekyll renderer",
   "type": "module",
   "sideEffects": false,
@@ -32,7 +32,7 @@
   "stableVersion": "2.0.0-beta.3",
   "ava": {
     "require": [
-			"./test/_setup-browser-env.js"
-		]
+      "./test/_setup-browser-env.js"
+    ]
   }
 }
