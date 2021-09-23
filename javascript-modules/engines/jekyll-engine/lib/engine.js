@@ -110,7 +110,6 @@ export class Engine {
 
         const [pre,post] = target.cloneNode().outerHTML.split('></');
         const diff = this.dd.diff(target, `${pre}>${newHTML}</${post}`);
-        console.log(diff);
         this.dd.apply(target, diff);
     }
 

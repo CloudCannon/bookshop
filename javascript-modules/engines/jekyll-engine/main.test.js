@@ -25,43 +25,43 @@ test("should not find components", async t => {
 });
 
 test("basic rendering", async t => {
-    const targetElementStub = {};
+    const targetElementStub = document.createElement('div');
     await je.render(targetElementStub, "title", { title: "test" });
     t.is(targetElementStub.innerHTML, "<h1>test</h1>");
 });
 
 test("should render an include", async t => {
-    const targetElementStub = {};
+    const targetElementStub = document.createElement('div');
     await je.render(targetElementStub, "include-title");
     t.is(targetElementStub.innerHTML, "<h1>Hello World</h1>");
 });
 
 test("should not pass through unscoped props", async t => {
-    const targetElementStub = {};
+    const targetElementStub = document.createElement('div');
     await je.render(targetElementStub, "include-global-title");
     t.is(targetElementStub.innerHTML, "<h1></h1>");
 });
 
 test("should pass through global data", async t => {
-    const targetElementStub = {};
+    const targetElementStub = document.createElement('div');
     await je.render(targetElementStub, "include-global-title", {}, { title: "test" });
     t.is(targetElementStub.innerHTML, "<h1>test</h1>");
 });
 
 test("should implement bind syntax", async t => {
-    const targetElementStub = {};
+    const targetElementStub = document.createElement('div');
     await je.render(targetElementStub, "include-title-bind", { title: "nested" });
     t.is(targetElementStub.innerHTML, "<h1>nested</h1>");
 });
 
 test("should handle deep binds", async t => {
-    const targetElementStub = {};
+    const targetElementStub = document.createElement('div');
     await je.render(targetElementStub, "include-title-deep-bind", { book: { title: "Bookshop" } });
     t.is(targetElementStub.innerHTML, "<h1>Bookshop</h1>");
 });
 
 test("should render bookshop_includes", async t => {
-    const targetElementStub = {};
+    const targetElementStub = document.createElement('div');
     await je.render(targetElementStub, "uses-helper", { label: "include-testing" });
     t.is(targetElementStub.innerHTML, "<span data-helper=\"include-testing\"></span>");
 });
