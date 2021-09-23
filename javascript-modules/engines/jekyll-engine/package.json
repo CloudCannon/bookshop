@@ -19,7 +19,6 @@
   },
   "devDependencies": {
     "ava": "^3.15.0",
-    "browser-env": "^3.3.0",
     "nyc": "^15.1.0"
   },
   "dependencies": {
@@ -29,10 +28,5 @@
     "liquidjs": "^9.25.0",
     "slugify": "^1.5.3"
   },
-  "stableVersion": "2.0.0-beta.3",
-  "ava": {
-    "require": [
-      "./test/_setup-browser-env.js"
-    ]
-  }
+  "stableVersion": "2.0.0-beta.3"
 }
