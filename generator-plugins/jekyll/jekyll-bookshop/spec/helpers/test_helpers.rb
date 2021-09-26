@@ -41,6 +41,8 @@ module JekyllBookshop
             "source"             => SOURCE_DIR,
             "destination"        => DEST_DIR,
             "disable_disk_cache" => true,
+            "title"              => "Bookshop Website",
+            "baseurl"            => "/documentation",
             "bookshop_locations" => [
               "../fixture_bookshop",
             ]
