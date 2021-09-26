@@ -55,6 +55,43 @@ const bookshopTagHandler = (tagType, locations, baseLocation) => (liquidEngine) 
     };
 }
 
+const transformHostString = (host) => {
+    switch (host) {
+        case host.match(/^:\d+$/)?.input:
+            return `http://localhost${host}/bookshop.js`;
+        case host.match(/^\d+$/)?.input:
+            return `http://localhost:${host}/bookshop.js`;
+        case host.match(/^localhost:\d+$/)?.input:
+            return `http://${host}/bookshop.js`;
+        case host.match(/^\/|https?:\/\//)?.input:
+            return host;
+        default:
+            return `//${host}`;
+    }
+}
+
+const browserTagHandler = (liquidEngine) => {
+    return {
+        parse: function (tagToken, remainingTokens) {
+            const host = tagToken.args.trim();
+            this.host = transformHostString(host);
+        },
+        render: async function (ctx, hash) {
+            console.log(ctx.getAll());
+            return `
+<div data-bookshop-browser></div>
+<script>window.bookshop_browser_site_data = null;</script>
+<script src="${this.host}"></script>
+<script>
+    window.bookshopBrowser = new window.BookshopBrowser({
+    globals: [window.bookshop_browser_site_data]
+    }); 
+    window.bookshopBrowser.render();
+</script>`;
+        }
+    };
+}
+
 module.exports = (bookshopConfig) => {
     const locations = bookshopConfig.bookshopLocations || [];
     // This should be the path of the site .eleventy.js
@@ -63,5 +100,6 @@ module.exports = (bookshopConfig) => {
         eleventyConfig.bookshopOptions = { locations, baseLocation };
         eleventyConfig.addLiquidTag("bookshop", bookshopTagHandler('component', locations, baseLocation));
         eleventyConfig.addLiquidTag("bookshop_include", bookshopTagHandler('include', locations, baseLocation));
+        eleventyConfig.addLiquidTag("bookshop_browser", browserTagHandler);
     };
 }

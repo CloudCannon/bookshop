@@ -54,12 +54,13 @@ Then(/^(debug )?(\S+) should (not )?contain each row:$/i, function (debug, file,
   });
 });
 
-Then(/^(stdout|stderr) should (not )?be empty$/i, function (stream, negation) {
+Then(/^(debug )?(stdout|stderr) should (not )?be empty$/i, function (debug, stream, negation) {
+  if (debug) debugStep(this[stream]);
   if (negation) assert.notStrictEqual(this[stream], "")
   else assert.strictEqual(this[stream], "");
 });
 
-Then(/^(debug )?(stdout|stderr) should (not )?contain "(.+)"$/i, function (debug,stream, negation, contents) {
+Then(/^(debug )?(stdout|stderr) should (not )?contain "(.+)"$/i, function (debug, stream, negation, contents) {
   if (debug) debugStep(this[stream]);
   const contains = this[stream].includes(unescape(contents));
   if (negation) assert.ok(!contains, `${stream} does not contain ${unescape(contents)}`);

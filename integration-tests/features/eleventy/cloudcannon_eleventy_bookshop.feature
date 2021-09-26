@@ -15,7 +15,6 @@ Feature: Eleventy Bookshop CloudCannon Integration
         package.json from starters/eleventy/package.json
       """
 
-  @skip
   Scenario: Bookshop Live tag
     Given a site/components.html file containing:
       """
@@ -30,7 +29,7 @@ Feature: Eleventy Bookshop CloudCannon Integration
       | script.src = `/_cloudcannon/bookshop-live.js`; |
       | if (window.inEditorMode)                      |
 
-  @skip
+  @skip # TODO: Eleventy does not yet support pulling data into bookshop
   Scenario: Site data extracted for live editing
     Given a site/_data/test.yml file containing "title: Zuchinni"
     When I run "npm install && npm start" in the site directory

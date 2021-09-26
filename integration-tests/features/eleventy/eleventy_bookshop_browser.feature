@@ -15,7 +15,6 @@ Feature: Eleventy Bookshop Component Browser
         package.json from starters/eleventy/package.json
       """
 
-  @skip
   Scenario: Bookshop Browser tags
     Given a site/components.html file containing:
       """
@@ -30,7 +29,7 @@ Feature: Eleventy Bookshop Component Browser
       """
     When I run "npm install && npm start" in the site directory
     Then stderr should be empty
-    And site/_site/components.html should contain each row: 
+    And site/_site/components/index.html should contain each row: 
       | text |
       | <div data-bookshop-browser></div>                             |
       | <script src=\"http://localhost:8465/bookshop.js\"></script>   |
@@ -40,7 +39,7 @@ Feature: Eleventy Bookshop Component Browser
       | <script src=\"https://example.com/bookshop.js\"></script>     |
       | <script src=\"/_folder/bookshop-browser.js\"></script>        |
 
-  @skip
+  @skip # TODO: Eleventy does not yet support pulling data into bookshop
   Scenario: Eleventy Bookshop extracted site data
     Given a site/components.html file containing:
       """
@@ -51,4 +50,4 @@ Feature: Eleventy Bookshop Component Browser
     And a site/_data/test.yml file containing "title: Zuchinni"
     When I run "npm install && npm start" in the site directory
     Then stderr should be empty
-    And site/_site/components.html should contain the text "Zuchinni"
+    And site/_site/components/index.html should contain the text "Zuchinni"
