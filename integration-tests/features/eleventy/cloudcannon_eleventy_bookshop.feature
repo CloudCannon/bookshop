@@ -24,7 +24,7 @@ Feature: Eleventy Bookshop CloudCannon Integration
       """
     When I run "npm install && npm start" in the site directory
     Then stderr should be empty
-    And site/_site/components.html should contain each row: 
+    And site/_site/components/index.html should contain each row: 
       | text |
       | script.src = `/_cloudcannon/bookshop-live.js`; |
       | if (window.inEditorMode)                      |

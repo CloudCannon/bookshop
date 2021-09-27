@@ -77,7 +77,6 @@ const browserTagHandler = (liquidEngine) => {
             this.host = transformHostString(host);
         },
         render: async function (ctx, hash) {
-            console.log(ctx.getAll());
             return `
 <div data-bookshop-browser></div>
 <script>window.bookshop_browser_site_data = null;</script>
