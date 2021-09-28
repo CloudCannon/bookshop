@@ -48,7 +48,7 @@ Feature: Eleventy Bookshop CloudCannon Integration
       """
     When I run "npm install && npm start" in the site directory
     Then stderr should be empty
-    And debug stdout should not be empty
+    And stdout should not be empty
     And site/_site/_cloudcannon/info.json should leniently contain each row: 
       | text |
       | "value" : { "_bookshop_name" : "card" , "card_text" : null, "color" : "Blue" } |

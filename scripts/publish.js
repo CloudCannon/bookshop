@@ -13,8 +13,13 @@ const run = async () => {
     if (!ver) {
         console.log(box(`Packages are currently @ ${packages.version}
                          Next version looks like ${next}
-                         Use: \`./publish.js next\` to bump and release
-                         Use: \`./publish.js <version>\` release a different version`));
+                         #
+                         Use: \`./scripts/publish.js next\` to bump and release
+                         Use: \`./scripts/publish.js <ver>\` to release ver
+                         #
+                         Helpers:
+                         \`./scripts/publish.js test\` only runs tests
+                         \`./scripts/publish.js git\` updates git tags`));
         process.exit(0);
     }
     
@@ -42,6 +47,10 @@ const run = async () => {
             console.log(`* Running tests`);
             await steps.test(packages);
             console.log(`* * Tests passed`);
+
+            console.log(`* Running integration tests (may take a while)`);
+            await steps.integrationTest();
+            console.log(`* * Integration tests passed`);
             process.exit(0);
     }
 
@@ -63,9 +72,13 @@ const run = async () => {
     vendorGems(packages.rubygems, version);
     console.log(`* * Vendoring done`);
 
-    console.log(`* Running tests`);
+    console.log(`* Running unit tests`);
     await steps.test(packages);
-    console.log(`* * Tests passed`);
+    console.log(`* * Unit tests passed`);
+
+    console.log(`* Running integration tests (may take a while)`);
+    await steps.integrationTest();
+    console.log(`* * Integration tests passed`);
 
     packages.version = version;
     fs.writeFileSync(path.join(__dirname, '../bookshop-packages.json'), JSON.stringify(packages, null, 2));
@@ -112,12 +125,36 @@ const steps = {
         const testFailures = [...npmTestResults, ...gemTestResults].filter(r => r.err);
         console.log(`🏁`);
         if (testFailures.length) {
-            console.error(`* * Tests failed for the following packages:`);
+            console.error(`* * Unit tests failed for the following packages:`);
             console.error(`* * ⇛ ${testFailures.map(r => r.pkg).join('\n* * ⇛ ')}`);
             console.log(box(`Cancelling publish, package versions have been changed
                              but bookshop-packages.json has not.
                              
-                             You can re-run whatever command you used to publish.`));
+                             Discard unstaged changes and re-run
+                             whatever command you used to publish.`));
+            process.exit(1);
+        }
+    },
+    integrationTest: async () => {
+        process.stdout.write(`* * `);
+        const testResult = await new Promise((resolve, reject) => {
+            try {
+                execSync(`cd integration-tests && yarn test`, {stdio: "ignore"});
+                resolve({err: null});
+                console.log(' 🎉');
+            } catch (err) {
+                resolve({err});
+                console.log(' 😦');
+            }
+        });
+        if (testResult.err) {
+            console.error(`* * Integration tests failed!`);
+            console.error(`* * Failing command: "cd integration-tests && yarn test"`);
+            console.log(box(`Cancelling publish, package versions have been changed
+                             but bookshop-packages.json has not.
+                             
+                             Discard unstaged changes and re-run
+                             whatever command you used to publish.`));
             process.exit(1);
         }
     },
@@ -267,7 +304,7 @@ const vendorGems = async (gems, version) => {
 /**
  * I/O utilities:
  **/
-const trim = (str) => str.replace(/^\s+|\s+$/gm, '');
+const trim = (str) => str.replace(/^\s+|\s+$/gm, '').replace(/^#$/gm, '');
 const pad = (str, len) => str + Array(len - str.length + 1).join(' ');
 const box = (str) => {
     let lines = trim(str).split('\n');

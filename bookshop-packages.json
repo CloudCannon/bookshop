@@ -10,13 +10,14 @@
     "generator-plugins/jekyll/jekyll-bookshop": {}
   },
   "npm": {
+    "javascript-modules/bookshop-sass": {},
     "javascript-modules/browser": {},
     "javascript-modules/builder": {},
-    "javascript-modules/bookshop-sass": {},
     "javascript-modules/cloudcannon-structures": {},
     "javascript-modules/engines/jekyll-engine": {},
     "javascript-modules/engines/eleventy-engine": {},
     "javascript-modules/engines/svelte-engine": {},
+    "javascript-modules/generator-plugins/eleventy/cloudcannon-eleventy-bookshop": {},
     "javascript-modules/generator-plugins/eleventy/eleventy-bookshop": {},
     "javascript-modules/live": {},
     "javascript-modules/styles": {},
