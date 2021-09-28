@@ -22,7 +22,7 @@ Feature: Basic Eleventy Bookshop
       ---
       <h1>Hello World!</h1>
       """
-    When I run "yarn install && yarn start" in the site directory
+    When I run "npm start" in the site directory
     Then stderr should be empty
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "Hello World"
@@ -39,7 +39,7 @@ Feature: Basic Eleventy Bookshop
       ---
       {% bookshop "title" text: "Result 🤽‍♂️" %}
       """
-    When I run "yarn install && yarn start" in the site directory
+    When I run "npm start" in the site directory
     Then stderr should be empty
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "Bookshop: Result 🤽‍♂️"
@@ -56,7 +56,7 @@ Feature: Basic Eleventy Bookshop
       ---
       {% bookshop "title" text: title_text %}
       """
-    When I run "yarn install && yarn start" in the site directory
+    When I run "npm start" in the site directory
     Then stderr should be empty
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "Bookshop: Result 🛗"
@@ -81,7 +81,7 @@ Feature: Basic Eleventy Bookshop
       ---
       {% bookshop "hero" text: title_text herotag: hero.tag %}
       """
-    When I run "yarn install && yarn start" in the site directory
+    When I run "npm start" in the site directory
     Then stderr should be empty
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "<h1>🩳</h1>"
@@ -102,7 +102,7 @@ Feature: Basic Eleventy Bookshop
       ---
       {% bookshop "card" bind: card %}
       """
-    When I run "yarn install && yarn start" in the site directory
+    When I run "npm start" in the site directory
     Then stderr should be empty
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "<h1>🧻</h1>"
@@ -124,7 +124,7 @@ Feature: Basic Eleventy Bookshop
       {% bookshop {{component._name}} bind: component %}
       {% endfor %}
       """
-    When I run "yarn install && yarn start" in the site directory
+    When I run "npm start" in the site directory
     Then stderr should be empty
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "🅰️🫀"

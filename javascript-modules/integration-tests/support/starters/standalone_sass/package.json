@@ -5,7 +5,7 @@
     "start": "bookshop-sass -b ../component-lib -o assets/css/bookshop.css"
   },
   "devDependencies": {
-    "@bookshop/sass": "file:../../../../javascript-modules/bookshop-sass",
-    "@bookshop/jekyll-engine": "file:../../../../javascript-modules/engines/jekyll-engine"
+    "@bookshop/sass": "file:../../../javascript-modules/bookshop-sass",
+    "@bookshop/jekyll-engine": "file:../../../javascript-modules/engines/jekyll-engine"
   }
 }

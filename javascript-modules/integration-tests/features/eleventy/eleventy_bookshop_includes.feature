@@ -31,7 +31,7 @@ Feature: Eleventy Bookshop Includes
       {% bookshop "block" title: "Component" %}
       <span>Inline—{% bookshop_include "basic" label: "Site" %}</span>
       """
-    When I run "yarn install && yarn start" in the site directory
+    When I run "npm start" in the site directory
     Then stderr should be empty
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "Block—Component🎉"

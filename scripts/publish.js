@@ -139,7 +139,7 @@ const steps = {
         process.stdout.write(`* * `);
         const testResult = await new Promise((resolve, reject) => {
             try {
-                execSync(`cd integration-tests && yarn test`, {stdio: "ignore"});
+                execSync(`cd javascript-modules/integration-tests && yarn run itest`, {stdio: "ignore"});
                 resolve({err: null});
                 console.log(' 🎉');
             } catch (err) {
@@ -149,7 +149,7 @@ const steps = {
         });
         if (testResult.err) {
             console.error(`* * Integration tests failed!`);
-            console.error(`* * Failing command: "cd integration-tests && yarn test"`);
+            console.error(`* * Failing command: "cd javascript-modules/integration-tests && yarn run itest"`);
             console.log(box(`Cancelling publish, package versions have been changed
                              but bookshop-packages.json has not.
                              

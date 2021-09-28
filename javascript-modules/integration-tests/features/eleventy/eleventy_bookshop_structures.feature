@@ -14,9 +14,9 @@ Feature: Eleventy Bookshop CloudCannon Integration
         .eleventyignore from starters/eleventy/.eleventyignore
         package.json from starters/eleventy/package.json # <-- this .json line hurts my syntax highlighting
         cloudcannon/
-          info.11tydata.js from ../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.11tydata.js
-          info.njk from ../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.njk
-          inject-cloudcannon.config.js from ../node_modules/eleventy-plugin-cloudcannon/cloudcannon/inject-cloudcannon.config.js
+          info.11tydata.js from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.11tydata.js
+          info.njk from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.njk
+          inject-cloudcannon.config.js from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/inject-cloudcannon.config.js
       """
     And a site/index.html file containing:
       """
@@ -46,7 +46,7 @@ Feature: Eleventy Bookshop CloudCannon Integration
       color.select = ["Red", "Blue"]
       color.default = "Blue" #: Comment
       """
-    When I run "yarn install && yarn start" in the site directory
+    When I run "npm start" in the site directory
     Then stderr should be empty
     And stdout should not be empty
     And site/_site/_cloudcannon/info.json should leniently contain each row: 

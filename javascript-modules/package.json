@@ -10,6 +10,7 @@
         "engines/svelte-engine",
         "generator-plugins/eleventy/cloudcannon-eleventy-bookshop",
         "generator-plugins/eleventy/eleventy-bookshop",
+        "integration-tests",
         "live",
         "styles",
         "toml-narrator"
