@@ -27,7 +27,7 @@ Feature: Eleventy Bookshop Component Browser
       {% bookshop_browser https://example.com/bookshop.js %}
       {% bookshop_browser /_folder/bookshop-browser.js %}
       """
-    When I run "npm install && npm start" in the site directory
+    When I run "yarn install && yarn start" in the site directory
     Then stderr should be empty
     And site/_site/components/index.html should contain each row: 
       | text |
@@ -48,6 +48,6 @@ Feature: Eleventy Bookshop Component Browser
       {% bookshop_browser :8465 %}
       """
     And a site/_data/test.yml file containing "title: Zuchinni"
-    When I run "npm install && npm start" in the site directory
+    When I run "yarn install && yarn start" in the site directory
     Then stderr should be empty
     And site/_site/components/index.html should contain the text "Zuchinni"

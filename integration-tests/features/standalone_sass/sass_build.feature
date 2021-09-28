@@ -18,7 +18,7 @@ Feature: Building Bookshop Sass
       """
       .c-title { &__text { color: red; } }
       """
-    When I run "npm install && npm start" in the site directory
+    When I run "yarn install && yarn start" in the site directory
     Then stderr should be empty
     And stdout should contain "Compiled Bookshop Sass with 0 errors and 0 warnings."
     And stdout should contain "📚 Writing styles to bookshop.css"
