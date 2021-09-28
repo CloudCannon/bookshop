@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    jekyll-bookshop (2.0.0.pre.beta.30)
+    jekyll-bookshop (2.0.0.pre.beta.31)
       dry-inflector (>= 0.1, < 1.0)
       jekyll (>= 3.7, < 5.0)
 
