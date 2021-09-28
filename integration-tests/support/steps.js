@@ -6,6 +6,18 @@ const unescape = (str) => {
   return str.replace(/\\(.)/g, "$1");
 }
 
+const escapeRegExp = (str) => {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+const strToLenientRegExp = (str) => {
+  return new RegExp(escapeRegExp(str).replace(/\s/g, "\\s*"));
+}
+
+const strToStrictRegExp = (str) => {
+  return new RegExp(escapeRegExp(str));
+}
+
 const debugStep = (log) => {
   console.log(`\n\n--- DEBUG OUTPUT:\n\n\n${log}\n\n--- END DEBUG OUTPUT\n`)
 }
@@ -32,25 +44,45 @@ Then(/^(\S+) should (not )?exist$/i, function (file, negation) {
   else assert.ok(exists, `${file} exists`);
 });
 
-Then(/^(debug )?(\S+) should (not )?contain the text "(.+)"$/i, function (debug, file, negation, contents) {
+Then(/^(debug )?(\S+) should (not |leniently )?contain the text "(.+)"$/i, function (debug, file, modifier, contents) {
   assert.ok(this.fileExists(file), `${file} exists`);
   const fileContents = this.fileContents(file);
   if (debug) debugStep(fileContents);
 
-  const contains = fileContents.includes(unescape(contents));
-  if (negation) assert.ok(!contains, `${file} does not contain ${unescape(contents)}`);
-  else assert.ok(contains, `${file} contains ${unescape(contents)}`);
+  let negation = modifier === 'not ';
+  contents = unescape(contents);
+  if (modifier === 'leniently ') {
+    contents = strToLenientRegExp(contents);
+    fileContents = fileContents.replace(/\n/g, ' ');
+  } else {
+    contents = strToStrictRegExp(contents);
+  }
+
+  const contains = contents.test(fileContents);
+  if (negation) assert.ok(!contains, `${file} does not match ${contents}`);
+  else assert.ok(contains, `${file} matches ${contents}`);
 });
 
-Then(/^(debug )?(\S+) should (not )?contain each row:$/i, function (debug, file, negation, table) {
+Then(/^(debug )?(\S+) should (not |leniently )?contain each row:$/i, function (debug, file, modifier, table) {
   assert.ok(this.fileExists(file), `${file} exists`);
-  const fileContents = this.fileContents(file);
+  let fileContents = this.fileContents(file);
   if (debug) debugStep(fileContents);
 
+  let negation = modifier === 'not ';
+  if (modifier === 'leniently ') {
+    fileContents = fileContents.replace(/\n/g, ' ');
+  }
+
   table.hashes().forEach(row => {
-    const contains = fileContents.includes(unescape(row.text));
-    if (negation) assert.ok(!contains, `${file} does not contain ${unescape(row.text)}`);
-    else assert.ok(contains, `${file} contains ${unescape(row.text)}`);
+    let contents = unescape(row.text);
+    if (modifier === 'leniently ') {
+      contents = strToLenientRegExp(contents);
+    } else {
+      contents = strToStrictRegExp(contents);
+    }
+    const contains = contents.test(fileContents);
+    if (negation) assert.ok(!contains, `${file} does not match ${contents}`);
+    else assert.ok(contains, `${file} matches ${contents}`);
   });
 });
 

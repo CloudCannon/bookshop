@@ -9,7 +9,8 @@
   "author": "@bglw",
   "license": "MIT",
   "dependencies": {
-    "@11ty/eleventy": "^0.12.1"
+    "@11ty/eleventy": "^0.12.1",
+    "eleventy-plugin-cloudcannon": "^0.0.17"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^7.3.1",

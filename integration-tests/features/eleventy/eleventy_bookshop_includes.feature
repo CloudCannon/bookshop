@@ -12,7 +12,7 @@ Feature: Eleventy Bookshop Includes
       site/
         .eleventy.js from starters/eleventy/.eleventy.js
         .eleventyignore from starters/eleventy/.eleventyignore
-        package.json from starters/eleventy/package.json
+        package.json from starters/eleventy/package.json # <-- this .json line hurts my syntax highlighting
       """
 
   Scenario: Basic Bookshop Include

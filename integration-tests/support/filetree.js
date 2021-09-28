@@ -13,8 +13,9 @@ module.exports = class FileTree {
     return this.files;
   }
   
-  parseLine(line) {
-    if (FileTree.isBlank(line)) return;
+  parseLine(rawLine) {
+    if (FileTree.isBlank(rawLine)) return;
+    let [line, comment] = FileTree.splitComment(rawLine);
     const backDepth = this.tree.length - FileTree.getDepth(line);
     if (backDepth % 1) {
       console.warn(`Bad depth found on line:\n${line}`);
@@ -60,5 +61,9 @@ module.exports = class FileTree {
   
   static getDepth(line) {
     return line.match(/^(\s*)/g)[0].length/2;
+  }
+
+  static splitComment(line) {
+    return line.split(/\s*#\s*/);
   }
 }

@@ -11,7 +11,7 @@ Before(function () {
 });
 
 After(function () {
-  fs.rmdirSync(this.tmp_dir, { recursive: true });
+  if (!process.env["DEBUG"]) fs.rmdirSync(this.tmp_dir, { recursive: true });
 });
 
 class CustomWorld {
@@ -27,7 +27,7 @@ class CustomWorld {
     const tree = new FileTree(input);
     tree.parse().forEach(file => {
       const fullCreatePath = path.join(this.tmp_dir, file.create);
-      const fullFromPath = path.join(__dirname, '../', file.from);
+      const fullFromPath = path.join(__dirname, file.from);
       fs.mkdirSync(path.dirname(fullCreatePath), { recursive: true });
       fs.copyFileSync(fullFromPath, fullCreatePath);
     });

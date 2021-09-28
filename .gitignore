@@ -22,5 +22,5 @@ package-lock.json
 .nyc_output
 coverage
 **/bookshop-test-dir/*
-integration-tests/features/starters/jekyll/Gemfile.lock
-integration-tests/bookshop-test-dir/*
+integration-tests/support/starters/jekyll/*.lock
+integration-tests/.bookshop-tmp-test-dir/*
