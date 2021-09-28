@@ -1,14 +1,19 @@
 {
     "private": true,
     "workspaces": [
+        "bookshop-sass",
         "browser",
         "builder",
         "cloudcannon-structures",
+        "engines/jekyll-engine",
+        "engines/eleventy-engine",
+        "engines/svelte-engine",
+        "generator-plugins/eleventy/cloudcannon-eleventy-bookshop",
+        "generator-plugins/eleventy/eleventy-bookshop",
+        "integration-tests",
         "live",
         "styles",
-        "toml-narrator",
-        "engines/jekyll-engine",
-        "engines/svelte-engine"
+        "toml-narrator"
     ],
     "scripts": {
         "postinstall": "./cloudcannon-structures/vendor-hoisted-pluralize"

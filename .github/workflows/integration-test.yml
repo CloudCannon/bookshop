@@ -1,0 +1,31 @@
+name: Integration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      cwd: ./javascript-modules
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      - name: Use Ruby 2.7.x
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+      - run: yarn install --immutable
+        working-directory: ${{ env.cwd }}
+      - name: Vendor node modules into ruby packages
+        run: ./scripts/publish.js vendor
+      - run: yarn run itest
+        working-directory: ${{ env.cwd }}/integration-tests
