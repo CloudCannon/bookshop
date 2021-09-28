@@ -413,7 +413,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/sass@workspace:bookshop-sass":
+"@bookshop/sass@2.0.0-beta.30, @bookshop/sass@workspace:bookshop-sass":
   version: 0.0.0-use.local
   resolution: "@bookshop/sass@workspace:bookshop-sass"
   dependencies:
@@ -3778,6 +3778,7 @@ fsevents@~2.3.2:
   resolution: "integration-tests@workspace:integration-tests"
   dependencies:
     "@11ty/eleventy": ^0.12.1
+    "@bookshop/sass": 2.0.0-beta.30
     "@cucumber/cucumber": ^7.3.1
     eleventy-plugin-cloudcannon: ^0.0.17
     uuid: ^8.3.2
