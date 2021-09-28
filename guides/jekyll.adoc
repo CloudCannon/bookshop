@@ -1,4 +1,4 @@
-= Bookshop Conventions
+= Jekyll Bookshop
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
