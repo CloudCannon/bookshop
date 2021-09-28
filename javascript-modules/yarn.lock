@@ -314,7 +314,7 @@ __metadata:
     "@codemirror/state": ^0.18.7
     "@codemirror/stream-parser": ^0.18.2
     "@codemirror/view": ^0.18.19
-    "@ltd/j-toml": ^1.12.2
+    "@ltd/j-toml": 1.15.0
     "@material-design-icons/svg": ^0.2.7
     ava: ^3.15.0
     commander: ^8.1.0
@@ -348,7 +348,7 @@ __metadata:
   dependencies:
     "@bookshop/cloudcannon-structures": 2.0.0-beta.31
     "@bookshop/toml-narrator": 2.0.0-beta.31
-    "@ltd/j-toml": ^1.12.2
+    "@ltd/j-toml": 1.15.0
     ava: ^3.15.0
     fast-glob: ^3.2.7
     nyc: ^15.1.0
@@ -360,7 +360,7 @@ __metadata:
   resolution: "@bookshop/cloudcannon-structures@workspace:cloudcannon-structures"
   dependencies:
     "@bookshop/toml-narrator": 2.0.0-beta.31
-    "@ltd/j-toml": ^1.12.2
+    "@ltd/j-toml": 1.15.0
     ava: ^3.15.0
     nyc: ^15.1.0
     pluralize: ^8.0.0
@@ -894,10 +894,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ltd/j-toml@npm:^1.12.2":
-  version: 1.16.1
-  resolution: "@ltd/j-toml@npm:1.16.1"
-  checksum: 0ddc412cfc36728a2a69e129259e6e1a701e138470df8ab286f9386499ffab3316da77ca4d8367ae25d80aee332f1a807c16f150c4c1deb2b8835d448fa74b6f
+"@ltd/j-toml@npm:1.15.0":
+  version: 1.15.0
+  resolution: "@ltd/j-toml@npm:1.15.0"
+  checksum: 078603c596a9d1b91a8e1870c7e8dc212741e82ecbb3690d6d09295a5d0ab3d1a0227f9963f74e58e1123e76b6c2fdafcf7595c7672d08d61d426b19fa724566
   languageName: node
   linkType: hard
 
@@ -2641,9 +2641,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.3.846":
-  version: 1.3.851
-  resolution: "electron-to-chromium@npm:1.3.851"
-  checksum: 68395d2997d6d2ee79c4ffe5fe229e8c6cb1ea225c3140a98183d4bc1600835aa84c9c74520bfd0459fc0930dee3aa13d273303bce161f75d6feaf4ca94efb9d
+  version: 1.3.853
+  resolution: "electron-to-chromium@npm:1.3.853"
+  checksum: 9a71823087b480cf53423a5cb3fe39dd8e84386c3b39ff6f14e0c05c9bfad0504722e86c0c84779b9aab911e9a19677da8d6f5bd8370a66800934da843d18f3d
   languageName: node
   linkType: hard
 
@@ -5003,9 +5003,9 @@ fsevents@~2.3.2:
   linkType: hard
 
 "nanocolors@npm:^0.2.2":
-  version: 0.2.11
-  resolution: "nanocolors@npm:0.2.11"
-  checksum: 5a66f0aa5d0b06794d2c8ddcc48074fb2d18262729ad85e5d99d49d9d97e3ca5b4eb420e2f7f4c0f743f2631a95698e1dd7a4c19dcac13cd2e2e29946f9d4211
+  version: 0.2.12
+  resolution: "nanocolors@npm:0.2.12"
+  checksum: a34a63dcca29eede3db41afd1421f130423fc99e73f6c89166f57815bbf0441f02a6112651b068acfd309707215f48eec15dd38e790a8225d6762503a7c175c6
   languageName: node
   linkType: hard
 
