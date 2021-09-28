@@ -27,5 +27,7 @@
     "liquidjs": "^9.25.0",
     "slugify": "^1.5.3"
   },
-  "stableVersion": "2.0.0-beta.3"
+  "engines": {
+    "node" : ">=14.16"
+  }
 }

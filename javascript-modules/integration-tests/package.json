@@ -20,5 +20,8 @@
   },
   "nohoist": [
     "@cucumber/cucumber"
-  ]
+  ],
+  "engines": {
+    "node" : ">=14.16"
+  }
 }

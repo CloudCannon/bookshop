@@ -39,5 +39,7 @@
     "js-yaml": "^4.1.0",
     "svelte": "^3.39.0"
   },
-  "stableVersion": "2.0.0-beta.3"
+  "engines": {
+    "node" : ">=14.16"
+  }
 }

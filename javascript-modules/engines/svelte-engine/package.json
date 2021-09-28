@@ -26,5 +26,8 @@
     "esbuild": "^0.11.23",
     "esbuild-svelte": "^0.5.3",
     "svelte": "^3.42.1"
+  },
+  "engines": {
+    "node" : ">=14.16"
   }
 }

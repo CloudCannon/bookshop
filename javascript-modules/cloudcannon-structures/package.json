@@ -22,5 +22,7 @@
     "nyc": "^15.1.0",
     "pluralize": "^8.0.0"
   },
-  "stableVersion": "2.0.0-beta.3"
+  "engines": {
+    "node" : ">=14.16"
+  }
 }

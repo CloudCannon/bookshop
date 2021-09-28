@@ -23,5 +23,8 @@
   "dependencies": {
     "@bookshop/builder": "2.0.0-beta.30",
     "commander": "^8.1.0"
+  },
+  "engines": {
+    "node" : ">=14.16"
   }
 }

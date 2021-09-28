@@ -24,5 +24,7 @@
     "@bookshop/builder": "2.0.0-beta.30",
     "commander": "^8.1.0"
   },
-  "stableVersion": "2.0.0-beta.3"
+  "engines": {
+    "node" : ">=14.16"
+  }
 }
