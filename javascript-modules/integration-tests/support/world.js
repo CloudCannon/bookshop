@@ -49,6 +49,10 @@ class CustomWorld {
 
   async runCommand(command, dir) {
     const fullPath = path.join(this.tmp_dir, dir);
+
+    // Fix node binary location on GitHub Actions
+    command = command.replace(/npm start/g, 'npm start --scripts-prepend-node-path');
+
     return new Promise((resolve, reject) => {
       exec(command, { cwd: fullPath }, (error, stdout, stderr) => {
         this.commandError = error || "";
