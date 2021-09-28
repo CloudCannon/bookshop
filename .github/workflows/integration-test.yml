@@ -25,5 +25,7 @@ jobs:
           ruby-version: 2.7
       - run: yarn install --immutable
         working-directory: ${{ env.cwd }}
+      - name: Vendor node modules into ruby packages
+        run: ./scripts/publish.js vendor
       - run: yarn run itest
         working-directory: ${{ env.cwd }}/integration-tests
