@@ -5,6 +5,7 @@ import translateLiquid from './translateLiquid.js';
  * LiquidJS plugins
  */
 import unbind from './plugins/unbind.js';
+import slug from './plugins/slug-plugin.js';
 
 export class Engine {
     constructor(options) {
@@ -18,7 +19,7 @@ export class Engine {
         this.name = options.name;
         this.files = options.files;
         this.plugins = options.plugins || [];
-        this.plugins.push(unbind);
+        this.plugins.push(unbind, slug);
 
         this.initializeLiquid();
         this.applyLiquidPlugins();

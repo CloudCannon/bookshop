@@ -384,6 +384,7 @@ __metadata:
     esbuild: ^0.11.23
     liquidjs: ^9.25.0
     nyc: ^15.1.0
+    slugify: ^1.5.3
   languageName: unknown
   linkType: soft
 
