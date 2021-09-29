@@ -1,8 +1,10 @@
 import { Liquid } from 'liquidjs';
+import translateLiquid from './translateLiquid.js';
 
 /**
  * LiquidJS plugins
  */
+import unbind from './plugins/unbind.js';
 
 export class Engine {
     constructor(options) {
@@ -16,7 +18,7 @@ export class Engine {
         this.name = options.name;
         this.files = options.files;
         this.plugins = options.plugins || [];
-        // this.plugins.push();
+        this.plugins.push(unbind);
 
         this.initializeLiquid();
         this.applyLiquidPlugins();
@@ -58,6 +60,7 @@ export class Engine {
             console.warn(`[eleventy-engine] No file found for ${file}`);
             return "";
         }
+        return translateLiquid(content);
     }
 
     applyLiquidPlugins() {
@@ -92,6 +95,7 @@ export class Engine {
             console.warn(`[eleventy-engine] No component found for ${name}`);
             return "";
         }
+        source = translateLiquid(source);
         if (!globals || typeof globals !== "object") globals = {};
         props = { ...globals, ...props };
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
