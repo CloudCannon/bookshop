@@ -314,7 +314,7 @@ __metadata:
     "@codemirror/state": ^0.18.7
     "@codemirror/stream-parser": ^0.18.2
     "@codemirror/view": ^0.18.19
-    "@ltd/j-toml": 1.15.0
+    "@ltd/j-toml": ^1.17.0
     "@material-design-icons/svg": ^0.2.7
     ava: ^3.15.0
     commander: ^8.1.0
@@ -348,7 +348,7 @@ __metadata:
   dependencies:
     "@bookshop/cloudcannon-structures": 2.0.0-beta.34
     "@bookshop/toml-narrator": 2.0.0-beta.34
-    "@ltd/j-toml": 1.15.0
+    "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
     fast-glob: ^3.2.7
     nyc: ^15.1.0
@@ -360,7 +360,7 @@ __metadata:
   resolution: "@bookshop/cloudcannon-structures@workspace:cloudcannon-structures"
   dependencies:
     "@bookshop/toml-narrator": 2.0.0-beta.34
-    "@ltd/j-toml": 1.15.0
+    "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
     nyc: ^15.1.0
     pluralize: ^8.0.0
@@ -895,10 +895,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ltd/j-toml@npm:1.15.0":
-  version: 1.15.0
-  resolution: "@ltd/j-toml@npm:1.15.0"
-  checksum: 078603c596a9d1b91a8e1870c7e8dc212741e82ecbb3690d6d09295a5d0ab3d1a0227f9963f74e58e1123e76b6c2fdafcf7595c7672d08d61d426b19fa724566
+"@ltd/j-toml@npm:^1.17.0":
+  version: 1.17.0
+  resolution: "@ltd/j-toml@npm:1.17.0"
+  checksum: 7f270eb8bf85678388fdf78c82560712c3c3139c6fd6f728744d7e55a19d9a2604f5386498033b22df54d09f6e1748534c717b6cc4d0a59b68ba97677b7e1b39
   languageName: node
   linkType: hard
 

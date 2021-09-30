@@ -30,7 +30,7 @@
     "@codemirror/state": "^0.18.7",
     "@codemirror/stream-parser": "^0.18.2",
     "@codemirror/view": "^0.18.19",
-    "@ltd/j-toml": "1.15.0",
+    "@ltd/j-toml": "^1.17.0",
     "@material-design-icons/svg": "^0.2.7",
     "commander": "^8.1.0",
     "esbuild-svelte": "^0.5.3",
