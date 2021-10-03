@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/styles",
-  "version": "2.0.0-beta.36",
+  "version": "2.0.0-beta.37",
   "description": "Bookshop style importer for esbuild",
   "type": "module",
   "main": "bookshopStylePlugin.js",
