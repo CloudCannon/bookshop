@@ -36,3 +36,29 @@ Feature: Jekyll Bookshop CloudCannon Integration
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/_cloudcannon/bookshop-site-data.json should contain the text "Zuchinni"
+
+  @skip
+  Scenario: Bookshop Live schema comments
+    Given a component-lib/components/page/page.jekyll.html file containing:
+      """
+      {% for block in include.content_blocks %}
+        {% assign b = block %}
+        <p>{{ b._bookshop_name }}</p>
+      {% endfor %}
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      content_blocks:
+        - _bookshop_name: fake
+      ---
+      {% bookshop page content_blocks=page.content_blocks %}
+      """
+    When I run "bundle exec jekyll build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Bookshop site data generated"
+    And debug site/_site/index.html should contain each row: 
+      | text |
+      | <p>fake</p> |
+      | <!--bookshop-live name(page) params(content_blocks: page.content_blocks)-->  |
+
