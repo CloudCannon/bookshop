@@ -6,6 +6,7 @@ import translateLiquid from './translateLiquid.js';
  */
 import unbind from './plugins/unbind.js';
 import slug from './plugins/slug-plugin.js';
+import loopContext from './plugins/loop_context';
 
 export class Engine {
     constructor(options) {
@@ -19,7 +20,7 @@ export class Engine {
         this.name = options.name;
         this.files = options.files;
         this.plugins = options.plugins || [];
-        this.plugins.push(unbind, slug);
+        this.plugins.push(unbind, slug, loopContext);
 
         this.initializeLiquid();
         this.applyLiquidPlugins();
