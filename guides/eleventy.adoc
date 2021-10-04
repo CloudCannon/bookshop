@@ -11,9 +11,12 @@ endif::[]
 
 toc::[]
 
+== Quick start
+To jump right into using Bookshop on an Eleventy site, check out the link:https://github.com/CloudCannon/eleventy-bookshop-starter[Eleventy Bookshop Starter] 
+
 == Eleventy Configuration
 
-To use Eleventy with Jekyll, the primary dependency is the `@bookshop/eleventy-bookshop` npm package.
+To use Bookshop with Eleventy, the primary dependency is the `@bookshop/eleventy-bookshop` npm package.
 
 .*command*
 ```bash
@@ -36,7 +39,7 @@ module.exports = function (eleventyConfig) {
   // ...
 
 	eleventyConfig.addPlugin(pluginBookshop({
-		bookshopLocations: ["../component-library"]
+		bookshopLocations: ["component-library"]
 	}));
 
   // ...
@@ -105,15 +108,49 @@ yarn add @bookshop/sass
 
 # then
 
-npx @bookshop/sass -b ../component-library -o css/bookshop.css
+npx @bookshop/sass -b component-library -o site/css/bookshop.css
 ```
 
 From within your `package.json` file you can add the script as: 
 ```
-"sass:build": "bookshop-sass -b ../component-library -o css/bookshop.css",
-"sass:watch": "bookshop-sass -b ../component-library -o css/bookshop.css -w"
+"sass:build": "bookshop-sass -b component-library -o site/css/bookshop.css",
+"sass:watch": "bookshop-sass -b component-library -o site/css/bookshop.css -w"
 ```
 
 This compiles all styles from the Bookshop (including running any Postcss plugins you have configured in your working directory), and outputs a css file ready to be referenced on your website.
 
 Reference `npx @bookshop/sass --help` to see the available options.
+
+== Component Library
+
+Setting up the component library is fairly framework agnostic, so following the steps in the link:guides/browser.adoc[Component Browser Guide] should see you on your way.
+
+== Live Editing
+
+Bookshop experimentally supports automatic live previews when editing on CloudCannon. +
+In Eleventy, this can be added with the `@bookshop/cloudcannon-eleventy-bookshop` npm package.
+
+```bash
+npm i @bookshop/cloudcannon-eleventy-bookshop
+# or
+yarn add @bookshop/cloudcannon-eleventy-bookshop
+```
+
+.*.eleventy.js*
+```javascript
+const pluginBookshop = require("@bookshop/eleventy-bookshop");
+const pluginCloudCannonBookshop = require("@bookshop/cloudcannon-eleventy-bookshop");
+
+module.exports = function (eleventyConfig) {
+  // ...
+
+	eleventyConfig.addPlugin(pluginBookshop({
+		bookshopLocations: ["component-library"]
+	}));
+	eleventyConfig.addPlugin(pluginCloudCannonBookshop);
+
+  // ...
+};
+```
+
+With that dependency installed, follow the instructions in the link:guides/live-editing.adoc[Live Editing Guide]

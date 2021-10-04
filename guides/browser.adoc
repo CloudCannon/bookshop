@@ -58,14 +58,19 @@ NOTE: One of port _or_ output must be supplied, not both. If a port is supplied,
 
 The bookshop generator frameworks provide helpers for embedding the Bookshop browser on your website.
 
-=== Jekyll
+Within Jekyll, the *jekyll-bookshop* plugin provides a `bookshop_browser` tag to embed the browser on a given page. Within Eleventy, this tag is supplied by the *@bookshop/eleventy-bookshop* plugin.
 
-Within Jekyll, the *jekyll-bookshop* plugin provides a `bookshop_browser` tag to embed the browser on a given page.
+The syntax is the same across both generators:
 
 .*components.html*
 ```liquid
 {% bookshop_browser :6061 %}
 ```
+
+This will embed the bookshop component browser in the location of the tag. +
+See the link:https://github.com/CloudCannon/jekyll-bookshop-starter/blob/main/site/components.html[Jekyll] 
+or link:https://github.com/CloudCannon/eleventy-bookshop-starter/blob/main/site/pages/components.liquid[Eleventy] 
+starter templates for an example.
 
 NOTE: Make sure the port number matches the port number you supplied to the `bookshop-browser` command earlier.
 
@@ -74,7 +79,7 @@ NOTE: Make sure the port number matches the port number you supplied to the `boo
 If you built the Bookshop browser javascript to a file, you can reference that file instead:
 
 ```
-npx bookshop-browser -b ./path/tocomponents -o ./path/to/assets/bookshop.js
+npx bookshop-browser -b ./path/to/components -o ./path/to/assets/bookshop.js
 ```
 ```
 {% if jekyll.environment == "production" %}
@@ -83,3 +88,5 @@ npx bookshop-browser -b ./path/tocomponents -o ./path/to/assets/bookshop.js
     {% bookshop_browser :6061 %}
 {% endif %}
 ```
+
+Adapt the above to Eleventy environments as needed.

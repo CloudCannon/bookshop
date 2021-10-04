@@ -11,6 +11,9 @@ endif::[]
 
 toc::[]
 
+== Quick start
+To jump right into using Bookshop on a Jekyll site, check out the link:https://github.com/CloudCannon/jekyll-bookshop-starter[Jekyll Bookshop Starter] 
+
 == Jekyll Configuration
 
 To use Bookshop with Jekyll, the primary dependency is the `jekyll-bookshop` gem.
@@ -18,7 +21,7 @@ To use Bookshop with Jekyll, the primary dependency is the `jekyll-bookshop` gem
 .*Gemfile*
 ```ruby
 group :jekyll_plugins do
-  gem "jekyll-bookshop", ">= 2.0.0.pre.beta"
+  gem "jekyll-bookshop"
 end
 ```
 
@@ -100,3 +103,36 @@ To import Bookshop styles in Jekyll, the plugin provides the tag `{% bookshop_sc
 {% bookshop_scss %} // Import all bookshop styles
 
 ```
+
+This bundles all bookshop SCSS files into the Jekyll Sass pipeline.
+
+== Component Library
+
+Setting up the component library is fairly framework agnostic, so following the steps in the link:guides/browser.adoc[Component Browser Guide] should see you on your way.
+
+== Live Editing
+
+Bookshop experimentally supports automatic live previews when editing on CloudCannon. +
+In Jekyll, this can be added with the `cloudcannon-jekyll-bookshop` gem.
+
+
+.*Gemfile*
+```ruby
+group :jekyll_plugins do
+  gem "jekyll-bookshop"
+  gem "cloudcannon-jekyll-bookshop"
+end
+```
+
+.*_config.yml*
+```yaml
+plugins:
+  - jekyll-bookshop
+  - cloudcannon-jekyll-bookshop
+
+bookshop_locations:
+  - ../component-library
+```
+
+With that dependency installed, follow the instructions in the link:guides/live-editing.adoc[Live Editing Guide]
+
