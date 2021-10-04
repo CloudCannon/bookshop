@@ -85,7 +85,7 @@ window.BookshopLive = class BookshopLive {
             let node = startNode.nextSibling;
             let digest = ''
             while(node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0){
-                digest += node.nodeType === Node.COMMENT_NODE ? `<!--${node.textContent}-->` : node.outerHTML;
+                digest += node.nodeType === Node.COMMENT_NODE ? `<!--${node.textContent}-->` : node.outerHTML || '';
                 node = node.nextSibling;
             }
 
