@@ -26,7 +26,7 @@ window.addEventListener('load', function() {
         window.CloudCannon = {
         trigger: function (eventName, frontMatter) {
             if (typeof frontMatter === 'string') frontMatter = JSON.parse(frontMatter);
-            window.bookshopLive.update({page: frontMatter});
+            window.bookshopLive.update(frontMatter);
         }
         }
     }
