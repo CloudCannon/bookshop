@@ -6,7 +6,7 @@ import translateLiquid from './translateLiquid.js';
  */
 import unbind from './plugins/unbind.js';
 import slug from './plugins/slug-plugin.js';
-import loopContext from './plugins/loop_context';
+import loopContext from './plugins/loop_context.js';
 
 export class Engine {
     constructor(options) {
