@@ -22,17 +22,19 @@ Feature: Eleventy Bookshop Includes
       """
     Given a component-lib/components/block/block.eleventy.liquid file containing:
       """
-      <div>Block—{% bookshop_include "basic" label: title %}</div>
+      <div>{% bookshop_include "basic" label: title %}-Block</div>
       """
     And a site/index.html file containing:
       """
       ---
       ---
       {% bookshop "block" title: "Component" %}
-      <span>Inline—{% bookshop_include "basic" label: "Site" %}</span>
+      <span>{% bookshop_include "basic" label: "Site" %}-Inline</span>
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
     And stdout should contain "v0.12.1"
-    And site/_site/index.html should contain the text "Block—Component🎉"
-    And site/_site/index.html should contain the text "Inline—Site🎉"
+    And site/_site/index.html should leniently contain each row:
+      | text |
+      | Component🎉 <!--bookshop-live end--> -Block |
+      | Site🎉 <!--bookshop-live end--> -Inline |

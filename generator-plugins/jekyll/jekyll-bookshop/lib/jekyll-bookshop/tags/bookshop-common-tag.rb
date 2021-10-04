@@ -30,10 +30,19 @@ module JekyllBookshop
 
       partial = load_cached_partial(path, context)
 
+      loop_context = ""
+      if context.scopes[0]["forloop"]
+        name = context.scopes[0]["forloop"].name
+        index = context.scopes[0]["forloop"].index - 1
+        loop_context = "#{name}[#{index}]"
+      end
+
       context.stack do
         context["include"] = parse_params(context) if @params
         begin
-          partial.render!(context)
+          "<!--bookshop-live name(#{file}) params(#{@params}) context(#{loop_context.gsub(/-/, '=').gsub(/=include\./, '=')}) -->
+          #{partial.render!(context)}
+          <!--bookshop-live end-->"
         rescue Liquid::Error => e
           e.template_name = path
           e.markup_context = "included " if e.markup_context.nil?

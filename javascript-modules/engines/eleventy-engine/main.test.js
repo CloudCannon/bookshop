@@ -11,6 +11,7 @@ const files = {
     [component('uses-helper')]: "{% bookshop_include \"helper\" help: label %}",
     [shared('helper')]: "<span data-helper=\"{{help}}\"></span>",
 }
+const livePost = `<!--bookshop-live end-->`
 
 const eleventyEngine = new Engine({files});
 
@@ -25,29 +26,32 @@ test("should not find components", async t => {
 test("basic rendering", async t => {
     const targetElementStub = {};
     await eleventyEngine.render(targetElementStub, "title", { title: "test" });
-    t.is(targetElementStub.innerHTML, "<h1>test</h1>");
+    t.is(targetElementStub.innerHTML, `<h1>test</h1>`);
 });
 
 test("should render a subcomponent", async t => {
     const targetElementStub = {};
     await eleventyEngine.render(targetElementStub, "include-title");
-    t.is(targetElementStub.innerHTML, "<h1>Hello World</h1>");
+    const livePre = `<!--bookshop-live name(title) params(title: "Hello World")-->`
+    t.is(targetElementStub.innerHTML, `${livePre}<h1>Hello World</h1>${livePost}`);
 });
 
 test("should pass through global data", async t => {
     const targetElementStub = {};
     await eleventyEngine.render(targetElementStub, "title", {}, { title: "test" });
-    t.is(targetElementStub.innerHTML, "<h1>test</h1>");
+    t.is(targetElementStub.innerHTML, `<h1>test</h1>`);
 });
 
 test("should implement bind syntax", async t => {
     const targetElementStub = {};
     await eleventyEngine.render(targetElementStub, "include-title-deep-bind", { book: { title: "Bookshop" } });
-    t.is(targetElementStub.innerHTML, "<h1>Bookshop</h1>");
+    const livePre = `<!--bookshop-live name(title) params(bind: book)-->`
+    t.is(targetElementStub.innerHTML, `${livePre}<h1>Bookshop</h1>${livePost}`);
 });
 
 test("should render bookshop_includes", async t => {
     const targetElementStub = {};
     await eleventyEngine.render(targetElementStub, "uses-helper", { label: "include-testing" });
-    t.is(targetElementStub.innerHTML, "<span data-helper=\"include-testing\"></span>");
+    const livePre = `<!--bookshop-live name(helper) params(help: label)-->`
+    t.is(targetElementStub.innerHTML, `${livePre}<span data-helper=\"include-testing\"></span>${livePost}`);
 });

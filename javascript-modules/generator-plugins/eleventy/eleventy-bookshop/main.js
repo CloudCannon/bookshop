@@ -19,6 +19,8 @@ const bookshopTagHandler = (tagType, locations, baseLocation) => (liquidEngine) 
         },
         render: async function (ctx, hash) {
             let component = this.component;
+            let preComment = `<!--bookshop-live -->`, loop_context = '';
+            const postComment = `<!--bookshop-live end-->`;
             // Handle a dynamic component syntax that matches Jekyll:
             // {% bookshop {{component._name}} %}
             if (/^{{.*}}$/.test(component)) {
@@ -38,6 +40,19 @@ const bookshopTagHandler = (tagType, locations, baseLocation) => (liquidEngine) 
                     const includePath = path.join(baseLocation, includeRoot);
                     const relativeBookshopPath = path.relative(includePath, bookshopPath);
                     const relativeIncludePath = path.join(relativeBookshopPath, componentKey);
+
+                    let loop_context = '';
+                    const top_context = ctx.contexts[ctx.contexts.length - 1] || {};
+                    if (top_context["forloop"]) {
+                        const variable = Object.keys(top_context).filter(k => k !== 'forloop')[0];
+
+                        // TODO: Find the actual source. This is a guess.
+                        const index = top_context["forloop"].index - 1;
+                        const guessedSource = contextHunt(ctx, top_context[variable], index);
+                        loop_context = `${variable}: ${guessedSource}[${index}]`;
+                    }
+
+                    preComment = `<!--bookshop-live name(${component}) params(${this.args}) context(${loop_context}) -->`;
                     convertedBookshopTag = `{% include ${relativeIncludePath} ${this.args} %}`;
                     break;
                 }
@@ -53,9 +68,22 @@ const bookshopTagHandler = (tagType, locations, baseLocation) => (liquidEngine) 
             const tpl = liquidEngine.parse(convertedBookshopTag);
             const output = await tpl[0].render(ctx);
             ctx.pop();
-            return output;
+            return `${preComment}${output}${postComment}`;
         }
     };
+}
+
+const contextHunt = (ctx, hash, index) => {
+    let h = JSON.stringify(hash);
+    for (let scope of ctx.contexts.reverse()) {
+        for (let [k,v] of Object.entries(scope)) {
+            if (!Array.isArray(v)) continue;
+            if (JSON.stringify(v[index]) === h) {
+                return k;
+            }
+        }
+    }
+    return "UNKNOWN";
 }
 
 const transformHostString = (host) => {
