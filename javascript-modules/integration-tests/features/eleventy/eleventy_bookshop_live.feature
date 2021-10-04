@@ -67,4 +67,4 @@ Feature: Eleventy Bookshop CloudCannon Integration
       | <p>fake</p> |
       | <!--bookshop-live name(page) params(content_blocks: content_blocks) context() -->  |
       | <span>fake</span> |
-      | <!--bookshop-live name(single) params(bind: block) context(block: UNKNOWN[0]) -->  |
+      | <!--bookshop-live name(single) params(bind: block) context(block: content_blocks[0]) -->  |

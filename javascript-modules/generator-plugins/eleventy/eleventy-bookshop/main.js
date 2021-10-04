@@ -42,9 +42,11 @@ const bookshopTagHandler = (tagType, locations, baseLocation) => (liquidEngine) 
                     const top_context = ctx.contexts[ctx.contexts.length - 1] || {};
                     if (top_context["forloop"]) {
                         const variable = Object.keys(top_context).filter(k => k !== 'forloop')[0];
-                        const source = 'UNKNOWN';
+
+                        // TODO: Find the actual source. This is a guess.
                         const index = top_context["forloop"].index - 1;
-                        loop_context = `${variable}: ${source}[${index}]`;
+                        const guessedSource = contextHunt(ctx, top_context[variable], index);
+                        loop_context = `${variable}: ${guessedSource}[${index}]`;
                     }
 
                     preComment = `<!--bookshop-live name(${component}) params(${this.args}) context(${loop_context}) -->`;
@@ -66,6 +68,19 @@ const bookshopTagHandler = (tagType, locations, baseLocation) => (liquidEngine) 
             return `${preComment}${output}${postComment}`;
         }
     };
+}
+
+const contextHunt = (ctx, hash, index) => {
+    let h = JSON.stringify(hash);
+    for (let scope of ctx.contexts.reverse()) {
+        for (let [k,v] of Object.entries(scope)) {
+            if (!Array.isArray(v)) continue;
+            if (JSON.stringify(v[index]) === h) {
+                return k;
+            }
+        }
+    }
+    return "UNKNOWN";
 }
 
 const transformHostString = (host) => {
