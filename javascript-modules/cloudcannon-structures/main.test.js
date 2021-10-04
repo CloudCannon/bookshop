@@ -15,7 +15,7 @@ test("should get component key", t => {
 test("should merge component definitions", t => {
   const bookshop_component = helpers.loadTestTOML(helpers.f`
   [component]
-  array_structures = [ "content_blocks" ]
+  structures = [ "content_blocks" ]
   label = "Unique Component"
   description = "Unique Component Description"
   icon = "nature_people"
@@ -24,7 +24,7 @@ test("should merge component definitions", t => {
   const bookshop_structure = Testables.TransformComponent(helpers.base_bookshop_path, bookshop_component)
   
   t.deepEqual(bookshop_structure, [{
-    "array_structures": [ "content_blocks", "bookshop_components" ],
+    "structures": [ "content_blocks", "bookshop_components" ],
     "label": "Unique Component",
     "description": "Unique Component Description",
     "icon": "nature_people",
@@ -43,7 +43,7 @@ test("should hide hidden components", t => {
   const bookshop_structure = Testables.TransformComponent(helpers.base_bookshop_path, bookshop_component)
   
   t.deepEqual(bookshop_structure, [{
-    "array_structures": [],
+    "structures": [],
     "label": "Component Subcomponent",
     "value": {
       "_bookshop_name": "component/subcomponent",

@@ -19,7 +19,7 @@ Feature: Jekyll Bookshop CloudCannon Integration
     Given a component-lib/components/card/card.bookshop.toml file containing:
       """
       [component]
-      array_structures = [ "content_blocks" ]
+      structures = [ "content_blocks" ]
       label = "Card"
       description = "Card component"
       icon = "nature_people"

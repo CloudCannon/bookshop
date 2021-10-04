@@ -68,7 +68,7 @@ module CloudCannonJekyllBookshop
     def self.base_bookshop_config
       <<~TOML
         [component]
-        array_structures = [ "content_blocks" ]
+        structures = [ "content_blocks" ]
         label = "Testing Component"
         description = "Description of testing component"
         icon = "nature_people"
@@ -78,7 +78,7 @@ module CloudCannonJekyllBookshop
 
     def self.base_bookshop_output
       {
-        "array_structures" => %w(content_blocks bookshop_components),
+        "structures" => %w(content_blocks bookshop_components),
         "label"            => "Testing Component",
         "description"      => "Description of testing component",
         "icon"             => "nature_people",

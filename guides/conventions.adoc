@@ -91,7 +91,7 @@ The component TOML file for our button might look like the following:
 .*button.bookshop.toml*
 ```toml
 [component]
-array_structures = [ "editor_components" ]
+structures = [ "editor_components" ]
 label = "Button"
 description = "Outbound CTA links"
 icon = "smart_button"
@@ -107,7 +107,7 @@ open_in_new_tab = false
 
 The `[component]` block defines this component, and is used to configure page building interfaces. The fields are the following:
 
-array_structures:: Used to configure editing interfaces
+structures:: Used to configure editing interfaces
 label:: Editor-friendly name
 description:: Editor-friendly description
 icon:: Material icon name

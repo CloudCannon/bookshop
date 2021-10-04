@@ -34,12 +34,12 @@ To use components directly in a template, use the `{% bookshop %}` tag like you 
 >...
 >```
 
-To use components as an editor in CloudCannon, define a front matter key that matches a key specified in a component's `array_structures` metadata. For example:
+To use components as an editor in CloudCannon, define a front matter key that matches a key specified in a component's `structures` metadata. For example:
 
 >#### `hero.bookshop.toml`
 >```toml
 >[component]
->array_structures = [ "content_blocks" ]
+>structures = [ "content_blocks" ]
 >```
 
 >#### `index.html`

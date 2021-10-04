@@ -11,14 +11,14 @@ module.exports = {
     base_bookshop_path: "component/subcomponent/subcomponent.bookshop.tomml",
     base_bookshop_config: f`
     [component]
-    array_structures = [ "content_blocks" ]
+    structures = [ "content_blocks" ]
     label = "Testing Component"
     description = "Description of testing component"
     icon = "nature_people"
     tags = [ "one", "two", "three" ]
     `,
     base_bookshop_output: {
-        "array_structures": [ "content_blocks", "bookshop_components" ],
+        "structures": [ "content_blocks", "bookshop_components" ],
         "label": "Testing Component",
         "description": "Description of testing component",
         "icon": "nature_people",

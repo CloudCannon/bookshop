@@ -48,9 +48,9 @@
                 {/each}
                 </p>
 
-                {#if component?.identity?.array_structures}
+                {#if component?.identity?.structures}
                 <p class="title">Structures</p>
-                <p class="label">{component.identity.array_structures.join(', ')}</p>
+                <p class="label">{component.identity.structures.join(', ')}</p>
                 {/if}
 
                 {#if component?.identity?.tags}
