@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module CloudCannonJekyllBookshop
-  VERSION = "2.0.0.pre.beta.37"
+  VERSION = "2.0.0.pre.beta.38"
 end
