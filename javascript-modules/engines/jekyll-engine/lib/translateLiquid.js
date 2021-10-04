@@ -10,26 +10,45 @@ const rewriteTag = function(token, src) {
     // Cached includes can be treated as includes
     if (token.name && token.name === 'include_cached') raw = raw.replace(/include_cached/, 'include');
 
+    if (token.name && token.name === 'for'){
+        raw = `${raw}{% loop_context ${token.args}%}`
+    }
+
+    if (token.name && (token.name === 'assign' || token.name === 'local')){
+        identifier = token.args.split('=').shift().trim();
+        raw = `${raw}<!--bookshop-live context(${identifier}="{{${identifier}}}")-->`
+    }
+
     // Rewrite bookshop_include tag to standard includes — within bookshop they're first class
     if (token.name && token.name === 'bookshop_include') {
+        let componentName;
         token.name = 'include';
         raw = raw.replace(
         /bookshop_include (\S+)/,
         (_, component) => {
+            componentName = component
             return `include _bookshop_include_${component}`
         }
         );
+        let params = token.args.split(' ');
+        params.shift();
+        raw = `<!--bookshop-live name(${componentName}) params(${params.join(' ')})-->${raw}<!--bookshop-live end-->`
     }
 
     // Rewrite bookshop tag to standard includes — within bookshop they're first class
     if (token.name && token.name === 'bookshop') {
+        let componentName;
         token.name = 'include';
         raw = raw.replace(
         /bookshop (\S+)/,
         (_, component) => {
+            componentName = component;
             return `include _bookshop_${component}`
         }
         );
+        let params = token.args.split(' ');
+        params.shift();
+        raw = `<!--bookshop-live name(${componentName}) params(${params.join(' ')})-->${raw}<!--bookshop-live end-->`
     }
 
     // Rewrite Jekyll include syntax to match Liquidjs

@@ -7,6 +7,7 @@ import translateLiquid from './translateLiquid.js';
 import jsonify from './plugins/jsonify.js';
 import slugify from './plugins/slugify-plugin.js';
 import unbind from './plugins/unbind.js';
+import loop_context from './plugins/loop_context.js';
 import emulateJekyll from './plugins/emulate-jekyll.js';
 import local from './plugins/local.js';
 import highlight from './plugins/highlight.js';
@@ -23,7 +24,7 @@ export class Engine {
         this.name = options.name;
         this.files = options.files;
         this.plugins = options.plugins || [];
-        this.plugins.push(jsonify, slugify, unbind, emulateJekyll, local, highlight);
+        this.plugins.push(jsonify, slugify, unbind, emulateJekyll, local, highlight, loop_context);
 
         this.initializeLiquid();
         this.applyLiquidPlugins();
