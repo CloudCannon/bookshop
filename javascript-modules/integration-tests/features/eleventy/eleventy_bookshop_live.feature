@@ -35,3 +35,36 @@ Feature: Eleventy Bookshop CloudCannon Integration
     When I run "npm start" in the site directory
     Then stderr should be empty
     And site/_site/_cloudcannon/bookshop-site-data.json should contain the text "Zuchinni"
+
+  Scenario: Bookshop Live schema comments
+    Given a component-lib/components/page/page.eleventy.liquid file containing:
+      """
+      {% for block in content_blocks %}
+        {% assign b = block %}
+        <p>{{ b._bookshop_name }}</p>
+      {% endfor %}
+      """
+    Given a component-lib/components/single/single.eleventy.liquid file containing:
+      """
+      <span>{{ _bookshop_name }}</span>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      content_blocks:
+        - _bookshop_name: fake
+      ---
+      {% bookshop "page" content_blocks: content_blocks %}
+      {% for block in content_blocks %}
+        {% bookshop "single" bind: block %}
+      {% endfor %}
+      """
+    When I run "npm start" in the site directory
+    Then stderr should be empty
+    And stdout should not be empty
+    And site/_site/index.html should contain each row: 
+      | text |
+      | <p>fake</p> |
+      | <!--bookshop-live name(page) params(content_blocks: content_blocks) context() -->  |
+      | <span>fake</span> |
+      | <!--bookshop-live name(single) params(bind: block) context(block: UNKNOWN[0]) -->  |
