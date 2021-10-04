@@ -82,20 +82,20 @@ window.BookshopLive = class BookshopLive {
         }
 
         updates.forEach(({startNode, endNode, output}) => {
-            let node = startNode.nextElementSibling;
+            let node = startNode.nextSibling;
             let digest = ''
             while(node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0){
-                digest += node.outerHTML;
-                node = node.nextElementSibling;
+                digest += node.nodeType === Node.COMMENT_NODE ? `<!--${node.textContent}-->` : node.outerHTML;
+                node = node.nextSibling;
             }
 
             if(digest.replace(/\s/g, '') === output.innerHTML.replace(/\s/g, '')){
                 return;
             }
 
-            node = startNode.nextElementSibling
+            node = startNode.nextSibling
             while(node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0){
-                const next = node.nextElementSibling;
+                const next = node.nextSibling;
                 node.remove();
                 node = next;
             }
