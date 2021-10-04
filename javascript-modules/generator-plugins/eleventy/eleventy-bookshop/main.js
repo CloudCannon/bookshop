@@ -31,10 +31,13 @@ const bookshopTagHandler = (tagType, locations, baseLocation) => (liquidEngine) 
 
             let convertedBookshopTag = null;
             for (let location of locations) {
-                const componentPath = path.join(baseLocation, location, componentKey);
+                const bookshopPath = path.join(baseLocation, location);
+                const componentPath = path.join(bookshopPath, componentKey);
                 if (fs.existsSync(componentPath)) {
-                    // TODO: Parse this based on the configured _includes dir
-                    const relativeIncludePath = path.join('../', location, componentKey);
+                    const includeRoot = liquidEngine?.options?.root?.filter(p => p.includes('_includes'))?.[0] || "_includes";
+                    const includePath = path.join(baseLocation, includeRoot);
+                    const relativeBookshopPath = path.relative(includePath, bookshopPath);
+                    const relativeIncludePath = path.join(relativeBookshopPath, componentKey);
                     convertedBookshopTag = `{% include ${relativeIncludePath} ${this.args} %}`;
                     break;
                 }
