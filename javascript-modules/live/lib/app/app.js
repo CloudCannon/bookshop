@@ -45,11 +45,7 @@ window.BookshopLive = class BookshopLive {
                 const prevScope = {...(stack[stack.length-1]?.scope ?? this.data), ...bindings};
                 contextMatches.groups["context"].replace(/: /g, '=').split(' ').forEach((binding) => {
                     const [name, identifier] = binding.split('=');
-                    if(/^".*"$/.test(identifier)){
-                        bindings[name] = identifier.substr(1, identifier.length-2);
-                    } else {
-                        bindings[name] = this.dig(identifier, prevScope);
-                    }
+                    bindings[name] = this.dig(identifier, prevScope);
                 })
             }
             
@@ -111,6 +107,7 @@ window.BookshopLive = class BookshopLive {
 
     dig(keys, scope) {
         if (!keys) return null;
+        if (typeof keys === "string" && /^('|").*('|")$/.test(keys)) return keys.substr(1, keys.length-2)
         if (!Array.isArray(keys)) keys = keys.split('.');
         const key = keys.shift();
         const indexMatches = key.match(/(?<key>.*)\[(?<index>\d*)\]$/);
