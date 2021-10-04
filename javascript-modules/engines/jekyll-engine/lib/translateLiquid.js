@@ -1,6 +1,6 @@
 import { Tokenizer } from 'liquidjs';
 
-const rewriteTag = function(token, src) {
+const rewriteTag = function(token, src, liveMarkup) {
     let raw = token.getText();
 
     // Skip html and {% end... %} tags
@@ -10,12 +10,12 @@ const rewriteTag = function(token, src) {
     // Cached includes can be treated as includes
     if (token.name && token.name === 'include_cached') raw = raw.replace(/include_cached/, 'include');
 
-    if (token.name && token.name === 'for'){
-        raw = `${raw}{% loop_context ${token.args}%}`
+    if (liveMarkup && token.name && token.name === 'for'){
+        raw = `${raw}{% loop_context ${token.args} %}`
     }
 
-    if (token.name && (token.name === 'assign' || token.name === 'local')){
-        identifier = token.args.split('=').shift().trim();
+    if (liveMarkup && token.name && (token.name === 'assign' || token.name === 'local')){
+        let identifier = token.args.split('=').shift().trim();
         raw = `${raw}<!--bookshop-live context(${identifier}="{{${identifier}}}")-->`
     }
 
@@ -30,9 +30,11 @@ const rewriteTag = function(token, src) {
             return `include _bookshop_include_${component}`
         }
         );
-        let params = token.args.split(' ');
-        params.shift();
-        raw = `<!--bookshop-live name(${componentName}) params(${params.join(' ')})-->${raw}<!--bookshop-live end-->`
+        if (liveMarkup) {
+            let params = token.args.split(' ');
+            params.shift();
+            raw = `<!--bookshop-live name(${componentName}) params(${params.join(' ')})-->${raw}<!--bookshop-live end-->`
+        }
     }
 
     // Rewrite bookshop tag to standard includes — within bookshop they're first class
@@ -46,9 +48,11 @@ const rewriteTag = function(token, src) {
             return `include _bookshop_${component}`
         }
         );
-        let params = token.args.split(' ');
-        params.shift();
-        raw = `<!--bookshop-live name(${componentName}) params(${params.join(' ')})-->${raw}<!--bookshop-live end-->`
+        if (liveMarkup) {
+            let params = token.args.split(' ');
+            params.shift();
+            raw = `<!--bookshop-live name(${componentName}) params(${params.join(' ')})-->${raw}<!--bookshop-live end-->`
+        }
     }
 
     // Rewrite Jekyll include syntax to match Liquidjs
@@ -69,6 +73,7 @@ export default function(text, opts) {
     opts = {
         isInclude: false,
         expandBindSyntax: true,
+        liveMarkup: true,
         ...opts
     }
     text = text.toString();
@@ -76,7 +81,7 @@ export default function(text, opts) {
     const output = tokenizer.readTopLevelTokens();
 
     output.reverse().forEach(tag => {
-        text = rewriteTag(tag, text);
+        text = rewriteTag(tag, text, opts.liveMarkup);
     });
 
     const emulateJekyllIncludes = opts.isInclude ? "{% emulate_jekyll %}" : "";
