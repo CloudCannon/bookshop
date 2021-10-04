@@ -44,7 +44,7 @@ module CloudCannonJekyllBookshop
     end
 
     def self.add_structure(hash, component)
-      array_structures = component.delete("array_structures")
+      array_structures = component.delete("structures")
       array_structures.each do |key|
         hash[key] ||= {}
         hash[key]["values"] ||= []

@@ -307,14 +307,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/browser@workspace:browser"
   dependencies:
-    "@bookshop/builder": 2.0.0-beta.32
+    "@bookshop/builder": 2.0.0-beta.38
     "@codemirror/basic-setup": ^0.18.2
     "@codemirror/commands": ^0.18.3
     "@codemirror/legacy-modes": ^0.18.1
     "@codemirror/state": ^0.18.7
     "@codemirror/stream-parser": ^0.18.2
     "@codemirror/view": ^0.18.19
-    "@ltd/j-toml": 1.15.0
+    "@ltd/j-toml": ^1.17.0
     "@material-design-icons/svg": ^0.2.7
     ava: ^3.15.0
     commander: ^8.1.0
@@ -330,12 +330,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/builder@2.0.0-beta.32, @bookshop/builder@workspace:builder":
+"@bookshop/builder@2.0.0-beta.38, @bookshop/builder@workspace:builder":
   version: 0.0.0-use.local
   resolution: "@bookshop/builder@workspace:builder"
   dependencies:
-    "@bookshop/jekyll-engine": 2.0.0-beta.32
-    "@bookshop/styles": 2.0.0-beta.32
+    "@bookshop/jekyll-engine": 2.0.0-beta.38
+    "@bookshop/styles": 2.0.0-beta.38
     ava: ^3.15.0
     esbuild: ^0.12.17
     nyc: ^15.1.0
@@ -346,21 +346,21 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/cloudcannon-eleventy-bookshop@workspace:generator-plugins/eleventy/cloudcannon-eleventy-bookshop"
   dependencies:
-    "@bookshop/cloudcannon-structures": 2.0.0-beta.32
-    "@bookshop/toml-narrator": 2.0.0-beta.32
-    "@ltd/j-toml": 1.15.0
+    "@bookshop/cloudcannon-structures": 2.0.0-beta.38
+    "@bookshop/toml-narrator": 2.0.0-beta.38
+    "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
     fast-glob: ^3.2.7
     nyc: ^15.1.0
   languageName: unknown
   linkType: soft
 
-"@bookshop/cloudcannon-structures@2.0.0-beta.32, @bookshop/cloudcannon-structures@workspace:cloudcannon-structures":
+"@bookshop/cloudcannon-structures@2.0.0-beta.38, @bookshop/cloudcannon-structures@workspace:cloudcannon-structures":
   version: 0.0.0-use.local
   resolution: "@bookshop/cloudcannon-structures@workspace:cloudcannon-structures"
   dependencies:
-    "@bookshop/toml-narrator": 2.0.0-beta.32
-    "@ltd/j-toml": 1.15.0
+    "@bookshop/toml-narrator": 2.0.0-beta.38
+    "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
     nyc: ^15.1.0
     pluralize: ^8.0.0
@@ -382,19 +382,20 @@ __metadata:
   dependencies:
     ava: ^3.15.0
     esbuild: ^0.11.23
-    liquidjs: ^9.25.0
+    liquidjs: ^9.27.0
     nyc: ^15.1.0
+    slugify: ^1.5.3
   languageName: unknown
   linkType: soft
 
-"@bookshop/jekyll-engine@2.0.0-beta.32, @bookshop/jekyll-engine@workspace:engines/jekyll-engine":
+"@bookshop/jekyll-engine@2.0.0-beta.38, @bookshop/jekyll-engine@workspace:engines/jekyll-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/jekyll-engine@workspace:engines/jekyll-engine"
   dependencies:
     ava: ^3.15.0
     esbuild: ^0.11.23
     js-base64: ^3.6.1
-    liquidjs: ^9.25.0
+    liquidjs: ^9.27.0
     nyc: ^15.1.0
     slugify: ^1.5.3
   languageName: unknown
@@ -404,7 +405,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/live@workspace:live"
   dependencies:
-    "@bookshop/builder": 2.0.0-beta.32
+    "@bookshop/builder": 2.0.0-beta.38
     ava: ^3.15.0
     commander: ^8.1.0
     nyc: ^15.1.0
@@ -413,11 +414,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/sass@2.0.0-beta.32, @bookshop/sass@workspace:bookshop-sass":
+"@bookshop/sass@2.0.0-beta.38, @bookshop/sass@workspace:bookshop-sass":
   version: 0.0.0-use.local
   resolution: "@bookshop/sass@workspace:bookshop-sass"
   dependencies:
-    "@bookshop/builder": 2.0.0-beta.32
+    "@bookshop/builder": 2.0.0-beta.38
     ava: ^3.15.0
     commander: ^8.1.0
     fast-glob: ^3.2.7
@@ -427,7 +428,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/styles@2.0.0-beta.32, @bookshop/styles@workspace:styles":
+"@bookshop/styles@2.0.0-beta.38, @bookshop/styles@workspace:styles":
   version: 0.0.0-use.local
   resolution: "@bookshop/styles@workspace:styles"
   dependencies:
@@ -446,7 +447,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/svelte-engine@workspace:engines/svelte-engine"
   dependencies:
-    "@bookshop/builder": 2.0.0-beta.32
+    "@bookshop/builder": 2.0.0-beta.38
     ava: ^3.15.0
     esbuild: ^0.11.23
     esbuild-svelte: ^0.5.3
@@ -455,7 +456,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/toml-narrator@2.0.0-beta.32, @bookshop/toml-narrator@workspace:toml-narrator":
+"@bookshop/toml-narrator@2.0.0-beta.38, @bookshop/toml-narrator@workspace:toml-narrator":
   version: 0.0.0-use.local
   resolution: "@bookshop/toml-narrator@workspace:toml-narrator"
   dependencies:
@@ -894,10 +895,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ltd/j-toml@npm:1.15.0":
-  version: 1.15.0
-  resolution: "@ltd/j-toml@npm:1.15.0"
-  checksum: 078603c596a9d1b91a8e1870c7e8dc212741e82ecbb3690d6d09295a5d0ab3d1a0227f9963f74e58e1123e76b6c2fdafcf7595c7672d08d61d426b19fa724566
+"@ltd/j-toml@npm:^1.17.0":
+  version: 1.17.0
+  resolution: "@ltd/j-toml@npm:1.17.0"
+  checksum: 7f270eb8bf85678388fdf78c82560712c3c3139c6fd6f728744d7e55a19d9a2604f5386498033b22df54d09f6e1748534c717b6cc4d0a59b68ba97677b7e1b39
   languageName: node
   linkType: hard
 
@@ -3778,7 +3779,7 @@ fsevents@~2.3.2:
   resolution: "integration-tests@workspace:integration-tests"
   dependencies:
     "@11ty/eleventy": ^0.12.1
-    "@bookshop/sass": 2.0.0-beta.32
+    "@bookshop/sass": 2.0.0-beta.38
     "@cucumber/cucumber": ^7.3.1
     eleventy-plugin-cloudcannon: ^0.0.17
     uuid: ^8.3.2
@@ -4468,13 +4469,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"liquidjs@npm:^9.25.0":
-  version: 9.25.1
-  resolution: "liquidjs@npm:9.25.1"
+"liquidjs@npm:^9.27.0":
+  version: 9.27.0
+  resolution: "liquidjs@npm:9.27.0"
   bin:
     liquid: bin/liquid.js
     liquidjs: bin/liquid.js
-  checksum: 837c2ac056c2b04c935eeedad91bea43df00d9ac4d3fcd7c09949804d3bb07c04a9aace9168ca044de4a6069d5147072d01ad3c0b8ef1bfb3d3de5f5dbacb361
+  checksum: df8ecba544053f0789eb031c3aa7906b3837c47d197b381dcc5f78f40d6af2692070a5b30d6571da93dd36870f4a5be38a023cb6d39d92dbcfafe9a5cf849a27
   languageName: node
   linkType: hard
 

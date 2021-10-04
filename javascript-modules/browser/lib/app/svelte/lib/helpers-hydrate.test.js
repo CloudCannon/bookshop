@@ -11,7 +11,7 @@ const stubbedEngines = [{
 
 const tomlExample = `
 [component]
-array_structures = []
+structures = []
 label = "Stub"
 description = ""
 icon = "crop_7_5"
@@ -40,7 +40,7 @@ test("should hydrate basic components", t => {
     t.is(hydrated["stub-component-a"].yaml, `label: Stub\ntype: A\n`);
 
     t.deepEqual(hydrated["stub-component-a"].identity, {
-        array_structures: [],
+        structures: [],
         label: "Stub",
         description: "",
         icon: "crop_7_5",

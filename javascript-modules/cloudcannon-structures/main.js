@@ -29,14 +29,14 @@ const TransformComponent = (path, component) => {
             _bookshop_name: GetComponentKey(path)
         },
         label: NiceLabel(GetComponentKey(path)), // Used as a fallback when no label is supplied inside [component]
-        array_structures: [],
+        structures: [],
         ...component["component"]
     }
     if (component["props"]) {
         TransformComponentProps(component["props"], result, null);
     }
-    if (!result["_hidden"] && !result["array_structures"].includes("bookshop_components")) {
-        result["array_structures"].push("bookshop_components");
+    if (!result["_hidden"] && !result["structures"].includes("bookshop_components")) {
+        result["structures"].push("bookshop_components");
     }
     
     const results = [result];

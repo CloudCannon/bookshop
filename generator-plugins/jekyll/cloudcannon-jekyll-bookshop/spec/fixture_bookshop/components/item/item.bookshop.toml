@@ -1,5 +1,5 @@
 [component]
-array_structures = [ "item_array_structure" ]
+structures = [ "item_array_structure" ]
 label = "Item Label"
 description = "Item Description"
 icon = "flare"

@@ -39,8 +39,8 @@ window.addEventListener('load', function() {
 }
 
 const addComponentTo = (obj, component) => {
-    const {array_structures, ...fields} = component;
-    array_structures?.forEach(structure => {
+    const {structures, ...fields} = component;
+    structures?.forEach(structure => {
         obj[structure] = obj[structure] || {};
         obj[structure]["values"] = obj[structure]["values"] || [];
         obj[structure]["values"].push(fields);
