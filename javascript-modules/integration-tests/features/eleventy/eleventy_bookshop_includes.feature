@@ -18,7 +18,7 @@ Feature: Eleventy Bookshop Includes
   Scenario: Basic Bookshop Include
     Given a component-lib/shared/eleventy/basic.eleventy.liquid file containing:
       """
-      {{include.label}}🎉
+      {{label}}🎉
       """
     Given a component-lib/components/block/block.eleventy.liquid file containing:
       """
