@@ -20,7 +20,7 @@ const bookshopTagHandler = (tagType, locations, baseLocation) => (liquidEngine) 
         render: async function (ctx, hash) {
             let component = this.component;
             let preComment = `<!--bookshop-live -->`, loop_context = '';
-            const postComment = `<!--bookshop end-->`;
+            const postComment = `<!--bookshop-live end-->`;
             // Handle a dynamic component syntax that matches Jekyll:
             // {% bookshop {{component._name}} %}
             if (/^{{.*}}$/.test(component)) {

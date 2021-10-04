@@ -36,5 +36,5 @@ Feature: Eleventy Bookshop Includes
     And stdout should contain "v0.12.1"
     And site/_site/index.html should leniently contain each row:
       | text |
-      | Component🎉 <!--bookshop end--> -Block |
-      | Site🎉 <!--bookshop end--> -Inline |
+      | Component🎉 <!--bookshop-live end--> -Block |
+      | Site🎉 <!--bookshop-live end--> -Inline |

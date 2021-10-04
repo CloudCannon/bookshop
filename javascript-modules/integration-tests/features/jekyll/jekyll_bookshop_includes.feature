@@ -36,5 +36,5 @@ Feature: Jekyll Bookshop Includes
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should leniently contain each row:
       | text |
-      | Component🎉 <!--bookshop end--> -Block |
-      | Site🎉 <!--bookshop end--> -Inline |
+      | Component🎉 <!--bookshop-live end--> -Block |
+      | Site🎉 <!--bookshop-live end--> -Inline |

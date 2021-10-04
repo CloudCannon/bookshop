@@ -42,7 +42,7 @@ module JekyllBookshop
         begin
           "<!--bookshop-live name(#{file}) params(#{@params}) context(#{loop_context.gsub(/-/, '=').gsub(/=include\./, '=')}) -->
           #{partial.render!(context)}
-          <!--bookshop end-->"
+          <!--bookshop-live end-->"
         rescue Liquid::Error => e
           e.template_name = path
           e.markup_context = "included " if e.markup_context.nil?
