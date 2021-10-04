@@ -43,7 +43,7 @@ window.BookshopLive = class BookshopLive {
             const contextMatches = currentNode.textContent.match(/bookshop-live.*context\((?<context>[^)]*)\)/);
             if(contextMatches?.groups["context"]){
                 const prevScope = {...(stack[stack.length-1]?.scope ?? this.data), ...bindings};
-                contextMatches.groups["context"].replace(': ', '=').split(' ').forEach((binding) => {
+                contextMatches.groups["context"].replace(/: /g, '=').split(' ').forEach((binding) => {
                     const [name, identifier] = binding.split('=');
                     if(/^".*"$/.test(identifier)){
                         bindings[name] = identifier.substr(1, identifier.length-2);
@@ -66,7 +66,7 @@ window.BookshopLive = class BookshopLive {
             } else if(matches){
                 let scope = {};
                 const prevScope = {...(stack[stack.length-1]?.scope ?? this.data), ...bindings};
-                matches.groups["params"].replace(': ', '=').split(' ').forEach((param) => {
+                matches.groups["params"].replace(/: /g, '=').split(' ').forEach((param) => {
                     const [name, identifier] = param.split('=');
                     if(name === 'bind'){
                         scope = {...scope, ...this.dig(identifier, prevScope)};
