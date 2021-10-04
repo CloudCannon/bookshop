@@ -14,7 +14,7 @@ toc::[]
 [.lead]
 The Bookshop component browser is an embedded component library on your website, allowing you to browse and experiment with components within the context of your site.
 
-A hosted example of the browser can be found here: https://full-fall.cloudvent.net/components
+An example browser showing the components in our Eleventy starter template can be seen here: https://winged-cat.cloudvent.net/components/
 
 == Configuration
 
