@@ -93,6 +93,8 @@ export class Engine {
 
     async render(target, name, props, globals) {
         let source = this.getComponent(name);
+        // TODO: Remove the below check and update the live comments to denote shared
+        if (!source) source = this.getShared(name);
         if (!source) {
             console.warn(`[eleventy-engine] No component found for ${name}`);
             return "";
