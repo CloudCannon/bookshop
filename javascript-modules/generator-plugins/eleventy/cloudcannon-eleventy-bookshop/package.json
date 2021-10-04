@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/cloudcannon-eleventy-bookshop",
-  "version": "2.0.0-beta.38",
+  "version": "2.0.0-beta.39",
   "description": "Eleventy plugin for generating CloudCannon Array Structures from Bookshop components",
   "main": "main.js",
   "scripts": {
@@ -16,8 +16,8 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/cloudcannon-structures": "2.0.0-beta.38",
-    "@bookshop/toml-narrator": "2.0.0-beta.38",
+    "@bookshop/cloudcannon-structures": "2.0.0-beta.39",
+    "@bookshop/toml-narrator": "2.0.0-beta.39",
     "@ltd/j-toml": "^1.17.0",
     "fast-glob": "^3.2.7"
   },
