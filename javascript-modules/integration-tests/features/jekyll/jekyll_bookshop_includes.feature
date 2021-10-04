@@ -22,17 +22,19 @@ Feature: Jekyll Bookshop Includes
       """
     Given a component-lib/components/block/block.jekyll.html file containing:
       """
-      <div>Block—{% bookshop_include basic label=include.title %}</div>
+      <div>{% bookshop_include basic label=include.title %}-Block</div>
       """
     And a site/index.html file containing:
       """
       ---
       ---
       {% bookshop block title="Component" %}
-      <span>Inline—{% bookshop_include basic label="Site" %}</span>
+      <span>{% bookshop_include basic label="Site" %}-Inline</span>
       """
     When I run "bundle exec jekyll build" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
-    And site/_site/index.html should contain the text "Block—Component🎉"
-    And site/_site/index.html should contain the text "Inline—Site🎉"
+    And site/_site/index.html should leniently contain each row:
+      | text |
+      | Component🎉 <!--bookshop end--> -Block |
+      | Site🎉 <!--bookshop end--> -Inline |
