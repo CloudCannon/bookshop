@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "postinstall": "husky install",
+    "changelog": "npx conventional-changelog -i CHANGELOG.md -s --pkg javascript-modules/browser/package.json -p angular"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^13.2.0",
+    "@commitlint/config-conventional": "^13.2.0",
+    "husky": "^7.0.2"
+  }
+}
