@@ -23,7 +23,12 @@ window.BookshopLive = class BookshopLive {
     }
 
     async renderElement(componentName, scope, bindings, dom) {
-        await this.engines[0].render(dom, componentName, scope, {...this.globalData, ...bindings});
+        try {
+            await this.engines[0].render(dom, componentName, scope, {...this.globalData, ...bindings});
+        } catch(e) {
+            console.warn(`Error rendering bookshop component ${componentName}`, e);
+            console.warn(`This is expected in certain cases, and may not be an issue, especially when deleting or re-ordering components.`)
+        }
     }
 
     update(data) {
@@ -111,7 +116,8 @@ window.BookshopLive = class BookshopLive {
         if (!Array.isArray(keys)) keys = keys.split('.');
         const key = keys.shift();
         const indexMatches = key.match(/(?<key>.*)\[(?<index>\d*)\]$/);
-        if (indexMatches){
+        scope = {...this.globalData, ...(scope ?? this.data)};
+        if (indexMatches) {
             scope = (scope ?? this.data)[indexMatches.groups["key"]];
             scope = (scope ?? this.data)[parseInt(indexMatches.groups["index"])];
         } else {

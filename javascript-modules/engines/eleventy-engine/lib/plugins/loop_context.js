@@ -4,7 +4,7 @@ export default function (Liquid) {
 			this.args = token.args;
 		},
     render: function (ctx, hash) {
-      const argsString = this.args.replace(' in ', ': ');
+      const argsString = this.args.replace(/\s+in\s+/, '=').split(' ')[0];
       return `<!--bookshop-live context(${argsString}[${ctx.get(['forloop','index0'])}])-->`;
     },
   });
