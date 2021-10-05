@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/gen",
-  "version": "1.7.1",
+  "version": "2.0.1",
   "description": "",
   "main": "src/index.js",
   "repository": {
@@ -11,17 +11,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\""
   },
-  "author": "@LiamBigelow",
+  "author": "@CloudCannon",
   "license": "MIT",
   "bin": {
-    "bookshop-gen": "src/index.js",
-    "gen": "src/index.js"
+    "bookshop-gen": "src/index.js"
   },
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "enquirer": "^2.3.6",
-    "hygen": "^6.0.4"
+    "ejs": "^3.1.6",
+    "yargs": "^17.2.1"
   }
 }
