@@ -84,8 +84,12 @@ const run = async () => {
     fs.writeFileSync(path.join(__dirname, '../bookshop-packages.json'), JSON.stringify(packages, null, 2));
     console.log(`* * bookshop-packages.json updated`);
 
+    console.log(`* Updating changelog`);
+    await steps.changelog();
+    console.log(`* * Updated changelog, pleace check the staged changes before you continue.`);
+
     console.log(`* Publishing packages`);
-    console.log(`* * Please supply an OTP code for npm`);
+    console.log(`* * Please supply an OTP code for npm (after checking changelog)`);
     const otp = await question(`OTP Code: `);
 
     console.log(`* * Publishing...`);
@@ -157,6 +161,9 @@ const steps = {
                              whatever command you used to publish.`));
             process.exit(1);
         }
+    },
+    changelog: async () => {
+        console.log(execSync(`yarn run changelog`));
     },
     updateGit: async (version) => {
         console.log(`* * Updating git`);
