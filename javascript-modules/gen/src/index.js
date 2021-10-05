@@ -5,6 +5,14 @@ const { join, resolve } = require("path");
 const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
 
+const getComponentName = (path) => {
+  return path.replace(/\//g, "-");
+}
+
+const getComponentFileName = (path) => {
+  return path.split("/").reverse()[0];
+}
+
 const argv = yargs(hideBin(process.argv))
   .option("name", {
     demandOption: true,
@@ -17,7 +25,7 @@ const argv = yargs(hideBin(process.argv))
   }).argv;
 
 const gen = async () => {
-  const componentName = argv.name;
+  const bookshopKey = argv.name;
   const frameworks = {};
   const directories = [];
 
@@ -92,18 +100,21 @@ const gen = async () => {
   }
 
   directories.forEach((directory) => {
-    const componentDirPath = join(directory, "components", componentName);
+    const componentDirPath = join(directory, "components", bookshopKey);
     mkdirSync(componentDirPath, { recursive: true });
 
-    if (!existsSync(join(componentDirPath, `${componentName}.bookshop.toml`))) {
+    const componentName = getComponentName(bookshopKey);
+    const componentFileName = getComponentFileName(bookshopKey);
+
+    if (!existsSync(join(componentDirPath, `${componentFileName}.bookshop.toml`))) {
       writeFileSync(
-        join(componentDirPath, `${componentName}.bookshop.toml`),
+        join(componentDirPath, `${componentFileName}.bookshop.toml`),
         templates["bookshop"].render({ componentName })
       );
     }
-    if (!existsSync(join(componentDirPath, `${componentName}.scss`))) {
+    if (!existsSync(join(componentDirPath, `${componentFileName}.scss`))) {
       writeFileSync(
-        join(componentDirPath, `${componentName}.scss`),
+        join(componentDirPath, `${componentFileName}.scss`),
         templates["scss"].render({ componentName })
       );
     }
@@ -117,12 +128,14 @@ const gen = async () => {
       }
       const componentPath = join(
         componentDirPath,
-        `${componentName}.${template.extension}`
+        `${componentFileName}.${template.extension}`
       );
       if (!existsSync(componentPath)) {
         writeFileSync(componentPath, template.render({ componentName }));
       }
     });
+
+    console.log(`Created component ${componentName} in ${componentDirPath}`);
   });
 };
 

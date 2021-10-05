@@ -1,3 +1,0 @@
-.c-<%= componentName %> { $c: &;
-
-}

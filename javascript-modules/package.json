@@ -8,6 +8,7 @@
         "engines/jekyll-engine",
         "engines/eleventy-engine",
         "engines/svelte-engine",
+        "gen",
         "generator-plugins/eleventy/cloudcannon-eleventy-bookshop",
         "generator-plugins/eleventy/eleventy-bookshop",
         "integration-tests",
