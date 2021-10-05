@@ -20,6 +20,9 @@ image::bookshop-hero.jpg[Iconography representing some components that might res
 
 Bookshop defines a convention for building self-contained components in the templating languages supported by common static site generators. Using these conventions, Bookshop provides developer tooling that empowers you to integrate these components with your stack, build and browse UI components locally, and provide rich live editing experiences for your editors.
 
+== Quick start
+To jump right into using Bookshop on a site, check out the link:https://github.com/CloudCannon/jekyll-bookshop-starter[Jekyll Bookshop Starter] or link:https://github.com/CloudCannon/eleventy-bookshop-starter[Eleventy Bookshop Starter]. Then read through the guides below to get a feel for how everything plugs together.
+
 == Guides
 
 For learning Bookshop conventions, see the link:guides/conventions.adoc[Conventions Guide]
