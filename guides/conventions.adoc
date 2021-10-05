@@ -44,6 +44,8 @@ example-project/
 └─ component-library/
 ```
 
+TIP: The `@bookshop/gen` package helps create component structures for you. Running `npx @bookshop/gen --name button` in the `component-library` directory above would create the button structure for your chosen framework.
+
 == Configuration
 
 The `bookshop.config.js` file defines which framework(s) are available in the component library. This file is used to build out any developer tooling interfaces like the component browser.
