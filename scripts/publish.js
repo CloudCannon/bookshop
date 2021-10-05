@@ -163,7 +163,7 @@ const steps = {
         }
     },
     changelog: async () => {
-        console.log(execSync(`yarn run changelog`));
+        console.log(execSync(`yarn run changelog`).toString());
     },
     updateGit: async (version) => {
         console.log(`* * Updating git`);
