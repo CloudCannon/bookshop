@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/eleventy-bookshop",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Eleventy plugin for consuming Bookshop components",
   "main": "main.js",
   "scripts": {
