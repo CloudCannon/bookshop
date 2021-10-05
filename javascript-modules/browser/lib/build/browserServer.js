@@ -13,6 +13,11 @@ export default class BrowserServer {
         this.app = express();
         expressWs(this.app);
 
+        this.app.get('/', (req, res) => {
+            res.type('.html');
+            res.send(browserHTML);
+        });
+
         this.app.get('/bookshop.js', (req, res) => {
             res.type('.js');
             res.send(this.currentMemoryFile);
@@ -24,7 +29,7 @@ export default class BrowserServer {
         });
         
         this.app.listen(this.port, () => {
-            console.log(`📚 Bookshop Renderer served at http://localhost:${this.port}/bookshop.js`)
+            console.log(`📚 Standalone Bookshop Renderer served at http://localhost:${this.port}/`)
         })
     }
 
@@ -44,3 +49,14 @@ export default class BrowserServer {
         })
     }
 }
+
+const browserHTML = `
+<div data-bookshop-browser></div>
+<script>window.bookshop_browser_site_data = {};</script>
+<script src="/bookshop.js"></script>
+<script>
+  window.bookshopBrowser = new window.BookshopBrowser({
+    globals: [window.bookshop_browser_site_data]
+  }); 
+  window.bookshopBrowser.render();
+</script>`;

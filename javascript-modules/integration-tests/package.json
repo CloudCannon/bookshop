@@ -11,8 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "@11ty/eleventy": "^0.12.1",
+    "@bookshop/sass": "2.0.1",
     "@bookshop/gen": "2.0.1",
-    "@bookshop/sass": "2.0.0-beta.39",
     "eleventy-plugin-cloudcannon": "^0.0.17"
   },
   "devDependencies": {

@@ -23,7 +23,12 @@ window.BookshopLive = class BookshopLive {
     }
 
     async renderElement(componentName, scope, bindings, dom) {
-        await this.engines[0].render(dom, componentName, scope, {...this.globalData, ...bindings});
+        try {
+            await this.engines[0].render(dom, componentName, scope, {...this.globalData, ...bindings});
+        } catch(e) {
+            console.warn(`Error rendering bookshop component ${componentName}`, e);
+            console.warn(`This is expected in certain cases, and may not be an issue, especially when deleting or re-ordering components.`)
+        }
     }
 
     update(data) {
@@ -85,11 +90,20 @@ window.BookshopLive = class BookshopLive {
             let node = startNode.nextSibling;
             let digest = ''
             while(node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0){
-                digest += node.nodeType === Node.COMMENT_NODE ? `<!--${node.textContent}-->` : node.outerHTML || '';
+                switch (node.nodeType) {
+                    case Node.ELEMENT_NODE:
+                      digest += node.outerHTML;
+                      break;
+                    case Node.COMMENT_NODE:
+                      digest += `<!--${node.textContent}-->`;
+                      break;
+                    default:
+                      digest += node.textContent || '';
+                }
                 node = node.nextSibling;
             }
 
-            if(digest.replace(/\s/g, '') === output.innerHTML.replace(/\s/g, '')){
+            if(digest === output.innerHTML){
                 return;
             }
 
@@ -111,7 +125,8 @@ window.BookshopLive = class BookshopLive {
         if (!Array.isArray(keys)) keys = keys.split('.');
         const key = keys.shift();
         const indexMatches = key.match(/(?<key>.*)\[(?<index>\d*)\]$/);
-        if (indexMatches){
+        scope = {...this.globalData, ...(scope ?? this.data)};
+        if (indexMatches) {
             scope = (scope ?? this.data)[indexMatches.groups["key"]];
             scope = (scope ?? this.data)[parseInt(indexMatches.groups["index"])];
         } else {
