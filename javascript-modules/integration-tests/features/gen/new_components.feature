@@ -3,6 +3,7 @@ Feature: Generating Bookshop Components
   I want a CLI to make new components
   So that I don't have to create all the files myself.
 
+  @skip
   Scenario: Creating a new Jekyll component from the bookshop
     Given the file tree:
       """
@@ -18,6 +19,7 @@ Feature: Generating Bookshop Components
     And src/component-lib/components/button/button.scss should contain the text ".c-button"
     And src/component-lib/components/button/button.bookshop.toml should contain the text "button"
 
+  @skip
   Scenario: Creating a new Jekyll component from the root
     Given the file tree:
       """
@@ -33,6 +35,7 @@ Feature: Generating Bookshop Components
     And src/component-lib/components/button/button.scss should contain the text ".c-button"
     And src/component-lib/components/button/button.bookshop.toml should contain the text "button"
 
+  @skip
   Scenario: Creating a new Eleventy component from the bookshop
     Given the file tree:
       """
@@ -48,6 +51,7 @@ Feature: Generating Bookshop Components
     And src/component-lib/components/button/button.scss should contain the text ".c-button"
     And src/component-lib/components/button/button.bookshop.toml should contain the text "button"
 
+  @skip
   Scenario: Creating a new deep nested component
     Given the file tree:
       """
