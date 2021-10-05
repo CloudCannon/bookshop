@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/eleventy-engine",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Bookshop frontend Eleventy renderer",
   "type": "module",
   "sideEffects": false,
