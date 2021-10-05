@@ -58,18 +58,47 @@ module CloudCannonJekyllBookshop
       Jekyll.logger.info "Bookshop:",
                          "Parsing Stories from #{base_path}"
 
-      threads = []
-      Dir.glob("**/*.{bookshop}.{toml,tml,tom,tm}", :base => base_path).each do |f|
-        threads << Thread.new do
-          raw_file = File.read(base_path + "/" + f)
-          component = load_component(raw_file)
+      files = Dir.glob("**/*.{bookshop}.{toml,tml,tom,tm}", :base => base_path);
 
-          transform_component(f, component).each do |transformed_component|
-            add_structure(site.config["_array_structures"], transformed_component)
+      read_attempts = 0
+      while files.size > 0 && read_attempts < 5
+        processing = files.map(&:clone)
+        files = []
+        threads = []
+        processing.each do |f|
+          threads << Thread.new do
+            begin
+              raw_file = File.read(base_path + "/" + f)
+              component = load_component(raw_file)
+    
+              transform_component(f, component).each do |transformed_component|
+                add_structure(site.config["_array_structures"], transformed_component)
+              end
+            rescue
+              Thread.current[:output] = f
+            end
           end
         end
+        threads.each do |t|
+          t.join
+          files << t[:output] if t[:output]
+        end
+        Jekyll.logger.info "Bookshop:",
+                           "Had trouble reading #{files.size} file(s), retrying" if files.size > 0
+        read_attempts += 1
       end
-      threads.each(&:join)
+
+      if files.size > 0
+        Jekyll.logger.error "Bookshop:",
+                            "❌ Failed to read #{files.size} file(s)"
+        files.each do |f|
+          Jekyll.logger.error "Bookshop:",
+                              "❌ Failed to read #{f}"
+        end
+        Jekyll.logger.error "Bookshop:",
+                            "❌ Check your TOML files are valid."
+        exit 1
+      end
     end
 
     def self.setup_helpers
