@@ -12,7 +12,7 @@ endif::[]
 toc::[]
 
 [.lead]
-The Bookshop component browser is an embedded component library on your website, allowing you to browse and experiment with components within the context of your site.
+The Bookshop component browser is an embedded component library on your website, allowing you to browse and experiment with components within the context of your site. When running in development the component browser also provide hot reloading of component templating and styles, while modifying the input props to a component.
 
 An example browser showing the components in our Eleventy starter template can be seen here: https://winged-cat.cloudvent.net/components/
 
@@ -50,15 +50,19 @@ This is best used in an npm script, eg:
 }
 ```
 
-TIP: You can supply the `-b` flag multiple times if you want to merge bookshops.
+TIP: You can supply the `-b` flag multiple times if you want to merge Bookshops.
 
 NOTE: One of port _or_ output must be supplied, not both. If a port is supplied, the browser will watch files. If an output is supplied, the browser will build once and exit.
 
+After running this command, a component browser will be viewable on localhost at the given port. +
+However, much of the component browser's power comes from its ability to integrate into your website, so see below for how to achieve this.
+
 == Integration
 
-The bookshop generator frameworks provide helpers for embedding the Bookshop browser on your website.
+The Bookshop generator frameworks provide helpers for embedding the Bookshop browser on your website. This references the component browser started in the previous command, and embeds a live copy onto your website. +
+This can be useful for many reasons, especially to allow your components the use of site styles and assets.
 
-Within Jekyll, the *jekyll-bookshop* plugin provides a `bookshop_browser` tag to embed the browser on a given page. Within Eleventy, this tag is supplied by the *@bookshop/eleventy-bookshop* plugin.
+Within Jekyll, the *jekyll-bookshop* plugin provides a `bookshop_browser` tag to embed the browser on a given page. Within Eleventy, the same tag is supplied by the *@bookshop/eleventy-bookshop* plugin.
 
 The syntax is the same across both generators:
 
@@ -67,12 +71,12 @@ The syntax is the same across both generators:
 {% bookshop_browser :6061 %}
 ```
 
-This will embed the bookshop component browser in the location of the tag. +
+This will embed the Bookshop component browser in the location of the tag. +
 See the link:https://github.com/CloudCannon/jekyll-bookshop-starter/blob/main/site/components.html[Jekyll] 
 or link:https://github.com/CloudCannon/eleventy-bookshop-starter/blob/main/site/pages/components.liquid[Eleventy] 
 starter templates for an example.
 
-NOTE: Make sure the port number matches the port number you supplied to the `bookshop-browser` command earlier.
+NOTE: Make sure the port number in the tag matches the port number you supplied to the `bookshop-browser` command earlier.
 
 === Hosting a component library
 

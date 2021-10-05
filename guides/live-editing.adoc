@@ -12,7 +12,7 @@ endif::[]
 toc::[]
 
 [.lead]
-Bookshop provides the ability to preview changes live while editing your page in CloudCannon.
+Bookshop provides the ability for your editors to preview changes live while editing your page in CloudCannon.
 
 IMPORTANT: This is an experimental feature
 
@@ -25,7 +25,7 @@ To install this as a development dependency, run: +
 
 == Building the live editing scrips
 
-In your local development environment, run: +
+Before your CloudCannon build, run: +
 `npx bookshop-live -b ./path/to/components -o site/assets/bookshop-live.js`
 
 [cols="2", options="header"]
@@ -49,11 +49,18 @@ This is best used in an npm script, eg:
 }
 ```
 
-TIP: You can supply the `-b` flag multiple times if you want to merge bookshops.
+Paired with a CloudCannon prebuild script:
+.*.cloudcannon/prebuild*
+```bash
+npm install
+npm run bookshop-live
+```
+
+TIP: You can supply the `-b` flag multiple times if you want to merge Bookshops.
 
 == Integration
 
-The bookshop generator frameworks provide helpers for integrating live editing with your website.
+The Bookshop generator frameworks provide helpers for integrating live editing with your website.
 
 Within Jekyll, the *cloudcannon-jekyll-bookshop* plugin provides a `bookshop_live` tag to embed the browser on a given page. Within Eleventy, this tag is supplied by the *@bookshop/cloudcannon-eleventy-bookshop* plugin. +
 See the link:guides/jekyll.adoc[Jekyll] 
@@ -69,12 +76,10 @@ The syntax is the same across both generators:
 </body>
 ```
 
-Ideally this is placed in your 
-This will embed the bookshop component browser in the location of the tag.
-See the link:https://github.com/CloudCannon/jekyll-bookshop-starter/blob/main/site/components.html[Jekyll] 
-or link:https://github.com/CloudCannon/eleventy-bookshop-starter/blob/main/site/pages/components.liquid[Eleventy] 
-starter templates for an example.
+Ideally this is placed in your default layout to enable live editing across all pages.
 
 NOTE: Make sure the path of the JavaScript file matches the `-o` flag of the `bookshop-live` command earlier.
 
 With the plugins installed and the `bookshop_live` tag integrated in your site layout, live editing should now be working for your pages on CloudCannon. This will only work within Bookshop components and includes, not your site as a whole.
+
+As a result, it is recommended to render groups of Bookshop components using a `page` Bookshop include. See the implementation in the link:https://github.com/CloudCannon/eleventy-bookshop-starter[Eleventy Bookshop Starter] for an example.

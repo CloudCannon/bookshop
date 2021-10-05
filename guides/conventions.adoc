@@ -11,9 +11,15 @@ endif::[]
 
 toc::[]
 
+[.lead]
+Bookshop relies on a strong set of conventions that encourage component isolation and maintenance. It should always be easy to find where a component is used, and discover where a component came from. +
+In general, components should avoid side-effects and tight coupling with website styles, to encourage portability.  
+
 == Configuration
 
-A basic bookshop project is expected to have the following structure:
+A Bookshop project is a standalone component library, generally tailored to a specific static site generator. This project might live in a repository alongside your website, or it might live in its own repository and be vendored into your build.
+
+A basic Bookshop project is expected to have the following structure:
 ```text
 component-library/
 ├─ bookshop/
@@ -22,24 +28,15 @@ component-library/
 │  └─ component-name/
 │     ├─ component-name.bookshop.toml
 │     ├─ component-name.scss
-│     └─ component-name.<framework
+│     └─ component-name.<framework>
 └─ shared/
-   └─ styles/
-      └─ **.scss
+   ├─ styles/
+   │  └─ **.scss
+   └─ <framework>
+      └─ **.<framework>
 ```
 
-For a Jekyll bookshop project, your configuration file might look like:
-
-.*bookshop.config.js*
-```javascript
-module.exports = {
-    engines: {
-        "@bookshop/jekyll-engine": {}
-    }
-}
-```
-
-Generally, your website will live alongside your bookshop project _(either as seperate repositories, or a monorepo)_:
+For a monorepo of company websites, the component library might sit alongside them like so:
 ```text
 example-project/
 ├─ example-website-1/
@@ -47,17 +44,32 @@ example-project/
 └─ component-library/
 ```
 
+== Configuration
+
+The `bookshop.config.js` file defines which framework(s) are available in the component library. This file is used to build out any developer tooling interfaces like the component browser.
+
+.*bookshop.config.js*
+```javascript
+module.exports = {
+    engines: {
+        "@bookshop/jekyll-engine": {},   // If using Jekyll
+        "@bookshop/eleventy-engine": {}  // If using Eleventy
+    }
+}
+```
+
 == Component Structure
 
-Components live within the `components/` directory, inside a folder bearing their name. A component is defined with a `<name>.bookshop.toml` file in the <<Component TOML Format>>. This file serves as the schema for the component, defining which properties it may be supplied.
+Components live within the `components/` directory, each inside a folder bearing their name. A component is defined with a `<name>.bookshop.toml` file in the <<Component TOML Format>>. This file serves as the schema for the component, defining which properties it may be supplied.
 
-For example, a `button` component would be defined at:
+For example, the `hero` component in our link:https://github.com/CloudCannon/eleventy-bookshop-starter[Eleventy Bookshop Starter] is defined at:
 ```text
-components/
-└─ button/
-   ├─ button.bookshop.toml
-   ├─ button.scss
-   └─ button.<framework
+component-library/
+└─ components/
+   └─ hero/
+      ├─ hero.bookshop.toml
+      ├─ hero.eleventy.liquid
+      └─ hero.scss
 ```
 
 Components may also be nested within folders, which are then referenced as part of the component name. For example, the following structure would define the components `button/large` and `button/small` _(But *not* `button`)_:
@@ -70,21 +82,21 @@ components/
       └─ small.bookshop.toml
 ```
 
-Alongside the bookshop TOML file, the component files are provided. For the button example, this might look like:
+Alongside the Bookshop TOML file, the component files are provided. For a button example, this might look like:
 ```text
 components/
 └─ button/
    ├─ button.bookshop.toml
    ├─ button.jekyll.html
-   ├─ button.scss
+   ├─ button.eleventy.liquid
    └─ button.svelte
 ```
 
-`button.jekyll.html` and `button.svelte` are both implementations of the `button` component markup, but they share the same SCSS file and TOML schema. Bookshop is designed to span static site generators, so in the future you might also write a `button.hugo.html` and a `button.jsx`, depending on the generators your component library is targeting.  
+`button.jekyll.html` and `button.eleventy.liquid` are both implementations of the `button` component markup, but they share the same SCSS file and TOML schema. Bookshop is designed to span static site generators, so in the future you might also write a `button.hugo.html` and a `button.jsx`, depending on the generators your component library is targeting.  
 
 == Component TOML Format
 
-A bookshop TOML file defines the schema for a given component. This schema is then used when previewing components in the bookshop, and for configuring editing interfaces.
+A Bookshop TOML file defines the schema for a given component. This schema is then used when previewing components in the Bookshop, and for configuring editing interfaces.
 
 The component TOML file for our button might look like the following:
 
@@ -105,22 +117,32 @@ link_url = "/"
 open_in_new_tab = false
 ```
 
-The `[component]` block defines this component, and is used to configure page building interfaces. The fields are the following:
+The `[component]` object defines this component, and is used to configure page building interfaces. The component fields are the following:
 
-structures:: Used to configure editing interfaces
+structures:: What types of structure to categorise this component as. This determines where editors can place components on your website.
 label:: Editor-friendly name
 description:: Editor-friendly description
-icon:: Material icon name
-tags:: Tags for filtering
+icon:: The name of a material icon that represents your component
+tags:: Editor-friendly tags to filter components by
 
-The `[props]` block defines the component schema. This controls what properties it can receive, and is used to configure editing interfaces. The props of our button file above would correspond to the following usage in Jekyll:
+The `[props]` object defines the component schema. This controls what properties it can receive, and is used to configure editing interfaces. The props of our button file above would correspond to the following usage in Eleventy:
 
 ```liquid
 {% bookshop button 
-    label="Get Started" 
-    type="Standard" 
-    link_url="/" 
-    open_in_new_tab=false %}
+   label: "Get Started" 
+   type: "Standard" 
+   link_url: "/" 
+   open_in_new_tab: false %}
+```
+
+Or the following representation in front-matter:
+
+```yaml
+- _bookshop_name: button
+  label: "Get Started"
+  type: "Standard"
+  line_url: "/"
+  open_in_new_tab: false
 ```
 
 === TOML Schema Keys
@@ -129,24 +151,24 @@ Within the TOML file, two special keywords are `select` and `default` within an 
 
 ==== Default Values
 
-*The field `default` is a special keyword in bookshop, which denotes a field as having a default value when created in the CMS.*
+*The field `default` is a special keyword in Bookshop, which denotes a field as having a default value when created in the CMS.*
 
-By default, alphanumeric values in the TOML file are considered testing data, and new components created in a CMS interface will be initialized with empty inputs. If you do wish to give a field a default value, use `key.default`
+By default, values in the TOML file are considered testing data, and new components created in a CMS interface will be initialized with empty inputs. If you do wish to give a field a default value for editors, use `key.default`
 ```toml
 title.default = "Hello World"
 order_number.default = 50
 featured = false
 ```
 This will prepopulate a new component in the CMS with `title: "Hello World"` and `order_number: 50`.  
-The default key is not required for boolean values, the value specified in the TOML will be used as the default CMS value.  
+The default key is not required for boolean values, as the value specified in the TOML will be used as the default CMS value.  
 
 NOTE: _A default value in the TOML file does not provide a default value to the component itself. It is solely used to configure editing interfaces._
 
 ==== Select Data
 
-*The field `select` is a special keyword in bookshop, which denotes a field as drawing from select data (a dropdown).*
+*The field `select` is a special keyword in Bookshop, which denotes a field as drawing from select data (a dropdown).*
 
-This key expects an array of options that will be used to populate the CMS.
+This key defines an array of options that will be used to populate the CMS.
 ```toml
 size.select = ["Large", "Medium", "Small"]
 ```
@@ -181,9 +203,9 @@ title = "Hello World"
 label.default = "Get Started"
 link_url = "/app"
 ```
-The CMS should provide an array named `buttons` within the component, to which buttons may be added or removed. Within these objects, all bookshop schema keys behave the same, and these sub-structures may define their own sub-structures again, i.e. with `\[[props.buttons.styles]]`
+The CMS should provide an array named `buttons` within the component, to which buttons may be added or removed. Within these objects all Bookshop schema keys behave the same, and these sub-structures may define their own sub-structures again, i.e. with `\[[props.buttons.styles]]`
 
-NOTE: The first array item in the TOML file will be used to build the schema for the sub-structure.
+NOTE: The first array object in the TOML file will be used to build the schema for the sub-structure.
 
 NOTE: A structure array will be initialized empty.
 
@@ -194,9 +216,11 @@ Editor-facing comments can be defined for a key via a comment starting with `#:`
 title = "Hello World" #: Looks best under 35 characters
 type.select = ["Primary", "Secondary"] #: Defines button hierarchy
 ```
+These should then be available in the CMS when editing component data.
 
 == Styles
 
 SCSS files within a project do not need to be individually referenced, and are instead loaded automatically. Styles within `shared/` are loaded before styles within `/components` — within each folder, files are loaded alphabetically.
 
-CAUTION: Bookshop SCSS is implementation agnostic. Bookshop interfaces use Dart Sass, but the generator ingesting components may use another implementation (i.e. Jekyll currently uses libsass).
+CAUTION: Bookshop SCSS is implementation agnostic. Bookshop interfaces use Dart Sass, but the generator ingesting components may use another implementation (i.e. Jekyll currently uses libsass). +
+If you require specific Dart Sass features, use the link:https://www.npmjs.com/package/@bookshop/sass[@bookshop/sass] package to compile the styles for your website build.

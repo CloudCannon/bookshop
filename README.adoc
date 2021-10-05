@@ -16,13 +16,17 @@ Bookshop is a component development workflow for static websites. Bookshop curre
 
 image::bookshop-hero.jpg[Iconography representing some components that might reside in a component library. There are lines connecting some of the components to wireframed areas of two example website pages.]
 
+== Concepts
+
+Bookshop defines a convention for building self-contained components in the templating languages supported by common static site generators. Using these conventions, Bookshop provides developer tooling that empowers you to integrate these components with your stack, build and browse UI components locally, and provide rich live editing experiences for your editors.
+
 == Guides
 
 For learning Bookshop conventions, see the link:guides/conventions.adoc[Conventions Guide]
 
-For setting up Bookshop with Jekyll, see the link:guides/jekyll.adoc[Jekyll Guide]
+For integrating a Bookshop with Jekyll, see the link:guides/jekyll.adoc[Jekyll Guide]
 
-For setting up Bookshop with Eleventy, see the link:guides/eleventy.adoc[Eleventy Guide]
+For integrating a Bookshop with Eleventy, see the link:guides/eleventy.adoc[Eleventy Guide]
 
 For setting up the Bookshop component browser, see the link:guides/browser.adoc[Browser Guide]
 
