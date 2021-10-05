@@ -1,3 +1,12 @@
+## [2.0.3](https://github.com/CloudCannon/bookshop/compare/2.0.2...2.0.3) (2021-10-05)
+
+
+### Bug Fixes
+
+* retry components that error in jekyll due to a thread race ([1cc3172](https://github.com/CloudCannon/bookshop/commit/1cc31729e086197ca300a87f0b10df9521c8f6eb))
+
+
+
 ## [2.0.2](https://github.com/CloudCannon/bookshop/compare/2.0.1...2.0.2) (2021-10-05)
 
 ### Bug Fixes
