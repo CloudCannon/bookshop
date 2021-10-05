@@ -90,11 +90,20 @@ window.BookshopLive = class BookshopLive {
             let node = startNode.nextSibling;
             let digest = ''
             while(node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0){
-                digest += node.nodeType === Node.COMMENT_NODE ? `<!--${node.textContent}-->` : node.outerHTML || '';
+                switch (node.nodeType) {
+                    case Node.ELEMENT_NODE:
+                      digest += node.outerHTML;
+                      break;
+                    case Node.COMMENT_NODE:
+                      digest += `<!--${node.textContent}-->`;
+                      break;
+                    default:
+                      digest += node.textContent || '';
+                }
                 node = node.nextSibling;
             }
 
-            if(digest.replace(/\s/g, '') === output.innerHTML.replace(/\s/g, '')){
+            if(digest === output.innerHTML){
                 return;
             }
 
