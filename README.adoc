@@ -14,7 +14,7 @@ https://github.com/CloudCannon/bookshop/actions/workflows/test-ruby.yml[image:ht
 [.lead]
 Bookshop is a component development workflow for static websites. Bookshop currently supports Jekyll and Eleventy, with Hugo support coming in the near future.
 
-image::bookshop-hero.jpg[Iconography representing some components that might reside in a component library. There are lines connecting some of the components to wireframed areas of two example website pages.]
+image::bookshop-hero.png[Iconography representing some components that might reside in a component library. There are lines connecting some of the components to wireframed areas of two example website pages.]
 
 == Concepts
 
@@ -27,12 +27,12 @@ To jump right into using Bookshop on a site, check out the link:https://github.c
 
 == Guides
 
-For learning Bookshop conventions, see the link:guides/conventions.adoc[Conventions Guide]
+link:guides/conventions.adoc[Conventions Guide]:: Learn the Bookshop conventions, from how to write Bookshop TOML files to the component file structure.
 
-For integrating a Bookshop with Jekyll, see the link:guides/jekyll.adoc[Jekyll Guide]
+link:guides/jekyll.adoc[Jekyll Guide]:: How to integrate your Bookshop project into a Jekyll website.
 
-For integrating a Bookshop with Eleventy, see the link:guides/eleventy.adoc[Eleventy Guide]
+link:guides/eleventy.adoc[Eleventy Guide]:: How to integrate your Bookshop projects into an Eleventy website.
 
-For setting up the Bookshop component browser, see the link:guides/browser.adoc[Browser Guide]
+link:guides/browser.adoc[Browser Guide]:: How to setup and use the Bookshop component browser locally and on a hosted URL.
 
-For information on live editing, see the link:guides/live-editing.adoc[Live Editing Guide]
+link:guides/live-editing.adoc[Live Editing Guide]:: Information on how the experimental live editing works, and how to configure it.
