@@ -1,3 +1,12 @@
+## [2.0.5](https://github.com/CloudCannon/bookshop/compare/2.0.4...2.0.5) (2021-10-06)
+
+
+### Features
+
+* automatically set the array structure id_key for components ([e9a1650](https://github.com/CloudCannon/bookshop/commit/e9a1650192c729d4c1211786aabcb351b493e3e3))
+
+
+
 ## [2.0.4](https://github.com/CloudCannon/bookshop/compare/2.0.3...2.0.4) (2021-10-06)
 
 
