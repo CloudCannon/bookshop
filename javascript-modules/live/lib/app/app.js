@@ -78,7 +78,7 @@ window.BookshopLive = class BookshopLive {
 
                 stack.push({
                     startNode: currentNode,
-                    name: matches.groups["name"].replace(/\/\w+\..+$/, ''),
+                    name: matches.groups["name"].replace(/\/[\w-]+\..+$/, '').replace(/\..+$/, ''),
                     bindings: JSON.parse(JSON.stringify(bindings)),
                     scope
                 });
