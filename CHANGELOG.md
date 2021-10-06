@@ -1,3 +1,12 @@
+## [2.0.4](https://github.com/CloudCannon/bookshop/compare/2.0.3...2.0.4) (2021-10-06)
+
+
+### Bug Fixes
+
+* live rendering name parsing edge cases ([f7badef](https://github.com/CloudCannon/bookshop/commit/f7badefab019dd2ad76e3620e754025b5f404447))
+
+
+
 ## [2.0.3](https://github.com/CloudCannon/bookshop/compare/2.0.2...2.0.3) (2021-10-05)
 
 

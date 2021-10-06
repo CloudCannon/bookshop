@@ -307,7 +307,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/browser@workspace:browser"
   dependencies:
-    "@bookshop/builder": 2.0.3
+    "@bookshop/builder": 2.0.4
     "@codemirror/basic-setup": ^0.18.2
     "@codemirror/commands": ^0.18.3
     "@codemirror/legacy-modes": ^0.18.1
@@ -330,12 +330,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/builder@2.0.3, @bookshop/builder@workspace:builder":
+"@bookshop/builder@2.0.4, @bookshop/builder@workspace:builder":
   version: 0.0.0-use.local
   resolution: "@bookshop/builder@workspace:builder"
   dependencies:
-    "@bookshop/jekyll-engine": 2.0.3
-    "@bookshop/styles": 2.0.3
+    "@bookshop/jekyll-engine": 2.0.4
+    "@bookshop/styles": 2.0.4
     ava: ^3.15.0
     esbuild: ^0.12.17
     nyc: ^15.1.0
@@ -346,8 +346,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/cloudcannon-eleventy-bookshop@workspace:generator-plugins/eleventy/cloudcannon-eleventy-bookshop"
   dependencies:
-    "@bookshop/cloudcannon-structures": 2.0.3
-    "@bookshop/toml-narrator": 2.0.3
+    "@bookshop/cloudcannon-structures": 2.0.4
+    "@bookshop/toml-narrator": 2.0.4
     "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
     fast-glob: ^3.2.7
@@ -355,11 +355,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/cloudcannon-structures@2.0.3, @bookshop/cloudcannon-structures@workspace:cloudcannon-structures":
+"@bookshop/cloudcannon-structures@2.0.4, @bookshop/cloudcannon-structures@workspace:cloudcannon-structures":
   version: 0.0.0-use.local
   resolution: "@bookshop/cloudcannon-structures@workspace:cloudcannon-structures"
   dependencies:
-    "@bookshop/toml-narrator": 2.0.3
+    "@bookshop/toml-narrator": 2.0.4
     "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
     nyc: ^15.1.0
@@ -388,7 +388,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/gen@2.0.3, @bookshop/gen@workspace:gen":
+"@bookshop/gen@2.0.4, @bookshop/gen@workspace:gen":
   version: 0.0.0-use.local
   resolution: "@bookshop/gen@workspace:gen"
   dependencies:
@@ -399,7 +399,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/jekyll-engine@2.0.3, @bookshop/jekyll-engine@workspace:engines/jekyll-engine":
+"@bookshop/jekyll-engine@2.0.4, @bookshop/jekyll-engine@workspace:engines/jekyll-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/jekyll-engine@workspace:engines/jekyll-engine"
   dependencies:
@@ -416,7 +416,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/live@workspace:live"
   dependencies:
-    "@bookshop/builder": 2.0.3
+    "@bookshop/builder": 2.0.4
     ava: ^3.15.0
     commander: ^8.1.0
     nyc: ^15.1.0
@@ -425,11 +425,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/sass@2.0.3, @bookshop/sass@workspace:bookshop-sass":
+"@bookshop/sass@2.0.4, @bookshop/sass@workspace:bookshop-sass":
   version: 0.0.0-use.local
   resolution: "@bookshop/sass@workspace:bookshop-sass"
   dependencies:
-    "@bookshop/builder": 2.0.3
+    "@bookshop/builder": 2.0.4
     ava: ^3.15.0
     commander: ^8.1.0
     fast-glob: ^3.2.7
@@ -439,7 +439,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/styles@2.0.3, @bookshop/styles@workspace:styles":
+"@bookshop/styles@2.0.4, @bookshop/styles@workspace:styles":
   version: 0.0.0-use.local
   resolution: "@bookshop/styles@workspace:styles"
   dependencies:
@@ -458,7 +458,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/svelte-engine@workspace:engines/svelte-engine"
   dependencies:
-    "@bookshop/builder": 2.0.3
+    "@bookshop/builder": 2.0.4
     ava: ^3.15.0
     esbuild: ^0.11.23
     esbuild-svelte: ^0.5.3
@@ -467,7 +467,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/toml-narrator@2.0.3, @bookshop/toml-narrator@workspace:toml-narrator":
+"@bookshop/toml-narrator@2.0.4, @bookshop/toml-narrator@workspace:toml-narrator":
   version: 0.0.0-use.local
   resolution: "@bookshop/toml-narrator@workspace:toml-narrator"
   dependencies:
@@ -3817,8 +3817,8 @@ fsevents@~2.3.2:
   resolution: "integration-tests@workspace:integration-tests"
   dependencies:
     "@11ty/eleventy": ^0.12.1
-    "@bookshop/gen": 2.0.3
-    "@bookshop/sass": 2.0.3
+    "@bookshop/gen": 2.0.4
+    "@bookshop/sass": 2.0.4
     "@cucumber/cucumber": ^7.3.1
     eleventy-plugin-cloudcannon: ^0.0.17
     uuid: ^8.3.2
