@@ -47,6 +47,7 @@ module CloudCannonJekyllBookshop
       array_structures = component.delete("structures")
       array_structures.each do |key|
         hash[key] ||= {}
+        hash[key]["id_key"] = "_bookshop_name"
         hash[key]["values"] ||= []
         hash[key]["values"].push(component)
       end

@@ -34,6 +34,7 @@ Feature: Jekyll Bookshop CloudCannon Integration
     Then stderr should be empty
     And site/_site/_cloudcannon/info.json should leniently contain each row: 
       | text |
+      | "id_key" : "_bookshop_name" |
       | "value" : { "_bookshop_name" : "card" , "card_text" : null, "color" : "Blue" } |
       | "label" : "Card"                                                               |
       | "_select_data" : { "colors" : [ "Red" , "Blue" ] }                             |

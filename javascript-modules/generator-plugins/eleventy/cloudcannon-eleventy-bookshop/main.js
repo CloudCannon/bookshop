@@ -42,6 +42,7 @@ const addComponentTo = (obj, component) => {
     const {structures, ...fields} = component;
     structures?.forEach(structure => {
         obj[structure] = obj[structure] || {};
+        obj[structure]["id_key"] = "_bookshop_name"
         obj[structure]["values"] = obj[structure]["values"] || [];
         obj[structure]["values"].push(fields);
     });
