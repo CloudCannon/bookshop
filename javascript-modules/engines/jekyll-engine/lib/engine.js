@@ -47,7 +47,7 @@ export class Engine {
                     return true
                 },
                 resolve(root, file, ext) {
-                    return file
+                    return `${root}${file}`
                 }
             }
         });
@@ -55,10 +55,10 @@ export class Engine {
 
     async retrieveInclude(file) {
         let content;
-        if (/^_bookshop_include_/.test(file)) {
-            content = this.getShared(file.replace(/^_bookshop_include_/, ""));
-        } else if (/^_bookshop_/.test(file)) {
-            content = this.getComponent(file.replace(/^_bookshop_/, ""));
+        if (/_bookshop_include_/.test(file)) {
+            content = this.getShared(file.replace(/^.*_bookshop_include_/, ""));
+        } else if (/_bookshop_/.test(file)) {
+            content = this.getComponent(file.replace(/^.*_bookshop_/, ""));
         } else {
             content = this.files?.[file];
         }

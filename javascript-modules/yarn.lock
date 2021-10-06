@@ -382,7 +382,7 @@ __metadata:
   dependencies:
     ava: ^3.15.0
     esbuild: ^0.11.23
-    liquidjs: 9.27.0
+    liquidjs: 9.28.0
     nyc: ^15.1.0
     slugify: ^1.5.3
   languageName: unknown
@@ -406,7 +406,7 @@ __metadata:
     ava: ^3.15.0
     esbuild: ^0.11.23
     js-base64: ^3.6.1
-    liquidjs: 9.27.0
+    liquidjs: 9.28.0
     nyc: ^15.1.0
     slugify: ^1.5.3
   languageName: unknown
@@ -4515,13 +4515,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"liquidjs@npm:9.27.0":
-  version: 9.27.0
-  resolution: "liquidjs@npm:9.27.0"
+"liquidjs@npm:9.28.0":
+  version: 9.28.0
+  resolution: "liquidjs@npm:9.28.0"
   bin:
     liquid: bin/liquid.js
     liquidjs: bin/liquid.js
-  checksum: df8ecba544053f0789eb031c3aa7906b3837c47d197b381dcc5f78f40d6af2692070a5b30d6571da93dd36870f4a5be38a023cb6d39d92dbcfafe9a5cf849a27
+  checksum: 7c89b5346ca2b8c8fe08b22e214a43cacaee6a6ba9b2a43e405a618c61245ab2c12b73c7e16716cd24982d3794fb1d95f438b1dc2f49554364b3de7dd9ff6149
   languageName: node
   linkType: hard
 
