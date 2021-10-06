@@ -47,7 +47,7 @@ const bookshopTagHandler = (tagType, locations, baseLocation) => (liquidEngine) 
                         const variable = Object.keys(top_context).filter(k => k !== 'forloop')[0];
 
                         // TODO: Find the actual source. This is a guess.
-                        const index = top_context["forloop"].index - 1;
+                        const index = top_context["forloop"].index0;
                         const guessedSource = contextHunt(ctx, top_context[variable], index);
                         loop_context = `${variable}: ${guessedSource}[${index}]`;
                     }

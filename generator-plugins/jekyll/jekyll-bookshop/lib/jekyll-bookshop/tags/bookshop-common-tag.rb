@@ -33,7 +33,7 @@ module JekyllBookshop
       loop_context = ""
       if context.scopes[0]["forloop"]
         name = context.scopes[0]["forloop"].name
-        index = context.scopes[0]["forloop"].index - 1
+        index = context.scopes[0]["forloop"].index0
         loop_context = "#{name}[#{index}]"
       end
 
