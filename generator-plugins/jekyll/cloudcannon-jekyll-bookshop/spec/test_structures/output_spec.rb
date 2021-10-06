@@ -12,6 +12,7 @@ module CloudCannonJekyllBookshop
       output_data = JSON.parse TestHelpers.read_output_file("_cloudcannon/info.json")
 
       info_diff = Hashdiff.diff(output_data.dig("_array_structures", "item_array_structure"), {
+        "id_key" => "_bookshop_name",
         "values" => [
           {
             "value"             => {
