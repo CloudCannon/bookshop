@@ -37,6 +37,7 @@
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
     "js-yaml": "^4.1.0",
+    "normalize-path": "^3.0.0",
     "svelte": "^3.39.0"
   },
   "engines": {

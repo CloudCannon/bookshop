@@ -19,7 +19,8 @@
     "@bookshop/cloudcannon-structures": "2.0.5",
     "@bookshop/toml-narrator": "2.0.5",
     "@ltd/j-toml": "^1.17.0",
-    "fast-glob": "^3.2.7"
+    "fast-glob": "^3.2.7",
+    "normalize-path": "^3.0.0"
   },
   "engines": {
     "node": ">=14.16"

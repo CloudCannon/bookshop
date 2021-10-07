@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@bookshop/styles": "2.0.5",
-    "esbuild": "^0.12.17"
+    "esbuild": "^0.12.17",
+    "normalize-path": "^3.0.0"
   },
   "engines": {
     "node": ">=14.16"
