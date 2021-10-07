@@ -30,12 +30,43 @@
     }
 
     const filter = (list, term) => list.filter(([k, c]) => {
-        console.log(term);
         if (!term) return true;
         let searchKey = (k + c?.identity?.label).toLowerCase();
         return searchKey.includes(term.toLowerCase());
     });
+
+    const handleKeydown = ({ keyCode }) => {
+        if (selectingComponent) { 
+            if (keyCode !== 38 && keyCode !== 40) 
+            return
+            const current = document.activeElement;
+            const items =  [...document.getElementsByClassName('list-item')];
+            const currentIndex = items.indexOf(current);
+            let newIndex;
+                
+            if (currentIndex === -1) {
+                newIndex = 0;
+            } else {
+                if (keyCode === 38) {
+                    if (currentIndex !== 0) {
+                        newIndex = (currentIndex - 1) 
+                    } else newIndex = 0
+                }
+                if (keyCode === 40 ) {
+                    if (currentIndex !== items.length - 1) {
+                        newIndex = (currentIndex + 1)
+                    } else newIndex = items.length - 1
+                }
+            }
+
+            current.blur()
+            items[newIndex].focus()
+        }
+    }
+
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 <div class="component-list"
      class:show={selectingComponent}
@@ -43,17 +74,18 @@
      bind:this={list}
      tabindex="-1">
     <p class="title animate bookshop-icon-string">{@html iconSvg("folder_open")} Components</p>
-    <button class="animate close">{@html iconSvg("close")}</button>
+    <button class="animate close" on:mousedown={blurry}>{@html iconSvg("close")}</button>
     <div class="search animate">
-        <input data-blur="list-child" on:blur={blurry} bind:this={input} type="text" bind:value={searchTerm} placeholder="Search">
+        <input data-blur="list-child" bind:this={input} type="text" bind:value={searchTerm} placeholder="Search">
     </div>
     <ul>
     {#each filter(Object.entries(components), searchTerm) as [key, component], i}
         <li class="animate" style="transition-delay: {i/70}s;">
-            <button class="component bookshop-icon-string"
+            <button class="list-item  component bookshop-icon-string"
                 data-blur="list-child" 
                 on:mousedown={set(key)}
-                on:blur={blurry}>
+                on:keydown={(e) => e.key == 'Enter' ? set(key) : null }
+                >
                 {@html iconSvg(component?.identity?.icon)}
                 {component?.identity?.label}
             </button>
