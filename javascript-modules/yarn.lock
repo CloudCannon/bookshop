@@ -1994,6 +1994,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cli-table@npm:^0.3.1":
+  version: 0.3.6
+  resolution: "cli-table@npm:0.3.6"
+  dependencies:
+    colors: 1.0.3
+  checksum: b0cd08578c810240920438cc2b3ffb4b4f5106b29f3362707f1d8cfc0c0440ad2afb70b96e30ce37f72f0ffe1e844ae7341dde4df17d51ad345eb186a5903af2
+  languageName: node
+  linkType: hard
+
 "cli-truncate@npm:^2.1.0":
   version: 2.1.0
   resolution: "cli-truncate@npm:2.1.0"
@@ -2087,6 +2096,13 @@ __metadata:
   version: 1.1.4
   resolution: "color-name@npm:1.1.4"
   checksum: b0445859521eb4021cd0fb0cc1a75cecf67fceecae89b63f62b201cca8d345baf8b952c966862a9d9a2632987d4f6581f0ec8d957dfacece86f0a7919316f610
+  languageName: node
+  linkType: hard
+
+"colors@npm:1.0.3":
+  version: 1.0.3
+  resolution: "colors@npm:1.0.3"
+  checksum: 234e8d3ab7e4003851cdd6a1f02eaa16dabc502ee5f4dc576ad7959c64b7477b15bd21177bab4055a4c0a66aa3d919753958030445f87c39a253d73b7a3637f5
   languageName: node
   linkType: hard
 
@@ -3099,6 +3115,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fill-keys@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "fill-keys@npm:1.0.2"
+  dependencies:
+    is-object: ~1.0.1
+    merge-descriptors: ~1.0.0
+  checksum: 6ac5ff60ff08f2f44d19e919c9ca579f4efaaa8c88232b4aab5a5b5522aeb8ec91501956e780cb2b44574fe4a4a337e9b43187829267d0b66a6bfedbafae893f
+  languageName: node
+  linkType: hard
+
 "fill-range@npm:^7.0.1":
   version: 7.0.1
   resolution: "fill-range@npm:7.0.1"
@@ -3335,6 +3361,47 @@ fsevents@~2.3.2:
   dependencies:
     pump: ^3.0.0
   checksum: 8bc1a23174a06b2b4ce600df38d6c98d2ef6d84e020c1ddad632ad75bac4e092eeb40e4c09e0761c35fc2dbc5e7fff5dab5e763a383582c4a167dd69a905bd12
+  languageName: node
+  linkType: hard
+
+"gherkin-assembler@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "gherkin-assembler@npm:2.0.1"
+  dependencies:
+    gherkin-ast: ^1.0.1
+  checksum: 635e5624fe7e19d5f31786f32f7611854f004844c281ad88397a59348a2218f01b5789d73f114c3f5914aa2e191adae86dd40455473c08d49ef8e4f0e397be82
+  languageName: node
+  linkType: hard
+
+"gherkin-ast@npm:^1.0.1":
+  version: 1.1.0
+  resolution: "gherkin-ast@npm:1.1.0"
+  dependencies:
+    cli-table: ^0.3.1
+    colors: ^1.1.2
+    gherkin: ^5.0.1
+    proxyquire: ^1.8.0
+    split-lines: ^1.1.0
+  checksum: c9421939c7308cf8e0ed0086031d4caf972d9020926a694a9cf9fa17ad8063158276abf1815880bdc31ec9c39d377d652f0841d3583d17fc43d6fd15e1ace8c1
+  languageName: node
+  linkType: hard
+
+"gherkin-parse@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "gherkin-parse@npm:1.0.6"
+  dependencies:
+    gherkin: ^5.0.1
+    gherkin-assembler: ^2.0.1
+  checksum: 15f553fd859786b19bbe89392272701b6ed5120f7cbdf0c16730a6b954b5d7f8bff83df54354e929408178eb9da8ea76eafc4fba678427c7c86702d9399175d2
+  languageName: node
+  linkType: hard
+
+"gherkin@npm:^5.0.1":
+  version: 5.1.0
+  resolution: "gherkin@npm:5.1.0"
+  bin:
+    gherkin-javascript: bin/gherkin
+  checksum: 38be6507fcf8d3a251493e91e576a8706a769d5829397f9acc41ddddcbd7c9e8b86fbb5fec3c2b20c27d48f0290a29d5834abe55320fce802a899567e5cceede
   languageName: node
   linkType: hard
 
@@ -3820,7 +3887,10 @@ fsevents@~2.3.2:
     "@bookshop/gen": 2.0.5
     "@bookshop/sass": 2.0.5
     "@cucumber/cucumber": ^7.3.1
+    ava: ^3.15.0
     eleventy-plugin-cloudcannon: ^0.0.17
+    fast-glob: ^3.2.7
+    gherkin-parse: ^1.0.6
     uuid: ^8.3.2
   languageName: unknown
   linkType: soft
@@ -4020,6 +4090,13 @@ fsevents@~2.3.2:
   version: 2.0.0
   resolution: "is-obj@npm:2.0.0"
   checksum: c9916ac8f4621962a42f5e80e7ffdb1d79a3fab7456ceaeea394cd9e0858d04f985a9ace45be44433bf605673c8be8810540fe4cc7f4266fc7526ced95af5a08
+  languageName: node
+  linkType: hard
+
+"is-object@npm:~1.0.1":
+  version: 1.0.2
+  resolution: "is-object@npm:1.0.2"
+  checksum: 971219c4b1985b9751f65e4c8296d3104f0457b0e8a70849e848a4a2208bc47317d73b3b85d4a369619cb2df8284dc22584cb2695a7d99aca5e8d0aa64fc075a
   languageName: node
   linkType: hard
 
@@ -4782,7 +4859,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"merge-descriptors@npm:1.0.1":
+"merge-descriptors@npm:1.0.1, merge-descriptors@npm:~1.0.0":
   version: 1.0.1
   resolution: "merge-descriptors@npm:1.0.1"
   checksum: 5abc259d2ae25bb06d19ce2b94a21632583c74e2a9109ee1ba7fd147aa7362b380d971e0251069f8b3eb7d48c21ac839e21fa177b335e82c76ec172e30c31a26
@@ -4978,6 +5055,13 @@ fsevents@~2.3.2:
   bin:
     mkdirp: bin/cmd.js
   checksum: a96865108c6c3b1b8e1d5e9f11843de1e077e57737602de1b82030815f311be11f96f09cce59bd5b903d0b29834733e5313f9301e3ed6d6f6fba2eae0df4298f
+  languageName: node
+  linkType: hard
+
+"module-not-found-error@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "module-not-found-error@npm:1.0.1"
+  checksum: ebd65339d4d5980dd55cd32dbf112ec02b8e33f30866312b94caeee4783322259f18cf2270e9d2e600df3bd1876c35612b87f5c2525c21885fb1f83e85a9b9b0
   languageName: node
   linkType: hard
 
@@ -5819,6 +5903,17 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"proxyquire@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "proxyquire@npm:1.8.0"
+  dependencies:
+    fill-keys: ^1.0.2
+    module-not-found-error: ^1.0.0
+    resolve: ~1.1.7
+  checksum: 1ae13869f787721fa49de6a1703df3cbf63e045447e029674933f42918e752d7fc391b5983324ec32fa77a2ab128e9cb90b67835d71a9ddcd6d0171117637e1b
+  languageName: node
+  linkType: hard
+
 "prr@npm:~1.0.1":
   version: 1.0.1
   resolution: "prr@npm:1.0.1"
@@ -6231,6 +6326,20 @@ fsevents@~2.3.2:
     is-core-module: ^2.2.0
     path-parse: ^1.0.6
   checksum: bed00be983cd20a8af0e7840664f655c4b269786dbd9595c5f156cd9d8a0050e65cdbbbdafc30ee9b6245b230c78a2c8ab6447a52545b582f476c29adb188cc5
+  languageName: node
+  linkType: hard
+
+"resolve@patch:resolve@~1.1.7#~builtin<compat/resolve>":
+  version: 1.1.7
+  resolution: "resolve@patch:resolve@npm%3A1.1.7#~builtin<compat/resolve>::version=1.1.7&hash=00b1ff"
+  checksum: 3477c7e1cb7c0588764f1c2dbdd84d1f4e98d0ad138485ff280c210ddc252c86735f9e6113cbe9491e24cf3205058fce8a7a1dd1f50370707656dbd895bd3826
+  languageName: node
+  linkType: hard
+
+resolve@~1.1.7:
+  version: 1.1.7
+  resolution: "resolve@npm:1.1.7"
+  checksum: afd20873fbde7641c9125efe3f940c2a99f6b1f90f1b7b743e744bdaac1cb105b2e4e0317bcc052ed7e31d57afa86b394a4dc9a1b33a297977be134fdf0250ab
   languageName: node
   linkType: hard
 
@@ -6787,6 +6896,13 @@ fsevents@~2.3.2:
   version: 3.0.10
   resolution: "spdx-license-ids@npm:3.0.10"
   checksum: 94fde6f558941f82c737433000e20678eccad448fe5e87cbb98ba1d811a120ddf7fbc4a7a3ebfcd2f49c8c4541ba6537af07750ca5cb54900a064d53f68b888d
+  languageName: node
+  linkType: hard
+
+"split-lines@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "split-lines@npm:1.1.0"
+  checksum: 986f50d83ea85b3a79e6e7eaed2d38e6fa11cc2e810172d940866465a68c908c28387855639a2dbd9060553aba17f7e2781664a979e2840fbe151028cac3e191
   languageName: node
   linkType: hard
 

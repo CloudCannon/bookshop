@@ -40,7 +40,7 @@ Feature: Eleventy Bookshop Component Browser
       | <script src=\"/_folder/bookshop-browser.js\"></script>        |
 
   @skip # TODO: Eleventy does not yet support pulling data into bookshop
-  Scenario: Eleventy Bookshop extracted site data
+  Scenario: Bookshop extracted site data
     Given a site/components.html file containing:
       """
       ---

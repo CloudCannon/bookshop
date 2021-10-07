@@ -28,7 +28,7 @@ Feature: Basic Eleventy Bookshop
     And site/_site/index.html should contain the text "Hello World"
 
 
-  Scenario: Eleventy components are rendered from bookshop
+  Scenario: Components are rendered from bookshop
     Given a component-lib/components/title/title.eleventy.liquid file containing:
       """
       <h1>Bookshop: {{ text }}</h1>
@@ -44,7 +44,7 @@ Feature: Basic Eleventy Bookshop
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "Bookshop: Result 🤽‍♂️"
 
-  Scenario: Eleventy components can use the page front matter
+  Scenario: Components can use the page front matter
     Given a component-lib/components/title/title.eleventy.liquid file containing:
       """
       <h1>Bookshop: {{ text }}</h1>
@@ -61,7 +61,7 @@ Feature: Basic Eleventy Bookshop
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "Bookshop: Result 🛗"
 
-  Scenario: Eleventy components can use further Eleventy components
+  Scenario: Components can use further components
     Given a component-lib/components/hero/hero.eleventy.liquid file containing:
       """
       <h1>{{ text }}</h1>
@@ -87,7 +87,7 @@ Feature: Basic Eleventy Bookshop
     And site/_site/index.html should contain the text "<h1>🩳</h1>"
     And site/_site/index.html should contain the text "<span>🪣</span>"
 
-  Scenario: Eleventy bookshop tags can use the bind syntax
+  Scenario: Bookshop tags can use the bind syntax
     Given a component-lib/components/card/card.eleventy.liquid file containing:
       """
       <h1>{{ title }}</h1>
@@ -108,7 +108,7 @@ Feature: Basic Eleventy Bookshop
     And site/_site/index.html should contain the text "<h1>🧻</h1>"
     And site/_site/index.html should contain the text "<p>⛳</p>"
 
-  Scenario: Eleventy bookshop tags should support dynamic names
+  Scenario: Bookshop tags should support dynamic names
     Given a component-lib/components/a/a.eleventy.liquid file containing "🅰️{{e}}"
     And a component-lib/components/b/b.eleventy.liquid file containing "🅱️{{e}}"
     And a site/index.html file containing:

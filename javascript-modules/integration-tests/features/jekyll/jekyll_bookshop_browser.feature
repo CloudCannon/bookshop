@@ -41,7 +41,7 @@ Feature: Jekyll Bookshop Component Browser
       | <script src=\"https://example.com/bookshop.js\"></script>     |
       | <script src=\"/_folder/bookshop-browser.js\"></script>        |
 
-  Scenario: Jekyll Bookshop extracted site data
+  Scenario: Bookshop extracted site data
     Given a site/components.html file containing:
       """
       ---

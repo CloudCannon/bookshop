@@ -15,7 +15,7 @@ Feature: Basic Jekyll Bookshop
         Gemfile.lock from starters/jekyll/Gemfile.lock
       """
 
-  Scenario: Jekyll tests are functional
+  Scenario: Tests are functional
     Given a site/index.html file containing:
       """
       ---
@@ -27,7 +27,7 @@ Feature: Basic Jekyll Bookshop
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "Hello World"
 
-  Scenario: Jekyll components are rendered from bookshop
+  Scenario: Components are rendered from bookshop
     Given a component-lib/components/title/title.jekyll.html file containing:
       """
       <h1>Bookshop: {{ include.text }}</h1>
@@ -43,7 +43,7 @@ Feature: Basic Jekyll Bookshop
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "Bookshop: Result 🧄"
 
-  Scenario: Jekyll components can use the page front matter
+  Scenario: Components can use the page front matter
     Given a component-lib/components/title/title.jekyll.html file containing:
       """
       <h1>Bookshop: {{ include.text }}</h1>
@@ -60,7 +60,7 @@ Feature: Basic Jekyll Bookshop
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "Bookshop: Result 👍"
 
-  Scenario: Jekyll components can use further Jekyll components
+  Scenario: Components can use further components
     Given a component-lib/components/hero/hero.jekyll.html file containing:
       """
       <h1>{{ include.text }}</h1>
@@ -85,7 +85,7 @@ Feature: Basic Jekyll Bookshop
     And site/_site/index.html should contain the text "<h1>🩳</h1>"
     And site/_site/index.html should contain the text "<span>🪣</span>"
 
-  Scenario: Jekyll bookshop tags can use the bind syntax
+  Scenario: Bookshop tags can use the bind syntax
     Given a component-lib/components/card/card.jekyll.html file containing:
       """
       <h1>{{ include.title }}</h1>
@@ -106,7 +106,7 @@ Feature: Basic Jekyll Bookshop
     And site/_site/index.html should contain the text "<h1>🧻</h1>"
     And site/_site/index.html should contain the text "<p>⛳</p>"
 
-  Scenario: Jekyll bookshop tags should support dynamic names
+  Scenario: Bookshop tags should support dynamic names
     Given a component-lib/components/a/a.jekyll.html file containing "🅰️{{include.e}}"
     And a component-lib/components/b/b.jekyll.html file containing "🅱️{{include.e}}"
     And a site/index.html file containing:
