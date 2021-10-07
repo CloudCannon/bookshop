@@ -55,6 +55,17 @@ test("should not rewrite a non-comment hashtag", t => {
   t.is(RewriteTOML(bookshop_toml), expected_toml);
 });
 
+test("should escape double quotes inside the comment", t => {
+  bookshop_toml = f`
+  title = "Hello World" #: A "simple" title
+  `
+  expected_toml = f`
+  title--bookshop_comment = "A \"simple\" title"
+  title = "Hello World" #: A "simple" title
+  `
+  t.is(RewriteTOML(bookshop_toml), expected_toml);
+});
+
 test("should pick up a second hashtag after a non-comment hashtag", t => {
   bookshop_toml = f`
   color = "#407AFC" #: Color comment
