@@ -7,13 +7,12 @@ module.exports = {
             const isVariableComment = /^[a-z0-9\-_\.\s]+=.*?#.+?$/i;
             // [some_section] #: Some comment
             const isBlockComment = /^\s*?\[.*?#.+?$/i;
-
             const extractComment = /#:([^#]+)$/i;
             const extractVariable = /^\s*?([a-z0-9\-_\.]+)\s?=/i;
 
             if (isVariableComment.test(line)) {
                 const [, comment] = extractComment.exec(line) || [];
-                const [, variable_name] = extractVariable.exec(line) || [];
+                const [, variable_name] = extractVariable.replaceAll('"', '/"').replaceAll("'","/'").exec(line) || [];
                 if (!comment || !variable_name) return line;
 
                 return `${variable_name}--bookshop_comment = "${comment.trim()}"\n${line}`
