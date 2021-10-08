@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const runCommand = async (command, fullPath, env) => {
     return new Promise((resolve, reject) => {
-        exec(command, { cwd: fullPath, env }, (e) => { 
+        exec(command, { cwd: fullPath, env: {...process.env, ...env} }, (e) => { 
             if (e) {
                 console.error(e);
                 process.exit(1);
