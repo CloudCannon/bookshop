@@ -4,9 +4,13 @@ import path from 'path';
 import sass from 'sass';
 import postcss from 'postcss';
 import postcssConfig from 'postcss-load-config';
+import normalizePath from 'normalize-path';
 
 const sassImport = (filePath) => `@import '${filePath}';`;
-const mapDirs = (dirs = [], seg) => dirs.map(d => path.join(d, `/${seg}/**/*.scss`));
+const mapDirs = (dirs = [], seg) => { 
+    // normalizePath is used because fast-glob does not support \\ path separators
+    return dirs.map(d => normalizePath(path.join(d, `/${seg}/**/*.scss`)))
+};
 
 const sortBookshopFiles = (a, b) => {
     const m = /\/shared\//;
@@ -23,7 +27,7 @@ const sortBookshopFiles = (a, b) => {
 const findPostcssConfig = async (primaryBookshopDir) => {
     let config = null;
     try {
-        const bookshopPostcssPath = path.join(primaryBookshopDir, 'bookshop/*postcss*');
+        const bookshopPostcssPath = normalizePath(path.join(primaryBookshopDir, 'bookshop/*postcss*'));
         const postcssFiles = (await fastGlob(bookshopPostcssPath));
         if (postcssFiles.length) {
             config = await postcssConfig({}, path.join(primaryBookshopDir, 'bookshop'));
@@ -58,7 +62,7 @@ export default (options) => ({
                 path: '_',
                 namespace: 'bookshop-styles-import',
                 pluginData: {
-                    resolveDir: args.resolveDir,
+                    resolveDir: normalizePath(args.resolveDir),
                     fullPaths: fullPaths,
                     bookshopDirs: options?.bookshopDirs
                 },

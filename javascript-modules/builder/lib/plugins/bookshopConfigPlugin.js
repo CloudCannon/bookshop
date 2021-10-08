@@ -1,4 +1,6 @@
 import path from 'path';
+import url from 'url';
+import normalizePath from 'normalize-path';
 
 const importEngineConfig = async ([engine, data]) => {
     const __engine = await import(`${engine}/build`);
@@ -38,7 +40,7 @@ const bundledEngine = (resolveDir) => {
 
 const bundledPlugin = (resolveDir, engineKey) => {
     return (plugin, pluginIndex) => {
-        const pluginPath = plugin[0] === "." ? path.join(resolveDir, plugin) : plugin;
+        const pluginPath = plugin[0] === "." ? normalizePath(path.join(resolveDir, plugin)) : plugin;
         const pluginKey = `${engineKey}Plugin${pluginIndex}`;
         return `
         import ${pluginKey} from '${pluginPath}';
@@ -62,7 +64,7 @@ export default (options) => ({
             };
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-config' }, async (args) => {
-            const {default: config} = await import(path.join(args.pluginData.resolveDir, args.path));
+            const {default: config} = await import(url.pathToFileURL(path.join(args.pluginData.resolveDir, args.path)));
             let engines = Object.entries(config?.engines) || [];
             if (options?.onlyEngines?.length) {
                 engines = engines.filter(([engine]) => options.onlyEngines.includes(engine));

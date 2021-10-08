@@ -1,6 +1,7 @@
 import path from 'path';
 import fastGlob from 'fast-glob';
 import { createRequire } from 'module';
+import normalizePath from 'normalize-path';
 
 const importFile = (file, index) => {
     return `
@@ -19,7 +20,7 @@ export default () => ({
                 path: args.path,
                 namespace: 'renderer-material-glob',
                 pluginData: {
-                    resolveDir: path.join(iconPath, 'filled')
+                    resolveDir: normalizePath(path.join(iconPath, 'filled'))
                 },
             };
         });

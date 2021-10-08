@@ -323,6 +323,7 @@ __metadata:
     express-ws: ^5.0.2
     fast-glob: ^3.2.7
     js-yaml: ^4.1.0
+    normalize-path: ^3.0.0
     nyc: ^15.1.0
     svelte: ^3.39.0
   bin:
@@ -338,6 +339,7 @@ __metadata:
     "@bookshop/styles": 2.0.5
     ava: ^3.15.0
     esbuild: ^0.12.17
+    normalize-path: ^3.0.0
     nyc: ^15.1.0
   languageName: unknown
   linkType: soft
@@ -351,6 +353,7 @@ __metadata:
     "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
     fast-glob: ^3.2.7
+    normalize-path: ^3.0.0
     nyc: ^15.1.0
   languageName: unknown
   linkType: soft
@@ -446,6 +449,7 @@ __metadata:
     ava: ^3.15.0
     esbuild: ^0.12.17
     fast-glob: ^3.2.7
+    normalize-path: ^3.0.0
     nyc: ^15.1.0
     postcss: ^8.3.6
     postcss-fluidvars: ^1.1.2
