@@ -308,6 +308,7 @@ __metadata:
   resolution: "@bookshop/browser@workspace:browser"
   dependencies:
     "@bookshop/builder": 2.0.6
+    "@bookshop/helpers": 2.0.6
     "@codemirror/basic-setup": ^0.18.2
     "@codemirror/commands": ^0.18.3
     "@codemirror/legacy-modes": ^0.18.1
@@ -335,6 +336,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/builder@workspace:builder"
   dependencies:
+    "@bookshop/helpers": 2.0.6
     "@bookshop/jekyll-engine": 2.0.6
     "@bookshop/styles": 2.0.6
     ava: ^3.15.0
@@ -349,6 +351,7 @@ __metadata:
   resolution: "@bookshop/cloudcannon-eleventy-bookshop@workspace:generator-plugins/eleventy/cloudcannon-eleventy-bookshop"
   dependencies:
     "@bookshop/cloudcannon-structures": 2.0.6
+    "@bookshop/helpers": 2.0.6
     "@bookshop/toml-narrator": 2.0.6
     "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
@@ -374,6 +377,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/eleventy-bookshop@workspace:generator-plugins/eleventy/eleventy-bookshop"
   dependencies:
+    "@bookshop/helpers": 2.0.6
     ava: ^3.15.0
     nyc: ^15.1.0
   languageName: unknown
@@ -383,6 +387,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/eleventy-engine@workspace:engines/eleventy-engine"
   dependencies:
+    "@bookshop/helpers": 2.0.6
     ava: ^3.15.0
     esbuild: ^0.11.23
     liquidjs: 9.28.0
@@ -395,6 +400,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/gen@workspace:gen"
   dependencies:
+    "@bookshop/helpers": 2.0.6
     ejs: ^3.1.6
     yargs: ^17.2.1
   bin:
@@ -402,10 +408,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@bookshop/helpers@2.0.6, @bookshop/helpers@workspace:helpers":
+  version: 0.0.0-use.local
+  resolution: "@bookshop/helpers@workspace:helpers"
+  dependencies:
+    ava: ^3.15.0
+    liquidjs: 9.28.0
+    nyc: ^15.1.0
+  languageName: unknown
+  linkType: soft
+
 "@bookshop/jekyll-engine@2.0.6, @bookshop/jekyll-engine@workspace:engines/jekyll-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/jekyll-engine@workspace:engines/jekyll-engine"
   dependencies:
+    "@bookshop/helpers": 2.0.6
     ava: ^3.15.0
     esbuild: ^0.11.23
     js-base64: ^3.6.1
@@ -420,6 +437,7 @@ __metadata:
   resolution: "@bookshop/live@workspace:live"
   dependencies:
     "@bookshop/builder": 2.0.6
+    "@bookshop/helpers": 2.0.6
     ava: ^3.15.0
     commander: ^8.1.0
     nyc: ^15.1.0
@@ -433,6 +451,7 @@ __metadata:
   resolution: "@bookshop/sass@workspace:bookshop-sass"
   dependencies:
     "@bookshop/builder": 2.0.6
+    "@bookshop/helpers": 2.0.6
     ava: ^3.15.0
     commander: ^8.1.0
     fast-glob: ^3.2.7
@@ -446,6 +465,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/styles@workspace:styles"
   dependencies:
+    "@bookshop/helpers": 2.0.6
     ava: ^3.15.0
     esbuild: ^0.12.17
     fast-glob: ^3.2.7
@@ -463,6 +483,7 @@ __metadata:
   resolution: "@bookshop/svelte-engine@workspace:engines/svelte-engine"
   dependencies:
     "@bookshop/builder": 2.0.6
+    "@bookshop/helpers": 2.0.6
     ava: ^3.15.0
     esbuild: ^0.11.23
     esbuild-svelte: ^0.5.3

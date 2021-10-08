@@ -20,6 +20,7 @@
     "javascript-modules/gen": {},
     "javascript-modules/generator-plugins/eleventy/cloudcannon-eleventy-bookshop": {},
     "javascript-modules/generator-plugins/eleventy/eleventy-bookshop": {},
+    "javascript-modules/helpers": {},
     "javascript-modules/live": {},
     "javascript-modules/styles": {},
     "javascript-modules/toml-narrator": {}
