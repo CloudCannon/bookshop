@@ -4,7 +4,7 @@ PATH
     cloudcannon-jekyll-bookshop (2.0.5)
       dry-inflector (>= 0.1, < 1.0)
       jekyll (>= 3.7, < 5.0)
-      node-runner (>= 1.0, < 2.0)
+      node-runner-temp-fix-windows (>= 1.0, < 2.0)
       toml-rb (>= 2.0, < 3.0)
 
 GEM
@@ -66,7 +66,7 @@ GEM
       builder
       minitest (>= 5.0)
       ruby-progressbar
-    node-runner (1.0.1)
+    node-runner-temp-fix-windows (1.0.1)
     parallel (1.20.1)
     parser (3.0.2.0)
       ast (~> 2.4.1)
