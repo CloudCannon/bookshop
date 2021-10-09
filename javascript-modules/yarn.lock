@@ -420,6 +420,7 @@ __metadata:
   resolution: "@bookshop/live@workspace:live"
   dependencies:
     "@bookshop/builder": 2.0.6
+    "@bookshop/eleventy-engine": "workspace:engines/eleventy-engine"
     "@bookshop/jekyll-engine": "workspace:engines/jekyll-engine"
     ava: ^3.15.0
     browser-env: ^3.3.0
