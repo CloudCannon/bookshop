@@ -17,7 +17,7 @@
         "toml-narrator"
     ],
     "scripts": {
-        "postinstall": "./cloudcannon-structures/vendor-hoisted-pluralize"
+        "postinstall": "node ./cloudcannon-structures/vendor-hoisted-pluralize.js"
     },
     "engines": {
         "npm": "please-use-yarn"

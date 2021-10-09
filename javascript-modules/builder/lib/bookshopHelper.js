@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import url from 'url';
 
 export const filterBookshops = (bookshopDirectories = []) => {
     if (!bookshopDirectories.length) {
@@ -15,7 +16,7 @@ export const filterBookshops = (bookshopDirectories = []) => {
 
 export const loadConfig = async (bookshopDirectory = "") => {
     const primaryConfig = path.join(bookshopDirectory, 'bookshop/bookshop.config.js');
-    const config = await import(primaryConfig);
+    const config = await import(url.pathToFileURL(primaryConfig));
     const engineImports = Object.keys(config.default.engines).map((engineName) => {
         return import(`${engineName}/build`);
     });

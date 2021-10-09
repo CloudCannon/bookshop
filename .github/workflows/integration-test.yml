@@ -7,11 +7,15 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  integration-test:
+    runs-on: ${{ matrix.os }}
 
     env:
       cwd: ./javascript-modules
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -26,6 +30,6 @@ jobs:
       - run: yarn install --immutable
         working-directory: ${{ env.cwd }}
       - name: Vendor node modules into ruby packages
-        run: ./scripts/publish.js vendor
+        run: node ./scripts/publish.js vendor
       - run: yarn run itest
         working-directory: ${{ env.cwd }}/integration-tests

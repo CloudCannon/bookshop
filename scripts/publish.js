@@ -297,12 +297,15 @@ const vendorGems = async (gems, version) => {
     Object.entries(gems).forEach(([gem, opts]) => {
         const target = path.join(__dirname, '../', gem);
         if (opts.vendor_from_npm && opts.vendor_from_npm.length) {
-            execSync(`rm -rf ${target}/node_modules && mkdir -p ${target}/node_modules/@bookshop`);
-            opts.vendor_from_npm.forEach(pkg => {
+            fs.rmSync(`${target}/node_modules`, {recursive: true, force: true});
+            opts.vendor_from_npm.forEach(packageName => {
+                const pkg = path.join(process.cwd(), packageName);
+                fs.mkdirSync(`${target}/node_modules/@bookshop/${path.basename(pkg)}`, {recursive: true});
                 execSync(`cd ${pkg} && yarn pack`);
-                execSync(`cd ${pkg} && tar -Pxzf *.tgz`);
-                execSync(`cd ${pkg} && cp -R package ${target}/node_modules/@bookshop/${path.basename(pkg)}`);
-                execSync(`cd ${pkg} && rm *.tgz && rm -r package`);
+                execSync(`cd ${pkg} && tar -Pxzf package.tgz`);
+                recursiveCopy(`${pkg}/package/`, `${target}/node_modules/@bookshop/${path.basename(pkg)}/`);
+                fs.rmSync(`${pkg}/package`, {recursive: true});
+                fs.rmSync(`${pkg}/package.tgz`);
             });
         }
     });
@@ -311,6 +314,16 @@ const vendorGems = async (gems, version) => {
 /**
  * I/O utilities:
  **/
+const recursiveCopy = (from, to) => {
+    fs.readdirSync(from).forEach(el => {
+        console.log(el);
+        if (fs.lstatSync(path.join(from, el)).isFile()) {
+            fs.copyFileSync(path.join(from, el), path.join(to, el));
+        } else {
+            recursiveCopy(path.join(from, el), path.join(to, el));
+        }
+    });
+}
 const trim = (str) => str.replace(/^\s+|\s+$/gm, '').replace(/^#$/gm, '');
 const pad = (str, len) => str + Array(len - str.length + 1).join(' ');
 const box = (str) => {

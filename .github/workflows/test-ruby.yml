@@ -7,12 +7,13 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  ruby-test:
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         ruby-version: ['2.6', '2.7']
+        os: [ubuntu-latest, windows-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -24,7 +25,7 @@ jobs:
       run: yarn install --immutable
       working-directory: ./javascript-modules
     - name: Vendor node modules into ruby packages
-      run: ./scripts/publish.js vendor
+      run: node ./scripts/publish.js vendor
     - name: Set up jekyll-bookshop Ruby
       uses: ruby/setup-ruby@v1
       with:

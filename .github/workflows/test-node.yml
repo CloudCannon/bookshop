@@ -7,8 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  node-test:
+    runs-on: ${{ matrix.os }}
 
     env:
       cwd: ./javascript-modules
@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         node-version: [14.x, 15.x, 16.x]
+        os: [ubuntu-latest, windows-latest]
 
     steps:
       - uses: actions/checkout@v2

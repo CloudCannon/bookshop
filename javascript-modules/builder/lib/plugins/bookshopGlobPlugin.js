@@ -1,5 +1,6 @@
 import path from 'path';
 import fastGlob from 'fast-glob';
+import normalizePath from 'normalize-path';
 
 const importFile = (file, index) => {
     return `
@@ -22,8 +23,8 @@ export default (options) => ({
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-glob' }, async (args) => {
             const globs = args.pluginData.resolveDirs.map(dir => {
-                return fastGlob(`@(components|shared)/**/*@${args.path}`, {
-                    cwd: dir,
+                return fastGlob(`@(components|shared)/**/*@${normalizePath(args.path)}`, {
+                    cwd: normalizePath(dir),
                 });
             });
             const globResults = await Promise.all(globs);
