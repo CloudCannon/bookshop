@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-CSDIR=$(dirname "$0")
-cp $CSDIR/../node_modules/pluralize/pluralize.js $CSDIR/vendored-pluralize.js

@@ -4,6 +4,7 @@ const TOML = require('@ltd/j-toml');
 const fs = require("fs");
 const { TransformComponent, GetComponentKey, NiceLabel } = require("@bookshop/cloudcannon-structures");
 const { RewriteTOML } = require("@bookshop/toml-narrator");
+const normalizePath = require("normalize-path");
 
 const liveTagHandler = (liquidEngine) => {
     return {
@@ -56,7 +57,7 @@ const hydrateStructures = (eleventyConfig) => {
 
     let globResults = locations.map(dir => {
         const loc = path.join(dir, "components");
-        return fastGlob.sync(`${loc}/**/*.bookshop.toml`, {
+        return fastGlob.sync(normalizePath(`${loc}/**/*.bookshop.toml`), {
             cwd: baseLocation,
         });
     });
