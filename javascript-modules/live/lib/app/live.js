@@ -30,9 +30,9 @@ export const getLive = (engines) => class BookshopLive {
         }
     }
 
-    update(data) {
+    async update(data) {
         this.data = data;
-        this.render();
+        await this.render();
     }
 
     async render() {
@@ -44,13 +44,15 @@ export const getLive = (engines) => class BookshopLive {
         let currentNode = iterator.iterateNext();
         while(currentNode){
             const matches = currentNode.textContent.match(/bookshop-live ((?<end>end)|name\((?<name>[^)]*)\) params\((?<params>[^)]*)\)).*/);
-            const contextMatches = currentNode.textContent.match(/bookshop-live.*context\((?<context>[^)]*)\)/);
+            const contextMatches = currentNode.textContent.match(/bookshop-live.*context\((?<context>.+)\)\s*$/);
+
             if(contextMatches?.groups["context"]){
-                const prevScope = {...(stack[stack.length-1]?.scope ?? this.data), ...bindings};
-                contextMatches.groups["context"].replace(/: /g, '=').split(' ').forEach((binding) => {
+                const assignments = contextMatches.groups["context"].replace(/: /g, '=').split(' ');
+                for (const binding of assignments) {
                     const [name, identifier] = binding.split('=');
-                    bindings[name] = this.dig(identifier, prevScope);
-                })
+                    const scopes = [this.data, ...stack.map(s => s.scope), bindings];
+                    bindings[name] = await this.engines[0].eval(identifier, scopes);
+                }
             }
             
             if(matches?.groups["end"]){
@@ -65,15 +67,17 @@ export const getLive = (engines) => class BookshopLive {
                 updates.push({startNode, endNode: currentNode, output});
             } else if(matches){
                 let scope = {};
-                const prevScope = {...(stack[stack.length-1]?.scope ?? this.data), ...bindings};
-                matches.groups["params"].replace(/: /g, '=').split(' ').forEach((param) => {
+                const params = matches.groups["params"].replace(/: /g, '=').split(' ');
+                for (const param of params) {
                     const [name, identifier] = param.split('=');
+                    const scopes = [this.data, ...stack.map(s => s.scope), bindings];
                     if(name === 'bind'){
-                        scope = {...scope, ...this.dig(identifier, prevScope)};
+                        const bindVals = await this.engines[0].eval(identifier, scopes);
+                        scope = {...scope, ...bindVals};
                     } else {
-                        scope[name] = this.dig(identifier, prevScope);
+                        scope[name] = await this.engines[0].eval(identifier, scopes);
                     }
-                });
+                };
 
                 stack.push({
                     startNode: currentNode,
@@ -115,25 +119,5 @@ export const getLive = (engines) => class BookshopLive {
             output = endNode.parentNode.insertBefore(output, endNode);
             output.outerHTML = output.innerHTML;
         })
-    }
-
-
-    dig(keys, scope) {
-        if (!keys) return null;
-        if (typeof keys === "string" && /^('|").*('|")$/.test(keys)) return keys.substr(1, keys.length-2)
-        if (!Array.isArray(keys)) keys = keys.split('.');
-        const key = keys.shift();
-        const indexMatches = key.match(/(?<key>.*)\[(?<index>\d*)\]$/);
-        scope = {...this.globalData, ...(scope ?? this.data)};
-        if (indexMatches) {
-            scope = (scope ?? this.data)[indexMatches.groups["key"]];
-            scope = (scope ?? this.data)[parseInt(indexMatches.groups["index"])];
-        } else {
-            scope = (scope ?? this.data)[key];
-        }
-        if(scope && keys.length) {
-            return this.dig(keys, scope);
-        }
-        return scope;
     }
 }

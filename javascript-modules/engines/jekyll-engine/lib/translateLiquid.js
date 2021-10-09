@@ -33,7 +33,7 @@ const rewriteTag = function(token, src, liveMarkup) {
         if (liveMarkup) {
             let params = token.args.split(' ');
             params.shift();
-            raw = `<!--bookshop-live name(${componentName}) params(${params.join(' ')})-->${raw}<!--bookshop-live end-->`
+            raw = `<!--bookshop-live name(${componentName}) params(${params.join(' ').replace(/\binclude\./g, '')})-->${raw}<!--bookshop-live end-->`
         }
     }
 
@@ -51,7 +51,7 @@ const rewriteTag = function(token, src, liveMarkup) {
         if (liveMarkup) {
             let params = token.args.split(' ');
             params.shift();
-            raw = `<!--bookshop-live name(${componentName}) params(${params.join(' ')})-->${raw}<!--bookshop-live end-->`
+            raw = `<!--bookshop-live name(${componentName}) params(${params.join(' ').replace(/\binclude\./g, '')})-->${raw}<!--bookshop-live end-->`
         }
     }
 
