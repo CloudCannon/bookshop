@@ -52,3 +52,9 @@ test("eval deep", async t => {
     const val = await engine.eval(`test.inner[0]`, {test: {inner: ['bookshop']}});
     t.is(val, 'bookshop');
 });
+
+test("eval scopes", async t => {
+    const scopes = [{test: 'jekyll', other: 'eleventy'}, {test: 'hugo'}];
+    t.is(await engine.eval(`test`, scopes), 'hugo');
+    t.is(await engine.eval(`other`, scopes), 'eleventy');
+});

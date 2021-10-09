@@ -109,9 +109,14 @@ export class Engine {
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
     }
 
-    async eval(str, props = {}) {
+    async eval(str, props = [{}]) {
         try {
-            const ctx = new Context(props);
+            const ctx = new Context();
+            if (Array.isArray(props)) {
+                props.forEach(p => ctx.push(p));
+            } else {
+                ctx.push(props);
+            }
             const [,value, index] = str.match(/^(.*?)(?:\[(\d+)\])?$/);
             let result = await this.liquid.evalValue(value, ctx);
             if (index && typeof result === 'object' && !Array.isArray(result)) {
