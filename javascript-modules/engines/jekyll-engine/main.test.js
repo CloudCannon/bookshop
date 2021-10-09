@@ -62,13 +62,13 @@ test("should implement bind syntax", async t => {
 test("should handle deep binds", async t => {
     const targetElementStub = {};
     await je.render(targetElementStub, "include-title-deep-bind", { book: { title: "Bookshop" } });
-    const livePre = `<!--bookshop-live name(title) params(bind: include.book)-->`
+    const livePre = `<!--bookshop-live name(title) params(bind: book)-->`
     t.is(targetElementStub.innerHTML, `${livePre}<h1>Bookshop</h1>${livePost}`);
 });
 
 test("should render bookshop_includes", async t => {
     const targetElementStub = {};
     await je.render(targetElementStub, "uses-helper", { label: "include-testing" });
-    const livePre = `<!--bookshop-live name(helper) params(help: include.label)-->`
+    const livePre = `<!--bookshop-live name(helper) params(help: label)-->`
     t.is(targetElementStub.innerHTML, `${livePre}<span data-helper=\"include-testing\"></span>${livePost}`);
 });
