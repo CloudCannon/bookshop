@@ -1,5 +1,6 @@
 {
   "name": "@bookshop/builder",
+  "packageManager": "yarn@3.0.0",
   "version": "2.0.6",
   "description": "esbuild wrapper for bringing bookshop components and engines throught to a frontend",
   "type": "module",
@@ -18,6 +19,7 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
+    "@bookshop/helpers": "2.0.6",
     "@bookshop/styles": "2.0.6",
     "esbuild": "^0.12.17",
     "normalize-path": "^3.0.0"

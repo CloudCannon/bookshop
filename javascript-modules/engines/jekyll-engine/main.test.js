@@ -12,6 +12,7 @@ const files = {
     [component('include-title-deep-bind')]: "{% bookshop title bind=include.book %}",
     [component('uses-helper')]: "{% bookshop_include helper help=include.label %}",
     [shared('helper')]: "<span data-helper=\"{{include.help}}\"></span>",
+    [shared('highlight')]: "{% highlight %}<{% endhighlight %}",
 }
 const livePost = `<!--bookshop-live end-->`
 
@@ -71,4 +72,10 @@ test("should render bookshop_includes", async t => {
     await je.render(targetElementStub, "uses-helper", { label: "include-testing" });
     const livePre = `<!--bookshop-live name(helper) params(help: label)-->`
     t.is(targetElementStub.innerHTML, `${livePre}<span data-helper=\"include-testing\"></span>${livePost}`);
+});
+
+test("should support highlight tag", async t => {
+    const targetElementStub = {};
+    await je.render(targetElementStub, "highlight");
+    t.regex(targetElementStub.innerHTML, /&lt;/);
 });
