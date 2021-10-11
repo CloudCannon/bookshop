@@ -1,3 +1,13 @@
+## [2.0.7](https://github.com/CloudCannon/bookshop/compare/2.0.6...2.0.7) (2021-10-11)
+
+
+### Bug Fixes
+
+* **jekyll-engine:** correct jekyll highlight tag implementation ([020d8c2](https://github.com/CloudCannon/bookshop/commit/020d8c2368bfbd6d3c4e1623cf62f8f9dd69f766))
+* **live:** handle more live editing edge cases ([9ee51c0](https://github.com/CloudCannon/bookshop/commit/9ee51c0bfda5ed5c98810d5960a2d56f9c0784fb))
+
+
+
 ## [2.0.6](https://github.com/CloudCannon/bookshop/compare/2.0.5...2.0.6) (2021-10-08)
 
 

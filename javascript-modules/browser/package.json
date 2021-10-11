@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/browser",
   "packageManager": "yarn@3.0.0",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "Component browser for bookshop components",
   "type": "module",
   "main": "main.js",
@@ -24,8 +24,8 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/builder": "2.0.6",
-    "@bookshop/helpers": "2.0.6",
+    "@bookshop/builder": "2.0.7",
+    "@bookshop/helpers": "2.0.7",
     "@codemirror/basic-setup": "^0.18.2",
     "@codemirror/commands": "^0.18.3",
     "@codemirror/legacy-modes": "^0.18.1",
