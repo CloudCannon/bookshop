@@ -1,4 +1,4 @@
-import { Liquid } from 'liquidjs';
+import { Liquid, Context } from 'liquidjs';
 import translateLiquid from './translateLiquid.js';
 
 /**
@@ -109,6 +109,26 @@ export class Engine {
         if (!globals || typeof globals !== "object") globals = {};
         props = { ...globals, include: props };
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
+    }
+
+    async eval(str, props = [{}]) {
+        try {
+            const ctx = new Context();
+            if (Array.isArray(props)) {
+                props.forEach(p => ctx.push(p));
+            } else {
+                ctx.push(props);
+            }
+            const [,value, index] = str.match(/^(.*?)(?:\[(\d+)\])?$/);
+            let result = await this.liquid.evalValue(value, ctx);
+            if (index && typeof result === 'object' && !Array.isArray(result)) {
+                result = Object.entries(result);
+            }
+            return index ? result[index] : result;
+        } catch(e) {
+            console.error(`Error evaluating ${str}`, e);
+            return '';
+        }
     }
 
     loader() {
