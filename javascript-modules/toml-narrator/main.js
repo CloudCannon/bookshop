@@ -13,7 +13,6 @@ module.exports = {
             if (isVariableComment.test(line)) {
                 const [, comment] = extractComment.exec(line) || [];
                 const [, variable_name] = extractVariable.exec(line) || [];
-                console.log(comment)
                 if (!comment || !variable_name) return line;
                 return `${variable_name}--bookshop_comment = "${comment.replace(/"/g, '\"').trim()}"\n${line}`
             } else if (isBlockComment.test(line)) {
