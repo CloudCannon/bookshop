@@ -1,6 +1,7 @@
 {
   "name": "@bookshop/builder",
-  "version": "2.0.6",
+  "packageManager": "yarn@3.0.0",
+  "version": "2.0.8",
   "description": "esbuild wrapper for bringing bookshop components and engines throught to a frontend",
   "type": "module",
   "main": "main.js",
@@ -13,12 +14,13 @@
     "access": "public"
   },
   "devDependencies": {
-    "@bookshop/jekyll-engine": "2.0.6",
+    "@bookshop/jekyll-engine": "2.0.8",
     "ava": "^3.15.0",
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/styles": "2.0.6",
+    "@bookshop/helpers": "2.0.8",
+    "@bookshop/styles": "2.0.8",
     "esbuild": "^0.12.17",
     "normalize-path": "^3.0.0"
   },

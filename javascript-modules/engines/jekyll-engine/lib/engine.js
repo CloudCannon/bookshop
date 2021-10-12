@@ -1,16 +1,18 @@
-import { Liquid } from 'liquidjs';
+import { Liquid, Context } from 'liquidjs';
 import translateLiquid from './translateLiquid.js';
 
 /**
  * LiquidJS plugins
  */
+import {liquidHighlight} from '@bookshop/helpers';
+
 import jsonify from './plugins/jsonify.js';
 import slugify from './plugins/slugify-plugin.js';
 import unbind from './plugins/unbind.js';
 import loop_context from './plugins/loop_context.js';
 import emulateJekyll from './plugins/emulate-jekyll.js';
 import local from './plugins/local.js';
-import highlight from './plugins/highlight.js';
+
 
 export class Engine {
     constructor(options) {
@@ -24,7 +26,7 @@ export class Engine {
         this.name = options.name;
         this.files = options.files;
         this.plugins = options.plugins || [];
-        this.plugins.push(jsonify, slugify, unbind, emulateJekyll, local, highlight, loop_context);
+        this.plugins.push(jsonify, slugify, unbind, emulateJekyll, local, liquidHighlight, loop_context);
 
         this.initializeLiquid();
         this.applyLiquidPlugins();
@@ -107,6 +109,26 @@ export class Engine {
         if (!globals || typeof globals !== "object") globals = {};
         props = { ...globals, include: props };
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
+    }
+
+    async eval(str, props = [{}]) {
+        try {
+            const ctx = new Context();
+            if (Array.isArray(props)) {
+                props.forEach(p => ctx.push(p));
+            } else {
+                ctx.push(props);
+            }
+            const [,value, index] = str.match(/^(.*?)(?:\[(\d+)\])?$/);
+            let result = await this.liquid.evalValue(value, ctx);
+            if (index && typeof result === 'object' && !Array.isArray(result)) {
+                result = Object.entries(result);
+            }
+            return index ? result[index] : result;
+        } catch(e) {
+            console.error(`Error evaluating ${str}`, e);
+            return '';
+        }
     }
 
     loader() {

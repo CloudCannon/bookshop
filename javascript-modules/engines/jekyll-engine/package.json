@@ -1,6 +1,7 @@
 {
   "name": "@bookshop/jekyll-engine",
-  "version": "2.0.6",
+  "packageManager": "yarn@3.0.0",
+  "version": "2.0.8",
   "description": "Bookshop frontend Jekyll renderer",
   "type": "module",
   "sideEffects": false,
@@ -22,6 +23,7 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
+    "@bookshop/helpers": "2.0.8",
     "esbuild": "^0.11.23",
     "js-base64": "^3.6.1",
     "liquidjs": "9.28.0",
