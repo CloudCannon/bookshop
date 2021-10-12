@@ -1,3 +1,12 @@
+## [2.0.8](https://github.com/CloudCannon/bookshop/compare/2.0.7...2.0.8) (2021-10-12)
+
+
+### Bug Fixes
+
+* **live:** wrong injected window variable ([d226bcd](https://github.com/CloudCannon/bookshop/commit/d226bcdb754c10344ea2b24d8927392b472ec111))
+
+
+
 ## [2.0.7](https://github.com/CloudCannon/bookshop/compare/2.0.6...2.0.7) (2021-10-11)
 
 
