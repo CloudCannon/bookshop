@@ -127,3 +127,30 @@ Feature: Basic Jekyll Bookshop
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "🅰️🫀"
     And site/_site/index.html should contain the text "🅱️🫑"
+
+  Scenario: Bookshop page building components should work
+    Given a component-lib/components/page/page.jekyll.html file containing:
+      """
+      {% for props in include.column_contents %}
+        {% bookshop {{props._bookshop_name}} bind=props %}
+      {% endfor %}
+      """
+    And a component-lib/components/tag/tag.jekyll.html file containing "tag-{{include.tag}}-tag"
+    And a site/index.html file containing:
+      """
+      ---
+      components:
+        - _bookshop_name: page
+          column_contents:
+            - _bookshop_name: tag
+              tag: "contents"
+      ---
+      {% for component in page.components %}
+      {% bookshop {{component._bookshop_name}} bind=component %}
+      {% endfor %}
+      """
+    When I run "bundle exec jekyll build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Bookshop site data generated"
+    And site/_site/index.html should contain the text "tag-contents-tag"
+
