@@ -129,3 +129,30 @@ Feature: Basic Eleventy Bookshop
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "🅰️🫀"
     And site/_site/index.html should contain the text "🅱️🫑"
+
+  Scenario: Bookshop page building components should work
+    Given a component-lib/components/page/page.eleventy.liquid file containing:
+      """
+      {% for props in column_contents %}
+        {% bookshop {{props._bookshop_name}} bind: props %}
+      {% endfor %}
+      """
+    And a component-lib/components/tag/tag.eleventy.liquid file containing "tag-{{tag}}-tag"
+    And a site/index.html file containing:
+      """
+      ---
+      components:
+        - _bookshop_name: page
+          column_contents:
+            - _bookshop_name: tag
+              tag: "contents"
+      ---
+      {% for component in components %}
+      {% bookshop {{component._bookshop_name}} bind: component %}
+      {% endfor %}
+      """
+    When I run "npm start" in the site directory
+    Then stderr should be empty
+    And stdout should contain "v0.12.1"
+    And site/_site/index.html should contain the text "tag-contents-tag"
+
