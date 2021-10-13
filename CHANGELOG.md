@@ -1,3 +1,11 @@
+## [2.0.9](https://github.com/CloudCannon/bookshop/compare/2.0.8...2.0.9) (2021-10-13)
+
+
+### Bug Fixes
+
+* **eleventy-bookshop:** correctly handle nested liquidjs contexts ([c4899f7](https://github.com/CloudCannon/bookshop/commit/c4899f786d59b3475265f48f2b82ea68947e7e3d))
+* **toml-narrator:** fix quotes in TOML comments ([50992f2](https://github.com/CloudCannon/bookshop/commit/50992f2da8360ef66103b1f32a0ac1ebcf7efdbc))
+
 ## [2.0.8](https://github.com/CloudCannon/bookshop/compare/2.0.7...2.0.8) (2021-10-12)
 
 
