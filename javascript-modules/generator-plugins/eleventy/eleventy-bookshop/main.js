@@ -64,10 +64,14 @@ const bookshopTagHandler = (tagType, locations, baseLocation) => (liquidEngine) 
             }
 
             // Support the bookshop bind property
-            ctx.push({...(hash.bind || {})});
+            const componentScope = {...(hash.bind || {})};
+            ctx.push(componentScope);
             const tpl = liquidEngine.parse(convertedBookshopTag);
             const output = await tpl[0].render(ctx);
-            ctx.pop();
+
+            // TODO: This is for old liquidjs. 
+            // We shouldn't need to pass the scope in any more.
+            ctx.pop(componentScope);
             return `${preComment}${output}${postComment}`;
         }
     };
