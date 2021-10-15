@@ -1,0 +1,9 @@
+baseURL = "http://example.org/"
+languageCode = "en-us"
+title = "Hugo Bookshop Starter"
+
+[module]
+replacements = "bookshop.test/components -> ../../component-lib,github.com/cloudcannon/hugo-bookshop -> ../../../../../../generator-plugins/hugo/hugo-bookshop/"
+
+[[module.imports]]
+path = 'bookshop.test/components'
