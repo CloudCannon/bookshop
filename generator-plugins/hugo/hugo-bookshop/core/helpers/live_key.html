@@ -1,0 +1,24 @@
+{{/*
+    Builds a context key for @bookshop/live to use in the frontend.
+    i.e. "Params.content.blocks[0]"
+
+    Expects a dict:
+    { 
+        input: String,      # The input path "content.blocks"
+        index: int,         # A loop iteration counter "0"
+        root_type: String   # The type of the root map "maps.Params"
+    }
+*/}}
+
+{{ $key := .input }}
+{{ if not (eq .index nil) }}
+    {{ $key = printf "%s[%d]" $key .index }}
+{{ end }}
+{{ if hasPrefix .root_type "maps"}}
+    {{/* 💭 Helpfully, .Params is of the type `maps.Params`
+         💭 so we can mark components that came from .Params as such.
+         💭 Thus, live editing will know that this was rendered
+         💭 directly from the front matter scope. */}}
+    {{ $key = printf "%s.%s" (replace .root_type "maps." "") $key }}
+{{ end }}
+{{ return $key }}

@@ -1,0 +1,28 @@
+{{/*
+    Renders a single Bookshop component, 
+    wrapping in in a live editing context tag.
+
+    Expects a dict:
+    { 
+        component: [Bookshop Object], 
+        input: String,      # See core/helpers/live_key.html
+        index: int,         # See core/helpers/live_key.html
+        root_type: String   # See core/helpers/live_key.html
+    }
+*/}}
+
+{{ $key := partial "_bookshop/helpers/live_key" . }}
+
+{{ if .component._bookshop_name }}
+    {{ $component_path := partial "_bookshop/helpers/component_key" .component._bookshop_name }}
+
+    {{ if templates.Exists ( printf "partials/%s" $component_path ) }}
+        {{ (printf "<!--bookshop-live name(%s) params(bind: %s) context() -->" .component._bookshop_name $key) | safeHTML }}
+        {{ partial $component_path .component }}
+        {{ "<!--bookshop-live end-->" | safeHTML }}
+    {{ else }}
+        {{ partial "_bookshop/errors/err" (printf "component \"%s\" does not exist — referenced from \"%s\"" .component._bookshop_name $key)}}
+    {{ end }}
+{{ else }}
+    {{ partial "_bookshop/errors/err" (printf "\"%s\" does not contain a _bookshop_name field, so no component can be rendered." $key)}}
+{{ end }}

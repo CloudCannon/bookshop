@@ -1,0 +1,11 @@
+{{/*
+    Converts a bare Bookshop component key to a Bookshop path
+    i.e. "a/b" --> "bookshop/a/b/b.hugo.html"
+
+    Expects a String.
+*/}}
+
+{{ $component_fragments := split . "/" }}
+{{ $component_fragments = append (last 1 $component_fragments) $component_fragments }}
+{{ $component_path := (printf "bookshop/%s.hugo.html" (delimit $component_fragments "/")) }}
+{{ return $component_path }}
