@@ -1,5 +1,6 @@
 {
     "private": true,
+    "packageManager": "yarn@3.0.0",
     "workspaces": [
         "bookshop-sass",
         "browser",
@@ -11,6 +12,7 @@
         "gen",
         "generator-plugins/eleventy/cloudcannon-eleventy-bookshop",
         "generator-plugins/eleventy/eleventy-bookshop",
+        "helpers",
         "integration-tests",
         "live",
         "styles",

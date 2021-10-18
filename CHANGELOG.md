@@ -1,3 +1,30 @@
+## [2.0.9](https://github.com/CloudCannon/bookshop/compare/2.0.8...2.0.9) (2021-10-13)
+
+
+### Bug Fixes
+
+* **eleventy-bookshop:** correctly handle nested liquidjs contexts ([c4899f7](https://github.com/CloudCannon/bookshop/commit/c4899f786d59b3475265f48f2b82ea68947e7e3d))
+* **toml-narrator:** fix quotes in TOML comments ([50992f2](https://github.com/CloudCannon/bookshop/commit/50992f2da8360ef66103b1f32a0ac1ebcf7efdbc))
+
+## [2.0.8](https://github.com/CloudCannon/bookshop/compare/2.0.7...2.0.8) (2021-10-12)
+
+
+### Bug Fixes
+
+* **live:** wrong injected window variable ([d226bcd](https://github.com/CloudCannon/bookshop/commit/d226bcdb754c10344ea2b24d8927392b472ec111))
+
+
+
+## [2.0.7](https://github.com/CloudCannon/bookshop/compare/2.0.6...2.0.7) (2021-10-11)
+
+
+### Bug Fixes
+
+* **jekyll-engine:** correct jekyll highlight tag implementation ([020d8c2](https://github.com/CloudCannon/bookshop/commit/020d8c2368bfbd6d3c4e1623cf62f8f9dd69f766))
+* **live:** handle more live editing edge cases ([9ee51c0](https://github.com/CloudCannon/bookshop/commit/9ee51c0bfda5ed5c98810d5960a2d56f9c0784fb))
+
+
+
 ## [2.0.6](https://github.com/CloudCannon/bookshop/compare/2.0.5...2.0.6) (2021-10-08)
 
 
