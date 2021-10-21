@@ -23,7 +23,7 @@ const eleventyFiles = {
     [eleventyComponent('title-loop')]: "{% for t in titles %}{% bookshop 'title' title: t %}{% endfor %}",
     [eleventyComponent('num-loop')]: "{% for t in (min..max) %}{% bookshop 'title' title: t %}{% endfor %}",
     [eleventyComponent('wrapper')]: "{% bookshop '{{component}}' bind: page %}",
-    [eleventyComponent('dynamic-loop')]: "{% for props in t %}{% bookshop '{{props._bookshop_name}}' bind: props %}{% endfor %}",
+    [eleventyComponent('dynamic-loop')]: "{% for props in t %}{% bookshop {{props._bookshop_name}} bind: props %}{% endfor %}",
 }
 
 const initial = async (liveInstance, component, props) => {
