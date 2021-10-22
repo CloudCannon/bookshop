@@ -13,6 +13,7 @@
         "generator-plugins/eleventy/cloudcannon-eleventy-bookshop",
         "generator-plugins/eleventy/eleventy-bookshop",
         "helpers",
+        "init",
         "integration-tests",
         "live",
         "styles",

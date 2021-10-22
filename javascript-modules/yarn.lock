@@ -396,18 +396,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/gen@2.0.10, @bookshop/gen@workspace:gen":
+"@bookshop/gen@workspace:gen":
   version: 0.0.0-use.local
   resolution: "@bookshop/gen@workspace:gen"
-  dependencies:
-    "@bookshop/helpers": 2.0.10
-    ejs: ^3.1.6
-    yargs: ^17.2.1
   bin:
     bookshop-gen: src/index.js
   languageName: unknown
   linkType: soft
 
+"@bookshop/helpers@2.0.10, @bookshop/helpers@workspace:helpers":
 "@bookshop/helpers@2.0.10, @bookshop/helpers@workspace:helpers":
   version: 0.0.0-use.local
   resolution: "@bookshop/helpers@workspace:helpers"
@@ -415,6 +412,18 @@ __metadata:
     ava: ^3.15.0
     liquidjs: 9.28.0
     nyc: ^15.1.0
+  languageName: unknown
+  linkType: soft
+
+"@bookshop/init@2.0.10, @bookshop/init@workspace:init":
+  version: 0.0.0-use.local
+  resolution: "@bookshop/init@workspace:init"
+  dependencies:
+    "@bookshop/helpers": 2.0.9
+    ejs: ^3.1.6
+    yargs: ^17.2.1
+  bin:
+    init: src/index.js
   languageName: unknown
   linkType: soft
 
@@ -4236,8 +4245,7 @@ fsevents@~2.3.2:
   resolution: "integration-tests@workspace:integration-tests"
   dependencies:
     "@11ty/eleventy": ^0.12.1
-    "@bookshop/gen": 2.0.10
-    "@bookshop/sass": 2.0.10
+
     "@cucumber/cucumber": ^7.3.1
     ava: ^3.15.0
     eleventy-plugin-cloudcannon: ^0.0.17

@@ -74,7 +74,7 @@ These files are namespaced for the static site generator when the filetype is am
 ```
 This looks like a normal Jekyll include because... it is. While Bookshop provides developer tooling, the job of jekyll-bookshop is to tell Jekyll where to find component files. Loading and parsing these files goes through the normal Jekyll include flow.
 
-TIP: The `@bookshop/gen` package helps create component structures for you. Running `npx @bookshop/gen --name button` would create the button structure needed for Jekyll.
+TIP: The `@bookshop/init` package helps create component structures for you. Running `npx @bookshop/init --component button` would create the button structure needed for Jekyll.
 
 == Using components
 
