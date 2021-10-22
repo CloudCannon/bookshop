@@ -44,7 +44,7 @@ example-project/
 └─ component-library/
 ```
 
-TIP: The `@bookshop/gen` package helps create component structures for you. Running `npx @bookshop/gen --name button` in the `component-library` directory above would create the button structure for your chosen framework.
+TIP: The `@bookshop/init` package helps create component structures for you. Running `npx @bookshop/init --component button` in the `component-library` directory above would create the button structure for your chosen framework.
 
 == Configuration
 

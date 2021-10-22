@@ -1,5 +1,5 @@
 {
-  "name": "@bookshop/gen",
+  "name": "@bookshop/init",
   "packageManager": "yarn@3.0.0",
   "version": "2.0.9",
   "description": "",
@@ -7,18 +7,21 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/cloudcannon/bookshop.git",
-    "directory": "gen"
+    "directory": "init"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\""
   },
   "author": "@CloudCannon",
   "license": "MIT",
-  "bin": {
-    "bookshop-gen": "src/index.js"
-  },
+  "bin": "src/index.js",
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@bookshop/helpers": "2.0.9",
+    "ejs": "^3.1.6",
+    "yargs": "^17.2.1"
   },
   "engines": {
     "node": ">=14.16"

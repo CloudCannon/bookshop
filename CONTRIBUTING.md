@@ -62,7 +62,7 @@ An extension to the above builder, that handles compiling and transforming all B
 * `@bookshop/bookshop-sass` 📦  
 Standalone CLI providing SCSS compilation and transformation for SSGs who do not have core Sass support.
 
-* `@bookshop/gen` 📦  
+* `@bookshop/init` 📦  
 Standalone CLI that can create skeleton component files in a Bookshop.
 
 _TODO: Expand upon all packages in their respective README files_

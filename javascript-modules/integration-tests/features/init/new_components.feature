@@ -12,7 +12,7 @@ Feature: Generating Bookshop Components
           bookshop/
             bookshop.config.js from starters/jekyll/bookshop.config.js
       """
-    When I run "npx @bookshop/gen --name button" in the src/component-lib directory
+    When I run "npx @bookshop/init --component button" in the src/component-lib directory
     Then stderr should be empty
     And stdout should contain "Created component button in components/button"
     And src/component-lib/components/button/button.jekyll.html should contain the text "c-button"
@@ -28,7 +28,7 @@ Feature: Generating Bookshop Components
           bookshop/
             bookshop.config.js from starters/jekyll/bookshop.config.js
       """
-    When I run "npx @bookshop/gen --name button" in the src directory
+    When I run "npx @bookshop/init --component button" in the src directory
     Then stderr should be empty
     And stdout should contain "Created component button in component-lib/components/button"
     And src/component-lib/components/button/button.jekyll.html should contain the text "c-button"
@@ -44,7 +44,7 @@ Feature: Generating Bookshop Components
           bookshop/
             bookshop.config.js from starters/eleventy/bookshop.config.js
       """
-    When I run "npx @bookshop/gen --name button" in the src/component-lib directory
+    When I run "npx @bookshop/init --component button" in the src/component-lib directory
     Then stderr should be empty
     And stdout should contain "Created component button in components/button"
     And src/component-lib/components/button/button.eleventy.liquid should contain the text "c-button"
@@ -60,7 +60,7 @@ Feature: Generating Bookshop Components
           bookshop/
             bookshop.config.js from starters/eleventy/bookshop.config.js
       """
-    When I run "npx @bookshop/gen --name deep/nested/component" in the src/component-lib directory
+    When I run "npx @bookshop/init --component deep/nested/component" in the src/component-lib directory
     Then stderr should be empty
     And stdout should contain "Created component deep-nested-component in components/deep/nested/component"
     And src/component-lib/components/deep/nested/component/component.eleventy.liquid should contain the text "c-deep-nested-component"
