@@ -15,32 +15,38 @@ const liveTagHandler = (liquidEngine) => {
             // TODO: Wire up remoteGlobals to Eleventy site data
             return `
 <script>
-window.addEventListener('load', function() {
-    if (window.inEditorMode) {
-    const head = document.querySelector('head');
-    const script = document.createElement('script');
-    script.src = \`/${this.host}\`;
-    script.onload = function() {
+(function(){
+    const bookshopLiveSetup = (CloudCannon) => {
+      CloudCannon.enableEvents();
+  
+      const head = document.querySelector('head');
+      const script = document.createElement('script');
+      script.src = \`/${this.host}\`;
+      script.onload = function() {
         window.bookshopLive = new window.BookshopLive({
-        remoteGlobals: []
+          remoteGlobals: []
         });
-        window.CloudCannon = {
-        trigger: function (eventName, frontMatter) {
-            if (typeof frontMatter === 'string') frontMatter = JSON.parse(frontMatter);
-            window.bookshopLive.update(frontMatter);
+        const updateBookshopLive = async () => {
+          const frontMatter = await CloudCannon.value();
+          window.bookshopLive.update({page: frontMatter});
         }
-        }
+        document.addEventListener('cloudcannon:update', updateBookshopLive);
+        updateBookshopLive();
+      }
+      head.appendChild(script);
     }
-    head.appendChild(script);
-    }
-});
+  
+    document.addEventListener('cloudcannon:load', function (e) {
+      bookshopLiveSetup(e.detail.CloudCannon);
+    });
+  })();
 </script>`;
         }
     };
 }
 
 const addComponentTo = (obj, component) => {
-    const {structures, ...fields} = component;
+    const { structures, ...fields } = component;
     structures?.forEach(structure => {
         obj[structure] = obj[structure] || {};
         obj[structure]["id_key"] = "_bookshop_name"
@@ -62,7 +68,7 @@ const hydrateStructures = (eleventyConfig) => {
         });
     });
     const allFiles = [].concat.apply([], globResults).sort();
-    const files = Array.from(new Set(allFiles)).map(file => {return {path: file}});
+    const files = Array.from(new Set(allFiles)).map(file => { return { path: file } });
 
     files?.forEach(file => {
         let contents = fs.readFileSync(path.join(baseLocation, file.path), "utf8")
@@ -72,12 +78,12 @@ const hydrateStructures = (eleventyConfig) => {
         structureCount += file.components.length;
     });
 
-    eleventyConfig.addTransform("hydrateCloudCannonInfo", function(content, outputPath) {
-        if( outputPath && outputPath.endsWith("_cloudcannon/info.json") ) {
+    eleventyConfig.addTransform("hydrateCloudCannonInfo", function (content, outputPath) {
+        if (outputPath && outputPath.endsWith("_cloudcannon/info.json")) {
             try {
                 let info_json = JSON.parse(content);
                 info_json["_array_structures"] = info_json["_array_structures"] || {};
-                
+
                 files?.forEach(file => {
                     file.components?.forEach(component => {
                         addComponentTo(info_json["_array_structures"], component);
@@ -85,17 +91,17 @@ const hydrateStructures = (eleventyConfig) => {
                 });
 
                 return JSON.stringify(info_json, null, 2);
-            } catch(e) {
+            } catch (e) {
                 console.warn(`Bookshop error ${e}`);
                 process.exit(1);
             }
         }
-    
+
         return content;
     });
 
     console.log(`Bookshop:`,
-                `${structureCount} structure${structureCount == 1 ? "" : "s"} built`);
+        `${structureCount} structure${structureCount == 1 ? "" : "s"} built`);
 }
 
 module.exports = function (eleventyConfig) {

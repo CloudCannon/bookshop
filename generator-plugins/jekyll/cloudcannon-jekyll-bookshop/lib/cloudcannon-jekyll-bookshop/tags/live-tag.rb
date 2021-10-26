@@ -11,8 +11,10 @@ module CloudCannonJekyllBookshop
       site = context.registers[:site]
 
       "<script>
-window.addEventListener('load', function() {
-  if (window.inEditorMode) {
+(function(){
+  const bookshopLiveSetup = (CloudCannon) => {
+    CloudCannon.enableEvents();
+
     const head = document.querySelector('head');
     const script = document.createElement('script');
     script.src = `/#{@script}`;
@@ -20,16 +22,20 @@ window.addEventListener('load', function() {
       window.bookshopLive = new window.BookshopLive({
         remoteGlobals: ['/_cloudcannon/bookshop-site-data.json']
       });
-      window.CloudCannon = {
-        trigger: function (eventName, frontMatter) {
-            if (typeof frontMatter === 'string') frontMatter = JSON.parse(frontMatter);
-            window.bookshopLive.update({page: frontMatter});
-        }
+      const updateBookshopLive = async () => {
+        const frontMatter = await CloudCannon.value();
+        window.bookshopLive.update({page: frontMatter});
       }
+      document.addEventListener('cloudcannon:update', updateBookshopLive);
+      updateBookshopLive();
     }
     head.appendChild(script);
   }
-});
+
+  document.addEventListener('cloudcannon:load', function (e) {
+    bookshopLiveSetup(e.detail.CloudCannon);
+  });
+})();
 </script>"
     end
   end
