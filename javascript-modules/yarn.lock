@@ -319,6 +319,7 @@ __metadata:
     "@material-design-icons/svg": ^0.2.7
     ava: ^3.15.0
     commander: ^8.1.0
+    esbuild: ^0.12.17
     esbuild-svelte: ^0.5.3
     express: ^4.17.1
     express-ws: ^5.0.2
