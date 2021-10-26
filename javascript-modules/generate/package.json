@@ -1,0 +1,29 @@
+{
+  "name": "@bookshop/generate",
+  "packageManager": "yarn@3.0.0",
+  "version": "2.0.9",
+  "description": "Bookshop generator powers rich editing experiences on your Bookshop website",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "nyc ava -v"
+  },
+  "bin": "main.js",
+  "author": "@bglw",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "ava": "^3.15.0",
+    "nyc": "^15.1.0"
+  },
+  "dependencies": {
+    "@bookshop/builder": "2.0.9",
+    "@bookshop/helpers": "2.0.9",
+    "commander": "^8.1.0"
+  },
+  "engines": {
+    "node": ">=14.16"
+  }
+}
