@@ -82,7 +82,7 @@ These files are namespaced for the static site generator when the filetype is am
 ```
 This looks like a normal Eleventy include because... it is. While Bookshop provides developer tooling, the job of eleventy-bookshop is to tell Eleventy where to find component files. Loading and parsing these files goes through the normal Eleventy include flow.
 
-TIP: The `@bookshop/gen` package helps create component structures for you. Running `npx @bookshop/gen --name button` would create the button structure needed for Eleventy.
+TIP: The `@bookshop/init` package helps create component structures for you. Running `npx @bookshop/init --component button` would create the button structure needed for Eleventy.
 
 == Using components
 
