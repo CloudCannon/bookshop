@@ -1,10 +1,16 @@
 import test from 'ava';
-import browserEnv from 'browser-env';
+import { JSDOM } from 'jsdom';
 import { getLive } from './live.js';
 import { Engine as JekyllEngine } from '@bookshop/jekyll-engine';
 import { Engine as EleventyEngine } from '@bookshop/eleventy-engine';
 
-browserEnv();
+const jsdomWindow = (new JSDOM(`...`)).window;
+['document', 'XPathResult', 'Node'].forEach(prop => {
+    Object.defineProperty(global, prop, {
+        configurable: true,
+        get: () => jsdomWindow[prop]
+    });
+});
 
 const jekyllComponent = (k) => `components/${k}/${k}.jekyll.html`;
 const jekyllFiles = {
