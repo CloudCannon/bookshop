@@ -47,15 +47,24 @@ export const getLive = (engines) => class BookshopLive {
             ...options
         };
 
-        const updates = await core.renderComponentUpdates(this, document);
+        // Render _all_ components found on the page into virtual DOM nodes
+        // Returned in depth-first ordering. Children will be listed before their parents,
+        // which allows parents to _not_ re-render if only a child changed.
+        const componentUpdates = await core.renderComponentUpdates(this, document);
 
-        // Go through the rendered components and apply them depth first,
-        // skipping the update if no work needs to be done.
-        for (let { startNode, endNode, output, pathStack } of updates) {
+        for (let {
+            startNode,  // The bookshop-live comment before this component's location in real-DOM
+            endNode,    // The bookshop-live end comment following this component's location in real-DOM
+            output,     // A virtual-DOM node containing contents of the just-rendered component
+            pathStack,  // Any "absolute paths" to data in scope for this component
+        } of componentUpdates) {
             if (options.editorLinks) {
+                // Re-traverse this component to inject any editor links we can to it or its children.
                 await core.hydrateEditorLinks(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode());
             }
 
+            // We can short-circuit doing any slow real-DOM work here
+            // if we can tell that this render didn't change anything.
             if (core.buildDigest(startNode, endNode) === output.innerHTML) {
                 continue;
             }
