@@ -96,7 +96,7 @@ const run = async () => {
     const npmPublishResults = await publishNPM(Object.keys(packages.npm), version, otp);
     const gemPublishResults = await publishGems(Object.keys(packages.rubygems), version);
     const publishFailures = [...npmPublishResults, ...gemPublishResults].filter(r => r.err).map(r => r.pkg);
-    const publishSuccesses = [...npmPublishResults, ...gemPublishResults].filter(r => !r.err).map(r => `${pad(`[${r.version}]`, 20)} ${r.pkg}`);
+    const publishSuccesses = [...npmPublishResults, ...gemPublishResults].filter(r => !r.err).map(r => `${pad(`[${r.version}]`, 30)} ${r.pkg}`);
 
     if (publishFailures.length) {
         console.error(`* * Publishing failed for the following packages:`);
