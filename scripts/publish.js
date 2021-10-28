@@ -255,11 +255,11 @@ const publishGems = async (pkgs, version) => {
  * Version bumping functions
  */
 const checkVersion = ver => /^\d+\.\d+\.\d+(-[a-z]+\.\d+)?$/.test(ver);
-const isPrereleaseVersion = ver => /^\d+\.\d+\.\d+(-[a-z]+\.\d+)$/.test(ver);
+const getPrereleaseTag = ver => ver.match(/^\d+\.\d+\.\d+(?:-([a-z]+)\.\d+)$/)?.[1];
 
 const versionNpm = (pkgs, version) => {
     pkgs.forEach(pkg => {
-        const npmTag = isPrereleaseVersion(version) ? ` --tag next` : ``;
+        const npmTag = getPrereleaseTag(version) ? ` --tag ${getPrereleaseTag(version)}` : ``;
         const npmBump = execSync(`npm --prefix ${pkg} version ${version}${npmTag} --allow-same-version --no-git-tag-version --no-commit-hooks`);
         if (npmBump.stderr) {
             console.error(box(`yarn version bump failed:
