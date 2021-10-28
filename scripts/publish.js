@@ -108,7 +108,9 @@ const run = async () => {
         process.exit(1);
     }
 
-    steps.updateGit(version);
+    console.log(`* Commit & push changes to git?`);
+    const yn = await question(`y / n: `);
+    if (yn === 'y') steps.updateGit(version);
 
     console.log(`\n` + box(`All packages published:
                      ⇛ ${publishSuccesses.join('\n⇛ ')}`));
