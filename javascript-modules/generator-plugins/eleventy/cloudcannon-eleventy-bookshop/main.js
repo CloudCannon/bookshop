@@ -28,7 +28,8 @@ const liveTagHandler = (liquidEngine) => {
         });
         const updateBookshopLive = async () => {
           const frontMatter = await CloudCannon.value();
-          window.bookshopLive.update(frontMatter);
+          const options = window.bookshopLiveOptions || {};
+          window.bookshopLive.update(frontMatter, options);
         }
         document.addEventListener('cloudcannon:update', updateBookshopLive);
         updateBookshopLive();

@@ -43,7 +43,7 @@ export const getLive = (engines) => class BookshopLive {
 
     async render(options = {}) {
         options = {
-            editorLinks: true,
+            editorLinks: false,
             ...options
         };
 
