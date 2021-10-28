@@ -8,7 +8,7 @@ const contextMatchRegex = /bookshop-live.*context\((?<context>.+)\)\s*$/;
 // TODO: Use the @bookshop/helpers package for name normalization
 const normalizeName = name => name.replace(/\/[\w-]+\..+$/, '').replace(/\..+$/, '');
 // TODO: The `page.` replacement feels too SSG coupled            v v v v v v v v v v v v
-const parseParams = params => params ? params.replace(/: /g, '=').replace(/=page\./g, '=').split(' ').map(p => p.split('=')) : [];
+const parseParams = params => params ? params.replace(/: /g, '=').split(' ').map(p => p.split('=')) : [];
 const getTemplateCommentIterator = node => {
     const documentNode = node.ownerDocument ?? document;
     return documentNode.evaluate("//comment()[contains(.,'bookshop-live')]", node, null, XPathResult.ANY_TYPE, null);
@@ -195,10 +195,7 @@ export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScop
         let editorLink = null;
         for (const [, identifier] of params) {
             const path = (findInStack(identifier, pathStack) ?? identifier);
-            let pathResolves =
-                path === 'page' // TODO: This special page case feels too SSG-coupled
-                || (dig(liveInstance.data, path.replace(/^page\./, ''))
-                    ?? dig(liveInstance.data, path));
+            let pathResolves = dig(liveInstance.data, path);
             if (pathResolves) {
                 // TODO: This special page case feels too SSG-coupled
                 editorLink = path.replace(/^page(\.|$)/, '');

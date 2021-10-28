@@ -41,6 +41,11 @@ const eleventyFiles = {
     [eleventyComponent('titles-wrapper-erroneous-component')]: "{% bookshop '{{component}}' titles: titles %}{% bookshop 'null' null: t %}",
 }
 
+const wrapDataFor = (impl, data) => {
+    if (impl === 'jekyll') return { page: data };
+    return data;
+}
+
 const initial = async (liveInstance, component, props) => {
     await liveInstance.engines[0].render(
         document.querySelector('body'),
@@ -82,7 +87,8 @@ for (const impl of ['jekyll', 'eleventy']) {
             `<!--bookshop-live end-->`
         ].join(''));
 
-        await t.context[impl].update({ data: { title: 'Live Love Laugh' } }, { editorLinks: false })
+        const data = wrapDataFor(impl, { data: { title: 'Live Love Laugh' } });
+        await t.context[impl].update(data, { editorLinks: false })
         t.is(getBody(), [
             `<!--bookshop-live name(title) params(bind: ${pagedot}data)-->`,
             `<h1>Live Love Laugh<\/h1>`,
@@ -98,7 +104,8 @@ for (const impl of ['jekyll', 'eleventy']) {
         // Add event listener to the first h1 'Bookshop'
         document.querySelectorAll('h1')[0].addEventListener('click', () => trigger = true);
 
-        await t.context[impl].update({ data: { titles: ['Bookshop', 'Hugo', 'Eleventy'] } }, { editorLinks: false })
+        const data = wrapDataFor(impl, { data: { titles: ['Bookshop', 'Hugo', 'Eleventy'] } });
+        await t.context[impl].update(data, { editorLinks: false })
         t.regex(getBody(), /<h1>Hugo<\/h1>/);
         t.notRegex(getBody(), /<h1>Jekyll<\/h1>/);
 
@@ -137,7 +144,8 @@ for (const impl of ['jekyll', 'eleventy']) {
         // Add event listener to h1 not rendered from a subcomponent 'Two'
         document.querySelectorAll('h1')[1].addEventListener('click', () => trigger = true);
 
-        await t.context[impl].update({ data: { one: "Uno", two: "Two", three: "Tres" } }, { editorLinks: false })
+        const data = wrapDataFor(impl, { data: { one: "Uno", two: "Two", three: "Tres" } });
+        await t.context[impl].update(data, { editorLinks: false })
         t.regex(getBody(), /<h1>Uno<\/h1>/);
         t.regex(getBody(), /<h1>Two<\/h1>/);
         t.regex(getBody(), /<h1>Tres<\/h1>/);
@@ -154,7 +162,9 @@ for (const impl of ['jekyll', 'eleventy']) {
 
     test.serial(`[${impl}]: Renders a simple editor link`, async t => {
         await initialSub(t.context[impl], 'title', { title: 'Bookshop' }, 'title-wrapper');
-        await t.context[impl].update({ title: 'Live Love Laugh' }, {});
+
+        const data = wrapDataFor(impl, { title: 'Live Love Laugh' });
+        await t.context[impl].update(data, { editorLinks: true });
         const pagedot = impl === `jekyll` ? `page.` : ``;
         t.is(getBody(), [
             `<!--bookshop-live name(title) params(title: ${pagedot}title)-->`,
@@ -165,7 +175,9 @@ for (const impl of ['jekyll', 'eleventy']) {
 
     test.serial(`[${impl}]: Parent editor links overrule child editor links`, async t => {
         await initialSub(t.context[impl], 'super-title', { data: { one: "One", two: "Two", three: "Three" } });
-        await t.context[impl].update({ data: { one: "One", two: "Two", three: "Three" } }, {})
+
+        const data = wrapDataFor(impl, { data: { one: "One", two: "Two", three: "Three" } });
+        await t.context[impl].update(data, { editorLinks: true })
         t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#data">One<\/h1>/);
         t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#data">Two<\/h1>/);
         t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#data">Three<\/h1>/);
@@ -173,7 +185,9 @@ for (const impl of ['jekyll', 'eleventy']) {
 
     test.serial(`[${impl}]: Renders nested editor links`, async t => {
         await initialSub(t.context[impl], 'title-loop', { titles: ['Bookshop', 'Jekyll', 'Eleventy'] }, 'titles-wrapper');
-        await t.context[impl].update({ titles: ['Bookshop', 'Jekyll', 'Eleventy'] }, {})
+
+        const data = wrapDataFor(impl, { titles: ['Bookshop', 'Jekyll', 'Eleventy'] });
+        await t.context[impl].update(data, { editorLinks: true })
         t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#titles">/);
         t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.0">Bookshop<\/h1>/);
         t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.1">Jekyll<\/h1>/);
@@ -182,7 +196,10 @@ for (const impl of ['jekyll', 'eleventy']) {
 
     test.serial(`[${impl}]: Cleans up paths for editor links when going out of scope`, async t => {
         await initialSub(t.context[impl], 'title-loop', { titles: ['Bookshop', 'Jekyll', 'Eleventy'] }, 'titles-wrapper-erroneous-component');
-        await t.context[impl].update({ titles: ['Bookshop', 'Jekyll', 'Eleventy'] }, {})
+
+        const data = wrapDataFor(impl, { titles: ['Bookshop', 'Jekyll', 'Eleventy'] });
+        await t.context[impl].update(data, { editorLinks: true })
+        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.0">Bookshop<\/h1>/);
         t.notRegex(getBody(), /<null data-cms-editor-link/);
     });
 
@@ -191,7 +208,8 @@ for (const impl of ['jekyll', 'eleventy']) {
 
         // Trigger an initial render, since the engine render above won't contain editor links
         // (and thus everything gets refreshed)
-        await t.context[impl].update({ data: { one: "One", two: "Two", three: "Three" } }, {})
+        let data = wrapDataFor(impl, { data: { one: "One", two: "Two", three: "Three" } });
+        await t.context[impl].update(data, { editorLinks: true })
 
         let trigger = false;
         // Add event listener to h1 not rendered from a subcomponent 'Two'
@@ -199,7 +217,9 @@ for (const impl of ['jekyll', 'eleventy']) {
 
         // Re-render with new data that should only affect the subcomponents, 
         // not the super-title component itself.
-        await t.context[impl].update({ data: { one: "Uno", two: "Two", three: "Tres" } }, {})
+        data = wrapDataFor(impl, { data: { one: "Uno", two: "Two", three: "Tres" } });
+        await t.context[impl].update(data, { editorLinks: true })
+        t.regex(getBody(), /Uno/);
 
         // Check that the page was only partially rendered
         // By clicking the h1 that should have been
