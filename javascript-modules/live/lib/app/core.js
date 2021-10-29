@@ -152,7 +152,6 @@ const evaluateTemplate = async (liveInstance, documentNode, templateBlockHandler
  */
 export const renderComponentUpdates = async (liveInstance, documentNode) => {
     const vDom = document.implementation.createHTMLDocument();
-
     const updates = [];     // Rendered elements and their DOM locations
 
     const templateBlockHandler = async ({ startNode, endNode, name, scope, bindings, pathStack }) => {
@@ -178,6 +177,7 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
  */
 export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScope, preComment, postComment) => {
     const vDom = documentNode.ownerDocument;
+    const components = [];     // Rendered components and their path stack
 
     // documentNode won't contain the bookshopLive comments that triggered its render,
     // which have the context we need for giving it editor links. So we sneak them in
@@ -186,7 +186,13 @@ export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScop
     // v v v This is here for the tests, see jsdom #3269: https://github.com/jsdom/jsdom/issues/3269
     vDom.body.appendChild(documentNode);
 
-    const templateBlockHandler = async ({ startNode, endNode, params, pathStack }) => {
+    const templateBlockHandler = async (component) => {
+        components.push(component);
+    }
+
+    await evaluateTemplate(liveInstance, documentNode, templateBlockHandler);
+
+    for (let { startNode, endNode, params, pathStack } of components) {
         // pathsInScope are from an earlier render pass, so will contain any paths
         // at a higher level than the documentNode we're working on. Without this,
         // if documentNode is a subcomponent we wouldn't be able to know
@@ -212,8 +218,6 @@ export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScop
             }
         }
     }
-
-    await evaluateTemplate(liveInstance, documentNode, templateBlockHandler);
 
     preComment.remove();
     postComment.remove();

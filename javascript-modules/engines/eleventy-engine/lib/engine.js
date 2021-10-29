@@ -118,7 +118,7 @@ export class Engine {
             if (index && typeof result === 'object' && !Array.isArray(result)) {
                 result = Object.entries(result);
             }
-            return index ? result[index] : result;
+            return index ? result?.[index] : result;
         } catch (e) {
             console.error(`Error evaluating ${str}`, e);
             return '';
