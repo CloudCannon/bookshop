@@ -25,6 +25,7 @@ const jekyllFiles = {
     [jekyllComponent('title-wrapper')]: "{% bookshop {{include.component}} title=page.title %}",
     [jekyllComponent('titles-wrapper')]: "{% bookshop {{include.component}} titles=page.titles %}",
     [jekyllComponent('titles-wrapper-erroneous-component')]: "{% bookshop {{include.component}} titles=page.titles %}{% bookshop null null=t %}",
+    [jekyllComponent('dynamic-loop')]: "{% for props in include.t %}{% bookshop {{props._bookshop_name}} bind=props %}{% endfor %}",
 }
 
 const eleventyComponent = (k) => `components/${k}/${k}.eleventy.liquid`;
@@ -39,6 +40,7 @@ const eleventyFiles = {
     [eleventyComponent('title-wrapper')]: "{% bookshop '{{component}}' title: title %}",
     [eleventyComponent('titles-wrapper')]: "{% bookshop '{{component}}' titles: titles %}",
     [eleventyComponent('titles-wrapper-erroneous-component')]: "{% bookshop '{{component}}' titles: titles %}{% bookshop 'null' null: t %}",
+    [eleventyComponent('dynamic-loop')]: "{% for props in t %}{% bookshop {{props._bookshop_name}} bind: props %}{% endfor %}",
 }
 
 const wrapDataFor = (impl, data) => {
@@ -134,6 +136,62 @@ for (const impl of ['jekyll', 'eleventy']) {
         await t.context[impl].update({ min: 4, max: 5 }, { editorLinks: false });
         t.regex(getBody(), /<h1>4<\/h1>.*<h1>5<\/h1>/);
         t.notRegex(getBody(), /<h1>0<\/h1>/);
+    });
+
+    test.serial(`[${impl}]: Re-renders dynamic loop`, async t => {
+        await initial(t.context[impl], 'dynamic-loop', {
+            t: [
+                {
+                    _bookshop_name: 'title',
+                    title: 'Outer Hello World'
+                },
+                {
+                    _bookshop_name: 'dynamic-loop',
+                    t: [
+                        {
+                            _bookshop_name: 'title',
+                            title: 'First Inner Hello World'
+                        },
+                        {
+                            _bookshop_name: 'title',
+                            title: 'Second Inner Hello World'
+                        }
+                    ]
+                }
+            ]
+        });
+        t.regex(getBody(), /<h1>Outer Hello World<\/h1>/);
+        t.regex(getBody(), /<h1>First Inner Hello World<\/h1>/);
+        t.regex(getBody(), /<h1>Second Inner Hello World<\/h1>/);
+
+        await t.context[impl].update({
+            t: [
+                {
+                    _bookshop_name: 'title',
+                    title: 'Outer Hello World'
+                },
+                {
+                    _bookshop_name: 'dynamic-loop',
+                    t: [
+                        {
+                            _bookshop_name: 'title',
+                            title: 'First Changed Inner Hello World'
+                        },
+                        {
+                            _bookshop_name: 'title',
+                            title: 'Second Inner Hello World'
+                        },
+                        {
+                            _bookshop_name: 'title',
+                            title: 'Third Inner Hello World'
+                        }
+                    ]
+                }
+            ]
+        })
+        t.regex(getBody(), /<h1>First Changed Inner Hello World<\/h1>/);
+        t.notRegex(getBody(), /<h1>First Inner Hello World<\/h1>/);
+        t.regex(getBody(), /<h1>Third Inner Hello World<\/h1>/);
     });
 
     test.serial(`[${impl}]: Re-renders depth first`, async t => {

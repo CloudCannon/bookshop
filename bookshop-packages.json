@@ -1,5 +1,5 @@
 {
-  "version": "2.0.9",
+  "version": "2.0.10",
   "rubygems": {
     "generator-plugins/jekyll/cloudcannon-jekyll-bookshop": {
       "vendor_from_npm": [
@@ -21,6 +21,7 @@
     "javascript-modules/generator-plugins/eleventy/cloudcannon-eleventy-bookshop": {},
     "javascript-modules/generator-plugins/eleventy/eleventy-bookshop": {},
     "javascript-modules/helpers": {},
+    "javascript-modules/init": {},
     "javascript-modules/live": {},
     "javascript-modules/styles": {},
     "javascript-modules/toml-narrator": {}

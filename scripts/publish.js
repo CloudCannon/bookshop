@@ -165,7 +165,7 @@ const steps = {
         }
     },
     changelog: async () => {
-        console.log(execSync(`yarn run changelog`).toString());
+        console.log(execSync(`npx conventional-changelog -i CHANGELOG.md -s --pkg javascript-modules/browser/package.json -p angular`).toString());
     },
     updateGit: async (version) => {
         console.log(`* * Updating git`);

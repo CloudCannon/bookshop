@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/browser",
   "packageManager": "yarn@3.0.0",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "Component browser for bookshop components",
   "type": "module",
   "main": "main.js",
@@ -24,8 +24,8 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/builder": "2.0.9",
-    "@bookshop/helpers": "2.0.9",
+    "@bookshop/builder": "2.0.10",
+    "@bookshop/helpers": "2.0.10",
     "@codemirror/basic-setup": "^0.18.2",
     "@codemirror/commands": "^0.18.3",
     "@codemirror/legacy-modes": "^0.18.1",
@@ -35,6 +35,7 @@
     "@ltd/j-toml": "^1.17.0",
     "@material-design-icons/svg": "^0.2.7",
     "commander": "^8.1.0",
+    "esbuild": "^0.12.17",
     "esbuild-svelte": "^0.5.3",
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
