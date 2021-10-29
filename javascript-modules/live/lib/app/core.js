@@ -7,7 +7,6 @@ const contextMatchRegex = /bookshop-live.*context\((?<context>.+)\)\s*$/;
 
 // TODO: Use the @bookshop/helpers package for name normalization
 const normalizeName = name => name.replace(/\/[\w-]+\..+$/, '').replace(/\..+$/, '');
-// TODO: The `page.` replacement feels too SSG coupled            v v v v v v v v v v v v
 const parseParams = params => params ? params.replace(/: /g, '=').split(' ').map(p => p.split('=')) : [];
 const getTemplateCommentIterator = node => {
     const documentNode = node.ownerDocument ?? document;
