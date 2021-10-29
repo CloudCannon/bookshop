@@ -215,10 +215,11 @@ const testGems = async (pkgs) => {
  * Publishing functions
  */
 const publishNPM = async (pkgs, version, otp) => {
+    const npmTag = getPrereleaseTag(version) ? ` --tag ${getPrereleaseTag(version)}` : ``;
     const releases = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
             try {
-                const cmd = `yarn --cwd ${pkg} publish --non-interactive --access public --otp ${otp}`;
+                const cmd = `yarn --cwd ${pkg} publish${npmTag} --non-interactive --access public --otp ${otp}`;
                 console.log(`\n$: ${cmd}`);
                 execSync(cmd, { stdio: "inherit" });
                 resolve({ pkg, version, err: null });
@@ -261,8 +262,7 @@ const getPrereleaseTag = ver => ver.match(/^\d+\.\d+\.\d+(?:-([a-z]+)\.\d+)$/)?.
 
 const versionNpm = (pkgs, version) => {
     pkgs.forEach(pkg => {
-        const npmTag = getPrereleaseTag(version) ? ` --tag ${getPrereleaseTag(version)}` : ``;
-        const npmBump = execSync(`npm --prefix ${pkg} version ${version}${npmTag} --allow-same-version --no-git-tag-version --no-commit-hooks`);
+        const npmBump = execSync(`npm --prefix ${pkg} version ${version} --allow-same-version --no-git-tag-version --no-commit-hooks`);
         if (npmBump.stderr) {
             console.error(box(`yarn version bump failed:
                                ${npmBump.stderr}`));
