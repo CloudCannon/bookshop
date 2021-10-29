@@ -21,7 +21,7 @@
   "dependencies": {
     "@bookshop/helpers": "2.0.10",
     "@bookshop/styles": "2.0.10",
-    "esbuild": "^0.12.17",
+    "esbuild": "^0.13.10",
     "normalize-path": "^3.0.0"
   },
   "engines": {
