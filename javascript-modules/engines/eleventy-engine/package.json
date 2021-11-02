@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@bookshop/helpers": "2.0.10",
-    "esbuild": "^0.11.23",
+    "esbuild": "^0.13.10",
     "liquidjs": "9.28.0",
     "slugify": "^1.5.3"
   },
