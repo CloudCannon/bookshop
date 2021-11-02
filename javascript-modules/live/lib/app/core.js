@@ -81,8 +81,9 @@ export const replaceHTMLRegion = (startNode, endNode, outputElement) => {
         node.remove();
         node = next;
     }
-    outputElement = endNode.parentNode.insertBefore(outputElement, endNode);
-    outputElement.outerHTML = outputElement.innerHTML;
+    while (outputElement.children.length) {
+        endNode.parentNode.insertBefore(outputElement.children[0], endNode);
+    }
 }
 
 /**
