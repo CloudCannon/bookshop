@@ -9,3 +9,7 @@ target = "layouts/partials/_bookshop"
 [[module.mounts]]
 source = "core/bookshop.html"
 target = "layouts/partials/bookshop.html"
+
+[[module.mounts]]
+source = "core/bookshop_scss.html"
+target = "layouts/partials/bookshop_scss.html"

@@ -1,0 +1,31 @@
+{{/*
+    Renders a single Bookshop partial,
+
+    Expects a dict:
+    { 
+        partial:            [Bookshop Object], 
+        input: String,      # See core/helpers/live_key.html
+        index: int,         # See core/helpers/live_key.html
+        root_type: String   # See core/helpers/live_key.html
+    }
+*/}}
+
+{{ $key := partial "_bookshop/helpers/live_key" . }}
+
+{{ if .partial._bookshop_name }}
+    {{ $partial_path := partial "_bookshop/helpers/partial_key" .partial._bookshop_name }}
+
+    {{ if templates.Exists ( printf "partials/%s" $partial_path ) }}
+        {{ (printf "<!--bookshop-live name(%s) params(bind: %s) context() -->" .partial._bookshop_name $key) | safeHTML }}
+        {{ partial $partial_path .partial }}
+        {{ "<!--bookshop-live end-->" | safeHTML }}
+    {{ else }}
+        {{ if $key }}
+            {{ partial "_bookshop/errors/err" (printf "partial \"%s\" does not exist — referenced from \"%s\"" .partial._bookshop_name $key)}}
+        {{ else }}
+            {{ partial "_bookshop/errors/err" (printf "partial \"%s\" does not exist" .partial._bookshop_name)}}
+        {{ end }}
+    {{ end }}
+{{ else }}
+    {{ partial "_bookshop/errors/err" (printf "\"%s\" does not contain a _bookshop_name field, so no partial can be rendered." $key)}}
+{{ end }}

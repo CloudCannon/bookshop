@@ -9,12 +9,13 @@
 */}}
 
 {{ $obj := .obj }}
+{{ $input_str := .render }}
 {{ range (split .render ".") }}
     {{ if $obj }}
         {{ if (ne . "")}}
             {{ $obj = (index $obj .) }}
             {{ if not $obj }}
-                {{ partial "_bookshop/errors/err" (printf "\"%s\" not found while evaluating \"%s\"" . .input)}}
+                {{ partial "_bookshop/errors/err" (printf "\"%s\" not found while evaluating \"%s\"" . $input_str)}}
             {{ end }}
         {{ end }}
     {{ end}}

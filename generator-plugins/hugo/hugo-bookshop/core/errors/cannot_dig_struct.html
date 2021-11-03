@@ -23,6 +23,6 @@
     {{ end }}
 {{ end }}
 
-{{ $bad := printf "-  {{ partial \"bookshop\" (dict \"from\" . \"render\" \"%s.%s\") }}" $base_key (delimit $subsequent_keys ".") }}
-{{ $good := printf "+  {{ partial \"bookshop\" (dict \"from\" .%s \"render\" \"%s\") }}" $base_key (delimit $subsequent_keys ".") }}
+{{ $bad := printf "-  {{ partial \"bookshop\" (dict \"structures\" \"%s.%s\" \"source\" .) }}" $base_key (delimit $subsequent_keys ".") }}
+{{ $good := printf "+  {{ partial \"bookshop\" (dict \"structures\" \"%s\" \"source\" .%s) }}" (delimit $subsequent_keys ".") $base_key }}
 {{ partial "_bookshop/errors/err" (printf "\"%s\" could not be indexed from \"%s\"\nSuggested change:\n%s\n%s" .render .root_type $bad $good)}}

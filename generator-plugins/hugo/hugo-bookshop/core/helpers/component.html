@@ -21,7 +21,11 @@
         {{ partial $component_path .component }}
         {{ "<!--bookshop-live end-->" | safeHTML }}
     {{ else }}
-        {{ partial "_bookshop/errors/err" (printf "component \"%s\" does not exist — referenced from \"%s\"" .component._bookshop_name $key)}}
+        {{ if $key }}
+            {{ partial "_bookshop/errors/err" (printf "component \"%s\" does not exist — referenced from \"%s\"" .component._bookshop_name $key)}}
+        {{ else }}
+            {{ partial "_bookshop/errors/err" (printf "component \"%s\" does not exist" .component._bookshop_name)}}
+        {{ end }}
     {{ end }}
 {{ else }}
     {{ partial "_bookshop/errors/err" (printf "\"%s\" does not contain a _bookshop_name field, so no component can be rendered." $key)}}

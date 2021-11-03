@@ -1,0 +1,41 @@
+{{/*
+    Renders a Bookshop component, or an array of Bookshop components.
+    Has an unusual input format so live editing can be auto-configured.
+
+    Expects a dict:
+    { 
+        from: map,      # The base object to look in
+        render: String, # A "dot.notation" key to render within the `from` object
+    }
+*/}}
+
+{{ $obj := .source }}
+{{ $root_type := printf "%T" $obj }}
+
+{{ if not (hasPrefix $root_type "*") }}
+    {{ $input := .structures }}
+
+    {{/* 💭 Dig through the map provided in `.source`
+        💭 to reach the value specified via dot notation in `.render` */}}
+    {{ $obj = partial "_bookshop/helpers/dig" (dict "obj" $obj "render" $input) }}
+
+    {{ if $obj }}
+        {{ if reflect.IsSlice $obj }}
+
+            {{/* 💭 Render an array of bookshop components from a slice */}}
+            {{range $index, $component := $obj }}
+                {{ partial "_bookshop/helpers/component" (dict "component" $component "input" $input "index" $index "root_type" $root_type) }}
+            {{ end }}
+
+        {{ else if reflect.IsMap $obj }}
+
+            {{/* 💭 Render a single bookshop component from a map */}}
+            {{ partial "_bookshop/helpers/component" (dict "component" $obj "input" $input "root_type" $root_type) }}
+
+        {{ else }}
+            {{ partial "_bookshop/errors/err" (printf "\"%s\" did not evaluate to a map or a slice, so it can't be rendered as a component." $input)}}
+        {{ end }}
+    {{ end }}
+{{ else }}
+    {{ $obj = partial "_bookshop/errors/cannot_dig_struct" (dict "render" $input "root_type" $root_type) }}
+{{ end }}
