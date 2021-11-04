@@ -21,24 +21,24 @@
     }
 */}}
 
-{{ $is_structures := (and (isset . "source") (or (isset . "structures") (isset . "structure")) ) }}
-{{ $is_component := isset . "component" }}
-{{ $is_partial := isset . "partial" }}
+{{- $is_structures := (and (isset . "source") (or (isset . "structures") (isset . "structure")) ) -}}
+{{- $is_component := isset . "component" -}}
+{{- $is_partial := isset . "partial" -}}
 
-{{ if $is_structures }}
-    {{ $input := .structures }}
-    {{ if not $input }}
-        {{ $input = .structure }}
-    {{ end }}
-    {{ partial "_bookshop/helpers/render_structures" (dict "structures" $input "source" .source) }}
-{{ else if $is_component }}
-    {{ $component_params := dict "_bookshop_name" .component }}
-    {{ $component := merge . $component_params }}
-    {{ partial "_bookshop/helpers/component" (dict "component" $component) }}
-{{ else if $is_partial }}
-    {{ $partial_params := dict "_bookshop_name" .partial }}
-    {{ $partial := merge . $partial_params }}
-    {{ partial "_bookshop/helpers/partial" (dict "partial" $partial) }}
-{{ else }}
-    {{ partial "_bookshop/errors/bad_bookshop_tag" }}
-{{ end }}
+{{- if $is_structures -}}
+    {{- $input := .structures -}}
+    {{- if not $input -}}
+        {{- $input = .structure -}}
+    {{- end -}}
+    {{- partial "_bookshop/helpers/render_structures" (dict "structures" $input "source" .source) -}}
+{{- else if $is_component -}}
+    {{- $component_params := dict "_bookshop_name" .component -}}
+    {{- $component := merge . $component_params -}}
+    {{- partial "_bookshop/helpers/component" (dict "component" $component) -}}
+{{- else if $is_partial -}}
+    {{- $partial_params := dict "_bookshop_name" .partial -}}
+    {{- $partial := merge . $partial_params -}}
+    {{- partial "_bookshop/helpers/partial" (dict "partial" $partial) -}}
+{{- else -}}
+    {{- partial "_bookshop/errors/bad_bookshop_tag" -}}
+{{- end -}}

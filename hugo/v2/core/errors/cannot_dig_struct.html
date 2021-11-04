@@ -10,19 +10,19 @@
         root_type: String   # The type of the object we were asked to dig into
     }
 */}}
-{{ $base_key := false }}
-{{ $subsequent_keys := slice }}
+{{- $base_key := false -}}
+{{- $subsequent_keys := slice -}}
 
-{{ range (split .render ".") }}
-    {{ if (ne . "")}}
-        {{ if not $base_key }}
-            {{ $base_key = . }}
-        {{ else }}
-            {{ $subsequent_keys = append (slice .) $subsequent_keys }}
-        {{ end }}
-    {{ end }}
-{{ end }}
+{{- range (split .render ".") -}}
+    {{- if (ne . "") -}}
+        {{- if not $base_key -}}
+            {{- $base_key = . -}}
+        {{- else -}}
+            {{- $subsequent_keys = append (slice .) $subsequent_keys -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
 
-{{ $bad := printf "-  {{ partial \"bookshop\" (dict \"structures\" \"%s.%s\" \"source\" .) }}" $base_key (delimit $subsequent_keys ".") }}
-{{ $good := printf "+  {{ partial \"bookshop\" (dict \"structures\" \"%s\" \"source\" .%s) }}" (delimit $subsequent_keys ".") $base_key }}
-{{ partial "_bookshop/errors/err" (printf "\"%s\" could not be indexed from \"%s\"\nSuggested change:\n%s\n%s" .render .root_type $bad $good)}}
+{{- $bad := printf "-  {{ partial \"bookshop\" (dict \"structures\" \"%s.%s\" \"source\" .) }}" $base_key (delimit $subsequent_keys ".") -}}
+{{- $good := printf "+  {{ partial \"bookshop\" (dict \"structures\" \"%s\" \"source\" .%s) }}" (delimit $subsequent_keys ".") $base_key -}}
+{{- partial "_bookshop/errors/err" (printf "\"%s\" could not be indexed from \"%s\"\nSuggested change:\n%s\n%s" .render .root_type $bad $good) -}}

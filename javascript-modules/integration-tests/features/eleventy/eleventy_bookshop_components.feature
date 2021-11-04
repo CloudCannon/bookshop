@@ -146,6 +146,8 @@ Feature: Basic Eleventy Bookshop
           column_contents:
             - _bookshop_name: tag
               tag: "contents"
+            - _bookshop_name: tag
+              tag: "another"
       ---
       {% for component in components %}
       {% bookshop {{component._bookshop_name}} bind: component %}
@@ -155,4 +157,5 @@ Feature: Basic Eleventy Bookshop
     Then stderr should be empty
     And stdout should contain "v0.12.1"
     And site/_site/index.html should contain the text "tag-contents-tag"
+    And site/_site/index.html should contain the text "tag-another-tag"
 

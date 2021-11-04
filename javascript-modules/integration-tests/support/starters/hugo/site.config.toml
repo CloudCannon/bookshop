@@ -3,7 +3,7 @@ languageCode = "en-us"
 title = "Hugo Bookshop Starter"
 
 [module]
-replacements = "bookshop.test/components -> ../../component-lib,github.com/cloudcannon/hugo-bookshop -> ../../../../../../generator-plugins/hugo/hugo-bookshop/"
+replacements = "bookshop.test/components -> ../../component-lib,github.com/cloudcannon/bookshop/hugo/v2 -> ../../../../../../hugo/v2/"
 
 [[module.imports]]
 path = 'bookshop.test/components'

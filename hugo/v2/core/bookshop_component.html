@@ -1,7 +1,0 @@
-{{/*
-    Renders a single bookshop component with some data
-*/}}
-
-{{ $component_params := dict "_bookshop_name" .component }}
-{{ $component := merge . $component_params }}
-{{ partial "_bookshop/helpers/component" (dict "component" $component) }}
