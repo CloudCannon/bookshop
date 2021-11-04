@@ -1,7 +1,7 @@
-Feature: Basic Hugo Bookshop
+Feature: Hugo Bookshop Includes
   As a user of Hugo with Bookshop
-  I want to be able to use components
-  So that I can build my site
+  I want includes scoped to the bookshop
+  So that I can use them on the site or in components
 
   Background:
     Given the file tree:

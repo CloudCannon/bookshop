@@ -1,7 +1,7 @@
-Feature: Basic Hugo Bookshop
+Feature: Hugo Bookshop CloudCannon Integration
   As a user of Hugo with Bookshop
-  I want to be able to use components
-  So that I can build my site
+  I want my CMS interfaces to be preconfigured
+  So that I can build pages out of my components
 
   Background:
     Given the file tree:
