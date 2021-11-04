@@ -27,6 +27,11 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
+      - name: Use Hugo 0.89
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.89.0'
+          extended: true
       - run: yarn install --immutable
         working-directory: ${{ env.cwd }}
       - name: Vendor node modules into ruby packages
