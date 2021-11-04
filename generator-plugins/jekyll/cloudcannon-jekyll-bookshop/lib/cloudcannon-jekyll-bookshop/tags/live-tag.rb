@@ -25,7 +25,8 @@ module CloudCannonJekyllBookshop
       const updateBookshopLive = async () => {
         const frontMatter = await CloudCannon.value();
         const options = window.bookshopLiveOptions || {};
-        window.bookshopLive.update({page: frontMatter}, options);
+        await window.bookshopLive.update({page: frontMatter}, options);
+        CloudCannon?.refreshInterface();
       }
       document.addEventListener('cloudcannon:update', updateBookshopLive);
       updateBookshopLive();
