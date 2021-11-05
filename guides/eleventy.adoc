@@ -167,7 +167,7 @@ Reference `npx @bookshop/sass --help` to see the available options.
 
 == Component Library
 
-Setting up the component library is fairly framework agnostic, so following the steps in the link:guides/browser.adoc[Component Browser Guide] should see you on your way.
+Setting up the component library is fairly framework agnostic, so following the steps in the link:browser.adoc[Component Browser Guide] should see you on your way.
 
 == Live Editing
 
@@ -197,4 +197,4 @@ module.exports = function (eleventyConfig) {
 };
 ```
 
-With that dependency installed, follow the instructions in the link:guides/live-editing.adoc[Live Editing Guide]
+With that dependency installed, follow the instructions in the link:live-editing.adoc[Live Editing Guide]
