@@ -63,8 +63,8 @@ TIP: You can supply the `-b` flag multiple times if you want to merge Bookshops.
 The Bookshop generator frameworks provide helpers for integrating live editing with your website.
 
 Within Jekyll, the *cloudcannon-jekyll-bookshop* plugin provides a `bookshop_live` tag to embed the browser on a given page. Within Eleventy, this tag is supplied by the *@bookshop/cloudcannon-eleventy-bookshop* plugin. +
-See the link:guides/jekyll.adoc[Jekyll] 
-or link:guides/eleventy.adoc[Eleventy] 
+See the link:jekyll.adoc[Jekyll] 
+or link:eleventy.adoc[Eleventy] 
 guides for instructions on installing these plugins.
 
 The syntax is the same across both generators:
