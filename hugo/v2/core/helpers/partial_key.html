@@ -1,9 +1,9 @@
 {{/*
     Converts a bare Bookshop partial key to a Bookshop path
-    i.e. "a" --> "bookshop-partials/a.hugo.html"
+    i.e. "a" --> "bookshop/shared/hugo/a.hugo.html"
 
     Expects a String.
 */}}
 
-{{ $component_path := (printf "bookshop-partials/%s.hugo.html" .) }}
+{{ $component_path := (printf "bookshop/shared/hugo/%s.hugo.html" .) }}
 {{ return $component_path }}

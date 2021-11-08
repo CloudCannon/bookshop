@@ -6,9 +6,9 @@ hugoVersion.min = "0.86.1"
 path = 'github.com/cloudcannon/bookshop/hugo/v2'
 
 [[module.mounts]]
-source = "components"
+source = "."
 target = "layouts/partials/bookshop"
 
 [[module.mounts]]
-source = "shared/hugo"
-target = "layouts/partials/bookshop-partials"
+source = "."
+target = "assets/bookshop"

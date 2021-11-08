@@ -18,7 +18,7 @@ To jump right into using Bookshop on a Hugo site, check out the link:https://git
 
 == Hugo Configuration
 
-To use Bookshop with Hugo, the primary dependency is the `bookshop/hugo`` module. This provides the bookshop partials needed to render components on your website. This import should be placed in your **site** config.toml.
+To use Bookshop with Hugo, the primary dependency is the `bookshop/hugo` module. This provides the bookshop partials needed to render components on your website. This import should be placed in your **site** config.toml.
 
 .*site/config.toml*
 ```toml
@@ -40,16 +40,12 @@ The last piece of config is adding the following mounts to the `config.toml` in 
 .*components/config.toml*
 ```toml
 [[module.mounts]]
-source = "components"
+source = "."
 target = "layouts/partials/bookshop"
 
 [[module.mounts]]
 source = "."
 target = "assets/bookshop"
-
-[[module.mounts]]
-source = "shared/hugo"
-target = "layouts/partials/bookshop-partials"
 ```
 
 These mounts allow the `bookshop/hugo` module to locate your components.
