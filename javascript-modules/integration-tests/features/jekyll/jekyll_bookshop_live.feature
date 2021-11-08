@@ -22,7 +22,7 @@ Feature: Jekyll Bookshop CloudCannon Integration
       ---
       {% bookshop_live _cloudcannon/bookshop-live.js %}
       """
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/components.html should contain each row: 
@@ -32,7 +32,7 @@ Feature: Jekyll Bookshop CloudCannon Integration
 
   Scenario: Site data extracted for live editing
     Given a site/_data/test.yml file containing "title: Zuchinni"
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/_cloudcannon/bookshop-site-data.json should contain the text "Zuchinni"
@@ -60,7 +60,7 @@ Feature: Jekyll Bookshop CloudCannon Integration
         {% bookshop single bind=block %}
       {% endfor %}
       """
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain each row: 
