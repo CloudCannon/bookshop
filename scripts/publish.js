@@ -22,7 +22,7 @@ const run = async () => {
                          \`./scripts/publish.js git\` updates git tags`));
         process.exit(0);
     }
-    
+
     let version = ver;
     switch (ver) {
         case 'next':
@@ -43,7 +43,7 @@ const run = async () => {
             console.log(`* Vendoring`);
             vendorGems(packages.rubygems, version);
             console.log(`* * Vendoring done`);
-        
+
             console.log(`* Running tests`);
             await steps.test(packages);
             console.log(`* * Tests passed`);
@@ -116,7 +116,7 @@ const run = async () => {
 
 const steps = {
     ensureReady: async () => {
-        const gitStatus = execSync('git status --porcelain', {stdio: "pipe"});
+        const gitStatus = execSync('git status --porcelain', { stdio: "pipe" });
         if (gitStatus.toString().length) {
             console.error(box(`Git is dirty. Please commit or stash your changes first.`));
             process.exit(1);
@@ -143,11 +143,11 @@ const steps = {
         process.stdout.write(`* * `);
         const testResult = await new Promise((resolve, reject) => {
             try {
-                execSync(`cd javascript-modules/integration-tests && yarn run itest`, {stdio: "ignore"});
-                resolve({err: null});
+                execSync(`cd javascript-modules/integration-tests && yarn run itest`, { stdio: "ignore" });
+                resolve({ err: null });
                 console.log(' 🎉');
             } catch (err) {
-                resolve({err});
+                resolve({ err });
                 console.log(' 😦');
             }
         });
@@ -163,7 +163,7 @@ const steps = {
         }
     },
     changelog: async () => {
-        console.log(execSync(`yarn run changelog`).toString());
+        console.log(execSync(`npx conventional-changelog -i CHANGELOG.md -s --pkg javascript-modules/browser/package.json -p angular`).toString());
     },
     updateGit: async (version) => {
         console.log(`* * Updating git`);
@@ -181,11 +181,11 @@ const testNPM = async (pkgs) => {
     const tests = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
             try {
-                execSync(`cd ${pkg} && yarn test`, {stdio: "ignore"});
-                resolve({pkg, err: null});
+                execSync(`cd ${pkg} && yarn test`, { stdio: "ignore" });
+                resolve({ pkg, err: null });
                 process.stdout.write('👏 ');
             } catch (err) {
-                resolve({pkg, err});
+                resolve({ pkg, err });
                 process.stdout.write('❌ ');
             }
         });
@@ -197,11 +197,11 @@ const testGems = async (pkgs) => {
     const tests = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
             try {
-                execSync(`cd ${pkg} && bundle exec rake test`, {stdio: "ignore"});
-                resolve({pkg, err: null});
+                execSync(`cd ${pkg} && bundle exec rake test`, { stdio: "ignore" });
+                resolve({ pkg, err: null });
                 process.stdout.write('👏 ');
             } catch (err) {
-                resolve({pkg, err});
+                resolve({ pkg, err });
                 process.stdout.write('❌ ');
             }
         });
@@ -218,10 +218,10 @@ const publishNPM = async (pkgs, version, otp) => {
             try {
                 const cmd = `yarn --cwd ${pkg} publish --non-interactive --access public --otp ${otp}`;
                 console.log(`\n$: ${cmd}`);
-                execSync(cmd, {stdio: "inherit"});
-                resolve({pkg, version, err: null});
+                execSync(cmd, { stdio: "inherit" });
+                resolve({ pkg, version, err: null });
             } catch (err) {
-                resolve({pkg, err});
+                resolve({ pkg, err });
             }
         });
     });
@@ -236,14 +236,14 @@ const publishGems = async (pkgs, version) => {
                 const packageName = path.basename(pkg);
                 let cmd = `gem build ${pkg}/${packageName}.gemspec`;
                 console.log(`\n$: ${cmd}`);
-                execSync(cmd, {stdio: "inherit"})
+                execSync(cmd, { stdio: "inherit" })
                 cmd = `gem push ${pkg}/${packageName}-${gemVersion}.gem`;
                 console.log(`\n$: ${cmd}`);
-                execSync(cmd, {stdio: "inherit"})
+                execSync(cmd, { stdio: "inherit" })
                 execSync(`rm ${pkg}/*.gem`);
-                resolve({pkg, version: gemVersion, err: null});
+                resolve({ pkg, version: gemVersion, err: null });
             } catch (err) {
-                resolve({pkg, err});
+                resolve({ pkg, err });
             }
         });
     });
@@ -280,7 +280,7 @@ const versionGems = (gems, version) => {
         }
 
         versionFileContents = versionFileContents
-            .replace(/VERSION =.*$/gm, `VERSION = "${formatGemVersion(version)}"`); 
+            .replace(/VERSION =.*$/gm, `VERSION = "${formatGemVersion(version)}"`);
         fs.writeFileSync(packageVersionFile, versionFileContents);
     });
 };
@@ -297,14 +297,14 @@ const vendorGems = async (gems, version) => {
     Object.entries(gems).forEach(([gem, opts]) => {
         const target = path.join(__dirname, '../', gem);
         if (opts.vendor_from_npm && opts.vendor_from_npm.length) {
-            fs.rmSync(`${target}/node_modules`, {recursive: true, force: true});
+            fs.rmSync(`${target}/node_modules`, { recursive: true, force: true });
             opts.vendor_from_npm.forEach(packageName => {
                 const pkg = path.join(process.cwd(), packageName);
-                fs.mkdirSync(`${target}/node_modules/@bookshop/${path.basename(pkg)}`, {recursive: true});
+                fs.mkdirSync(`${target}/node_modules/@bookshop/${path.basename(pkg)}`, { recursive: true });
                 execSync(`cd ${pkg} && yarn pack`);
                 execSync(`cd ${pkg} && tar -Pxzf package.tgz`);
                 recursiveCopy(`${pkg}/package/`, `${target}/node_modules/@bookshop/${path.basename(pkg)}/`);
-                fs.rmSync(`${pkg}/package`, {recursive: true});
+                fs.rmSync(`${pkg}/package`, { recursive: true });
                 fs.rmSync(`${pkg}/package.tgz`);
             });
         }
@@ -328,7 +328,7 @@ const trim = (str) => str.replace(/^\s+|\s+$/gm, '').replace(/^#$/gm, '');
 const pad = (str, len) => str + Array(len - str.length + 1).join(' ');
 const box = (str) => {
     let lines = trim(str).split('\n');
-    const max = lines.reduce((a,b) => a.length > b.length ? a : b);
+    const max = lines.reduce((a, b) => a.length > b.length ? a : b);
     lines = lines.map((l) => {
         return `║ ${l + Array(max.length - l.length + 1).join(' ')} ║`;
     });

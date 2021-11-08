@@ -30,7 +30,7 @@ Feature: Jekyll Bookshop CloudCannon Integration
       color.select = ["Red", "Blue"]
       color.default = "Blue" #: Comment
       """
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And site/_site/_cloudcannon/info.json should leniently contain each row: 
       | text |
