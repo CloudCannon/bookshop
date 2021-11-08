@@ -31,7 +31,7 @@ Feature: Jekyll Bookshop Includes
       {% bookshop block title="Component" %}
       <span>{% bookshop_include basic label="Site" %}-Inline</span>
       """
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should leniently contain each row:

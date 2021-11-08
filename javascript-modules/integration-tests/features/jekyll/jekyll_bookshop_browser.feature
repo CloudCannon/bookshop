@@ -28,7 +28,7 @@ Feature: Jekyll Bookshop Component Browser
       {% bookshop_browser https://example.com/bookshop.js %}
       {% bookshop_browser /_folder/bookshop-browser.js %}
       """
-    When I run "bundle exec jekyll build --unpublished" in the site directory
+    When I run "bundle exec jekyll build --trace --unpublished" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/components.html should contain each row: 
@@ -49,7 +49,7 @@ Feature: Jekyll Bookshop Component Browser
       {% bookshop_browser :8465 %}
       """
     And a site/_data/test.yml file containing "title: Zuchinni"
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/components.html should contain the text "Zuchinni"
