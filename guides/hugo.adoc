@@ -11,6 +11,8 @@ endif::[]
 
 toc::[]
 
+IMPORTANT: Hugo support should be treated as an unstable beta
+
 == Quick start
 To jump right into using Bookshop on a Hugo site, check out the link:https://github.com/CloudCannon/hugo-bookshop-starter[Hugo Bookshop Starter] 
 
