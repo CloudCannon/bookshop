@@ -37,6 +37,7 @@ Feature: Hugo Bookshop CloudCannon Integration
   @skip # NYI
   Scenario: Site data extracted for live editing
 
+  @skip # NYI
   Scenario: Bookshop Live schema comments
     Given a component-lib/components/a/a.hugo.html file containing:
       """
@@ -58,7 +59,7 @@ Feature: Hugo Bookshop CloudCannon Integration
       """
     And a site/layouts/index.html file containing:
       """
-      {{ partial "bookshop" (dict "structures" "content_blocks" "source" .Params)}}
+      {{ partial "bookshop" .Params.content_blocks }}
       """
     When I run "hugo" in the site directory
     Then stderr should be empty
@@ -67,5 +68,5 @@ Feature: Hugo Bookshop CloudCannon Integration
       | text |
       | <p>a-component-one</p> |
       | <p>b-component-two</p> |
-      | <!--bookshop-live name(a) params(bind: Params.content_blocks[0]) context() -->  |
-      | <!--bookshop-live name(b) params(bind: Params.content_blocks[1]) context() -->  |
+      | <!--bookshop-live name(a) params(? ? ?) context() -->  |
+      | <!--bookshop-live name(b) params(? ? ?) context() -->  |

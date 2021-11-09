@@ -1,36 +1,34 @@
 {{/*
     Renders a Bookshop component, or an array of Bookshop components.
-    Has an unusual input format so live editing can be auto-configured.
 
-    To render a single structure object, or an array of structure objects:
-    { 
-        structures: String, # A "dot.notation" key to the structures in the `source` object
-        source: map,        # The base object to look in
-    }
+    To render a single structure object, or an array of structure objects,
+    the object or slice is expected to be passed in directly.
 
-    To render a component:
+    To render a single component:
     { 
         component: String, # The bookshop name of a component to render
         ... # any data to pass to the component
     }
 
-    To render a partial:
+    To render a single partial:
     { 
         partial: String, # The bookshop name of a partial to render
         ... # any data to pass to the include
     }
 */}}
 
-{{- $is_structures := (and (isset . "source") (or (isset . "structures") (isset . "structure")) ) -}}
-{{- $is_component := isset . "component" -}}
-{{- $is_partial := isset . "partial" -}}
+{{- $is_structures := reflect.IsSlice . -}}
+{{- $is_component := false -}}
+{{- $is_partial := false -}}
+
+{{- if reflect.IsMap . -}}
+    {{- $is_structures = isset . "_bookshop_name" -}}
+    {{- $is_component = isset . "component" -}}
+    {{- $is_partial = isset . "partial" -}}
+{{- end -}}
 
 {{- if $is_structures -}}
-    {{- $input := .structures -}}
-    {{- if not $input -}}
-        {{- $input = .structure -}}
-    {{- end -}}
-    {{- partial "_bookshop/helpers/render_structures" (dict "structures" $input "source" .source) -}}
+    {{- partial "_bookshop/helpers/render_direct_structures" . -}}
 {{- else if $is_component -}}
     {{- $component_params := dict "_bookshop_name" .component -}}
     {{- $component := merge . $component_params -}}

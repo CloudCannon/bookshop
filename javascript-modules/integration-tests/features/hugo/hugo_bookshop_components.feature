@@ -152,12 +152,12 @@ Feature: Basic Hugo Bookshop
   Scenario: Bookshop page building components should work
     Given a component-lib/components/page/page.hugo.html file containing:
       """
-      {{ partial "bookshop" (dict "structures" "column_contents" "source" .)}}
+      {{ partial "bookshop" .column_contents }}
       """
     And a component-lib/components/tag/tag.hugo.html file containing "tag-{{.tag}}-tag"
     And a site/layouts/index.html file containing:
       """
-      {{ partial "bookshop" (dict "structures" "components" "source" .Params)}}
+      {{ partial "bookshop" .Params.components }}
       """
     And a site/content/_index.md file containing:
       """
