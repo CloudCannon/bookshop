@@ -1,0 +1,10 @@
+{
+  "name": "bookshop-generate-cucumber-site",
+  "private": true,
+  "scripts": {
+    "start": "bookshop-generate"
+  },
+  "devDependencies": {
+    "@bookshop/generate": "file:../../../javascript-modules/generate"
+  }
+}
