@@ -8,7 +8,9 @@
   "scripts": {
     "test": "nyc ava -v"
   },
-  "bin": "main.js",
+  "bin": {
+    "bookshop-generate": "main.js"
+  },
   "author": "@bglw",
   "license": "MIT",
   "publishConfig": {
