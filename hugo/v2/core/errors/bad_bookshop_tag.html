@@ -4,7 +4,7 @@
 
 {{- $message := "Unknown Bookshop tag was used — the following Bookshop tag formats are valid:" -}}
 
-{{- $structures_example := "{{ partial \"bookshop\" (dict \"structures\" \"path.to.content_blocks\" \"source\" .Params) }}" -}}
+{{- $structures_example := "{{ partial \"bookshop\" .Params.path.to.structures }}" -}}
 {{- $structures_message := printf "  Render components from front matter:\n    %s" $structures_example  -}}
 
 {{- $component_example := "{{ partial \"bookshop\" (dict \"component\" \"button\" \"text\" .button.text) }}" -}}
