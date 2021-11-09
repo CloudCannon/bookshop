@@ -144,6 +144,8 @@ Feature: Basic Jekyll Bookshop
           column_contents:
             - _bookshop_name: tag
               tag: "contents"
+            - _bookshop_name: tag
+              tag: "another"
       ---
       {% for component in page.components %}
       {% bookshop {{component._bookshop_name}} bind=component %}
@@ -153,4 +155,5 @@ Feature: Basic Jekyll Bookshop
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "tag-contents-tag"
+    And site/_site/index.html should contain the text "tag-another-tag"
 

@@ -19,6 +19,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Use Hugo 0.89
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.89.0'
+          extended: true
       - name: Use Node.js 14.x
         uses: actions/setup-node@v2
         with:

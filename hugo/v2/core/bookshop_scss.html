@@ -1,0 +1,9 @@
+{{/*
+    Returns a slice of all Bookshop SCSS resources
+*/}}
+
+{{ $components := resources.Match "bookshop/components/**.scss" }}
+{{ $shared := resources.Match "bookshop/shared/styles/**.scss" }}
+{{ $bookshop_scss := $shared | append $components }}
+
+{{ return $bookshop_scss }}
