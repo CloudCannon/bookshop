@@ -169,7 +169,7 @@ const steps = {
         console.log(`* * Updating git`);
         execSync(`git add -A && git commit -m "build: releasing ${version}"`);
         execSync(`git tag -a v${version} -m "build: releasing ${version}"`);
-        execSync(`git tag -a hugo/v${version} -m "build: releasing ${version}"`);
+        //execSync(`git tag -a hugo/v${version} -m "build: releasing ${version}"`);
         execSync(`git push && git push --tags`);
         console.log(`* * * Git updated`);
     }
