@@ -7,7 +7,7 @@ module.exports = {
 		render: ejs.compile(readFileSync(join(__dirname, "jekyll.ejs.t"), 'utf8')),
 		extension: 'jekyll.html'
 	},
-	jekyll: {
+	hugo: {
 		render: ejs.compile(readFileSync(join(__dirname, "hugo.ejs.t"), 'utf8')),
 		extension: 'hugo.html'
 	},
