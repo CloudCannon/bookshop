@@ -65,7 +65,7 @@ async function run() {
 
     for (const infoJsonFile of infoJsonFiles) {
         const siteRoot = path.dirname(path.dirname(infoJsonFile));
-        console.log(`📚 Modifying built site at ./${bookshopRoot}`);
+        console.log(`📚 Modifying built site at ./${siteRoot}`);
         const contents = fs.readFileSync(infoJsonFile, "utf8");
         const info_json = JSON.parse(contents);
         info_json["_array_structures"] = info_json["_array_structures"] || {};
