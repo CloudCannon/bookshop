@@ -22,7 +22,7 @@ Feature: Basic Jekyll Bookshop
       ---
       <h1>Hello World!</h1>
       """
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "Hello World"
@@ -38,7 +38,7 @@ Feature: Basic Jekyll Bookshop
       ---
       {% bookshop title text="Result 🧄" %}
       """
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "Bookshop: Result 🧄"
@@ -55,7 +55,7 @@ Feature: Basic Jekyll Bookshop
       ---
       {% bookshop title text=page.title_text %}
       """
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "Bookshop: Result 👍"
@@ -79,7 +79,7 @@ Feature: Basic Jekyll Bookshop
       ---
       {% bookshop hero text=page.title_text tag=page.tag %}
       """
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "<h1>🩳</h1>"
@@ -100,7 +100,7 @@ Feature: Basic Jekyll Bookshop
       ---
       {% bookshop card bind=page.card %}
       """
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "<h1>🧻</h1>"
@@ -122,7 +122,7 @@ Feature: Basic Jekyll Bookshop
       {% bookshop {{component._name}} bind=component %}
       {% endfor %}
       """
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "🅰️🫀"
@@ -144,13 +144,16 @@ Feature: Basic Jekyll Bookshop
           column_contents:
             - _bookshop_name: tag
               tag: "contents"
+            - _bookshop_name: tag
+              tag: "another"
       ---
       {% for component in page.components %}
       {% bookshop {{component._bookshop_name}} bind=component %}
       {% endfor %}
       """
-    When I run "bundle exec jekyll build" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
     And site/_site/index.html should contain the text "tag-contents-tag"
+    And site/_site/index.html should contain the text "tag-another-tag"
 

@@ -1,3 +1,7 @@
+## [2.0.10](https://github.com/CloudCannon/bookshop/compare/2.0.9...2.0.10) (2021-10-29)
+
+* no-op release to reset npm latest tag
+
 ## [2.0.9](https://github.com/CloudCannon/bookshop/compare/2.0.8...2.0.9) (2021-10-13)
 
 
