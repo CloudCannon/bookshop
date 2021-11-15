@@ -52,10 +52,11 @@ module.exports = (tagType, locations, baseLocation) => (liquidEngine) => {
                 const bookshopPath = path.join(baseLocation, location);
                 const componentPath = path.join(bookshopPath, componentKey);
                 if (fs.existsSync(componentPath)) {
-                    const includeRoot = liquidEngine?.options?.root?.filter(p => p.includes('_includes'))?.[0] || "_includes";
-                    const includePath = path.join(baseLocation, includeRoot);
-                    const relativeBookshopPath = path.relative(includePath, bookshopPath);
-                    const relativeIncludePath = path.join(relativeBookshopPath, componentKey);
+                    // TODO: Currently using absolute paths until https://github.com/11ty/eleventy/issues/2090 resolves
+                    // const includeRoot = liquidEngine?.options?.root?.filter(p => p.includes('_includes'))?.[0] || "_includes";
+                    // const includePath = path.join(baseLocation, includeRoot);
+                    // const relativeBookshopPath = path.relative(includePath, bookshopPath);
+                    // const relativeIncludePath = path.join(relativeBookshopPath, componentKey);
 
                     //            11ty 1.x
                     //            (ljs 9.x)
@@ -72,7 +73,7 @@ module.exports = (tagType, locations, baseLocation) => (liquidEngine) => {
                     }
 
                     preComment = `<!--bookshop-live name(${component}) params(${this.args}) context(${loop_context}) -->`;
-                    convertedBookshopTag = `{% include '${relativeIncludePath}' ${this.args} %}`;
+                    convertedBookshopTag = `{% include '${componentPath}' ${this.args} %}`;
                     break;
                 }
             };
