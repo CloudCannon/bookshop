@@ -27,7 +27,7 @@ const argv = yargs(hideBin(process.argv))
   }).argv;
 
 const gen = async () => {
-  const bookshopKey = argv.name;
+  const bookshopKey = argv.component;
   const frameworks = {};
   const directories = [];
 
