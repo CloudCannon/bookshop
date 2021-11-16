@@ -1,3 +1,12 @@
+## [2.1.1](https://github.com/CloudCannon/bookshop/compare/v2.1.0...v2.1.1) (2021-11-16)
+
+
+### Bug Fixes
+
+* **init:** fix arguments to @bookshop/init command ([c15282d](https://github.com/CloudCannon/bookshop/commit/c15282d96bde4029491d53ad6bcfba72145cc11b))
+
+
+
 # [2.1.0](https://github.com/CloudCannon/bookshop/compare/2.0.9...2.1.0) (2021-11-16)
 
 
