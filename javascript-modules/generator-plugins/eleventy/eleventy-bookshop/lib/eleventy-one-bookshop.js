@@ -1,6 +1,7 @@
 const LiquidJS = require("liquidjs");
 const path = require("path");
 const fs = require("fs");
+const normalizePath = require("normalize-path");
 
 const { Tokenizer } = LiquidJS;
 
@@ -73,7 +74,7 @@ module.exports = (tagType, locations, baseLocation) => (liquidEngine) => {
                     }
 
                     preComment = `<!--bookshop-live name(${component}) params(${this.args}) context(${loop_context}) -->`;
-                    convertedBookshopTag = `{% include '${componentPath}' ${this.args} %}`;
+                    convertedBookshopTag = `{% include '${normalizePath(componentPath)}' ${this.args} %}`;
                     break;
                 }
             };

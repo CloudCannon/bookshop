@@ -429,6 +429,7 @@ __metadata:
   dependencies:
     "@bookshop/helpers": 2.0.10
     ava: ^3.15.0
+    normalize-path: ^3.0.0
     nyc: ^15.1.0
   languageName: unknown
   linkType: soft
