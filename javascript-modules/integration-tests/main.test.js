@@ -4,7 +4,7 @@ const parser = require("gherkin-parse");
 const fastGlob = require('fast-glob');
 
 
-const ssgs = /^(eleventy|jekyll|hugo)/;
+const ssgs = /^(eleventy-one|eleventy-zero|jekyll|hugo)/;
 
 
 const getFeatures = async () => {
@@ -32,7 +32,7 @@ test("(unit test) test parity between SSGs", async t => {
   Object.entries(scenarios).forEach(([ssg, tests]) => {
     Object.entries(scenarios).forEach(([otherSsg, otherTests]) => {
       tests.forEach(scenario => {
-        t.is(otherTests.includes(scenario), true, 
+        t.is(otherTests.includes(scenario), true,
           `${ssg} has the scenario "${scenario}". ${otherSsg} should also have this test.`
         );
       });

@@ -17,7 +17,8 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/helpers": "2.0.10"
+    "@bookshop/helpers": "2.0.10",
+    "normalize-path": "^3.0.0"
   },
   "engines": {
     "node": ">=14.16"
