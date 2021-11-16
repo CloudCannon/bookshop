@@ -14,6 +14,8 @@ toc::[]
 == Quick start
 To jump right into using Bookshop on an Eleventy site, check out the link:https://github.com/CloudCannon/eleventy-bookshop-starter[Eleventy Bookshop Starter] 
 
+TIP: Bookshop supports both Eleventy 0.x and 1.x. No changes to the configuration are required when updating to 1.0
+
 NOTE: Currently, Bookshop only supports liquid templating on Eleventy sites.
 
 == Bookshop Configuration
