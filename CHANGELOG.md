@@ -1,3 +1,19 @@
+# [2.1.0](https://github.com/CloudCannon/bookshop/compare/2.0.9...2.1.0) (2021-11-16)
+
+
+### Bug Fixes
+
+* **eleventy:** make eleventy engine more lenient for dynamic components ([f6de1f0](https://github.com/CloudCannon/bookshop/commit/f6de1f0ec108a36d7334455dd7a11b67e8588886))
+
+
+### Features
+
+* **eleventy:** eleventy 1.0.0-beta support ([35fce81](https://github.com/CloudCannon/bookshop/commit/35fce812dec4057aee36f45cb6a028bdfb2cd7a0))
+* **hugo:** core hugo component support ([#60](https://github.com/CloudCannon/bookshop/issues/60)) ([75a9765](https://github.com/CloudCannon/bookshop/commit/75a97656cf11f8da1a87c9ba46aa3c415eb2473b))
+* **init:** renamed the @bookshop/gen package to @bookshop/init ([86ad798](https://github.com/CloudCannon/bookshop/commit/86ad798d92ebcfd353f3233de6dfee58044aafb6))
+
+
+
 ## [2.0.10](https://github.com/CloudCannon/bookshop/compare/2.0.9...2.0.10) (2021-10-29)
 
 * no-op release to reset npm latest tag
