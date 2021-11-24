@@ -13,6 +13,7 @@ const jekyllFiles = {
     [jekyllComponent('title-loop')]: "{% for t in include.titles %}{% bookshop title title=t %}{% endfor %}",
     [jekyllComponent('num-loop')]: "{% for t in (include.min..include.max) %}{% bookshop title title=t %}{% endfor %}",
     [jekyllComponent('wrapper')]: "{% bookshop {{include.component}} bind=page %}",
+    [jekyllComponent('assign-wrapper')]: "{% assign test_var=include.component %}{% bookshop {{test_var}} bind=page %}",
     [jekyllComponent('dynamic-loop')]: "{% for props in include.t %}{% bookshop {{props._bookshop_name}} bind=props %}{% endfor %}",
 }
 
@@ -23,6 +24,7 @@ const eleventyFiles = {
     [eleventyComponent('title-loop')]: "{% for t in titles %}{% bookshop 'title' title: t %}{% endfor %}",
     [eleventyComponent('num-loop')]: "{% for t in (min..max) %}{% bookshop 'title' title: t %}{% endfor %}",
     [eleventyComponent('wrapper')]: "{% bookshop '{{component}}' bind: page %}",
+    [eleventyComponent('assign-wrapper')]: "{% assign test_var=component %}{% bookshop '{{test_var}}' bind: page %}",
     [eleventyComponent('dynamic-loop')]: "{% for props in t %}{% bookshop {{props._bookshop_name}} bind: props %}{% endfor %}",
 }
 
@@ -34,10 +36,10 @@ const initial = async (liveInstance, component, props) => {
     );
 }
 
-const initialSub = async (liveInstance, component, props) => {
+const initialSub = async (liveInstance, component, props, wrapper = 'wrapper') => {
     await liveInstance.engines[0].render(
         document.querySelector('body'),
-        'wrapper',
+        wrapper,
         { component },
         { page: props }
     );
@@ -89,6 +91,24 @@ for (const impl of ['jekyll', 'eleventy']) {
         t.is(trigger, false);
         document.querySelectorAll('h1')[0].click();
         t.is(trigger, true);
+    });
+
+    test.serial(`[${impl}]: Re-renders through an assign`, async t => {
+        await initialSub(t.context[impl], 'title', { title: 'Bookshop' }, 'assign-wrapper');
+        t.is(getBody(), [
+            `<!--bookshop-live context(test_var="title")-->`,
+            `<!--bookshop-live name(title) params(bind: page)-->`,
+            `<h1>Bookshop<\/h1>`,
+            `<!--bookshop-live end-->`
+        ].join(''));
+
+        await t.context[impl].update({ page: { title: 'Live Love Laugh' } })
+        t.is(getBody(), [
+            `<!--bookshop-live context(test_var="title")-->`,
+            `<!--bookshop-live name(title) params(bind: page)-->`,
+            `<h1>Live Love Laugh<\/h1>`,
+            `<!--bookshop-live end-->`
+        ].join(''));
     });
 
     test.serial(`[${impl}]: Re-renders top-level loop`, async t => {
