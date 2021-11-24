@@ -1,0 +1,32 @@
+{
+  "name": "@bookshop/hugo-engine",
+  "packageManager": "yarn@3.0.0",
+  "version": "2.1.1",
+  "description": "Bookshop frontend Hugo renderer",
+  "type": "module",
+  "sideEffects": false,
+  "main": "main.js",
+  "exports": {
+    ".": "./main.js",
+    "./build": "./build.js"
+  },
+  "scripts": {
+    "test": "nyc ava -v"
+  },
+  "author": "@bglw",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "ava": "^3.15.0",
+    "nyc": "^15.1.0"
+  },
+  "dependencies": {
+    "@bookshop/helpers": "2.1.1",
+    "esbuild": "^0.13.10"
+  },
+  "engines": {
+    "node": ">=14.16"
+  }
+}

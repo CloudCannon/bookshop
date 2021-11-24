@@ -465,6 +465,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@bookshop/hugo-engine@workspace:engines/hugo-engine":
+  version: 0.0.0-use.local
+  resolution: "@bookshop/hugo-engine@workspace:engines/hugo-engine"
+  dependencies:
+    "@bookshop/helpers": 2.1.1
+    ava: ^3.15.0
+    esbuild: ^0.13.10
+    nyc: ^15.1.0
+  languageName: unknown
+  linkType: soft
+
 "@bookshop/init@workspace:init":
   version: 0.0.0-use.local
   resolution: "@bookshop/init@workspace:init"
