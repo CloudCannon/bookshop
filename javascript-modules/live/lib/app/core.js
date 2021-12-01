@@ -23,7 +23,7 @@ const parseComment = node => {
  * Try find an existing absolute path to the given identifier,
  * and note down the sum absolute path of the new name if we can
  */
-const resolvePath = (name, identifier, pathStack) => {
+export const storeResolvedPath = (name, identifier, pathStack) => {
     // TODO: The `include.` replacement feels too SSG coupled.
     //                       v v v v v v v v v v v v 
     identifier = identifier.replace(/^include\./, '').replace(/\[(\d+)]/g, '.$1').split('.');
@@ -33,7 +33,7 @@ const resolvePath = (name, identifier, pathStack) => {
     pathStack[pathStack.length - 1][name] = `${[prefix, ...identifier].join('.')}`;
 }
 
-const findInStack = (key, stack) => {
+export const findInStack = (key, stack) => {
     for (let i = stack.length - 1; i >= 0; i--) {
         if (stack[i][key]) return stack[i][key]
     }
@@ -81,8 +81,8 @@ export const replaceHTMLRegion = (startNode, endNode, outputElement) => {
         node.remove();
         node = next;
     }
-    while (outputElement.children.length) {
-        endNode.parentNode.insertBefore(outputElement.children[0], endNode);
+    while (outputElement.childNodes.length) {
+        endNode.parentNode.insertBefore(outputElement.childNodes[0], endNode);
     }
 }
 
@@ -90,9 +90,9 @@ export const replaceHTMLRegion = (startNode, endNode, outputElement) => {
  * Takes in a DOM tree containing Bookshop live comments
  * Calls a given callback whenever a component end tag is hit
  */
-const evaluateTemplate = async (liveInstance, documentNode, templateBlockHandler = () => { }) => {
+const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, templateBlockHandler = () => { }) => {
     const stack = [];           // The stack of component data scopes
-    const pathStack = [{}];     // The paths from the root to any assigned variables
+    const pathStack = parentPathStack || [{}];     // The paths from the root to any assigned variables
     const bindings = {};        // Anything assigned through assigns or loops
 
     const combinedScope = () => [liveInstance.data, ...stack.map(s => s.scope), bindings];
@@ -108,7 +108,7 @@ const evaluateTemplate = async (liveInstance, documentNode, templateBlockHandler
             // TODO: bindings here has no encapsulation / stack, which feels too SSG-coupled for assigns
             // TODO: bindings here has no encapsulation / stack, which is wrong for loops
             bindings[name] = await liveInstance.eval(identifier, combinedScope());
-            resolvePath(name, identifier, pathStack);
+            storeResolvedPath(name, identifier, pathStack);
         }
 
         if (matches?.groups["end"]) {
@@ -124,11 +124,11 @@ const evaluateTemplate = async (liveInstance, documentNode, templateBlockHandler
                     const bindVals = await liveInstance.eval(identifier, combinedScope());
                     if (bindVals && typeof bindVals === 'object') {
                         scope = { ...scope, ...bindVals };
-                        Object.keys(bindVals).forEach(key => resolvePath(key, `${identifier}.${key}`, pathStack));
+                        Object.keys(bindVals).forEach(key => storeResolvedPath(key, `${identifier}.${key}`, pathStack));
                     }
                 } else {
                     scope[name] = await liveInstance.eval(identifier, combinedScope());
-                    resolvePath(name, identifier, pathStack);
+                    storeResolvedPath(name, identifier, pathStack);
                 }
             };
 
@@ -165,7 +165,7 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
         updates.push({ startNode, endNode, output, pathStack });
     }
 
-    await evaluateTemplate(liveInstance, documentNode, templateBlockHandler);
+    await evaluateTemplate(liveInstance, documentNode, null, templateBlockHandler);
 
     return updates;
 }
@@ -190,14 +190,13 @@ export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScop
         components.push(component);
     }
 
-    await evaluateTemplate(liveInstance, documentNode, templateBlockHandler);
+    await evaluateTemplate(liveInstance, documentNode, pathsInScope, templateBlockHandler);
 
     for (let { startNode, endNode, params, pathStack } of components) {
         // pathsInScope are from an earlier render pass, so will contain any paths
         // at a higher level than the documentNode we're working on. Without this,
         // if documentNode is a subcomponent we wouldn't be able to know
         // its path back to the root data.
-        pathStack = [...pathsInScope, ...pathStack];
         let editorLink = null;
         for (const [, identifier] of params) {
             const path = (findInStack(identifier, pathStack) ?? identifier);

@@ -18,7 +18,8 @@ const jekyllFiles = {
     [jekyllComponent('title')]: "<h1>{{ include.title }}</h1>",
     [jekyllComponent('null')]: "<null>empty</null>",
     [jekyllComponent('super-title')]: "{% bookshop title title=include.one %}<h1>{{ include.two }}</h2>{% bookshop title title=include.three %}",
-    [jekyllComponent('super-wrapped-title')]: "<div>{% bookshop title title=include.one %}</div><h1>{{ include.two }}</h2><div>{% bookshop title title=include.three %}</div>",
+    [jekyllComponent('super-wrapped-title-inner')]: "<div>{% bookshop title title=include.one %}</div><h1>{{ include.two }}</h2><div>{% bookshop title title=include.three %}</div>",
+    [jekyllComponent('super-wrapped-title')]: "<div>{% bookshop super-wrapped-title-inner bind=include.inner %}</div>",
     [jekyllComponent('title-loop')]: "<div>{% for t in include.titles %}{% bookshop title title=t %}{% endfor %}</div>",
     [jekyllComponent('num-loop')]: "{% for t in (include.min..include.max) %}{% bookshop title title=t %}{% endfor %}",
     [jekyllComponent('wrapper')]: "{% bookshop {{include.component}} bind=page.data %}",
@@ -33,7 +34,8 @@ const eleventyFiles = {
     [eleventyComponent('title')]: "<h1>{{ title }}</h1>",
     [eleventyComponent('null')]: "<null>empty</null>",
     [eleventyComponent('super-title')]: "{% bookshop 'title' title: one %}<h1>{{ two }}</h2>{% bookshop 'title' title: three %}",
-    [eleventyComponent('super-wrapped-title')]: "<div>{% bookshop 'title' title: one %}</div><h1>{{ two }}</h2><div>{% bookshop 'title' title: three %}</div>",
+    [eleventyComponent('super-wrapped-title-inner')]: "<div>{% bookshop 'title' title: one %}</div><h1>{{ two }}</h2><div>{% bookshop 'title' title: three %}</div>",
+    [eleventyComponent('super-wrapped-title')]: "<div>{% bookshop 'super-wrapped-title-inner' bind: inner %}</div>",
     [eleventyComponent('title-loop')]: "<div>{% for t in titles %}{% bookshop 'title' title: t %}{% endfor %}</div>",
     [eleventyComponent('num-loop')]: "{% for t in (min..max) %}{% bookshop 'title' title: t %}{% endfor %}",
     [eleventyComponent('wrapper')]: "{% bookshop '{{component}}' bind: data %}",
@@ -262,11 +264,13 @@ for (const impl of ['jekyll', 'eleventy']) {
     });
 
     test.serial(`[${impl}]: Re-renders editor links depth first`, async t => {
-        await initialSub(t.context[impl], 'super-wrapped-title', { data: { one: "One", two: "Two", three: "Three" } });
+        // TODO: This test fails with the structure {data: data: { ... }}
+        // as inner components resolve data.data.data instead of data.data
+        await initialSub(t.context[impl], 'super-wrapped-title', { data: { inner: { one: "One", two: "Two", three: "Three" } } });
 
         // Trigger an initial render, since the engine render above won't contain editor links
         // (and thus everything gets refreshed)
-        let data = wrapDataFor(impl, { data: { one: "One", two: "Two", three: "Three" } });
+        let data = wrapDataFor(impl, { data: { inner: { one: "One", two: "Two", three: "Three" } } });
         await t.context[impl].update(data, { editorLinks: true })
 
         let trigger = false;
@@ -275,7 +279,7 @@ for (const impl of ['jekyll', 'eleventy']) {
 
         // Re-render with new data that should only affect the subcomponents, 
         // not the super-title component itself.
-        data = wrapDataFor(impl, { data: { one: "Uno", two: "Two", three: "Tres" } });
+        data = wrapDataFor(impl, { data: { inner: { one: "Uno", two: "Two", three: "Tres" } } });
         await t.context[impl].update(data, { editorLinks: true })
         t.regex(getBody(), /Uno/);
 
