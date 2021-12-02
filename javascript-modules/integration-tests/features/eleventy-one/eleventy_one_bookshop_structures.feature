@@ -12,7 +12,7 @@ Feature: Eleventy Bookshop CloudCannon Integration
       site/
         .eleventy.js from starters/eleventy/.eleventy.cloudcannon.js
         .eleventyignore from starters/eleventy/.eleventyignore
-        package.json from starters/eleventy/package.json # <-- this .json line hurts my syntax highlighting
+        package.json from starters/eleventy/eleventy-one-package.json # <-- this .json line hurts my syntax highlighting
         cloudcannon/
           info.11tydata.js from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.11tydata.js
           info.njk from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.njk

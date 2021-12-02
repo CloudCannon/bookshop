@@ -26,6 +26,7 @@ const jekyllFiles = {
     [jekyllComponent('title-wrapper')]: "{% bookshop {{include.component}} title=page.title %}",
     [jekyllComponent('titles-wrapper')]: "{% bookshop {{include.component}} titles=page.titles %}",
     [jekyllComponent('titles-wrapper-erroneous-component')]: "{% bookshop {{include.component}} titles=page.titles %}{% bookshop null null=t %}",
+    [jekyllComponent('assign-wrapper')]: "{% assign test_var=include.component %}{% bookshop {{test_var}} bind=page %}",
     [jekyllComponent('dynamic-loop')]: "{% for props in include.t %}{% bookshop {{props._bookshop_name}} bind=props %}{% endfor %}",
 }
 
@@ -42,6 +43,7 @@ const eleventyFiles = {
     [eleventyComponent('title-wrapper')]: "{% bookshop '{{component}}' title: title %}",
     [eleventyComponent('titles-wrapper')]: "{% bookshop '{{component}}' titles: titles %}",
     [eleventyComponent('titles-wrapper-erroneous-component')]: "{% bookshop '{{component}}' titles: titles %}{% bookshop 'null' null: t %}",
+    [eleventyComponent('assign-wrapper')]: "{% assign test_var=component %}{% bookshop '{{test_var}}' bind: page %}",
     [eleventyComponent('dynamic-loop')]: "{% for props in t %}{% bookshop {{props._bookshop_name}} bind: props %}{% endfor %}",
 }
 
@@ -119,6 +121,24 @@ for (const impl of ['jekyll', 'eleventy']) {
         t.is(trigger, false);
         document.querySelectorAll('h1')[0].click();
         t.is(trigger, true);
+    });
+
+    test.serial(`[${impl}]: Re-renders through an assign`, async t => {
+        await initialSub(t.context[impl], 'title', { title: 'Bookshop' }, 'assign-wrapper');
+        t.is(getBody(), [
+            `<!--bookshop-live context(test_var="title")-->`,
+            `<!--bookshop-live name(title) params(bind: page)-->`,
+            `<h1>Bookshop<\/h1>`,
+            `<!--bookshop-live end-->`
+        ].join(''));
+
+        await t.context[impl].update({ page: { title: 'Live Love Laugh' } })
+        t.is(getBody(), [
+            `<!--bookshop-live context(test_var="title")-->`,
+            `<!--bookshop-live name(title) params(bind: page)-->`,
+            `<h1>Live Love Laugh<\/h1>`,
+            `<!--bookshop-live end-->`
+        ].join(''));
     });
 
     test.serial(`[${impl}]: Re-renders top-level loop`, async t => {

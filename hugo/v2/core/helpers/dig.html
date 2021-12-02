@@ -1,0 +1,24 @@
+{{/*
+    Digs through a map using dot notation, errors on failure.
+
+    Expects a dict:
+    { 
+        obj: map,           # Object to dig through
+        render: String,     # The "dot.notation" string to dig for
+    }
+*/}}
+
+{{ $obj := .obj }}
+{{ $input_str := .render }}
+{{ range (split .render ".") }}
+    {{ if $obj }}
+        {{ if (ne . "")}}
+            {{ $obj = (index $obj .) }}
+            {{ if not $obj }}
+                {{ partial "_bookshop/errors/err" (printf "\"%s\" not found while evaluating \"%s\"" . $input_str)}}
+            {{ end }}
+        {{ end }}
+    {{ end}}
+{{ end }}
+
+{{ return $obj }}

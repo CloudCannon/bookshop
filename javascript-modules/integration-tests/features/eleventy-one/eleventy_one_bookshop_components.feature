@@ -12,7 +12,7 @@ Feature: Basic Eleventy Bookshop
       site/
         .eleventy.js from starters/eleventy/.eleventy.js
         .eleventyignore from starters/eleventy/.eleventyignore
-        package.json from starters/eleventy/package.json # <-- this .json line hurts my syntax highlighting
+        package.json from starters/eleventy/eleventy-one-package.json # <-- this .json line hurts my syntax highlighting
       """
 
   Scenario: Tests are functional
@@ -24,7 +24,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v0.12.1"
+    And stdout should contain "v1.0.0"
     And site/_site/index.html should contain the text "Hello World"
 
 
@@ -41,7 +41,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v0.12.1"
+    And stdout should contain "v1.0.0"
     And site/_site/index.html should contain the text "Bookshop: Result 🤽‍♂️"
 
   Scenario: Components can use the page front matter
@@ -58,7 +58,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v0.12.1"
+    And stdout should contain "v1.0.0"
     And site/_site/index.html should contain the text "Bookshop: Result 🛗"
 
   Scenario: Components can use further components
@@ -83,7 +83,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v0.12.1"
+    And stdout should contain "v1.0.0"
     And site/_site/index.html should contain the text "<h1>🩳</h1>"
     And site/_site/index.html should contain the text "<span>🪣</span>"
 
@@ -104,7 +104,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v0.12.1"
+    And stdout should contain "v1.0.0"
     And site/_site/index.html should contain the text "<h1>🧻</h1>"
     And site/_site/index.html should contain the text "<p>⛳</p>"
 
@@ -126,7 +126,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v0.12.1"
+    And stdout should contain "v1.0.0"
     And site/_site/index.html should contain the text "🅰️🫀"
     And site/_site/index.html should contain the text "🅱️🫑"
 
@@ -153,6 +153,6 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v0.12.1"
+    And stdout should contain "v1.0.0"
     And site/_site/index.html should contain the text "tag-contents-tag"
 

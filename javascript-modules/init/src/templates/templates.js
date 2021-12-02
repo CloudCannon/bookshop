@@ -1,11 +1,15 @@
 const ejs = require('ejs');
-const {readFileSync} = require('fs');
-const {join} = require('path');
+const { readFileSync } = require('fs');
+const { join } = require('path');
 
 module.exports = {
 	jekyll: {
 		render: ejs.compile(readFileSync(join(__dirname, "jekyll.ejs.t"), 'utf8')),
 		extension: 'jekyll.html'
+	},
+	hugo: {
+		render: ejs.compile(readFileSync(join(__dirname, "hugo.ejs.t"), 'utf8')),
+		extension: 'hugo.html'
 	},
 	eleventy: {
 		render: ejs.compile(readFileSync(join(__dirname, "eleventy.ejs.t"), 'utf8')),

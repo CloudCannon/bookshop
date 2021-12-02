@@ -11,9 +11,10 @@
   "author": "@bglw",
   "license": "MIT",
   "dependencies": {
-    "@11ty/eleventy": "^0.12.1",
-    "@bookshop/init": "2.0.10",
-    "@bookshop/sass": "2.0.10",
+    "@11ty/eleventy": "beta",
+    "@11ty/eleventy-zero": "npm:@11ty/eleventy@0.12.1",
+    "@bookshop/gen": "2.1.1",
+    "@bookshop/sass": "2.1.1",
     "eleventy-plugin-cloudcannon": "^0.0.17"
   },
   "devDependencies": {
