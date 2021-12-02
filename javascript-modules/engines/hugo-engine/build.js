@@ -1,1 +1,1 @@
-export {buildLoaders, extensions} from './lib/builder.js';
+export { esbuildConfigFn, extensions } from './lib/builder.js';

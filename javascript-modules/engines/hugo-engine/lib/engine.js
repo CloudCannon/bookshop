@@ -1,3 +1,9 @@
+import wasmywasmy from "../hugo-renderer/hugo_renderer.wasm";
+
+const sleep = (ms = 0) => {
+    return new Promise(r => setTimeout(r, ms));
+}
+
 export class Engine {
     constructor(options) {
         options = {
@@ -13,8 +19,15 @@ export class Engine {
         this.initializeHugo();
     }
 
-    initializeHugo() {
-
+    async initializeHugo() {
+        const scriptOrigin = document.currentScript?.src || `/bookshop.js`;
+        const wasmOrigin = scriptOrigin.replace(/\/[^\.\/]+\.js$/, wasmywasmy.replace(/^\./, ''));
+        console.log(`Loading ${wasmOrigin}`);
+        const go = new Go();
+        const response = await fetch(wasmOrigin);
+        const buffer = await response.arrayBuffer();
+        const result = await WebAssembly.instantiate(buffer, go.importObject);
+        go.run(result.instance)
     }
 
     getShared(name) {
@@ -38,6 +51,8 @@ export class Engine {
     }
 
     async render(target, name, props, globals) {
+        while (!window.renderHugo) await sleep(100);
+
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
         if (!source) source = this.getShared(name);
@@ -45,10 +60,10 @@ export class Engine {
             console.warn(`[hugo-engine] No component found for ${name}`);
             return "";
         }
-        source = translateLiquid(source, {});
         if (!globals || typeof globals !== "object") globals = {};
-        props = { ...globals, include: props };
-        target.innerHTML = source;
+        props = { ...globals, ...props };
+        const output = window.renderHugo(source, JSON.stringify(props));
+        target.innerHTML = output;
     }
 
     async eval(str, props = [{}]) {
