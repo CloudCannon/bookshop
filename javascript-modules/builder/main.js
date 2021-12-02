@@ -25,26 +25,25 @@ export default async (options) => {
     options.bookshopDirs = filterBookshops(options.bookshopDirs);
     options.bookshopConfig = await loadConfig(options.bookshopDirs[0]);
 
-    const plugins = esbuildOptions.plugins || [];
-    plugins.push(bookshopComponentPlugin(options));
-    plugins.push(bookshopConfigPlugin(options));
-    plugins.push(bookshopFilePlugin(options));
-    plugins.push(bookshopGlobPlugin(options));
-    plugins.push(bookshopStylesPlugin(options));
+    esbuildOptions.plugins.push(bookshopComponentPlugin(options));
+    esbuildOptions.plugins.push(bookshopConfigPlugin(options));
+    esbuildOptions.plugins.push(bookshopFilePlugin(options));
+    esbuildOptions.plugins.push(bookshopGlobPlugin(options));
+    esbuildOptions.plugins.push(bookshopStylesPlugin(options));
 
     options.bookshopConfig?.engines?.forEach(engine => {
         engine?.buildPlugins?.forEach(plugin => {
-            plugins.push(plugin);
+            esbuildOptions.plugins.push(plugin);
         });
         esbuildOptions.loader = {
             ...esbuildOptions.loader,
             ...(engine?.buildLoaders || {})
         };
+        engine?.esbuildConfigFn?.(esbuildOptions);
     });
 
     return await esbuild.build({
         ...esbuildOptions,
-        bundle: true,
-        plugins: plugins,
+        bundle: true
     });
 }
