@@ -42,7 +42,7 @@ export const getLive = (engines) => class BookshopLive {
     }
 
     async render(options = {}) {
-        const CCEditorPanelSupport = !!window.CloudCannon?.refreshInterface;
+        const CCEditorPanelSupport = typeof window !== 'undefined' && window.CloudCannon?.refreshInterface;
         options = {
             editorLinks: CCEditorPanelSupport,
             ...options
