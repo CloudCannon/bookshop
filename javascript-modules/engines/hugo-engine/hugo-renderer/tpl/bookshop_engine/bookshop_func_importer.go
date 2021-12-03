@@ -19,7 +19,7 @@ import (
 	_ "hugo-renderer/tpl/math"
 	// _ "hugo-renderer/tpl/openapi/openapi3" // ———— ❗ TODO: Maybe a rabbit hole
 	// _ "hugo-renderer/tpl/os" // —————————————————— ⏭️ NTBI: We don't have an OS
-	// _ "hugo-renderer/tpl/partials" // ———————————— ❗ TODO: Implement for Bookshop ! ! !
+	_ "hugo-renderer/tpl/partials" // ——————————————— ❗ TODO: Return partials / use bookshop module partials
 	_ "hugo-renderer/tpl/path"
 	_ "hugo-renderer/tpl/reflect"
 

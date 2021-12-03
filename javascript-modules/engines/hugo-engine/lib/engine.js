@@ -28,6 +28,19 @@ export class Engine {
         const buffer = await response.arrayBuffer();
         const result = await WebAssembly.instantiate(buffer, go.importObject);
         go.run(result.instance)
+
+        // TODO: Tidy
+        const mappedFiles = {};
+        for (const file of Object.entries(this.files)) {
+            mappedFiles[file[0]] = {
+                contents: file[1]
+            }
+        }
+
+        console.log(`Sending`);
+        console.log(mappedFiles);
+        const success = window.loadHugoBookshopPartials(JSON.stringify(mappedFiles));
+        console.log(success);
     }
 
     getShared(name) {

@@ -10,6 +10,7 @@ import (
 	"hugo-renderer/tpl/internal"
 )
 
+// TODO(bookshop): DRY
 func createFuncMap(d *deps.Deps) map[string]interface{} {
 	funcMap := template.FuncMap{}
 
@@ -33,6 +34,9 @@ func createFuncMap(d *deps.Deps) map[string]interface{} {
 	return funcMap
 }
 
+// RenderHugo takes a component from the browser,
+// as well as a JSON blob of its data,
+// and renders it.
 func RenderHugo(templateString string, props string) interface{} {
 	var parsedProps map[string]interface{}
 	err := json.Unmarshal([]byte(props), &parsedProps)
