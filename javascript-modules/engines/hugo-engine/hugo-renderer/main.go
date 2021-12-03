@@ -1,8 +1,9 @@
 package main
 
 import (
-	"hugo-renderer/engine"
 	"syscall/js"
+
+	engine "hugo-renderer/tpl/bookshop_engine"
 )
 
 func main() {
