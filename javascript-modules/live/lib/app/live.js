@@ -76,7 +76,7 @@ export const getLive = (engines) => class BookshopLive {
             output,     // A virtual-DOM node containing contents of the just-rendered component
             pathStack,  // Any "absolute paths" to data in scope for this component
         } of componentUpdates) {
-            if (options.editorLinks) {
+            if (options.editorLinks) { // If we should be adding editor links _in general_
                 // Re-traverse this component to inject any editor links we can to it or its children.
                 await core.hydrateEditorLinks(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode());
             }

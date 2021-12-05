@@ -310,4 +310,36 @@ for (const impl of ['jekyll', 'eleventy']) {
         document.querySelectorAll('h1')[1].click();
         t.is(trigger, true);
     });
+
+    test.serial(`[${impl}]: Respects the editorLinks flag`, async t => {
+        await initialSub(t.context[impl], 'super-wrapped-title', { data: { editorLink: false, inner: { one: "One", two: "Two", three: "Three" } } });
+
+        // Render without the outer-most editor link
+        let data = wrapDataFor(impl, { data: { editorLink: false, inner: { one: "One", two: "Two", three: "Three" } } });
+        await t.context[impl].update(data, { editorLinks: true })
+
+        t.notRegex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
+        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+
+        // Render without the inner editor link
+        data = wrapDataFor(impl, { data: { editorLink: true, inner: { editorLink: false, one: "One", two: "Two", three: "Three" } } });
+        await t.context[impl].update(data, { editorLinks: true })
+
+        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
+        t.notRegex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+
+        // Render with both editor links
+        data = wrapDataFor(impl, { data: { inner: { one: "One", two: "Two", three: "Three" } } });
+        await t.context[impl].update(data, { editorLinks: true })
+
+        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
+        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+
+        // Render without the inner editor link using the other syntax
+        data = wrapDataFor(impl, { data: { editor_link: true, inner: { editor_link: false, one: "One", two: "Two", three: "Three" } } });
+        await t.context[impl].update(data, { editorLinks: true })
+
+        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
+        t.notRegex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+    });
 }
