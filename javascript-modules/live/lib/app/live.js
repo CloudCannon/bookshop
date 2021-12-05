@@ -1,3 +1,5 @@
+import * as core from './core.js';
+
 export const getLive = (engines) => class BookshopLive {
     constructor(options) {
         this.engines = engines;
@@ -23,101 +25,52 @@ export const getLive = (engines) => class BookshopLive {
 
     async renderElement(componentName, scope, bindings, dom) {
         try {
-            await this.engines[0].render(dom, componentName, scope, {...this.globalData, ...bindings});
-        } catch(e) {
+            await this.engines[0].render(dom, componentName, scope, { ...this.globalData, ...bindings });
+        } catch (e) {
             console.warn(`Error rendering bookshop component ${componentName}`, e);
             console.warn(`This is expected in certain cases, and may not be an issue, especially when deleting or re-ordering components.`)
         }
     }
 
-    async update(data) {
-        this.data = data;
-        await this.render();
+    async eval(identifier, scope) {
+        return await this.engines[0].eval(identifier, scope);
     }
 
-    async render() {
-        const vDom = document.implementation.createHTMLDocument();
-        const iterator = document.evaluate("//comment()[contains(.,'bookshop-live')]", document, null, XPathResult.ANY_TYPE, null);
-        const stack = [];
-        const updates = [];
-        let bindings = {}
-        let currentNode = iterator.iterateNext();
-        while(currentNode){
-            const matches = currentNode.textContent.match(/bookshop-live ((?<end>end)|name\((?<name>[^)]*)\) params\((?<params>[^)]*)\)).*/);
-            const contextMatches = currentNode.textContent.match(/bookshop-live.*context\((?<context>.+)\)\s*$/);
+    async update(data, options) {
+        this.data = data;
+        await this.render(options);
+    }
 
-            if(contextMatches?.groups["context"]){
-                const assignments = contextMatches.groups["context"].replace(/: /g, '=').split(' ');
-                for (const binding of assignments) {
-                    const [name, identifier] = binding.split('=');
-                    const scopes = [this.data, ...stack.map(s => s.scope), bindings];
-                    bindings[name] = await this.engines[0].eval(identifier, scopes);
-                }
-            }
-            
-            if(matches?.groups["end"]){
-                const {startNode, name, scope, bindings} = stack.pop();
-                const output = vDom.createElement('div');
-                await this.renderElement(
-                    name,
-                    scope,
-                    bindings,
-                    output
-                )
-                updates.push({startNode, endNode: currentNode, output});
-            } else if(matches){
-                let scope = {};
-                const params = matches.groups["params"].replace(/: /g, '=').split(' ');
-                for (const param of params) {
-                    const [name, identifier] = param.split('=');
-                    const scopes = [this.data, ...stack.map(s => s.scope), bindings];
-                    if(name === 'bind'){
-                        const bindVals = await this.engines[0].eval(identifier, scopes);
-                        scope = {...scope, ...bindVals};
-                    } else {
-                        scope[name] = await this.engines[0].eval(identifier, scopes);
-                    }
-                };
+    async render(options = {}) {
+        const CCEditorPanelSupport = typeof window !== 'undefined' && window.CloudCannon?.refreshInterface;
+        options = {
+            editorLinks: CCEditorPanelSupport,
+            ...options
+        };
 
-                stack.push({
-                    startNode: currentNode,
-                    name: matches.groups["name"].replace(/\/[\w-]+\..+$/, '').replace(/\..+$/, ''),
-                    bindings: JSON.parse(JSON.stringify(bindings)),
-                    scope
-                });
+        // Render _all_ components found on the page into virtual DOM nodes
+        // Returned in depth-first ordering. Children will be listed before their parents,
+        // which allows parents to _not_ re-render if only a child changed.
+        const componentUpdates = await core.renderComponentUpdates(this, document);
+
+        for (let {
+            startNode,  // The bookshop-live comment before this component's location in real-DOM
+            endNode,    // The bookshop-live end comment following this component's location in real-DOM
+            output,     // A virtual-DOM node containing contents of the just-rendered component
+            pathStack,  // Any "absolute paths" to data in scope for this component
+        } of componentUpdates) {
+            if (options.editorLinks) {
+                // Re-traverse this component to inject any editor links we can to it or its children.
+                await core.hydrateEditorLinks(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode());
             }
-            currentNode = iterator.iterateNext();
+
+            // We can short-circuit doing any slow real-DOM work here
+            // if we can tell that this render didn't change anything.
+            if (core.buildDigest(startNode, endNode) === output.innerHTML) {
+                continue;
+            }
+
+            core.replaceHTMLRegion(startNode, endNode, output);
         }
-
-        updates.forEach(({startNode, endNode, output}) => {
-            let node = startNode.nextSibling;
-            let digest = ''
-            while(node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0){
-                switch (node.nodeType) {
-                    case Node.ELEMENT_NODE:
-                      digest += node.outerHTML;
-                      break;
-                    case Node.COMMENT_NODE:
-                      digest += `<!--${node.textContent}-->`;
-                      break;
-                    default:
-                      digest += node.textContent || '';
-                }
-                node = node.nextSibling;
-            }
-
-            if(digest === output.innerHTML){
-                return;
-            }
-
-            node = startNode.nextSibling
-            while(node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0){
-                const next = node.nextSibling;
-                node.remove();
-                node = next;
-            }
-            output = endNode.parentNode.insertBefore(output, endNode);
-            output.outerHTML = output.innerHTML;
-        })
     }
 }

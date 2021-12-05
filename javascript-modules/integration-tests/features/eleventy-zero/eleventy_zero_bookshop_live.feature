@@ -27,7 +27,7 @@ Feature: Eleventy Bookshop CloudCannon Integration
     And site/_site/components/index.html should contain each row: 
       | text |
       | script.src = `/_cloudcannon/bookshop-live.js`; |
-      | if (window.inEditorMode)                      |
+      | document.addEventListener('cloudcannon:load', function (e) { |
 
   @skip # TODO: Eleventy does not yet support pulling data into bookshop
   Scenario: Site data extracted for live editing

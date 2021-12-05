@@ -21,7 +21,7 @@
     "@bookshop/eleventy-engine": "2.1.1",
     "@bookshop/jekyll-engine": "2.1.1",
     "ava": "^3.15.0",
-    "browser-env": "^3.3.0",
+    "jsdom": "^18.0.0",
     "nyc": "^15.1.0"
   },
   "dependencies": {

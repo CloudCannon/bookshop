@@ -27,8 +27,8 @@ Feature: Jekyll Bookshop CloudCannon Integration
     And stdout should contain "Bookshop site data generated"
     And site/_site/components.html should contain each row: 
       | text |
-      | script.src = `/_cloudcannon/bookshop-live.js`; |
-      | if (window.inEditorMode)                      |
+      | script.src = `/_cloudcannon/bookshop-live.js`;               |
+      | document.addEventListener('cloudcannon:load', function (e) { |
 
   Scenario: Site data extracted for live editing
     Given a site/_data/test.yml file containing "title: Zuchinni"

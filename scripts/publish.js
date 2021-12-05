@@ -96,7 +96,7 @@ const run = async () => {
     const npmPublishResults = await publishNPM(Object.keys(packages.npm), version, otp);
     const gemPublishResults = await publishGems(Object.keys(packages.rubygems), version);
     const publishFailures = [...npmPublishResults, ...gemPublishResults].filter(r => r.err).map(r => r.pkg);
-    const publishSuccesses = [...npmPublishResults, ...gemPublishResults].filter(r => !r.err).map(r => `${pad(`[${r.version}]`, 20)} ${r.pkg}`);
+    const publishSuccesses = [...npmPublishResults, ...gemPublishResults].filter(r => !r.err).map(r => `${pad(`[${r.version}]`, 30)} ${r.pkg}`);
 
     if (publishFailures.length) {
         console.error(`* * Publishing failed for the following packages:`);
@@ -108,7 +108,9 @@ const run = async () => {
         process.exit(1);
     }
 
-    steps.updateGit(version);
+    console.log(`* Commit & push changes to git?`);
+    const yn = await question(`y / n: `);
+    if (yn === 'y') steps.updateGit(version);
 
     console.log(`\n` + box(`All packages published:
                      ⇛ ${publishSuccesses.join('\n⇛ ')}`));
@@ -214,10 +216,11 @@ const testGems = async (pkgs) => {
  * Publishing functions
  */
 const publishNPM = async (pkgs, version, otp) => {
+    const npmTag = getPrereleaseTag(version) ? ` --tag ${getPrereleaseTag(version)}` : ``;
     const releases = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
             try {
-                const cmd = `yarn --cwd ${pkg} publish --non-interactive --access public --otp ${otp}`;
+                const cmd = `yarn --cwd ${pkg} publish${npmTag} --non-interactive --access public --otp ${otp}`;
                 console.log(`\n$: ${cmd}`);
                 execSync(cmd, { stdio: "inherit" });
                 resolve({ pkg, version, err: null });
@@ -256,6 +259,7 @@ const publishGems = async (pkgs, version) => {
  * Version bumping functions
  */
 const checkVersion = ver => /^\d+\.\d+\.\d+(-[a-z]+\.\d+)?$/.test(ver);
+const getPrereleaseTag = ver => ver.match(/^\d+\.\d+\.\d+(?:-([a-z]+)\.\d+)$/)?.[1];
 
 const versionNpm = (pkgs, version) => {
     pkgs.forEach(pkg => {

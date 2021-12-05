@@ -30,16 +30,16 @@ export class Engine {
         const eleventyEngine = this;
         this.liquid = new Liquid({
             fs: {
-                readFileSync (file) {
+                readFileSync(file) {
                     return "LiquidJS readFileSync unimplemented"
                 },
-                async readFile (file) {
+                async readFile(file) {
                     return await eleventyEngine.retrieveInclude(file);
                 },
-                existsSync () {
+                existsSync() {
                     return true
                 },
-                async exists () {
+                async exists() {
                     return true
                 },
                 resolve(root, file, ext) {
@@ -113,13 +113,13 @@ export class Engine {
             } else {
                 ctx.push(props);
             }
-            const [,value, index] = str.match(/^(.*?)(?:\[(\d+)\])?$/);
+            const [, value, index] = str.match(/^(.*?)(?:\[(\d+)\])?$/);
             let result = await this.liquid.evalValue(value, ctx);
             if (index && typeof result === 'object' && !Array.isArray(result)) {
                 result = Object.entries(result);
             }
-            return index ? result[index] : result;
-        } catch(e) {
+            return index ? result?.[index] : result;
+        } catch (e) {
             console.error(`Error evaluating ${str}`, e);
             return '';
         }

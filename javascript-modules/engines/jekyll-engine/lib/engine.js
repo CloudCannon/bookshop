@@ -4,7 +4,7 @@ import translateLiquid from './translateLiquid.js';
 /**
  * LiquidJS plugins
  */
-import {liquidHighlight} from '@bookshop/helpers';
+import { liquidHighlight } from '@bookshop/helpers';
 
 import jsonify from './plugins/jsonify.js';
 import slugify from './plugins/slugify-plugin.js';
@@ -36,16 +36,16 @@ export class Engine {
         const je = this;
         this.liquid = new Liquid({
             fs: {
-                readFileSync (file) {
+                readFileSync(file) {
                     return "LiquidJS readFileSync unimplemented"
                 },
-                async readFile (file) {
+                async readFile(file) {
                     return await je.retrieveInclude(file);
                 },
-                existsSync () {
+                existsSync() {
                     return true
                 },
-                async exists () {
+                async exists() {
                     return true
                 },
                 resolve(root, file, ext) {
@@ -68,7 +68,7 @@ export class Engine {
             console.warn(`[jekyll-engine] No file found for ${file}`);
             return "";
         }
-        return translateLiquid(content, {isInclude: true});
+        return translateLiquid(content, { isInclude: true });
     }
 
     applyLiquidPlugins() {
@@ -119,13 +119,13 @@ export class Engine {
             } else {
                 ctx.push(props);
             }
-            const [,value, index] = str.match(/^(.*?)(?:\[(\d+)\])?$/);
+            const [, value, index] = str.match(/^(.*?)(?:\[(\d+)\])?$/);
             let result = await this.liquid.evalValue(value, ctx);
             if (index && typeof result === 'object' && !Array.isArray(result)) {
                 result = Object.entries(result);
             }
-            return index ? result[index] : result;
-        } catch(e) {
+            return index ? result?.[index] : result;
+        } catch (e) {
             console.error(`Error evaluating ${str}`, e);
             return '';
         }
