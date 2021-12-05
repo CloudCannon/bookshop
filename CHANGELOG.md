@@ -5,6 +5,7 @@
 
 * **live:** automatically add cms editor links in the live renderer ([08fa8b3](https://github.com/CloudCannon/bookshop/commit/08fa8b3ad32f142357a9febe8146ff4c1d18aa65))
 
+This will take effect with the upcoming CloudCannon editor panels release.
 
 
 ## [2.1.1](https://github.com/CloudCannon/bookshop/compare/v2.1.0...v2.1.1) (2021-11-16)
