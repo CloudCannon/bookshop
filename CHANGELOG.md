@@ -1,3 +1,21 @@
+# [2.2.0](https://github.com/CloudCannon/bookshop/compare/v2.1.1...v2.2.0) (2021-12-05)
+
+
+### Bug Fixes
+
+* check if live rendering is in a browser context ([876e9a4](https://github.com/CloudCannon/bookshop/commit/876e9a47951d3a39b5b1923600cc24024cbff912))
+* don't error on upcoming CloudCannon function call ([1e251c1](https://github.com/CloudCannon/bookshop/commit/1e251c197a2e81e41bc8012870b4153ffe649aa1))
+* improve editor link generation in nested components ([6efd7eb](https://github.com/CloudCannon/bookshop/commit/6efd7eb95db0feec33521b9fa650bc654e87ebb1))
+
+
+### Features
+
+* enable editor link feature based on cloudcannon support ([e133113](https://github.com/CloudCannon/bookshop/commit/e1331139d835bc43c0b6d24e651e348370e5ac15))
+* **live:** automatically add cms editor links in the live renderer ([08fa8b3](https://github.com/CloudCannon/bookshop/commit/08fa8b3ad32f142357a9febe8146ff4c1d18aa65))
+* **live:** refresh the CloudCannon interface after live rendering ([79bcacc](https://github.com/CloudCannon/bookshop/commit/79bcaccfa22f47070472258b6505431235a7c2df))
+
+
+
 ## [2.1.1](https://github.com/CloudCannon/bookshop/compare/v2.1.0...v2.1.1) (2021-11-16)
 
 
