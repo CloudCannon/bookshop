@@ -5,13 +5,25 @@ export const getLive = (engines) => class BookshopLive {
         this.engines = engines;
         this.elements = [];
         this.globalData = {};
+        this.data = null;
+        this.renderOptions = {};
+        this.pendingRender = false;
+        this.awaitingDataFetches = options?.remoteGlobals?.length || 0;
         options?.remoteGlobals?.forEach(this.fetchGlobalData.bind(this));
     }
 
     async fetchGlobalData(path) {
-        const dataReq = await fetch(path);
-        const data = await dataReq.json();
-        Object.assign(this.globalData, data);
+        try {
+            const dataReq = await fetch(path);
+            const data = await dataReq.json();
+            Object.assign(this.globalData, data);
+            this.awaitingDataFetches -= 1;
+        } catch (e) {
+            this.awaitingDataFetches -= 1;
+        }
+        if (this.awaitingDataFetches <= 0 && this.pendingRender) {
+            await this.render()
+        }
     }
 
     readElement(el) {
@@ -38,14 +50,19 @@ export const getLive = (engines) => class BookshopLive {
 
     async update(data, options) {
         this.data = data;
-        await this.render(options);
+        this.renderOptions = options;
+        if (this.awaitingDataFetches > 0) {
+            this.pendingRender = true;
+        } else {
+            await this.render();
+        }
     }
 
-    async render(options = {}) {
+    async render(options = false) {
         const CCEditorPanelSupport = typeof window !== 'undefined' && window.CloudCannon?.refreshInterface;
         options = {
             editorLinks: CCEditorPanelSupport,
-            ...options
+            ...(options ?? this.renderOptions ?? {})
         };
 
         // Render _all_ components found on the page into virtual DOM nodes
