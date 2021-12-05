@@ -5,7 +5,7 @@ export const getLive = (engines) => class BookshopLive {
         this.engines = engines;
         this.elements = [];
         this.globalData = {};
-        this.data = null;
+        this.data = {};
         this.renderOptions = {};
         this.pendingRender = false;
         this.awaitingDataFetches = options?.remoteGlobals?.length || 0;
@@ -58,11 +58,11 @@ export const getLive = (engines) => class BookshopLive {
         }
     }
 
-    async render(options = false) {
+    async render() {
         const CCEditorPanelSupport = typeof window !== 'undefined' && window.CloudCannon?.refreshInterface;
-        options = {
+        const options = {
             editorLinks: CCEditorPanelSupport,
-            ...(options ?? this.renderOptions ?? {})
+            ...this.renderOptions
         };
 
         // Render _all_ components found on the page into virtual DOM nodes
