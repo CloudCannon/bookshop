@@ -91,6 +91,12 @@ export class Engine {
         return !!this.files?.[key];
     }
 
+    resolveComponentType(name) {
+        if (this.getComponent(name)) return 'component';
+        if (this.getShared(name)) return 'shared';
+        return false;
+    }
+
     async render(target, name, props, globals) {
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared

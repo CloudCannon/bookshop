@@ -35,6 +35,10 @@ export const getLive = (engines) => class BookshopLive {
         }
     }
 
+    resolveComponentType(componentName) {
+        return this.engines[0].resolveComponentType(componentName);
+    }
+
     async renderElement(componentName, scope, bindings, dom) {
         try {
             await this.engines[0].render(dom, componentName, scope, { ...this.globalData, ...bindings });
@@ -59,7 +63,7 @@ export const getLive = (engines) => class BookshopLive {
     }
 
     async render() {
-        const CCEditorPanelSupport = typeof window !== 'undefined' && window.CloudCannon?.refreshInterface;
+        const CCEditorPanelSupport = typeof window === 'undefined' || typeof window !== 'undefined' && window.CloudCannon?.refreshInterface;
         const options = {
             editorLinks: CCEditorPanelSupport,
             ...this.renderOptions

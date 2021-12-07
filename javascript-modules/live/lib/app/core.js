@@ -196,8 +196,10 @@ export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScop
     // its path back to the root data.
     await evaluateTemplate(liveInstance, documentNode, pathsInScope, templateBlockHandler);
 
-    for (let { startNode, endNode, params, pathStack, scope } of components) {
-        const editorLinkFlag = scope?.editorLink ?? scope?.editor_link ?? true;
+    for (let { startNode, endNode, params, pathStack, scope, name } of components) {
+        // By default, don't add editor links for bookshop shared includes
+        const isStandardComponent = liveInstance.resolveComponentType(name) === 'component';
+        const editorLinkFlag = scope?.editorLink ?? scope?.editor_link ?? isStandardComponent;
         if (editorLinkFlag) { // If we should be adding an editor link _for this component_
             let editorLink = null;
             for (const [, identifier] of params) {
