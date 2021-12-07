@@ -14,35 +14,39 @@ const jsdomWindow = (new JSDOM(`...`)).window;
 });
 
 const jekyllComponent = (k) => `components/${k}/${k}.jekyll.html`;
+const jekyllShared = (k) => `shared/jekyll/${k}.jekyll.html`;
 const jekyllFiles = {
     [jekyllComponent('title')]: "<h1>{{ include.title }}</h1>",
     [jekyllComponent('null')]: "<null>empty</null>",
     [jekyllComponent('super-title')]: "{% bookshop title title=include.one %}<h1>{{ include.two }}</h2>{% bookshop title title=include.three %}",
     [jekyllComponent('super-wrapped-title-inner')]: "<div>{% bookshop title title=include.one %}</div><h1>{{ include.two }}</h2><div>{% bookshop title title=include.three %}</div>",
     [jekyllComponent('super-wrapped-title')]: "<div>{% bookshop super-wrapped-title-inner bind=include.inner %}</div>",
-    [jekyllComponent('title-loop')]: "<div>{% for t in include.titles %}{% bookshop title title=t %}{% endfor %}</div>",
+    [jekyllShared('title-loop')]: "{% for t in include.titles %}{% bookshop title title=t %}{% endfor %}",
     [jekyllComponent('num-loop')]: "{% for t in (include.min..include.max) %}{% bookshop title title=t %}{% endfor %}",
     [jekyllComponent('wrapper')]: "{% bookshop {{include.component}} bind=page.data %}",
+    [jekyllComponent('include-wrapper')]: "{% bookshop_include {{include.component}} bind=page.data %}",
     [jekyllComponent('title-wrapper')]: "{% bookshop {{include.component}} title=page.title %}",
-    [jekyllComponent('titles-wrapper')]: "{% bookshop {{include.component}} titles=page.titles %}",
-    [jekyllComponent('titles-wrapper-erroneous-component')]: "{% bookshop {{include.component}} titles=page.titles %}{% bookshop null null=t %}",
+    [jekyllComponent('titles-wrapper')]: "{% bookshop_include {{include.component}} titles=page.titles %}",
+    [jekyllComponent('titles-wrapper-erroneous-component')]: "{% bookshop_include {{include.component}} titles=page.titles %}{% bookshop null null=t %}",
     [jekyllComponent('assign-wrapper')]: "{% assign test_var=include.component %}{% bookshop {{test_var}} bind=page %}",
     [jekyllComponent('dynamic-loop')]: "{% for props in include.t %}{% bookshop {{props._bookshop_name}} bind=props %}{% endfor %}",
 }
 
 const eleventyComponent = (k) => `components/${k}/${k}.eleventy.liquid`;
+const eleventyShared = (k) => `shared/eleventy/${k}.eleventy.liquid`;
 const eleventyFiles = {
     [eleventyComponent('title')]: "<h1>{{ title }}</h1>",
     [eleventyComponent('null')]: "<null>empty</null>",
     [eleventyComponent('super-title')]: "{% bookshop 'title' title: one %}<h1>{{ two }}</h2>{% bookshop 'title' title: three %}",
     [eleventyComponent('super-wrapped-title-inner')]: "<div>{% bookshop 'title' title: one %}</div><h1>{{ two }}</h2><div>{% bookshop 'title' title: three %}</div>",
     [eleventyComponent('super-wrapped-title')]: "<div>{% bookshop 'super-wrapped-title-inner' bind: inner %}</div>",
-    [eleventyComponent('title-loop')]: "<div>{% for t in titles %}{% bookshop 'title' title: t %}{% endfor %}</div>",
+    [eleventyShared('title-loop')]: "{% for t in titles %}{% bookshop 'title' title: t %}{% endfor %}",
     [eleventyComponent('num-loop')]: "{% for t in (min..max) %}{% bookshop 'title' title: t %}{% endfor %}",
     [eleventyComponent('wrapper')]: "{% bookshop '{{component}}' bind: data %}",
+    [eleventyComponent('include-wrapper')]: "{% bookshop_include '{{component}}' bind: data %}",
     [eleventyComponent('title-wrapper')]: "{% bookshop '{{component}}' title: title %}",
-    [eleventyComponent('titles-wrapper')]: "{% bookshop '{{component}}' titles: titles %}",
-    [eleventyComponent('titles-wrapper-erroneous-component')]: "{% bookshop '{{component}}' titles: titles %}{% bookshop 'null' null: t %}",
+    [eleventyComponent('titles-wrapper')]: "{% bookshop_include '{{component}}' titles: titles %}",
+    [eleventyComponent('titles-wrapper-erroneous-component')]: "{% bookshop_include '{{component}}' titles: titles %}{% bookshop 'null' null: t %}",
     [eleventyComponent('assign-wrapper')]: "{% assign test_var=component %}{% bookshop '{{test_var}}' bind: page %}",
     [eleventyComponent('dynamic-loop')]: "{% for props in t %}{% bookshop {{props._bookshop_name}} bind: props %}{% endfor %}",
 }
@@ -103,7 +107,7 @@ for (const impl of ['jekyll', 'eleventy']) {
     });
 
     test.serial(`[${impl}]: Re-renders in a loop`, async t => {
-        await initialSub(t.context[impl], 'title-loop', { data: { titles: ['Bookshop', 'Jekyll', 'Eleventy'] } });
+        await initialSub(t.context[impl], 'title-loop', { data: { titles: ['Bookshop', 'Jekyll', 'Eleventy'] } }, 'include-wrapper');
         t.regex(getBody(), /<h1>Jekyll<\/h1>/);
 
         let trigger = false;
@@ -210,7 +214,7 @@ for (const impl of ['jekyll', 'eleventy']) {
                     ]
                 }
             ]
-        })
+        }, { editorLinks: false })
         t.regex(getBody(), /<h1>First Changed Inner Hello World<\/h1>/);
         t.notRegex(getBody(), /<h1>First Inner Hello World<\/h1>/);
         t.regex(getBody(), /<h1>Third Inner Hello World<\/h1>/);
@@ -257,7 +261,7 @@ for (const impl of ['jekyll', 'eleventy']) {
         await initialSub(t.context[impl], 'super-title', { data: { one: "One", two: "Two", three: "Three" } });
 
         const data = wrapDataFor(impl, { data: { one: "One", two: "Two", three: "Three" } });
-        await t.context[impl].update(data, { editorLinks: true })
+        await t.context[impl].update(data)
         t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#data">One<\/h1>/);
         t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#data">Two<\/h1>/);
         t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#data">Three<\/h1>/);
@@ -267,8 +271,7 @@ for (const impl of ['jekyll', 'eleventy']) {
         await initialSub(t.context[impl], 'title-loop', { titles: ['Bookshop', 'Jekyll', 'Eleventy'] }, 'titles-wrapper');
 
         const data = wrapDataFor(impl, { titles: ['Bookshop', 'Jekyll', 'Eleventy'] });
-        await t.context[impl].update(data, { editorLinks: true })
-        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#titles">/);
+        await t.context[impl].update(data)
         t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.0">Bookshop<\/h1>/);
         t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.1">Jekyll<\/h1>/);
         t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.2">Eleventy<\/h1>/);
@@ -309,5 +312,37 @@ for (const impl of ['jekyll', 'eleventy']) {
         t.is(trigger, false);
         document.querySelectorAll('h1')[1].click();
         t.is(trigger, true);
+    });
+
+    test.serial(`[${impl}]: Respects the editorLinks flag`, async t => {
+        await initialSub(t.context[impl], 'super-wrapped-title', { data: { editorLink: false, inner: { one: "One", two: "Two", three: "Three" } } });
+
+        // Render without the outer-most editor link
+        let data = wrapDataFor(impl, { data: { editorLink: false, inner: { one: "One", two: "Two", three: "Three" } } });
+        await t.context[impl].update(data, { editorLinks: true })
+
+        t.notRegex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
+        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+
+        // Render without the inner editor link
+        data = wrapDataFor(impl, { data: { editorLink: true, inner: { editorLink: false, one: "One", two: "Two", three: "Three" } } });
+        await t.context[impl].update(data, { editorLinks: true })
+
+        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
+        t.notRegex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+
+        // Render with both editor links
+        data = wrapDataFor(impl, { data: { inner: { one: "One", two: "Two", three: "Three" } } });
+        await t.context[impl].update(data, { editorLinks: true })
+
+        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
+        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+
+        // Render without the inner editor link using the other syntax
+        data = wrapDataFor(impl, { data: { editor_link: true, inner: { editor_link: false, one: "One", two: "Two", three: "Three" } } });
+        await t.context[impl].update(data, { editorLinks: true })
+
+        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
+        t.notRegex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
     });
 }

@@ -5,13 +5,25 @@ export const getLive = (engines) => class BookshopLive {
         this.engines = engines;
         this.elements = [];
         this.globalData = {};
+        this.data = {};
+        this.renderOptions = {};
+        this.pendingRender = false;
+        this.awaitingDataFetches = options?.remoteGlobals?.length || 0;
         options?.remoteGlobals?.forEach(this.fetchGlobalData.bind(this));
     }
 
     async fetchGlobalData(path) {
-        const dataReq = await fetch(path);
-        const data = await dataReq.json();
-        Object.assign(this.globalData, data);
+        try {
+            const dataReq = await fetch(path);
+            const data = await dataReq.json();
+            Object.assign(this.globalData, data);
+            this.awaitingDataFetches -= 1;
+        } catch (e) {
+            this.awaitingDataFetches -= 1;
+        }
+        if (this.awaitingDataFetches <= 0 && this.pendingRender) {
+            await this.render()
+        }
     }
 
     readElement(el) {
@@ -21,6 +33,10 @@ export const getLive = (engines) => class BookshopLive {
             componentName: el.dataset.bookshopLive,
             componentPropSource: el.dataset.bookshopProps,
         }
+    }
+
+    resolveComponentType(componentName) {
+        return this.engines[0].resolveComponentType(componentName);
     }
 
     async renderElement(componentName, scope, bindings, dom) {
@@ -38,14 +54,19 @@ export const getLive = (engines) => class BookshopLive {
 
     async update(data, options) {
         this.data = data;
-        await this.render(options);
+        this.renderOptions = options;
+        if (this.awaitingDataFetches > 0) {
+            this.pendingRender = true;
+        } else {
+            await this.render();
+        }
     }
 
-    async render(options = {}) {
-        const CCEditorPanelSupport = typeof window !== 'undefined' && window.CloudCannon?.refreshInterface;
-        options = {
+    async render() {
+        const CCEditorPanelSupport = typeof window === 'undefined' || typeof window !== 'undefined' && window.CloudCannon?.refreshInterface;
+        const options = {
             editorLinks: CCEditorPanelSupport,
-            ...options
+            ...this.renderOptions
         };
 
         // Render _all_ components found on the page into virtual DOM nodes
@@ -59,7 +80,7 @@ export const getLive = (engines) => class BookshopLive {
             output,     // A virtual-DOM node containing contents of the just-rendered component
             pathStack,  // Any "absolute paths" to data in scope for this component
         } of componentUpdates) {
-            if (options.editorLinks) {
+            if (options.editorLinks) { // If we should be adding editor links _in general_
                 // Re-traverse this component to inject any editor links we can to it or its children.
                 await core.hydrateEditorLinks(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode());
             }

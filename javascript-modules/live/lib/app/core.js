@@ -162,7 +162,7 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
             bindings,
             output
         )
-        updates.push({ startNode, endNode, output, pathStack });
+        updates.push({ startNode, endNode, output, pathStack, scope, name });
     }
 
     await evaluateTemplate(liveInstance, documentNode, null, templateBlockHandler);
@@ -190,30 +190,35 @@ export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScop
         components.push(component);
     }
 
+    // pathsInScope are from an earlier render pass, so will contain any paths
+    // at a higher level than the documentNode we're working on. Without this,
+    // if documentNode is a subcomponent we wouldn't be able to know
+    // its path back to the root data.
     await evaluateTemplate(liveInstance, documentNode, pathsInScope, templateBlockHandler);
 
-    for (let { startNode, endNode, params, pathStack } of components) {
-        // pathsInScope are from an earlier render pass, so will contain any paths
-        // at a higher level than the documentNode we're working on. Without this,
-        // if documentNode is a subcomponent we wouldn't be able to know
-        // its path back to the root data.
-        let editorLink = null;
-        for (const [, identifier] of params) {
-            const path = (findInStack(identifier, pathStack) ?? identifier);
-            let pathResolves = dig(liveInstance.data, path);
-            if (pathResolves) {
-                // TODO: This special page case feels too SSG-coupled
-                editorLink = path.replace(/^page(\.|$)/, '');
-                break;
+    for (let { startNode, endNode, params, pathStack, scope, name } of components) {
+        // By default, don't add editor links for bookshop shared includes
+        const isStandardComponent = liveInstance.resolveComponentType(name) === 'component';
+        const editorLinkFlag = scope?.editorLink ?? scope?.editor_link ?? isStandardComponent;
+        if (editorLinkFlag) { // If we should be adding an editor link _for this component_
+            let editorLink = null;
+            for (const [, identifier] of params) {
+                const path = (findInStack(identifier, pathStack) ?? identifier);
+                let pathResolves = dig(liveInstance.data, path);
+                if (pathResolves) {
+                    // TODO: This special page case feels too SSG-coupled
+                    editorLink = path.replace(/^page(\.|$)/, '');
+                    break;
+                }
             }
-        }
-        if (editorLink) {
-            // Add the editor link to all top-level elements of the component,
-            // since we can't wrap the component in any elements
-            let node = startNode.nextElementSibling;
-            while (node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0) {
-                node.dataset.cmsEditorLink = `cloudcannon:#${editorLink}`;
-                node = node.nextElementSibling;
+            if (editorLink) {
+                // Add the editor link to all top-level elements of the component,
+                // since we can't wrap the component in any elements
+                let node = startNode.nextElementSibling;
+                while (node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0) {
+                    node.dataset.cmsEditorLink = `cloudcannon:#${editorLink}`;
+                    node = node.nextElementSibling;
+                }
             }
         }
     }
