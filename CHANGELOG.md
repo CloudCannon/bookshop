@@ -1,3 +1,16 @@
+## [2.2.1](https://github.com/CloudCannon/bookshop/compare/v2.2.0...v2.2.1) (2021-12-07)
+
+
+### Bug Fixes
+
+* handle some editor link corner cases ([a45653a](https://github.com/CloudCannon/bookshop/commit/a45653aa63542d5d756e5d2c2674e6e9bf22cfe4))
+
+### Features
+
+* editor links can be toggled on a per-component basis by setting the `editor_links` or `editorLinks` flag in a components props
+
+
+
 # [2.2.0](https://github.com/CloudCannon/bookshop/compare/v2.1.1...v2.2.0) (2021-12-05)
 
 
