@@ -1,3 +1,12 @@
+## [2.2.2](https://github.com/CloudCannon/bookshop/compare/v2.2.1...v2.2.2) (2021-12-08)
+
+
+### Features
+
+* support `_editor_link` and `_editorLink` as flags in component data ([1fa8591](https://github.com/CloudCannon/bookshop/commit/1fa859113a2b6a3a9a7f71ae46d430890e055839))
+
+
+
 ## [2.2.1](https://github.com/CloudCannon/bookshop/compare/v2.2.0...v2.2.1) (2021-12-07)
 
 
