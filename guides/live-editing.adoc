@@ -83,3 +83,7 @@ NOTE: Make sure the path of the JavaScript file matches the `-o` flag of the `bo
 With the plugins installed and the `bookshop_live` tag integrated in your site layout, live editing should now be working for your pages on CloudCannon. This will only work within Bookshop components and includes, not your site as a whole.
 
 As a result, it is recommended to render groups of Bookshop components using a `page` Bookshop include. See the implementation in the link:https://github.com/CloudCannon/eleventy-bookshop-starter[Eleventy Bookshop Starter] for an example.
+
+== Editor Links
+
+When live editing, Bookshop will automatically add CloudCannon Editor Links to your components. See the link:editor-links.adoc[Editor Links Guide] for more.

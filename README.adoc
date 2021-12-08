@@ -36,3 +36,5 @@ link:guides/eleventy.adoc[Eleventy Guide]:: How to integrate your Bookshop proje
 link:guides/browser.adoc[Browser Guide]:: How to setup and use the Bookshop component browser locally and on a hosted URL.
 
 link:guides/live-editing.adoc[Live Editing Guide]:: Information on how the experimental live editing works, and how to configure it.
+
+link:guides/editor-links.adoc[Editor Links Guide]:: Information on the Editor Links that Bookshop generates automatically.
