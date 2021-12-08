@@ -14,6 +14,8 @@ toc::[]
 [.lead]
 When live editing a page in CloudCannon Bookshop will automatically generate link:https://cloudcannon.com/documentation/articles/extending-in-app-navigation-with-editor-links/[Editor Links]. These highlight components on the page, and open a floating editor panel scoped to the front matter data for that component.
 
+IMPORTANT: Bookshop Editor Links are supported in Bookshop versions 2.2.2 and higher.
+
 == Configuration
 
 Editor Links are only rendered when using Bookshop link:live-editing.adoc[Live Editing], so following those integration steps are the primary requirement.
