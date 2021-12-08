@@ -69,6 +69,10 @@ export const getLive = (engines) => class BookshopLive {
             ...this.renderOptions
         };
 
+        if (typeof window !== 'undefined' && window.bookshopEditorLinks === false) {
+            options.editorLinks = false;
+        }
+
         // Render _all_ components found on the page into virtual DOM nodes
         // Returned in depth-first ordering. Children will be listed before their parents,
         // which allows parents to _not_ re-render if only a child changed.
