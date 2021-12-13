@@ -37,4 +37,4 @@ link:guides/browser.adoc[Browser Guide]:: How to setup and use the Bookshop comp
 
 link:guides/live-editing.adoc[Live Editing Guide]:: Information on how the experimental live editing works, and how to configure it.
 
-link:guides/editor-links.adoc[Editor Links Guide]:: Information on the Editor Links that Bookshop generates automatically.
+link:guides/visual-data-bindings.adoc[Visual Data Bindings Guide]:: Information on the Visual Data Bindings that Bookshop generates automatically.
