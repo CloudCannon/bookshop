@@ -463,6 +463,7 @@ __metadata:
     "@bookshop/builder": 2.2.2
     "@bookshop/cloudcannon-structures": 2.2.2
     "@bookshop/helpers": 2.2.2
+    "@bookshop/live": 2.2.2
     "@bookshop/toml-narrator": 2.2.2
     "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
@@ -529,7 +530,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/live@workspace:live":
+"@bookshop/live@2.2.2, @bookshop/live@workspace:live":
   version: 0.0.0-use.local
   resolution: "@bookshop/live@workspace:live"
   dependencies:
@@ -542,7 +543,7 @@ __metadata:
     jsdom: ^18.0.0
     nyc: ^15.1.0
   bin:
-    bookshop-live: main.js
+    bookshop-live: cli.js
   languageName: unknown
   linkType: soft
 
@@ -2246,6 +2247,23 @@ __metadata:
   version: 1.0.4
   resolution: "clone@npm:1.0.4"
   checksum: d06418b7335897209e77bdd430d04f882189582e67bd1f75a04565f3f07f5b3f119a9d670c943b6697d0afb100f03b866b3b8a1f91d4d02d72c4ecf2bb64b5dd
+  languageName: node
+  linkType: hard
+
+"cloudcannon-hugo@npm:0.12.5":
+  version: 0.12.5
+  resolution: "cloudcannon-hugo@npm:0.12.5"
+  dependencies:
+    chalk: ^4.1.2
+    glob: ^7.1.6
+    js-yaml: ^4.1.0
+    jsonschema: ^1.2.11
+    papaparse: ^5.3.1
+    pkginfo: ^0.4.1
+    toml: ^3.0.0
+  bin:
+    cloudcannon-hugo: src/index.js
+  checksum: 46b60d42976f9c4b9792d44b085c7702ad9b26a86ee3db4eb5171dc10926e0d255d89464b77f6529e916d5c5893e6456acd4968a7761e58c0df2c18be109bd98
   languageName: node
   linkType: hard
 
@@ -4423,6 +4441,7 @@ fsevents@~2.3.2:
     "@bookshop/sass": 2.2.2
     "@cucumber/cucumber": ^7.3.1
     ava: ^3.15.0
+    cloudcannon-hugo: 0.12.5
     eleventy-plugin-cloudcannon: ^0.0.17
     fast-glob: ^3.2.7
     gherkin-parse: ^1.0.6
@@ -5042,6 +5061,13 @@ fsevents@~2.3.2:
     graceful-fs:
       optional: true
   checksum: 6447d6224f0d31623eef9b51185af03ac328a7553efcee30fa423d98a9e276ca08db87d71e17f2310b0263fd3ffa6c2a90a6308367f661dc21580f9469897c9e
+  languageName: node
+  linkType: hard
+
+"jsonschema@npm:^1.2.11":
+  version: 1.4.0
+  resolution: "jsonschema@npm:1.4.0"
+  checksum: a2f96b5154658f5567b064d6f25fa4cb7e38b923d5dce9dad8d2566a07dd94abc4acedf234333a91f31bc9934e9dd57c270dcc51e5656b4c104408196c768580
   languageName: node
   linkType: hard
 
@@ -6162,6 +6188,13 @@ fsevents@~2.3.2:
   dependencies:
     repeat-string: ^1.5.2
   checksum: 090fe065f979e04b251e4b33706caf5817c973f1106e445ffaee3a742e1495b0892db858ee25383f97dd048262ba969559d43f31beb385d780c9a0a24f3063d0
+  languageName: node
+  linkType: hard
+
+"papaparse@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "papaparse@npm:5.3.1"
+  checksum: 3431917bb46f8952e49ca64ecc9107ddf05291573ef666c8fac4e172b57780d131f1af925b47841039bd5ae0ceadc2eafbcb8183c092307442f85eed11f82b69
   languageName: node
   linkType: hard
 
@@ -7976,6 +8009,13 @@ resolve@~1.1.7:
   version: 1.0.0
   resolution: "token-stream@npm:1.0.0"
   checksum: e8adb56f31b813b6157130e7fc2fe14eb60e7cbf7b746e70e8293c7e55664d8e7ad5d93d7ae3aa4cad7fcb2b0aaf59dad6f2fd4ee0269204e55af5b05bc369e2
+  languageName: node
+  linkType: hard
+
+"toml@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "toml@npm:3.0.0"
+  checksum: 5d7f1d8413ad7780e9bdecce8ea4c3f5130dd53b0a4f2e90b93340979a137739879d7b9ce2ce05c938b8cc828897fe9e95085197342a1377dd8850bf5125f15f
   languageName: node
   linkType: hard
 

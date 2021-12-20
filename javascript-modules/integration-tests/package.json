@@ -16,6 +16,7 @@
     "@bookshop/generate": "2.2.2",
     "@bookshop/init": "2.2.2",
     "@bookshop/sass": "2.2.2",
+    "cloudcannon-hugo": "0.12.5",
     "eleventy-plugin-cloudcannon": "^0.0.17"
   },
   "devDependencies": {

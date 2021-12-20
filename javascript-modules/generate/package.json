@@ -24,6 +24,7 @@
     "@bookshop/builder": "2.2.2",
     "@bookshop/cloudcannon-structures": "2.2.2",
     "@bookshop/helpers": "2.2.2",
+    "@bookshop/live": "2.2.2",
     "@bookshop/toml-narrator": "2.2.2",
     "@ltd/j-toml": "^1.17.0",
     "commander": "^8.1.0",

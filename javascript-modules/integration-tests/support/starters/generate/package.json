@@ -2,7 +2,8 @@
   "name": "bookshop-generate-cucumber-site",
   "private": true,
   "scripts": {
-    "start": "bookshop-generate"
+    "start": "bookshop-generate",
+    "cc-hugo": "cloudcannon-hugo --baseURL /"
   },
   "devDependencies": {
     "@bookshop/generate": "file:../../../javascript-modules/generate"

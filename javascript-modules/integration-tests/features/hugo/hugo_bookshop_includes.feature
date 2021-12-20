@@ -40,5 +40,5 @@ Feature: Hugo Bookshop Includes
     And stdout should contain "Total in"
     And site/public/index.html should leniently contain each row:
       | text |
-      | Component🎉 -Block |
-      | Site🎉 -Inline |
+      | Component🎉 <!--bookshop-live end--> -Block |
+      | Site🎉 <!--bookshop-live end--> -Inline |
