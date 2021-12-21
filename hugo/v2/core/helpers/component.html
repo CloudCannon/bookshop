@@ -11,23 +11,16 @@
     }
 */}}
 
-{{- $key := partial "_bookshop/helpers/live_key" . -}}
-
 {{- if .component._bookshop_name -}}
     {{- $component_path := partial "_bookshop/helpers/component_key" .component._bookshop_name -}}
 
     {{- if templates.Exists ( printf "partials/%s" $component_path ) -}}
-        {{- if $key -}} {{ (printf "<!--bookshop-live name(%s) params(bind: %s) context() -->" .component._bookshop_name $key) | safeHTML }} {{ end }}
+        {{ (printf "<!--bookshop-live name(%s) params() context() -->" .component._bookshop_name) | safeHTML }}
 {{ partial $component_path .component }}
-        {{- if $key }}
-{{ "<!--bookshop-live end-->" | safeHTML }} {{- end -}}
+{{ "<!--bookshop-live end-->" | safeHTML }}
     {{- else -}}
-        {{- if $key -}}
-            {{- partial "_bookshop/errors/err" (printf "component \"%s\" does not exist — referenced from \"%s\"" .component._bookshop_name $key) -}}
-        {{- else -}}
-            {{- partial "_bookshop/errors/err" (printf "component \"%s\" does not exist" .component._bookshop_name) -}}
-        {{- end -}}
+        {{- partial "_bookshop/errors/err" (printf "component \"%s\" does not exist" .component._bookshop_name) -}}
     {{- end -}}
 {{- else -}}
-    {{- partial "_bookshop/errors/err" (printf "\"%s\" does not contain a _bookshop_name field, so no component can be rendered." $key) -}}
+    {{- partial "_bookshop/errors/err" (printf "\"%s\" does not contain a _bookshop_name field, so no component can be rendered." .) -}}
 {{- end -}}

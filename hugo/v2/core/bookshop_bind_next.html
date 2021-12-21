@@ -1,0 +1,17 @@
+{{/*
+    Binds the next bookshop component to a given front matter data source
+
+    Expects one argument, a string to use as the data binding in CloudCannon
+*/}}
+
+{{- $is_string := eq "string" (printf "%T" .) -}}
+
+{{- if $is_string -}}
+    {{- if hasPrefix . ".Params" -}}
+        {{ (printf "<!--bookshop-live name(__bookshop__subsequent) params(bind: %s) context() -->" .) | safeHTML }}
+    {{- else -}}
+    {{- partial "_bookshop/errors/err" (printf "Bookshop can only bind to fields in .Params — received \"%s\"" .) -}}    
+    {{- end -}}
+{{- else -}}
+    {{- partial "_bookshop/errors/err" (printf "\"%s\" passed to bookshop_bind_next was not a string." .) -}}
+{{- end -}}

@@ -32,13 +32,14 @@ Feature: Bookshop Structure Generation
       """
     And a component-lib/components/card/card.hugo.html file containing:
       """
-      <p class="{{ .color }}">{{ .card_text }}</p>
+      <p class="{{ .card_color }}">{{ .card_text }}</p>
       """
     And a site/layouts/index.html file containing:
       """
       <html>
       <body>
-      {{ partial "bookshop" (dict "component" "card" "card_text" .Params.card_text "color" .Params.card_color) }}
+      {{ partial "bookshop_bind_next" ".Params" }}
+      {{ partial "bookshop" (dict "component" "card" "card_text" .Params.card_text "card_color" .Params.card_color) }}
       </body>
       </html>
       """

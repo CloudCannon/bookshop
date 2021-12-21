@@ -10,23 +10,17 @@
     }
 */}}
 
-{{- $key := partial "_bookshop/helpers/live_key" . -}}
 
 {{- if .partial._bookshop_name -}}
     {{- $partial_path := partial "_bookshop/helpers/partial_key" .partial._bookshop_name -}}
 
     {{- if templates.Exists ( printf "partials/%s" $partial_path ) -}}
-        {{- if $key -}} {{ (printf "<!--bookshop-live name(%s) params(bind: %s) context() -->" .partial._bookshop_name $key) | safeHTML }} {{ end }}
+        {{ (printf "<!--bookshop-live name(%s) params() context() -->" .partial._bookshop_name) | safeHTML }}
 {{ partial $partial_path .partial }}
-        {{- if $key }}
-{{ "<!--bookshop-live end-->" | safeHTML }} {{- end -}}
+{{ "<!--bookshop-live end-->" | safeHTML }}
     {{- else -}}
-        {{- if $key -}}
-            {{- partial "_bookshop/errors/err" (printf "partial \"%s\" does not exist — referenced from \"%s\"" .partial._bookshop_name $key) -}}
-        {{- else -}}
-            {{- partial "_bookshop/errors/err" (printf "partial \"%s\" does not exist" .partial._bookshop_name) -}}
-        {{- end -}}
+        {{- partial "_bookshop/errors/err" (printf "partial \"%s\" does not exist" .partial._bookshop_name) -}}
     {{- end -}}
 {{- else -}}
-    {{- partial "_bookshop/errors/err" (printf "\"%s\" does not contain a _bookshop_name field, so no partial can be rendered." $key) -}}
+    {{- partial "_bookshop/errors/err" (printf "\"%s\" does not contain a _bookshop_name field, so no partial can be rendered." .) -}}
 {{- end -}}
