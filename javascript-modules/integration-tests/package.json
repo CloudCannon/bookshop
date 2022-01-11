@@ -11,13 +11,17 @@
   "author": "@bglw",
   "license": "MIT",
   "dependencies": {
-    "@11ty/eleventy": "beta",
+    "@11ty/eleventy": "1.0.0",
     "@11ty/eleventy-zero": "npm:@11ty/eleventy@0.12.1",
     "@bookshop/generate": "2.2.2",
     "@bookshop/init": "2.2.2",
     "@bookshop/sass": "2.2.2",
     "cloudcannon-hugo": "0.12.5",
-    "eleventy-plugin-cloudcannon": "^0.0.17"
+    "eleventy-plugin-cloudcannon": "^0.0.17",
+    "get-port": "^6.0.0",
+    "puppeteer": "^13.0.1",
+    "serve-handler": "^6.1.3",
+    "tree-kill": "^1.2.2"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^7.3.1",
