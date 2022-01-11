@@ -53,7 +53,11 @@ export const getLive = (engines) => class BookshopLive {
     }
 
     async update(data, options) {
-        this.data = data;
+        if (typeof this.engines[0].transformData === 'function') {
+            this.data = this.engines[0].transformData(data);
+        } else {
+            this.data = data;
+        }
         this.renderOptions = options;
         if (this.awaitingDataFetches > 0) {
             this.pendingRender = true;
