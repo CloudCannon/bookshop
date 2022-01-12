@@ -24,6 +24,8 @@ const parseComment = node => {
  * and note down the sum absolute path of the new name if we can
  */
 export const storeResolvedPath = (name, identifier, pathStack) => {
+    // TODO: This shouldn't be required post-tokenizer 
+    if (!name || !identifier) return;
     // TODO: The `include.` replacement feels too SSG coupled.
     //                       v v v v v v v v v v v v 
     identifier = identifier.replace(/^include\./, '').replace(/\[(\d+)]/g, '.$1').split('.');
@@ -106,6 +108,8 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
         const { matches, contextMatches } = parseComment(currentNode);
 
         for (const [name, identifier] of parseParams(contextMatches?.groups["context"])) {
+            // TODO: This shouldn't be required post-tokenizer 
+            if (!identifier) return;
             // TODO: bindings here has no encapsulation / stack, which feels too SSG-coupled for assigns
             // TODO: bindings here has no encapsulation / stack, which is wrong for loops
             bindings[name] = await liveInstance.eval(identifier, combinedScope());
@@ -123,6 +127,8 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             const params = [...stashed_params, ...parseParams(matches.groups["params"])];
             pathStack.push({});
             for (const [name, identifier] of params) {
+                // TODO: This shouldn't be required post-tokenizer 
+                if (!identifier) return;
                 if (name === 'bind') {
                     const bindVals = await liveInstance.eval(identifier, combinedScope());
                     if (bindVals && typeof bindVals === 'object') {

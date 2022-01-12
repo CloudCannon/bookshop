@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/live",
   "packageManager": "yarn@3.0.0",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Live component renderer for editing from a CMS",
   "type": "module",
   "main": "main.js",
@@ -18,15 +18,15 @@
     "access": "public"
   },
   "devDependencies": {
-    "@bookshop/eleventy-engine": "2.2.2",
-    "@bookshop/jekyll-engine": "2.2.2",
+    "@bookshop/eleventy-engine": "2.2.3",
+    "@bookshop/jekyll-engine": "2.2.3",
     "ava": "^3.15.0",
     "jsdom": "^18.0.0",
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/builder": "2.2.2",
-    "@bookshop/helpers": "2.2.2",
+    "@bookshop/builder": "2.2.3",
+    "@bookshop/helpers": "2.2.3",
     "commander": "^8.1.0"
   },
   "engines": {

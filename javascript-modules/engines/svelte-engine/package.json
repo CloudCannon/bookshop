@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/svelte-engine",
   "packageManager": "yarn@3.0.0",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Bookshop frontend Svelte renderer",
   "type": "module",
   "sideEffects": false,
@@ -19,8 +19,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "@bookshop/builder": "2.2.2",
-    "@bookshop/helpers": "2.2.2",
+    "@bookshop/builder": "2.2.3",
+    "@bookshop/helpers": "2.2.3",
     "ava": "^3.15.0",
     "nyc": "^15.1.0"
   },
