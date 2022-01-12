@@ -14,7 +14,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing
         config.toml from starters/hugo/site.config.toml
       """
 
-  Scenario: Bookshop Live browser updati
+  Scenario: Bookshop Live browser update
     Given a component-lib/components/single/single.bookshop.toml file containing:
       """
       [component]
