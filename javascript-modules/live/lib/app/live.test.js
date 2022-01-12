@@ -149,7 +149,7 @@ for (const impl of ['jekyll', 'eleventy']) {
         await initial(t.context[impl], 'title-loop', { titles: ['Bookshop', 'Jekyll', 'Eleventy'] });
         t.regex(getBody(), /<h1>Jekyll<\/h1>/);
 
-        await t.context[impl].update({ titles: ['Bookshop', 'Hugo', 'Eleventy'] }, { editorLinks: false })
+        await t.context[impl].update({ titles: ['Bookshop', 'Hugo', 'Eleventy'] }, { editorLinks: false, transformData: false })
         t.regex(getBody(), /<h1>Hugo<\/h1>/);
         t.notRegex(getBody(), /<h1>Jekyll<\/h1>/);
     });
@@ -159,7 +159,7 @@ for (const impl of ['jekyll', 'eleventy']) {
         t.regex(getBody(), /<h1>0<\/h1>.*<h1>1<\/h1>/);
         t.notRegex(getBody(), /<h1>2<\/h1>/);
 
-        await t.context[impl].update({ min: 4, max: 5 }, { editorLinks: false });
+        await t.context[impl].update({ min: 4, max: 5 }, { editorLinks: false, transformData: false });
         t.regex(getBody(), /<h1>4<\/h1>.*<h1>5<\/h1>/);
         t.notRegex(getBody(), /<h1>0<\/h1>/);
     });
@@ -214,7 +214,7 @@ for (const impl of ['jekyll', 'eleventy']) {
                     ]
                 }
             ]
-        }, { editorLinks: false })
+        }, { editorLinks: false, transformData: false })
         t.regex(getBody(), /<h1>First Changed Inner Hello World<\/h1>/);
         t.notRegex(getBody(), /<h1>First Inner Hello World<\/h1>/);
         t.regex(getBody(), /<h1>Third Inner Hello World<\/h1>/);

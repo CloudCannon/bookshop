@@ -54,7 +54,11 @@ export const getLive = (engines) => class BookshopLive {
     }
 
     async update(data, options) {
-        if (typeof this.engines[0].transformData === 'function') {
+        // transformData = false means implementations like Jekyll 
+        // won't wrap the data in { page: {} }
+        // (this is currently only used for tests)
+        if (typeof this.engines[0].transformData === 'function'
+            && options?.transformData !== false) {
             this.data = this.engines[0].transformData(data);
         } else {
             this.data = data;
