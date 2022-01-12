@@ -8,6 +8,7 @@ export const getLive = (engines) => class BookshopLive {
         this.data = {};
         this.renderOptions = {};
         this.pendingRender = false;
+        this.hasRendered = false;
         this.awaitingDataFetches = options?.remoteGlobals?.length || 0;
         options?.remoteGlobals?.forEach(this.fetchGlobalData.bind(this));
     }
@@ -64,6 +65,7 @@ export const getLive = (engines) => class BookshopLive {
         } else {
             await this.render();
         }
+        this.hasRendered = true;
     }
 
     async render() {

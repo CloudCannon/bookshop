@@ -1,7 +1,14 @@
-import wasmywasmy from "../hugo-renderer/hugo_renderer.wasm";
+import hugoWasm from "../hugo-renderer/hugo_renderer.wasm";
 
 const sleep = (ms = 0) => {
     return new Promise(r => setTimeout(r, ms));
+}
+
+const dig = (obj, path) => {
+    if (typeof path === 'string') path = path.replace(/\[(\d+)]/g, '.$1').split('.');
+    obj = obj[path.shift()];
+    if (obj && path.length) return dig(obj, path);
+    return obj;
 }
 
 export class Engine {
@@ -21,8 +28,7 @@ export class Engine {
 
     async initializeHugo() {
         const scriptOrigin = document.currentScript?.src || `/bookshop.js`;
-        const wasmOrigin = scriptOrigin.replace(/\/[^\.\/]+\.js$/, wasmywasmy.replace(/^\./, ''));
-        console.log(`Loading ${wasmOrigin}`);
+        const wasmOrigin = scriptOrigin.replace(/\/[^\.\/]+\.js$/, hugoWasm.replace(/^\./, ''));
         const go = new Go();
         const response = await fetch(wasmOrigin);
         const buffer = await response.arrayBuffer();
@@ -37,10 +43,7 @@ export class Engine {
             }
         }
 
-        console.log(`Sending`);
-        console.log(mappedFiles);
         const success = window.loadHugoBookshopPartials(JSON.stringify(mappedFiles));
-        console.log(success);
     }
 
     getShared(name) {
@@ -63,8 +66,20 @@ export class Engine {
         return !!this.files?.[key];
     }
 
+    resolveComponentType(name) {
+        if (this.getComponent(name)) return 'component';
+        if (this.getShared(name)) return 'shared';
+        return false;
+    }
+
+    transformData(data) {
+        return {
+            Params: data
+        };
+    }
+
     async render(target, name, props, globals) {
-        while (!window.renderHugo) await sleep(100);
+        while (!window.renderHugo) await sleep(10);
 
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
@@ -80,23 +95,23 @@ export class Engine {
     }
 
     async eval(str, props = [{}]) {
-        try {
-            return `TODO:${str}`;
-            // const ctx = new Context();
-            // if (Array.isArray(props)) {
-            //     props.forEach(p => ctx.push(p));
-            // } else {
-            //     ctx.push(props);
-            // }
-            // const [, value, index] = str.match(/^(.*?)(?:\[(\d+)\])?$/);
-            // let result = await this.liquid.evalValue(value, ctx);
-            // if (index && typeof result === 'object' && !Array.isArray(result)) {
-            //     result = Object.entries(result);
-            // }
-            // return index ? result[index] : result;
-        } catch (e) {
-            console.error(`Error evaluating ${str}`, e);
+        if (!/^\.Params(\.\S+)*$/.test(str)) {
+            console.error([
+                `Bookshop Hugo: Couldn't evaluate \`${str}\`.`,
+                `For Bookshop bindings, only \`.Params.*\` are supported.`,
+                `Arrays can be indexed into using dot notation: \`.Params.some_array.4\``,
+            ].join(' '));
             return '';
+        }
+        try {
+            for (let prop_object of props) {
+                const val = dig(prop_object, str.replace(/^\./, ''));
+                if (val) return val;
+            }
+            return null;
+        } catch (e) {
+            console.error(`Error evaluating ${str}`, e.toString());
+            return null;
         }
     }
 

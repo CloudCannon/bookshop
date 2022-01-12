@@ -22,10 +22,6 @@ const strToStrictRegExp = (str) => {
   return new RegExp(escapeRegExp(str));
 }
 
-const debugStep = (log) => {
-  console.log(`\n\n--- DEBUG OUTPUT:\n\n\n${log}\n\n--- END DEBUG OUTPUT\n`)
-}
-
 //
 // STEPS
 //
@@ -65,7 +61,7 @@ Then(/^(\S+) should (not )?exist$/i, function (file, negation) {
 Then(/^(debug )?(\S+) should (not |leniently )?contain the text "(.+)"$/i, function (debug, file, modifier, contents) {
   assert.ok(this.fileExists(file), `${file} exists`);
   const fileContents = this.fileContents(file);
-  if (debug) debugStep(fileContents);
+  if (debug) this.debugStep(fileContents);
 
   let negation = modifier === 'not ';
   contents = unescape(contents);
@@ -84,7 +80,7 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain the text "(.+)"$/i, funct
 Then(/^(debug )?(\S+) should (not |leniently )?contain each row:$/i, function (debug, file, modifier, table) {
   assert.ok(this.fileExists(file), `${file} exists`);
   let fileContents = this.fileContents(file);
-  if (debug) debugStep(fileContents);
+  if (debug) this.debugStep(fileContents);
 
   let negation = modifier === 'not ';
   if (modifier === 'leniently ') {
@@ -105,13 +101,13 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain each row:$/i, function (d
 });
 
 Then(/^(debug )?(stdout|stderr) should (not )?be empty$/i, function (debug, stream, negation) {
-  if (debug) debugStep(this[stream]);
+  if (debug) this.debugStep(this[stream]);
   if (negation) assert.notStrictEqual(this[stream], "")
   else assert.strictEqual(this[stream], "");
 });
 
 Then(/^(debug )?(stdout|stderr) should (not )?contain "(.+)"$/i, function (debug, stream, negation, contents) {
-  if (debug) debugStep(this[stream]);
+  if (debug) this.debugStep(this[stream]);
   const contains = this[stream].includes(unescape(contents));
   if (negation) assert.ok(!contains, `${stream} does not contain ${unescape(contents)}`);
   else assert.ok(contains, `${stream} contains ${unescape(contents)}`);
@@ -156,6 +152,7 @@ When(/^🌐 I load (\S+)$/i, { timeout: 60 * 1000 }, async function (url) {
     20 // attempts
   );
   this.page
+    .on('console', message => this.trackPuppeteerLog(`${message.type().toUpperCase()}: ${message.text()}`))
     .on('pageerror', ({ message }) => this.trackPuppeteerError(message))
     .on('requestfailed', request => this.trackPuppeteerError(`${request.failure().errorText} ${request.url()}`));
 });
@@ -179,7 +176,15 @@ When(/^🌐 CloudCannon pushes new data:$/i, { timeout: 60 * 1000 }, async funct
   if (!this.page) throw Error("No page open");
   const script = `window.CloudCannon.newData(${input});`;
   await this.page.addScriptTag({ content: script });
-  await p_sleep(100); // Brief pause for Bookshop to re-render
+});
+
+When(/^🌐 "(.+)" evaluates$/i, { timeout: 5 * 1000 }, async function (statement) {
+  if (!this.page) throw Error("No page open");
+  try {
+    await this.page.waitForFunction(statement, { timeout: 4 * 1000 });
+  } catch (e) {
+    this.trackPuppeteerError(`${statement} didn't evaluate within 4s`);
+  }
 });
 
 Then(/^🌐 The selector (\S+) should contain "(.+)"$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
@@ -191,4 +196,8 @@ Then(/^🌐 The selector (\S+) should contain "(.+)"$/i, { timeout: 60 * 1000 },
 
 Then(/^🌐 There should be no errors$/i, { timeout: 60 * 1000 }, async function () {
   assert.deepEqual(this.puppeteerErrors(), []);
+});
+
+Then(/^🌐 There should be no logs$/i, { timeout: 60 * 1000 }, async function () {
+  assert.deepEqual(this.puppeteerLogs(), []);
 });

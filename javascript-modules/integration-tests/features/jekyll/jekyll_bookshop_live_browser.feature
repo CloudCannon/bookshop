@@ -65,7 +65,9 @@ Feature: Jekyll Bookshop CloudCannon Live Editing
         } ]
       }
       """
+       * 🌐 "window.bookshopLive.hasRendered === true" evaluates
     Then 🌐 There should be no errors
+       * 🌐 There should be no logs
     Then 🌐 The selector h1 should contain "Gidday"
     # Testing CloudCannon data changing
     When 🌐 CloudCannon pushes new data:

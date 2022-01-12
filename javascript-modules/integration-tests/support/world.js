@@ -17,10 +17,10 @@ const starting_port = 30000;
 const port_spacing = 10; // How many ports to provide each each with
 
 Before(async function (scenario) {
-  const internal_test_id = `${scenario.pickle.uri}:${scenario.pickle.name}`;
-  const test_index = (await test_order).indexOf(internal_test_id);
+  this.internal_test_id = `${scenario.pickle.uri}:${scenario.pickle.name}`;
+  const test_index = (await test_order).indexOf(this.internal_test_id);
   if (test_index === -1) {
-    throw new Error(`Test ${internal_test_id} not found in test_ordering`);
+    throw new Error(`Test ${this.internal_test_id} not found in test_ordering`);
   }
   const assigned_block = starting_port + (test_index * port_spacing);
   const gp = await getPort;
@@ -46,6 +46,7 @@ After(async function () {
 
 class CustomWorld {
   constructor() {
+    this.internal_test_id = "";
     this.variable = 0;
     this.tmp_dir = null;
     this.commandError = null;
@@ -55,9 +56,14 @@ class CustomWorld {
     this.browser = null; // An active puppeteer browser
     this.page = null; // An active puppeteer page
     this.page_errors = []; // Any network or javascript errors from puppeteer will be collected here
+    this.page_logs = []; // Any logs from puppeteer will be collected here
     this.assigned_port = null; // A free port that tests can spin processes up on
     this.child = null; // An active child process that we need to kill later
     this.server = null; // An active http server that we need to kill later
+  }
+
+  debugStep(log) {
+    console.log(`\n\n[${this.internal_test_id}]\n- - - DEBUG OUTPUT\n${log}\n- - - END DEBUG OUTPUT\n`)
   }
 
   buildFileTree(input) {
@@ -94,6 +100,14 @@ class CustomWorld {
 
   puppeteerErrors() {
     return this.page_errors;
+  }
+
+  trackPuppeteerLog(e) {
+    this.page_logs.push(e);
+  }
+
+  puppeteerLogs() {
+    return this.page_logs;
   }
 
   serveDir(dir) {
