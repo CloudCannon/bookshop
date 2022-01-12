@@ -21,11 +21,11 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/builder": "2.2.2",
-    "@bookshop/cloudcannon-structures": "2.2.2",
-    "@bookshop/helpers": "2.2.2",
-    "@bookshop/live": "2.2.2",
-    "@bookshop/toml-narrator": "2.2.2",
+    "@bookshop/builder": "2.2.3",
+    "@bookshop/cloudcannon-structures": "2.2.3",
+    "@bookshop/helpers": "2.2.3",
+    "@bookshop/live": "2.2.3",
+    "@bookshop/toml-narrator": "2.2.3",
     "@ltd/j-toml": "^1.17.0",
     "commander": "^8.1.0",
     "fast-glob": "^3.2.7",
