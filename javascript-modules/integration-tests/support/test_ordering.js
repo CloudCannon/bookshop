@@ -9,7 +9,7 @@ const getFeatures = async () => {
 }
 
 module.exports = async () => {
-    const feats = await getFeatures();
+    const feats = (await getFeatures()).sort();
     const scenarios = [];
     feats.forEach(uri => {
         const doc = parser.convertFeatureFileToJSON(path.join(__dirname, '../features', uri));
