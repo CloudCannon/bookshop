@@ -17,7 +17,9 @@ const starting_port = 30000;
 const port_spacing = 10; // How many ports to provide each each with
 
 Before(async function (scenario) {
-  this.internal_test_id = `${scenario.pickle.uri}:${scenario.pickle.name}`;
+  const uri = scenario.pickle.uri.replace(/\\/g, '/').replace(/^features\//g, '');
+  this.storage.ssg = uri.split('/')[0];
+  this.internal_test_id = `${uri}:${scenario.pickle.name}`;
   const test_index = (await test_order).indexOf(this.internal_test_id);
   if (test_index === -1) {
     throw new Error(`Test ${this.internal_test_id} not found in test_ordering`);

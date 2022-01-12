@@ -14,7 +14,7 @@ module.exports = async () => {
     feats.forEach(uri => {
         const doc = parser.convertFeatureFileToJSON(path.join(__dirname, '../features', uri));
         doc.feature.children.filter(c => c.type === "Scenario" || c.type === "ScenarioOutline").forEach(scenario => {
-            scenarios.push(`features/${uri}:${scenario.name}`);
+            scenarios.push(`${uri}:${scenario.name}`);
         });
     });
     return scenarios;

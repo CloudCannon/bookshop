@@ -1,8 +1,7 @@
 Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
 
   Background:
-    Given [ssg]: "hugo"
-    * the file tree:
+    Given the file tree:
       """
       package.json from starters/generate/package.json # <-- this .json line hurts my syntax highlighting
       component-lib/

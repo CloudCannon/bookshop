@@ -1,8 +1,7 @@
 Feature: Jekyll Bookshop CloudCannon Live Editing Granular Steps
 
   Background:
-    Given [ssg]: "jekyll"
-    * the file tree:
+    Given the file tree:
       """
       package.json from starters/generate/package.json # <-- this .json line hurts my syntax highlighting
       component-lib/
@@ -18,10 +17,6 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Granular Steps
     * a component-lib/components/single/single.jekyll.html file containing:
       """
       <h1>{{ include.title }}</h1>
-      """
-    * a component-lib/components/card/card.jekyll.html file containing:
-      """
-      <div class="card">{{ include.card.title }}</div>
       """
     * [front_matter]:
       """
