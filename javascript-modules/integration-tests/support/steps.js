@@ -38,6 +38,10 @@ Given(/^an? (\S+) file containing:$/i, function (filepath, input) {
   this.createFile(filepath, unescape(input));
 });
 
+Given(/^I serve the (\S+) directory$/i, { timeout: 60 * 1000 }, function (dir) {
+  this.serveDir(dir); // We'll need to kill this later
+});
+
 When(/^I run "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (command, dir) {
   command = this.replacePort(command);
   await this.runCommand(unescape(command), dir);
@@ -46,10 +50,6 @@ When(/^I run "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async fun
 When(/^I daemonize "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (command, dir) {
   command = this.replacePort(command);
   this.runCommand(unescape(command), dir); // We'll need to kill this later
-});
-
-When(/^I serve the (\S+) directory$/i, { timeout: 60 * 1000 }, function (dir) {
-  this.serveDir(dir); // We'll need to kill this later
 });
 
 Then(/^(\S+) should (not )?exist$/i, function (file, negation) {

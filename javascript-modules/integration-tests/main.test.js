@@ -4,7 +4,7 @@ const parser = require("gherkin-parse");
 const fastGlob = require('fast-glob');
 
 
-const ssgs = /^(eleventy|jekyll|hugo)/;
+const ssgs = /^(eleventy|jekyll|hugo)\//;
 
 
 const getFeatures = async () => {

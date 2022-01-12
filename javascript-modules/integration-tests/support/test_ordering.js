@@ -13,7 +13,7 @@ module.exports = async () => {
     const scenarios = [];
     feats.forEach(uri => {
         const doc = parser.convertFeatureFileToJSON(path.join(__dirname, '../features', uri));
-        doc.feature.children.filter(c => c.type === "Scenario").forEach(scenario => {
+        doc.feature.children.filter(c => c.type === "Scenario" || c.type === "ScenarioOutline").forEach(scenario => {
             scenarios.push(`features/${uri}:${scenario.name}`);
         });
     });
