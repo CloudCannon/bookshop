@@ -12,7 +12,7 @@ Feature: Eleventy Bookshop Component Browser
       site/
         .eleventy.js from starters/eleventy/.eleventy.js
         .eleventyignore from starters/eleventy/.eleventyignore
-        package.json from starters/eleventy/eleventy-one-package.json # <-- this .json line hurts my syntax highlighting
+        package.json from starters/eleventy/package.json # <-- this .json line hurts my syntax highlighting
       """
 
   Scenario: Bookshop Browser tags
