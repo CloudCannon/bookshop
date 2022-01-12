@@ -19,6 +19,7 @@
     "cloudcannon-hugo": "0.12.5",
     "eleventy-plugin-cloudcannon": "^0.0.17",
     "get-port": "^6.0.0",
+    "js-yaml": "^4.1.0",
     "puppeteer": "^13.0.1",
     "serve-handler": "^6.1.3",
     "tree-kill": "^1.2.2"

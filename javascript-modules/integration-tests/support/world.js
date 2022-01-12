@@ -52,6 +52,7 @@ class CustomWorld {
     this.commandError = null;
     this.stdout = null;
     this.stderr = null;
+    this.storage = {}; // Generic storage that steps can use
     this.puppeteer = puppeteer; // The puppeteer instance that our steps can use
     this.browser = null; // An active puppeteer browser
     this.page = null; // An active puppeteer page

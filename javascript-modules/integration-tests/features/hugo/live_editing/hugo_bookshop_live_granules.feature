@@ -1,7 +1,8 @@
 Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
 
   Background:
-    Given the file tree:
+    Given [ssg]: "hugo"
+    * the file tree:
       """
       package.json from starters/generate/package.json # <-- this .json line hurts my syntax highlighting
       component-lib/
@@ -13,7 +14,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
         go.mod from starters/hugo/site.go.mod
         config.toml from starters/hugo/site.config.toml
       """
-    Given a component-lib/components/single/single.bookshop.toml file containing:
+    * a component-lib/components/single/single.bookshop.toml file containing:
       """
       [component]
       structures = [ "content_blocks" ]
@@ -21,11 +22,11 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
       [props]
       title = "Hello World"
       """
-    And a component-lib/components/single/single.hugo.html file containing:
+    * a component-lib/components/single/single.hugo.html file containing:
       """
       <h1>{{ .title }}</h1>
       """
-    And a site/layouts/index.html file containing:
+    * a site/layouts/index.html file containing:
       """
       <html>
       <body>
@@ -34,11 +35,15 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
       </body>
       </html>
       """
-    And a site/content/_index.md file containing:
+    * [front_matter]:
       """
-      ---
       block:
         title: "Hello There"
+      """
+    * a site/content/_index.md file containing:
+      """
+      ---
+      [front_matter]
       ---
       """
 
@@ -60,32 +65,18 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
     *    stdout should contain "Added live editing to 1 page containing Bookshop components"
 
   Scenario: Bookshop live renders when CloudCannon initialises
-    Given I run "hugo" in the site directory
-    *     I run "cloudcannon-hugo --baseurl /" in the site directory
-    *     I run "npm start" in the . directory
-    *     I serve the site/public directory
-    *    🌐 I load http://localhost:__PORT__
-    Then 🌐 The selector h1 should contain "Hello There"
-    When 🌐 CloudCannon is ready with the data:
+    Given [front_matter]:
       """
-      { block: { title: "Gidday" } } 
+      block:
+        title: "Gidday"
       """
-    And  🌐 "window.bookshopLive.hasRendered === true" evaluates
+    When I load my site in CloudCannon
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Gidday"
 
   Scenario: Bookshop live renders when CloudCannon pushes new data
-    Given I run "hugo" in the site directory
-    *     I run "cloudcannon-hugo --baseurl /" in the site directory
-    *     I run "npm start" in the . directory
-    *     I serve the site/public directory
-    *    🌐 I load http://localhost:__PORT__
-    *    🌐 CloudCannon is ready with the data:
-      """
-      { block: { title: "Hello There" } } 
-      """
-    *    🌐 "window.bookshopLive.hasRendered === true" evaluates
+    Given I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new data:
       """
       { block: { title: "Rerendered" } } 

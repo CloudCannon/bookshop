@@ -1,10 +1,14 @@
 // features/support/steps.js
+const yaml = require("js-yaml");
 const { Given, When, Then } = require("@cucumber/cucumber");
 const assert = require("assert").strict;
 
-//
-// HELPERS
-//
+
+/* * * * * * * * * *
+ *                 *
+ * STRING  HELPERS *
+ *                 *
+ * * * * * * * * * */
 
 const unescape = (str) => {
   return str.replace(/\\(.)/g, "$1");
@@ -22,34 +26,40 @@ const strToStrictRegExp = (str) => {
   return new RegExp(escapeRegExp(str));
 }
 
-//
-// STEPS
-//
+const subVariables = (input, varObject) => {
+  for (const [key, value] of Object.entries(varObject)) {
+    const r = new RegExp(`\\[${key}\\]`, 'g');
+    input = input.replace(r, value);
+  }
+  return input;
+}
+
+/* * * * * * * * * * *
+ *                   *
+ * FILESYSTEM  STEPS *
+ *                   *
+ * * * * * * * * * * */
 
 Given(/^the file tree:$/i, function (input) {
   this.buildFileTree(input);
 });
 
 Given(/^an? (\S+) file containing "(.+)"$/i, function (filepath, input) {
+  input = subVariables(input, this.storage);
   this.createFile(filepath, unescape(input));
 });
 
 Given(/^an? (\S+) file containing:$/i, function (filepath, input) {
+  input = subVariables(input, this.storage);
   this.createFile(filepath, unescape(input));
 });
 
-Given(/^I serve the (\S+) directory$/i, { timeout: 60 * 1000 }, function (dir) {
-  this.serveDir(dir); // We'll need to kill this later
+Given(/^\[(.+)\]:$/i, function (variable, input) {
+  this.storage[variable] = input;
 });
 
-When(/^I run "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (command, dir) {
-  command = this.replacePort(command);
-  await this.runCommand(unescape(command), dir);
-});
-
-When(/^I daemonize "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (command, dir) {
-  command = this.replacePort(command);
-  this.runCommand(unescape(command), dir); // We'll need to kill this later
+Given(/^\[(.+)\]: "(.+)"$/i, function (variable, input) {
+  this.storage[variable] = input;
 });
 
 Then(/^(\S+) should (not )?exist$/i, function (file, negation) {
@@ -100,6 +110,26 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain each row:$/i, function (d
   });
 });
 
+/* * * * * * * * *
+ *               *
+ * COMMAND STEPS *
+ *               *
+ * * * * * * * * */
+
+Given(/^I serve the (\S+) directory$/i, { timeout: 60 * 1000 }, function (dir) {
+  this.serveDir(dir); // We'll need to kill this later
+});
+
+When(/^I run "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (command, dir) {
+  command = this.replacePort(command);
+  await this.runCommand(unescape(command), dir);
+});
+
+When(/^I daemonize "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (command, dir) {
+  command = this.replacePort(command);
+  this.runCommand(unescape(command), dir); // We'll need to kill this later
+});
+
 Then(/^(debug )?(stdout|stderr) should (not )?be empty$/i, function (debug, stream, negation) {
   if (debug) this.debugStep(this[stream]);
   if (negation) assert.notStrictEqual(this[stream], "")
@@ -113,9 +143,11 @@ Then(/^(debug )?(stdout|stderr) should (not )?contain "(.+)"$/i, function (debug
   else assert.ok(contains, `${stream} contains ${unescape(contents)}`);
 });
 
-//
-// PUPPETEER HELPERS
-//
+/* * * * * * * * * * *
+ *                   *
+ * PUPPETEER HELPERS *
+ *                   *
+ * * * * * * * * * * */
 
 const ensurePage = async (state) => {
   if (!state.browser) state.browser = await state.puppeteer.launch();
@@ -138,27 +170,23 @@ const p_retry = async (fn, wait, attempts) => {
   }
 }
 
-//
-// PUPPETEER STEPS
-//
-
-When(/^🌐 I load (\S+)$/i, { timeout: 60 * 1000 }, async function (url) {
-  await ensurePage(this);
+const loadPage = async (url, world) => {
+  await ensurePage(world);
   await p_retry(
-    () => this.page.goto(this.replacePort(url), {
-      waitUntil: 'networkidle2',
+    () => world.page.goto(world.replacePort(url), {
+      waitUntil: 'networkidle0',
     }),
     500, // ms between attempts
     20 // attempts
   );
-  this.page
-    .on('console', message => this.trackPuppeteerLog(`${message.type().toUpperCase()}: ${message.text()}`))
-    .on('pageerror', ({ message }) => this.trackPuppeteerError(message))
-    .on('requestfailed', request => this.trackPuppeteerError(`${request.failure().errorText} ${request.url()}`));
-});
+  world.page
+    .on('console', message => world.trackPuppeteerLog(`${message.type().toUpperCase()}: ${message.text()}`))
+    .on('pageerror', ({ message }) => world.trackPuppeteerError(message))
+    .on('requestfailed', request => world.trackPuppeteerError(`${request.failure().errorText} ${request.url()}`));
+}
 
-When(/^🌐 CloudCannon is ready with the data:$/i, { timeout: 60 * 1000 }, async function (input) {
-  if (!this.page) throw Error("No page open");
+const readyCloudCannon = async (data, world) => {
+  if (!world.page) throw Error("No page open");
   const script = `window.CC = class CloudCannon {
     constructor(options) { this.data = options.data; document.dispatchEvent(this.event('cloudcannon:load')); }
     newData(data) { this.data = data; document.dispatchEvent(this.event('cloudcannon:update')); }
@@ -167,15 +195,30 @@ When(/^🌐 CloudCannon is ready with the data:$/i, { timeout: 60 * 1000 }, asyn
     refreshInterface() {}
     async value() { return this.data; }
   };
-  window.CloudCannon = new window.CC({ data: ${input} })`;
-  await this.page.addScriptTag({ content: script });
-  await p_sleep(100); // Brief pause for Bookshop to re-render
+  window.CloudCannon = new window.CC({ data: ${data} })`;
+  await world.page.addScriptTag({ content: script });
+  await p_sleep(50);
+}
+
+/* * * * * * * * * *
+ *                 *
+ * PUPPETEER STEPS *
+ *                 *
+ * * * * * * * * * */
+
+When(/^🌐 I load (\S+)$/i, { timeout: 60 * 1000 }, async function (url) {
+  await loadPage(url, this);
+});
+
+When(/^🌐 CloudCannon is ready with the data:$/i, { timeout: 60 * 1000 }, async function (data) {
+  await readyCloudCannon(data, this);
 });
 
 When(/^🌐 CloudCannon pushes new data:$/i, { timeout: 60 * 1000 }, async function (input) {
   if (!this.page) throw Error("No page open");
   const script = `window.CloudCannon.newData(${input});`;
   await this.page.addScriptTag({ content: script });
+  await p_sleep(50);
 });
 
 When(/^🌐 "(.+)" evaluates$/i, { timeout: 5 * 1000 }, async function (statement) {
@@ -201,3 +244,59 @@ Then(/^🌐 There should be no errors$/i, { timeout: 60 * 1000 }, async function
 Then(/^🌐 There should be no logs$/i, { timeout: 60 * 1000 }, async function () {
   assert.deepEqual(this.puppeteerLogs(), []);
 });
+
+/* * * * * * * *
+ *             *
+ * COMBO STEPS *
+ *             *
+ * * * * * * * */
+
+Given(/^I (?:have loaded|load) my site in CloudCannon$/i, { timeout: 60 * 1000 }, async function () {
+  if (!this.storage.ssg) {
+    throw new Error(`Expected ssg to be set with a "Given [ssg]:" step`);
+  }
+  if (!/^jekyll|eleventy|hugo$/.test(this.storage.ssg)) {
+    throw new Error(`SSG was ${this.storage.ssg}, expected one of: jekyll, eleventy, hugo`);
+  }
+
+  if (!this.storage.front_matter) {
+    throw new Error(`Expected front matter to be set with a "Given [front_matter]:" step`);
+  }
+  const page_data = JSON.stringify(yaml.load(this.storage.front_matter));
+  const ssg = this.storage.ssg;
+
+  // SSG build
+  switch (ssg) {
+    case 'jekyll':
+      await this.runCommand(`bundle exec jekyll build --trace`, `site`);
+      break;
+    case 'hugo':
+      await this.runCommand(`hugo`, `site`);
+      await this.runCommand(`cloudcannon-hugo --baseurl /`, `site`);
+      break;
+    case 'eleventy':
+      await this.runCommand(`npm start`, `site`);
+  }
+
+  // @bookshop/generate
+  await this.runCommand(`npm start`, `.`);
+
+  // Open the site in a browser
+  switch (ssg) {
+    case 'jekyll':
+    case 'eleventy':
+      this.serveDir("site/_site");
+      break;
+    case 'hugo':
+      this.serveDir("site/public");
+  }
+  await loadPage("http://localhost:__PORT__", this);
+  // Trigger cloudcannon:load
+  await readyCloudCannon(page_data, this);
+  try {
+    await this.page.waitForFunction("window.bookshopLive?.hasRendered === true", { timeout: 4 * 1000 });
+  } catch (e) {
+    this.trackPuppeteerError(e.toString());
+    this.trackPuppeteerError(`Bookshop didn't do an initial render within 4s`);
+  }
+}); //yaml.load(input)
