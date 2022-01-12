@@ -1,3 +1,4 @@
+@jekyll
 Feature: Jekyll Bookshop Includes
   As a user of Jekyll with Bookshop
   I want includes scoped to the bookshop

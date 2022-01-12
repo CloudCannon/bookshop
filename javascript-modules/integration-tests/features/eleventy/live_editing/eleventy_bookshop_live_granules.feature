@@ -1,3 +1,4 @@
+@eleventy
 Feature: Eleventy Bookshop CloudCannon Live Editing Granular Steps
 
   Background:
@@ -18,14 +19,6 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Granular Steps
           info.11tydata.js from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.11tydata.js
           info.njk from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.njk
           inject-cloudcannon.config.js from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/inject-cloudcannon.config.js
-      """
-    * a component-lib/components/single/single.bookshop.toml file containing:
-      """
-      [component]
-      structures = [ "content_blocks" ]
-
-      [props]
-      title = "Hello World"
       """
     * a component-lib/components/single/single.eleventy.liquid file containing:
       """
@@ -66,13 +59,13 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Granular Steps
       block:
         title: "Gidday"
       """
-    When I load my site in CloudCannon
+    When 🌐 I load my site in CloudCannon
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Gidday"
 
   Scenario: Bookshop live renders when CloudCannon pushes new data
-    Given I have loaded my site in CloudCannon
+    Given 🌐 I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new yaml:
       """
       block:

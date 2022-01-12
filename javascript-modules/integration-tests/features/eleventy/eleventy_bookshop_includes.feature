@@ -1,3 +1,4 @@
+@eleventy
 Feature: Eleventy Bookshop Includes
   As a user of Eleventy with Bookshop
   I want includes scoped to the bookshop

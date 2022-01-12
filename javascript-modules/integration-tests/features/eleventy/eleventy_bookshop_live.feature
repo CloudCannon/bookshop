@@ -1,3 +1,4 @@
+@eleventy
 Feature: Eleventy Bookshop CloudCannon Integration
   As a user of Eleventy with Bookshop
   I want my CMS interfaces to be preconfigured

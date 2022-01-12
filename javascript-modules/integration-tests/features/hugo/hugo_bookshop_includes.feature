@@ -1,3 +1,4 @@
+@hugo
 Feature: Hugo Bookshop Includes
   As a user of Hugo with Bookshop
   I want includes scoped to the bookshop

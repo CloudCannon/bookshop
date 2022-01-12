@@ -1,3 +1,4 @@
+@hugo
 Feature: Hugo Bookshop Component Browser
   As a user of Hugo with Bookshop
   I want my component browser to be preconfigured to my bookshop

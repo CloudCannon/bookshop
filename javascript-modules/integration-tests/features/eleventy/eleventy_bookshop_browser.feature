@@ -1,3 +1,4 @@
+@eleventy
 Feature: Eleventy Bookshop Component Browser
   As a user of Eleventy with Bookshop
   I want my component browser to be preconfigured to my bookshop

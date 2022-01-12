@@ -1,3 +1,4 @@
+@init
 Feature: Generating Bookshop Components
   As a user who is using a bookshop
   I want a CLI to make new components

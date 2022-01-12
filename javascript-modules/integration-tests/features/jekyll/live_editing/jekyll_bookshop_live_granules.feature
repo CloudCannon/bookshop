@@ -1,3 +1,4 @@
+@jekyll
 Feature: Jekyll Bookshop CloudCannon Live Editing Granular Steps
 
   Background:
@@ -53,13 +54,13 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Granular Steps
       block:
         title: "Gidday"
       """
-    When I load my site in CloudCannon
+    When 🌐 I load my site in CloudCannon
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Gidday"
 
   Scenario: Bookshop live renders when CloudCannon pushes new data
-    Given I have loaded my site in CloudCannon
+    Given 🌐 I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new yaml:
       """
       block:

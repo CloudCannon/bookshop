@@ -1,3 +1,4 @@
+@generate
 Feature: Bookshop Structure Generation
   As a user who is using a bookshop
   I want my CMS interfaces to be preconfigured

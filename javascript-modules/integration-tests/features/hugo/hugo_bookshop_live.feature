@@ -1,3 +1,4 @@
+@hugo
 Feature: Hugo Bookshop CloudCannon Integration
   As a user of Hugo with Bookshop
   I want my CMS interfaces to be preconfigured

@@ -238,6 +238,22 @@ When(/^🌐 "(.+)" evaluates$/i, { timeout: 5 * 1000 }, async function (statemen
   }
 });
 
+When(/^🌐 I (?:add|have added) a click listener to (\S+)$/i, { timeout: 60 * 1000 }, async function (selector) {
+  await this.page.evaluate((selector) => {
+    document.querySelector(selector).addEventListener('click', () => { window[`${selector}:clicked`] = true })
+  }, selector);
+});
+
+Then(/^🌐 There should be a click listener on (\S+)$/i, { timeout: 60 * 1000 }, async function (selector) {
+  await this.page.evaluate((selector) => {
+    document.querySelector(selector).click();
+  }, selector);
+  const clicked = await this.page.evaluate((selector) => {
+    return window[`${selector}:clicked`];
+  }, selector);
+  assert.equal(clicked, true, `Clicking the element did fire the expected handler. Expected window["${selector}:clicked"] to be true.`);
+});
+
 Then(/^🌐 The selector (\S+) should contain "(.+)"$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
   if (!this.page) throw Error("No page open");
   const innerText = await this.page.$eval(selector, (node) => node.innerText);
@@ -259,7 +275,7 @@ Then(/^🌐 There should be no logs$/i, { timeout: 60 * 1000 }, async function (
  *             *
  * * * * * * * */
 
-Given(/^I (?:have loaded|load) my site in CloudCannon$/i, { timeout: 60 * 1000 }, async function () {
+Given(/^🌐 I (?:have loaded|load) my site in CloudCannon$/i, { timeout: 60 * 1000 }, async function () {
   if (!this.storage.ssg) {
     throw new Error(`Expected ssg to be set with a "Given [ssg]:" step`);
   }
@@ -285,6 +301,7 @@ Given(/^I (?:have loaded|load) my site in CloudCannon$/i, { timeout: 60 * 1000 }
     case 'eleventy':
       await this.runCommand(`npm start`, `site`);
   }
+  assert.strictEqual(this.stderr, "");
 
   // @bookshop/generate
   await this.runCommand(`npm start`, `.`);
@@ -307,4 +324,6 @@ Given(/^I (?:have loaded|load) my site in CloudCannon$/i, { timeout: 60 * 1000 }
     this.trackPuppeteerError(e.toString());
     this.trackPuppeteerError(`Bookshop didn't do an initial render within 4s`);
   }
+
+  assert.deepEqual(this.puppeteerErrors(), []);
 }); //yaml.load(input)

@@ -1,3 +1,4 @@
+@eleventy
 Feature: Basic Eleventy Bookshop
   As a user of Eleventy with Bookshop
   I want to be able to use components
