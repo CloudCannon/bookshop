@@ -73,9 +73,10 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Granular Steps
 
   Scenario: Bookshop live renders when CloudCannon pushes new data
     Given I have loaded my site in CloudCannon
-    When 🌐 CloudCannon pushes new data:
+    When 🌐 CloudCannon pushes new yaml:
       """
-      { block: { title: "Rerendered" } } 
+      block:
+        title: "Rerendered"
       """
     Then 🌐 There should be no errors
     *    🌐 There should be no logs

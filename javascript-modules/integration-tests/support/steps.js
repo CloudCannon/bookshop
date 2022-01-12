@@ -214,9 +214,17 @@ When(/^🌐 CloudCannon is ready with the data:$/i, { timeout: 60 * 1000 }, asyn
   await readyCloudCannon(data, this);
 });
 
-When(/^🌐 CloudCannon pushes new data:$/i, { timeout: 60 * 1000 }, async function (input) {
+When(/^🌐 CloudCannon pushes new json:$/i, { timeout: 60 * 1000 }, async function (input) {
   if (!this.page) throw Error("No page open");
   const script = `window.CloudCannon.newData(${input});`;
+  await this.page.addScriptTag({ content: script });
+  await p_sleep(50);
+});
+
+When(/^🌐 CloudCannon pushes new yaml:$/i, { timeout: 60 * 1000 }, async function (input) {
+  if (!this.page) throw Error("No page open");
+  const page_data = JSON.stringify(yaml.load(input));
+  const script = `window.CloudCannon.newData(${page_data});`;
   await this.page.addScriptTag({ content: script });
   await p_sleep(50);
 });
