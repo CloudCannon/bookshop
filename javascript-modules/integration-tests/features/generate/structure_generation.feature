@@ -39,7 +39,7 @@ Feature: Bookshop Structure Generation
       """
       <html>
       <body>
-      {{ partial "bookshop_bind_next" ".Params" }}
+      {{ partial "bookshop_bindings" "bind: .Params" }}
       {{ partial "bookshop" (dict "component" "card" "card_text" .Params.card_text "card_color" .Params.card_color) }}
       </body>
       </html>

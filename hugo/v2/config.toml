@@ -15,5 +15,5 @@ source = "core/bookshop_scss.html"
 target = "layouts/partials/bookshop_scss.html"
 
 [[module.mounts]]
-source = "core/bookshop_bind_next.html"
-target = "layouts/partials/bookshop_bind_next.html"
+source = "core/bookshop_bindings.html"
+target = "layouts/partials/bookshop_bindings.html"

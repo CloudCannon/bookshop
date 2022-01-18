@@ -123,6 +123,7 @@ Given(/^I serve the (\S+) directory$/i, { timeout: 60 * 1000 }, function (dir) {
 When(/^I run "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (command, dir) {
   command = this.replacePort(command);
   await this.runCommand(unescape(command), dir);
+  assert.strictEqual(this.commandError, "");
 });
 
 When(/^I daemonize "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (command, dir) {
@@ -296,12 +297,15 @@ Given(/^🌐 I (?:have loaded|load) my site in CloudCannon$/i, { timeout: 60 * 1
       break;
     case 'hugo':
       await this.runCommand(`hugo`, `site`);
+      assert.strictEqual(this.stderr, "");
+      assert.strictEqual(this.commandError, "");
       await this.runCommand(`cloudcannon-hugo --baseurl /`, `site`);
       break;
     case 'eleventy':
       await this.runCommand(`npm start`, `site`);
   }
   assert.strictEqual(this.stderr, "");
+  assert.strictEqual(this.commandError, "");
 
   // @bookshop/generate
   await this.runCommand(`npm start`, `.`);

@@ -96,7 +96,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
     const stack = [];           // The stack of component data scopes
     const pathStack = parentPathStack || [{}];     // The paths from the root to any assigned variables
     const bindings = {};        // Anything assigned through assigns or loops
-    let stashed_params = [];    // Params from the bookshop_bind_next tag that we should include in the next component tag
+    let stashed_params = [];    // Params from the bookshop_bindings tag that we should include in the next component tag
 
     const combinedScope = () => [liveInstance.data, ...stack.map(s => s.scope), bindings];
     const currentScope = () => stack[stack.length - 1];
@@ -120,7 +120,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             currentScope().endNode = currentNode;
             await templateBlockHandler(stack.pop());
             pathStack.pop();
-        } else if (matches && matches.groups["name"] === "__bookshop__subsequent") { // Entering a bookshop_bind_next rule
+        } else if (matches && matches.groups["name"] === "__bookshop__subsequent") { // Entering a bookshop_bindings rule
             stashed_params = [...stashed_params, ...parseParams(matches.groups["params"])];
         } else if (matches) { // Entering a new component
             let scope = {};
@@ -129,7 +129,8 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             for (const [name, identifier] of params) {
                 // TODO: This shouldn't be required post-tokenizer 
                 if (!identifier) return;
-                if (name === 'bind') {
+                // Currently 'bind' is used in Jekyll/11ty and '.' is used in Hugo
+                if (name === 'bind' || name === '.') {
                     const bindVals = await liveInstance.eval(identifier, combinedScope());
                     if (bindVals && typeof bindVals === 'object') {
                         scope = { ...scope, ...bindVals };

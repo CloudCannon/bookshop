@@ -53,7 +53,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <html>
       <body>
-      {{ partial "bookshop_bind_next" ".Params" }}
+      {{ partial "bookshop_bindings" "bind: .Params" }}
       {{ partial "bookshop" (dict "component" "multiple" "items" .Params.items) }}
       </body>
       </html>
@@ -95,8 +95,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <html>
       <body>
-      {{ partial "bookshop_bind_next" ".Params" }}
-      {{ partial "bookshop" (merge .data (dict "component" "uppermost")) }}
+      {{ partial "bookshop_bindings" "bind: .Params" }}
+      {{ partial "bookshop" (merge .Params.data (dict "component" "uppermost")) }}
       </body>
       </html>
       """

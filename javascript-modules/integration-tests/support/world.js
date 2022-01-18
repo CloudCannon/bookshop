@@ -51,6 +51,7 @@ class CustomWorld {
     this.internal_test_id = "";
     this.variable = 0;
     this.tmp_dir = null;
+    this.lastCommand = null;
     this.commandError = null;
     this.stdout = null;
     this.stderr = null;
@@ -138,7 +139,8 @@ class CustomWorld {
 
     return new Promise((resolve, reject) => {
       this.child = exec(command, { cwd: fullPath }, (error, stdout, stderr) => {
-        this.commandError = error || "";
+        this.lastCommand = command;
+        this.commandError = error ?? "";
         this.stdout = stdout || "";
         this.stderr = stderr || "";
         this.child = null;
