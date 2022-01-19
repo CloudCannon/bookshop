@@ -330,7 +330,10 @@ const recursiveCopy = (from, to) => {
     });
 }
 const trim = (str) => str.replace(/^\s+|\s+$/gm, '').replace(/^#$/gm, '');
-const pad = (str, len) => str + Array(len - str.length + 1).join(' ');
+const pad = (str, len) => {
+    len = len > 0 ? len : 1;
+    return str + Array(len - str.length + 1).join(' ')
+};
 const box = (str) => {
     let lines = trim(str).split('\n');
     const max = lines.reduce((a, b) => a.length > b.length ? a : b);

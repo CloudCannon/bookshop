@@ -14,6 +14,7 @@
     "@11ty/eleventy": "beta",
     "@11ty/eleventy-zero": "npm:@11ty/eleventy@0.12.1",
     "@bookshop/gen": "2.2.3",
+    "@bookshop/generate": "2.2.3",
     "@bookshop/sass": "2.2.3",
     "eleventy-plugin-cloudcannon": "^0.0.17"
   },
