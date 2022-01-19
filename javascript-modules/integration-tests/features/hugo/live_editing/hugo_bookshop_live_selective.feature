@@ -95,7 +95,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" "bind: .Params" }}
+      {{ partial "bookshop_bindings" "bind: .Params.data" }}
       {{ partial "bookshop" (merge .Params.data (dict "component" "uppermost")) }}
       </body>
       </html>
