@@ -5,7 +5,7 @@
   },
   "source": "site",
   "base-url": "/",
-  "_array_structures": {
+  "_structures": {
     "content_blocks": {
       "style": "modal"
     }
