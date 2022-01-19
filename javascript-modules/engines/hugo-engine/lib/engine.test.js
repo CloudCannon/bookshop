@@ -1,10 +1,4 @@
 import test from 'ava';
-import { Engine } from './engine.js';
-
-let engine = null;
-test.before(async t => {
-    engine = new Engine();
-});
 
 test("stub", async t => {
     t.pass()

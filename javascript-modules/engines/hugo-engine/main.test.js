@@ -1,5 +1,4 @@
 import test from 'ava';
-import { Engine } from './main.js';
 
 test("stub", async t => {
     t.pass()
