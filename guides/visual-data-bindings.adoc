@@ -1,0 +1,76 @@
+= Bookshop Visual Data Bindings
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+:toc-placement!:
+
+toc::[]
+
+[.lead]
+When editing a page in CloudCannon Bookshop will automatically generate link:https://cloudcannon.com/documentation/articles/extending-in-app-navigation-with-editor-links/[Visual Data Bindings]. These highlight components on the page, and open a floating editor panel scoped to the front matter data for that component.
+
+IMPORTANT: Bookshop Visual Data Bindings are supported in Bookshop versions 2.2.2 and higher.
+
+== Configuration
+
+Visual Data Bindings are only rendered when using Bookshop link:live-editing.adoc[Live Editing], so following those integration steps are the primary requirement.
+
+== Customization
+
+Bookshop adds Visual Data Bindings for any component that renders using front matter from the page. For most use cases these bindings will work out-of-the-box, and they work especially well when combined with CloudCannon Structures and page building.
+
+By default, Bookshop will add bindings for any components on the page, but will not add bindings for shared includes/partials. For example, in Eleventy:
+
+.*index.html*
+```
+<!-- This component will get an automatic binding -->
+{% bookshop 'item' props: props %}
+
+<!-- This include will not get a binding added by default -->
+{% bookshop_include 'page' props: props %}
+```
+
+This allows you to create, for example, a page include that renders your components in a loop, without bindings being added for the page as a whole. Each component within will still get bindings generated.
+
+The behavior of each scenario can be customised by including a flag in the component's props. Bookshop will look for any of the following attributes:
+
+* editor_link
+* editorLink
+* _editor_link
+* _editorLink
+
+So for example, in Eleventy:
+
+.*index.html*
+```
+<!-- This component will **not** get a binding -->
+{% bookshop 'item' editor_link: false, props: props %}
+
+<!-- This include will get a binding -->
+{% bookshop_include 'page' editor_link: true, props: props %}
+```
+
+NOTE: This flag only applies to the component directly and doesn't cascade down. Any subcomponents will follow the standard rules, or can also specify their own Data Binding flag.
+
+If you have a specific component that you never want bindings generated for, you can set `_editor_link` in the component props. 
+
+.*component.bookshop.toml*
+```
+[component]
+...
+
+[props]
+_editor_link: false
+...
+```
+
+This will be hidden from editors due to the leading underscore, and will disable bindings for that component anywhere it is rendered.
+
+== Disabling
+
+This behavior is enabled by default. If you want to opt out entirely and configure Visual Data Bindings manually, you can set `window.bookshopEditorLinks = false` anywhere in your page's javascript.

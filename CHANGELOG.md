@@ -1,3 +1,12 @@
+## [2.2.3](https://github.com/CloudCannon/bookshop/compare/v2.2.2...v2.2.3) (2021-12-14)
+
+
+### Bug Fixes
+
+* **live:** patch for complex layouts assigning html to variables ([#76](https://github.com/CloudCannon/bookshop/issues/76)) ([0a90a4d](https://github.com/CloudCannon/bookshop/commit/0a90a4de206df3f60c6cb076df6e16fc988c5400))
+
+
+
 ## [2.2.2](https://github.com/CloudCannon/bookshop/compare/v2.2.1...v2.2.2) (2021-12-08)
 
 

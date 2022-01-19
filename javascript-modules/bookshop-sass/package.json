@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/sass",
   "packageManager": "yarn@3.0.0",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Standalone sass compiler for Bookshop",
   "type": "module",
   "main": "main.js",
@@ -22,8 +22,8 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/builder": "2.2.2",
-    "@bookshop/helpers": "2.2.2",
+    "@bookshop/builder": "2.2.3",
+    "@bookshop/helpers": "2.2.3",
     "commander": "^8.1.0"
   },
   "engines": {
