@@ -1,3 +1,12 @@
+# [2.3.0](https://github.com/CloudCannon/bookshop/compare/v2.2.3...v2.3.0) (2022-01-19)
+
+
+### Features
+
+* **generate:** add new structures cli to replace cc-ssg plugins ([8a4bff3](https://github.com/CloudCannon/bookshop/commit/8a4bff3deadd3ef9d39001d298aaab835a98cee6))
+
+
+
 ## [2.2.3](https://github.com/CloudCannon/bookshop/compare/v2.2.2...v2.2.3) (2021-12-14)
 
 
