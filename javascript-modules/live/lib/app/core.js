@@ -18,6 +18,9 @@ const parseComment = node => {
         contextMatches: node.textContent.match(contextMatchRegex),
     }
 }
+const nodeIsBefore = (a, b) => {
+    return a && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
+}
 
 /**
  * Try find an existing absolute path to the given identifier,
@@ -55,7 +58,7 @@ const dig = (obj, path) => {
 export const buildDigest = (startNode, endNode) => {
     let node = startNode.nextSibling;
     let digest = ''
-    while (node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0) {
+    while (nodeIsBefore(node, endNode)) {
         switch (node.nodeType) {
             case Node.ELEMENT_NODE:
                 digest += node.outerHTML;
@@ -148,7 +151,8 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
                 bindings: JSON.parse(JSON.stringify(bindings)),
                 pathStack: JSON.parse(JSON.stringify(pathStack)),
                 scope,
-                params
+                params,
+                depth: stack.length,
             });
             stashed_params = [];
         }
@@ -165,7 +169,10 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
     const vDom = document.implementation.createHTMLDocument();
     const updates = [];     // Rendered elements and their DOM locations
 
-    const templateBlockHandler = async ({ startNode, endNode, name, scope, bindings, pathStack }) => {
+    const templateBlockHandler = async ({ startNode, endNode, name, scope, bindings, pathStack, depth }) => {
+        // We only need to render the outermost component
+        if (depth) return;
+
         const output = vDom.createElement('div');
         await liveInstance.renderElement(
             name,
@@ -242,4 +249,61 @@ export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScop
     postComment.remove();
     // v v v This is here for the tests, see jsdom #3269: https://github.com/jsdom/jsdom/issues/3269
     documentNode.remove();
+}
+
+/**
+ * Update the block of HTML between DOMStart and DOMEnd to match the contents of vDOMObject
+ * This will walk the tree and make only the most fine-grained changes possible.
+ * - Any changes to attributes like classnames will re-render the entire DOM node & children
+ * - Adding or removing elements will re-render from the parent DOM node
+ * - Most other changes should only update a text node
+ */
+export const graftTrees = (DOMStart, DOMEnd, vDOMObject) => {
+    // Collapse each NodeList into an array so that moving elements doesn't truncate a list
+    let existingNodes = [], incomingNodes = [...vDOMObject.childNodes];
+
+    let existingNode = DOMStart.nextSibling;
+    while (nodeIsBefore(existingNode, DOMEnd)) {
+        existingNodes.push(existingNode);
+        existingNode = existingNode.nextSibling;
+    }
+
+    if (existingNodes.length !== incomingNodes.length) {
+        // Root-level children have been added or removed, re-render the whole block
+        replaceHTMLRegion(DOMStart, DOMEnd, vDOMObject);
+        return;
+    }
+
+    for (let i = 0; i < existingNodes.length; i++) {
+        diffAndUpdateNode(existingNodes[i], incomingNodes[i]);
+    }
+}
+
+const diffAndUpdateNode = (existingNode, incomingNode) => {
+    if (existingNode.isEqualNode(incomingNode)) {
+        // Node and full subtree is identical
+        return;
+    }
+
+    if (!existingNode.cloneNode(false).isEqualNode(incomingNode.cloneNode(false))) {
+        // Node sans-children has changes, update this whole node (and thus children)
+        existingNode.replaceWith(incomingNode);
+        return;
+    }
+
+    if (existingNode.childNodes.length !== incomingNode.childNodes.length) {
+        // Node children have been added or removed, update this whole node
+        existingNode.replaceWith(incomingNode);
+        return;
+    }
+    // Existing node is fine, we can reach parity by updating one/some of the child nodes.
+
+
+    // Collapse each NodeList into an array so that moving an element
+    // in incomingChildren doesn't remove it from the list (and change our indexing)
+    const existingChildren = [...existingNode.childNodes];
+    const incomingChildren = [...incomingNode.childNodes];
+    for (let i = 0; i < existingChildren.length; i++) {
+        diffAndUpdateNode(existingChildren[i], incomingChildren[i]);
+    }
 }

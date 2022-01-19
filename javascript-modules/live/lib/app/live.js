@@ -99,13 +99,7 @@ export const getLive = (engines) => class BookshopLive {
                 await core.hydrateEditorLinks(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode());
             }
 
-            // We can short-circuit doing any slow real-DOM work here
-            // if we can tell that this render didn't change anything.
-            if (core.buildDigest(startNode, endNode) === output.innerHTML) {
-                continue;
-            }
-
-            core.replaceHTMLRegion(startNode, endNode, output);
+            core.graftTrees(startNode, endNode, output);
         }
     }
 }
