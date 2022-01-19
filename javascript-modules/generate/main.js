@@ -68,11 +68,14 @@ async function run() {
         console.log(`📚 Modifying built site at ./${siteRoot}`);
         const contents = fs.readFileSync(infoJsonFile, "utf8");
         const info_json = JSON.parse(contents);
-        info_json["_array_structures"] = info_json["_array_structures"] || {};
+        info_json["_structures"] = info_json["_structures"] || {};
 
         files?.forEach(file => {
             file.components?.forEach(component => {
-                addComponentTo(info_json["_array_structures"], component);
+                addComponentTo(info_json["_structures"], component);
+                if (typeof info_json["_array_structures"] === 'object') {
+                    addComponentTo(info_json["_array_structures"], component);
+                }
             });
         });
 
