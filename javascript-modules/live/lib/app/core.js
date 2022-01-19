@@ -190,15 +190,15 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
 
 /**
  * Takes in a real-or-virtual-DOM tree containing Bookshop live comments
- * Updates all components found within to have editor links
+ * Updates all components found within to have data bindings
  * pointing to the front matter path passed to that component (if possible)
  */
-export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScope, preComment, postComment) => {
+export const hydrateDataBindings = async (liveInstance, documentNode, pathsInScope, preComment, postComment) => {
     const vDom = documentNode.ownerDocument;
     const components = [];     // Rendered components and their path stack
 
     // documentNode won't contain the bookshopLive comments that triggered its render,
-    // which have the context we need for giving it editor links. So we sneak them in
+    // which have the context we need for giving it data bindings. So we sneak them in
     documentNode.prepend(preComment);
     documentNode.append(postComment);
     // v v v This is here for the tests, see jsdom #3269: https://github.com/jsdom/jsdom/issues/3269
@@ -215,30 +215,34 @@ export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScop
     await evaluateTemplate(liveInstance, documentNode, pathsInScope, templateBlockHandler);
 
     for (let { startNode, endNode, params, pathStack, scope, name } of components) {
-        // By default, don't add editor links for bookshop shared includes
+        // By default, don't add bindings for bookshop shared includes
         const isStandardComponent = liveInstance.resolveComponentType(name) === 'component';
-        const editorLinkFlag = scope?.editorLink
+        const dataBindingFlag = scope?.editorLink
             ?? scope?.editor_link
             ?? scope?._editorLink
             ?? scope?._editor_link
+            ?? scope?.dataBinding
+            ?? scope?.data_binding
+            ?? scope?._dataBinding
+            ?? scope?._data_binding
             ?? isStandardComponent;
-        if (editorLinkFlag) { // If we should be adding an editor link _for this component_
-            let editorLink = null;
+        if (dataBindingFlag) { // If we should be adding a data binding _for this component_
+            let dataBinding = null;
             for (const [, identifier] of params) {
                 const path = (findInStack(identifier, pathStack) ?? identifier);
                 let pathResolves = dig(liveInstance.data, path);
                 if (pathResolves) {
                     // TODO: This special page case feels too SSG-coupled
-                    editorLink = path.replace(/^page(\.|$)/, '');
+                    dataBinding = path.replace(/^page(\.|$)/, '');
                     break;
                 }
             }
-            if (editorLink) {
-                // Add the editor link to all top-level elements of the component,
+            if (dataBinding) {
+                // Add the data binding to all top-level elements of the component,
                 // since we can't wrap the component in any elements
                 let node = startNode.nextElementSibling;
                 while (node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0) {
-                    node.dataset.cmsEditorLink = `cloudcannon:#${editorLink}`;
+                    node.dataset.cmsBind = `cloudcannon:#${dataBinding}`;
                     node = node.nextElementSibling;
                 }
             }

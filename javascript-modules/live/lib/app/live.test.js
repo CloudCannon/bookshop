@@ -252,7 +252,7 @@ for (const impl of ['jekyll', 'eleventy']) {
         const pagedot = impl === `jekyll` ? `page.` : ``;
         t.is(getBody(), [
             `<!--bookshop-live name(title) params(title: ${pagedot}title)-->`,
-            `<h1 data-cms-editor-link="cloudcannon:#title">Live Love Laugh<\/h1>`,
+            `<h1 data-cms-bind="cloudcannon:#title">Live Love Laugh<\/h1>`,
             `<!--bookshop-live end-->`
         ].join(''));
     });
@@ -262,9 +262,9 @@ for (const impl of ['jekyll', 'eleventy']) {
 
         const data = wrapDataFor(impl, { data: { one: "One", two: "Two", three: "Three" } });
         await t.context[impl].update(data)
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#data">One<\/h1>/);
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#data">Two<\/h1>/);
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#data">Three<\/h1>/);
+        t.regex(getBody(), /<h1 data-cms-bind="cloudcannon:#data">One<\/h1>/);
+        t.regex(getBody(), /<h1 data-cms-bind="cloudcannon:#data">Two<\/h1>/);
+        t.regex(getBody(), /<h1 data-cms-bind="cloudcannon:#data">Three<\/h1>/);
     });
 
     test.serial(`[${impl}]: Renders nested editor links`, async t => {
@@ -272,9 +272,9 @@ for (const impl of ['jekyll', 'eleventy']) {
 
         const data = wrapDataFor(impl, { titles: ['Bookshop', 'Jekyll', 'Eleventy'] });
         await t.context[impl].update(data)
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.0">Bookshop<\/h1>/);
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.1">Jekyll<\/h1>/);
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.2">Eleventy<\/h1>/);
+        t.regex(getBody(), /<h1 data-cms-bind="cloudcannon:#titles.0">Bookshop<\/h1>/);
+        t.regex(getBody(), /<h1 data-cms-bind="cloudcannon:#titles.1">Jekyll<\/h1>/);
+        t.regex(getBody(), /<h1 data-cms-bind="cloudcannon:#titles.2">Eleventy<\/h1>/);
     });
 
     test.serial(`[${impl}]: Cleans up paths for editor links when going out of scope`, async t => {
@@ -282,8 +282,8 @@ for (const impl of ['jekyll', 'eleventy']) {
 
         const data = wrapDataFor(impl, { titles: ['Bookshop', 'Jekyll', 'Eleventy'] });
         await t.context[impl].update(data, { editorLinks: true })
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.0">Bookshop<\/h1>/);
-        t.notRegex(getBody(), /<null data-cms-editor-link/);
+        t.regex(getBody(), /<h1 data-cms-bind="cloudcannon:#titles.0">Bookshop<\/h1>/);
+        t.notRegex(getBody(), /<null data-cms-bind/);
     });
 
     test.serial(`[${impl}]: Re-renders editor links depth first`, async t => {
@@ -321,28 +321,28 @@ for (const impl of ['jekyll', 'eleventy']) {
         let data = wrapDataFor(impl, { data: { editorLink: false, inner: { one: "One", two: "Two", three: "Three" } } });
         await t.context[impl].update(data, { editorLinks: true })
 
-        t.notRegex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
-        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+        t.notRegex(getBody(), /<div data-cms-bind="cloudcannon:#data">/);
+        t.regex(getBody(), /<div data-cms-bind="cloudcannon:#data.inner">/);
 
         // Render without the inner editor link
         data = wrapDataFor(impl, { data: { editorLink: true, inner: { editorLink: false, one: "One", two: "Two", three: "Three" } } });
         await t.context[impl].update(data, { editorLinks: true })
 
-        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
-        t.notRegex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+        t.regex(getBody(), /<div data-cms-bind="cloudcannon:#data">/);
+        t.notRegex(getBody(), /<div data-cms-bind="cloudcannon:#data.inner">/);
 
         // Render with both editor links
         data = wrapDataFor(impl, { data: { inner: { one: "One", two: "Two", three: "Three" } } });
         await t.context[impl].update(data, { editorLinks: true })
 
-        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
-        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+        t.regex(getBody(), /<div data-cms-bind="cloudcannon:#data">/);
+        t.regex(getBody(), /<div data-cms-bind="cloudcannon:#data.inner">/);
 
         // Render without the inner editor link using the other syntax
         data = wrapDataFor(impl, { data: { editor_link: true, inner: { editor_link: false, one: "One", two: "Two", three: "Three" } } });
         await t.context[impl].update(data, { editorLinks: true })
 
-        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
-        t.notRegex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+        t.regex(getBody(), /<div data-cms-bind="cloudcannon:#data">/);
+        t.notRegex(getBody(), /<div data-cms-bind="cloudcannon:#data.inner">/);
     });
 }

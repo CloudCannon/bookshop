@@ -75,12 +75,17 @@ export const getLive = (engines) => class BookshopLive {
     async render() {
         const CCEditorPanelSupport = typeof window === 'undefined' || typeof window !== 'undefined' && window.CloudCannon?.refreshInterface;
         const options = {
-            editorLinks: CCEditorPanelSupport,
+            dataBindings: CCEditorPanelSupport,
             ...this.renderOptions
         };
 
-        if (typeof window !== 'undefined' && window.bookshopEditorLinks === false) {
-            options.editorLinks = false;
+        if (typeof window !== 'undefined' && (window.bookshopEditorLinks === false || window.bookshopDataBindings === false)) {
+            options.dataBindings = false;
+        }
+
+        // Legacy flag
+        if (options.editorLinks === false) {
+            options.dataBindings = false;
         }
 
         // Render _all_ components found on the page into virtual DOM nodes
@@ -94,9 +99,9 @@ export const getLive = (engines) => class BookshopLive {
             output,     // A virtual-DOM node containing contents of the just-rendered component
             pathStack,  // Any "absolute paths" to data in scope for this component
         } of componentUpdates) {
-            if (options.editorLinks) { // If we should be adding editor links _in general_
-                // Re-traverse this component to inject any editor links we can to it or its children.
-                await core.hydrateEditorLinks(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode());
+            if (options.dataBindings) { // If we should be adding data bindings _in general_
+                // Re-traverse this component to inject any data bindings we can to it or its children.
+                await core.hydrateDataBindings(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode());
             }
 
             core.graftTrees(startNode, endNode, output);
