@@ -1,3 +1,12 @@
+## [2.3.1](https://github.com/CloudCannon/bookshop/compare/v2.3.0...v2.3.1) (2022-01-19)
+
+
+### Bug Fixes
+
+* live rendering error boundary around bad comments ([91e77f1](https://github.com/CloudCannon/bookshop/commit/91e77f1aad02a64b6e710c38eb43c37e5172b6d7))
+
+
+
 # [2.3.0](https://github.com/CloudCannon/bookshop/compare/v2.2.3...v2.3.0) (2022-01-19)
 
 

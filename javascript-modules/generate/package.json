@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/generate",
   "packageManager": "yarn@3.0.0",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Bookshop generate powers rich editing experiences on your Bookshop website",
   "type": "module",
   "main": "main.js",
@@ -21,10 +21,10 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/builder": "2.3.0",
-    "@bookshop/cloudcannon-structures": "2.3.0",
-    "@bookshop/helpers": "2.3.0",
-    "@bookshop/toml-narrator": "2.3.0",
+    "@bookshop/builder": "2.3.1",
+    "@bookshop/cloudcannon-structures": "2.3.1",
+    "@bookshop/helpers": "2.3.1",
+    "@bookshop/toml-narrator": "2.3.1",
     "@ltd/j-toml": "^1.17.0",
     "commander": "^8.1.0",
     "fast-glob": "^3.2.7",

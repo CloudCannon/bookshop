@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/init",
   "packageManager": "yarn@3.0.0",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "",
   "main": "src/index.js",
   "repository": {
@@ -19,7 +19,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@bookshop/helpers": "2.3.0",
+    "@bookshop/helpers": "2.3.1",
     "ejs": "^3.1.6",
     "yargs": "^17.2.1"
   },
