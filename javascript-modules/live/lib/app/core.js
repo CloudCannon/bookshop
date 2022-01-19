@@ -108,7 +108,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
 
         for (const [name, identifier] of parseParams(contextMatches?.groups["context"])) {
             // TODO: This shouldn't be required post-tokenizer 
-            if (!identifier) return;
+            if (!identifier) continue;
             // TODO: bindings here has no encapsulation / stack, which feels too SSG-coupled for assigns
             // TODO: bindings here has no encapsulation / stack, which is wrong for loops
             bindings[name] = await liveInstance.eval(identifier, combinedScope());
@@ -125,7 +125,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             pathStack.push({});
             for (const [name, identifier] of params) {
                 // TODO: This shouldn't be required post-tokenizer 
-                if (!identifier) return;
+                if (!identifier) continue;
                 if (name === 'bind') {
                     const bindVals = await liveInstance.eval(identifier, combinedScope());
                     if (bindVals && typeof bindVals === 'object') {
