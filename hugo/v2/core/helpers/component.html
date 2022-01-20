@@ -2,25 +2,24 @@
     Renders a single Bookshop component, 
     wrapping in in a live editing context tag.
 
-    Expects a dict:
-    { 
-        component: [Bookshop Object], 
-        input: String,      # See core/helpers/live_key.html
-        index: int,         # See core/helpers/live_key.html
-        root_type: String   # See core/helpers/live_key.html
-    }
+    Expects a slice:
+    [
+        <string>, # Component name
+        <_>       # Component props
+    ]
 */}}
 
-{{- if .component._bookshop_name -}}
-    {{- $component_path := partial "_bookshop/helpers/component_key" .component._bookshop_name -}}
+{{- $component_name := index . 0 -}}
+{{- $component_props := index . 1 -}}
+{{- $component_path := partial "_bookshop/helpers/component_key" $component_name -}}
 
-    {{- if templates.Exists ( printf "partials/%s" $component_path ) -}}
-        {{ (printf "<!--bookshop-live name(%s) params() context() -->" .component._bookshop_name) | safeHTML }}
-{{ partial $component_path .component }}
+{{- if templates.Exists ( printf "partials/%s" $component_path ) -}}
+
+{{ (printf "<!--bookshop-live name(%s) params() context() -->" $component_name) | safeHTML }}
+{{ partial $component_path $component_props }}
 {{ "<!--bookshop-live end-->" | safeHTML }}
-    {{- else -}}
-        {{- partial "_bookshop/errors/err" (printf "component \"%s\" does not exist" .component._bookshop_name) -}}
-    {{- end -}}
+
 {{- else -}}
-    {{- partial "_bookshop/errors/err" (printf "\"%s\" does not contain a _bookshop_name field, so no component can be rendered." .) -}}
+    {{- $file_loc := slicestr $component_path 9 -}}
+    {{- partial "_bookshop/errors/err" (printf "Component \"%s\" does not exist.\n     Create this component by placing a file in your bookshop at %s" $component_name $file_loc) -}}
 {{- end -}}
