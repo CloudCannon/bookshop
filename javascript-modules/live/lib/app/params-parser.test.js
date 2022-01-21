@@ -2,6 +2,14 @@ import test from 'ava';
 import { ParamsParser } from './params-parser.js';
 
 test(`Hugo dict`, async t => {
+    const params = `bind: (dict "contents" .Params.contents )`;
+    const output = (new ParamsParser(params)).build();
+    t.deepEqual(output, [
+        ["bind", `(dict "contents" .Params.contents )`]
+    ]);
+});
+
+test(`Nested Hugo dict`, async t => {
     const params = `bind: (dict "a" (slice 1 2 3))`;
     const output = (new ParamsParser(params)).build();
     t.deepEqual(output, [
@@ -67,5 +75,13 @@ test(`Extraneous whitespace`, async t => {
     t.deepEqual(output, [
         ["k", `"v"`],
         ["a", `4`]
+    ]);
+});
+
+test(`Ranges`, async t => {
+    const params = `t=(min..max)[0]`;
+    const output = (new ParamsParser(params)).build();
+    t.deepEqual(output, [
+        ["t", `(min..max)[0]`]
     ]);
 });

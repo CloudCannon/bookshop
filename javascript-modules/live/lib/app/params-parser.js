@@ -5,6 +5,8 @@ const TOKENS = {
   SPACE: /\s/,
   INSCOPE: /\(/,
   OUTSCOPE: /\)/,
+  INDEX: /\[/,
+  OUTDEX: /\]/,
 }
 
 /**
@@ -99,11 +101,19 @@ export class ParamsParser {
       if (TOKENS.INSCOPE.test(t)) {
         return this.deps.delim = TOKENS.OUTSCOPE;
       }
+      //              ↓  
+      // title: (0..4)[1]
+      if (TOKENS.INDEX.test(t)) {
+        return this.deps.delim = TOKENS.OUTDEX;
+      }
+
+      this.deps.delim = TOKENS.SPACE
+
       //        ↓  
       // title: variable
-      this.deps.delim = TOKENS.SPACE;
-      this.deps.stripdelim = true;
-      return;
+      if (!TOKENS.SPACE.test(t)) {
+        return;
+      }
     }
 
     //                               ↓  
@@ -112,13 +122,21 @@ export class ParamsParser {
       return this.deps.delimDepth -= 1;
     }
 
-    //                    ↓  
-    // title: "Hello World"
-    if (this.deps.delim.test(t)) {
-      if (this.deps.stripdelim) { this.deps.value = this.deps.value.replace(/.$/, '') }
+
+    //                     ↓  
+    // title: "Hello World" 
+    if (this.deps.delim === TOKENS.SPACE && this.deps.delim.test(t)) {
+      this.deps.value = this.deps.value.replace(/.$/, '')
       this.output.push([this.deps.identifier, this.deps.value]);
       this.state = 'IDENT';
       this.deps = {};
+      return;
+    }
+
+    //                    ↓              ↓  ↓
+    // title: "Hello World" number: (0..4)[2]
+    if (this.deps.delim.test(t)) {
+      this.deps.delim = null;
       return;
     }
 
