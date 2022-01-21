@@ -1,9 +1,9 @@
 import test from 'ava';
-import { ParamTokenizer } from './param-tokenizer.js';
+import { ParamsParser } from './params-parser.js';
 
 test(`Hugo dict`, async t => {
     const params = `bind: (dict "a" (slice 1 2 3))`;
-    const output = (new ParamTokenizer(params)).build();
+    const output = (new ParamsParser(params)).build();
     t.deepEqual(output, {
         "bind": `(dict "a" (slice 1 2 3))`
     });
@@ -11,7 +11,7 @@ test(`Hugo dict`, async t => {
 
 test(`Bare variable`, async t => {
     const params = `title: page.title[3]`;
-    const output = (new ParamTokenizer(params)).build();
+    const output = (new ParamsParser(params)).build();
     t.deepEqual(output, {
         "title": `page.title[3]`
     });
@@ -19,7 +19,7 @@ test(`Bare variable`, async t => {
 
 test(`Quoted strings`, async t => {
     const params = `a: "Hello World" b: 'Hi Globe' c: \`Hey Earth\``;
-    const output = (new ParamTokenizer(params)).build();
+    const output = (new ParamsParser(params)).build();
     t.deepEqual(output, {
         "a": `"Hello World"`,
         "b": `'Hi Globe'`,
@@ -29,7 +29,7 @@ test(`Quoted strings`, async t => {
 
 test(`Escaped strings`, async t => {
     const params = `key: "He\\\`llo \\"Wo'rld" next: ""`;
-    const output = (new ParamTokenizer(params)).build();
+    const output = (new ParamsParser(params)).build();
     t.deepEqual(output, {
         "key": `"He\`llo "Wo'rld"`,
         "next": `""`,
@@ -38,7 +38,7 @@ test(`Escaped strings`, async t => {
 
 test(`Complex keys`, async t => {
     const params = `num\\:be r: 1234`;
-    const output = (new ParamTokenizer(params)).build();
+    const output = (new ParamsParser(params)).build();
     t.deepEqual(output, {
         "num:be r": `1234`,
     });
@@ -46,7 +46,7 @@ test(`Complex keys`, async t => {
 
 test(`Equals notation`, async t => {
     const params = `item="result" number=4`;
-    const output = (new ParamTokenizer(params)).build();
+    const output = (new ParamsParser(params)).build();
     t.deepEqual(output, {
         "item": `"result"`,
         "number": `4`,
@@ -55,7 +55,7 @@ test(`Equals notation`, async t => {
 
 test(`Escaped escape`, async t => {
     const params = `item="result\\\\"`;
-    const output = (new ParamTokenizer(params)).build();
+    const output = (new ParamsParser(params)).build();
     t.deepEqual(output, {
         "item": `"result\\"`,
     });
@@ -63,7 +63,7 @@ test(`Escaped escape`, async t => {
 
 test(`Extraneous whitespace`, async t => {
     const params = `    k:       "v"   a: 4`;
-    const output = (new ParamTokenizer(params)).build();
+    const output = (new ParamsParser(params)).build();
     t.deepEqual(output, {
         "k": `"v"`,
         "a": `4`

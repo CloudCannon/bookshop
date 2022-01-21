@@ -10,7 +10,7 @@ const TOKENS = {
 /**
  * Takes in a param string and returns an object of [identifier: value] pairs
  */
-export class ParamTokenizer {
+export class ParamsParser {
   constructor(input) {
     this.input = input;
     this.stream = input.split('');
