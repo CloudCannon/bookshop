@@ -16,7 +16,7 @@ export class ParamsParser {
     this.stream = input.split('');
     this.state = `IDENT`;
     this.deps = {};
-    this.output = {};
+    this.output = [];
   }
 
   build() {
@@ -116,7 +116,7 @@ export class ParamsParser {
     // title: "Hello World"
     if (this.deps.delim.test(t)) {
       if (this.deps.stripdelim) { this.deps.value = this.deps.value.replace(/.$/, '') }
-      this.output[this.deps.identifier] = this.deps.value;
+      this.output.push([this.deps.identifier, this.deps.value]);
       this.state = 'IDENT';
       this.deps = {};
       return;

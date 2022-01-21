@@ -1,3 +1,5 @@
+import { ParamsParser } from './params-parser.js';
+
 //    <!--bookshop-live name(...) params(...)-->
 // or <!--bookshop-live name(...) params(...) context(...)-->
 // or <!--bookshop-live end-->
@@ -7,7 +9,8 @@ const contextMatchRegex = /bookshop-live.*context\((?<context>.+)\)\s*$/;
 
 // TODO: Use the @bookshop/helpers package for name normalization
 const normalizeName = name => name.replace(/\/[\w-]+\..+$/, '').replace(/\..+$/, '');
-const parseParams = params => params ? params.replace(/: /g, '=').split(' ').map(p => p.split('=')) : [];
+// const parseParams = params => params ? params.replace(/: /g, '=').split(' ').map(p => p.split('=')) : [];
+const parseParams = params => params ? (new ParamsParser(params)).build() : [];
 const getTemplateCommentIterator = node => {
     const documentNode = node.ownerDocument ?? document;
     return documentNode.evaluate("//comment()[contains(.,'bookshop-live')]", node, null, XPathResult.ANY_TYPE, null);

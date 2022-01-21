@@ -33,7 +33,8 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Selective Re-rendering
     Given a component-lib/components/assigner/assigner.eleventy.liquid file containing:
       """
       {% assign test_var=component._bookshop_name %}
-      <div> {% bookshop '{{test_var}}' bind: component %} </div>
+      {% assign title_var=component.title %}
+      <div> {% bookshop '{{test_var}}' title: title_var %} </div>
       """
     Given [front_matter]:
       """

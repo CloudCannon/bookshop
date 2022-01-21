@@ -28,7 +28,8 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Selective Re-rendering
     Given a component-lib/components/assigner/assigner.jekyll.html file containing:
       """
       {% assign test_var=include.component._bookshop_name %}
-      <div> {% bookshop {{test_var}} bind=include.component %} </div>
+      {% assign title_var=include.component.title %}
+      <div> {% bookshop {{test_var}} title=title_var %} </div>
       """
     Given [front_matter]:
       """
