@@ -95,11 +95,21 @@ export class Engine {
     }
 
     async eval(str, props = [{}]) {
+        if (/^(false|true)$/.test(str)) {
+            return str === "true";
+        }
+        if (/^\d+$/.test(str)) {
+            return parseInt(str);
+        }
+        if (/^(\".+\"|\'.+\')/.test(str)) {
+            return str.replace(/^.|.$/g, '');
+        }
         if (!/^\.Params(\.\S+)*$/.test(str)) {
             console.error([
                 `Bookshop Hugo: Couldn't evaluate \`${str}\`.`,
                 `For Bookshop bindings, only \`.Params.*\` are supported.`,
                 `Arrays can be indexed into using dot notation: \`.Params.some_array.4\``,
+                `Raw values can be passed: true,false,"string",1234`,
             ].join(' '));
             return '';
         }

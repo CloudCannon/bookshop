@@ -98,10 +98,11 @@ export const getLive = (engines) => class BookshopLive {
             endNode,    // The bookshop-live end comment following this component's location in real-DOM
             output,     // A virtual-DOM node containing contents of the just-rendered component
             pathStack,  // Any "absolute paths" to data in scope for this component
+            stashedNodes, // Any bookshop_bindings tags that were applied to this component
         } of componentUpdates) {
             if (options.dataBindings) { // If we should be adding data bindings _in general_
                 // Re-traverse this component to inject any data bindings we can to it or its children.
-                await core.hydrateDataBindings(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode());
+                await core.hydrateDataBindings(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode(), stashedNodes.map(n => n.cloneNode()));
             }
 
             core.graftTrees(startNode, endNode, output);

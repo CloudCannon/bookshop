@@ -99,7 +99,8 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
     const stack = [];           // The stack of component data scopes
     const pathStack = parentPathStack || [{}];     // The paths from the root to any assigned variables
     const bindings = {};        // Anything assigned through assigns or loops
-    let stashed_params = [];    // Params from the bookshop_bindings tag that we should include in the next component tag
+    let stashedNodes = [];    // bookshop_bindings tags that we should keep track of for the next component
+    let stashedParams = [];    // Params from the bookshop_bindings tag that we should include in the next component tag
 
     const combinedScope = () => [liveInstance.data, ...stack.map(s => s.scope), bindings];
     const currentScope = () => stack[stack.length - 1];
@@ -124,10 +125,11 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             await templateBlockHandler(stack.pop());
             pathStack.pop();
         } else if (matches && matches.groups["name"] === "__bookshop__subsequent") { // Entering a bookshop_bindings rule
-            stashed_params = [...stashed_params, ...parseParams(matches.groups["params"])];
+            stashedNodes.push(currentNode);
+            stashedParams = [...stashedParams, ...parseParams(matches.groups["params"])];
         } else if (matches) { // Entering a new component
             let scope = {};
-            const params = [...stashed_params, ...parseParams(matches.groups["params"])];
+            const params = [...stashedParams, ...parseParams(matches.groups["params"])];
             pathStack.push({});
             for (const [name, identifier] of params) {
                 // TODO: This shouldn't be required post-tokenizer 
@@ -152,9 +154,11 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
                 pathStack: JSON.parse(JSON.stringify(pathStack)),
                 scope,
                 params,
+                stashedNodes,
                 depth: stack.length,
             });
-            stashed_params = [];
+            stashedParams = [];
+            stashedNodes = [];
         }
         currentNode = iterator.iterateNext();
     }
@@ -169,7 +173,7 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
     const vDom = document.implementation.createHTMLDocument();
     const updates = [];     // Rendered elements and their DOM locations
 
-    const templateBlockHandler = async ({ startNode, endNode, name, scope, bindings, pathStack, depth }) => {
+    const templateBlockHandler = async ({ startNode, endNode, name, scope, bindings, pathStack, depth, stashedNodes }) => {
         // We only need to render the outermost component
         if (depth) return;
 
@@ -180,7 +184,7 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
             bindings,
             output
         )
-        updates.push({ startNode, endNode, output, pathStack, scope, name });
+        updates.push({ startNode, endNode, output, pathStack, scope, name, stashedNodes });
     }
 
     await evaluateTemplate(liveInstance, documentNode, null, templateBlockHandler);
@@ -193,13 +197,16 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
  * Updates all components found within to have data bindings
  * pointing to the front matter path passed to that component (if possible)
  */
-export const hydrateDataBindings = async (liveInstance, documentNode, pathsInScope, preComment, postComment) => {
+export const hydrateDataBindings = async (liveInstance, documentNode, pathsInScope, preComment, postComment, stashedNodes) => {
     const vDom = documentNode.ownerDocument;
     const components = [];     // Rendered components and their path stack
 
     // documentNode won't contain the bookshopLive comments that triggered its render,
     // which have the context we need for giving it data bindings. So we sneak them in
     documentNode.prepend(preComment);
+    for (let node of stashedNodes.reverse()) {
+        documentNode.prepend(node);
+    }
     documentNode.append(postComment);
     // v v v This is here for the tests, see jsdom #3269: https://github.com/jsdom/jsdom/issues/3269
     vDom.body.appendChild(documentNode);
@@ -229,11 +236,18 @@ export const hydrateDataBindings = async (liveInstance, documentNode, pathsInSco
         if (dataBindingFlag) { // If we should be adding a data binding _for this component_
             let dataBinding = null;
             for (const [, identifier] of params) {
-                const path = (findInStack(identifier, pathStack) ?? identifier);
+                let path = (findInStack(identifier, pathStack) ?? identifier);
+
+                // TODO: This special Params case feels too SSG-coupled
+                path = path.replace(/^\.Params/, 'Params');
+
                 let pathResolves = dig(liveInstance.data, path);
                 if (pathResolves) {
                     // TODO: This special page case feels too SSG-coupled
                     dataBinding = path.replace(/^page(\.|$)/, '');
+
+                    // TODO: This special Params case feels too SSG-coupled
+                    dataBinding = dataBinding.replace(/^Params(\.|$)/, '');
                     break;
                 }
             }
@@ -251,6 +265,9 @@ export const hydrateDataBindings = async (liveInstance, documentNode, pathsInSco
 
     preComment.remove();
     postComment.remove();
+    for (let node of stashedNodes) {
+        node.remove();
+    }
     // v v v This is here for the tests, see jsdom #3269: https://github.com/jsdom/jsdom/issues/3269
     documentNode.remove();
 }

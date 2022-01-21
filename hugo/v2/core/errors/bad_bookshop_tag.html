@@ -4,17 +4,31 @@
     Expects a String containing a helpful error message.
 */}}
 
-{{- $message := printf "Incorrect Bookshop tag was used:\n  👉 %s\n\nThe following Bookshop tag formats are valid:" . -}}
+{{- $err := slice 
+    .
+    "    The following Bookshop tag formats are valid:"
+    ""
+    "  ► Render a \"button\" component with data:"
+    " ┌─"
+    " │  {{ partial \"bookshop\" (slice \"button\" (dict \"text\" .button.text)) }}"
+    " ├─"
+    " │  {{ with (dict \"text\" .button.text) }}"
+    " │     {{ partial \"bookshop\" (slice \"button\" .) }}"
+    " │  {{ end }}"
+    " └─"
+    ""
+    "  ► Render a component from a struct, where the struct contains a _bookshop_name key:"
+    " ┌─"
+    " │  {{ partial \"bookshop\" (dict \"_bookshop_name\" \"button\" \"text\" .button.text) }}"
+    " ├─"
+    " │  {{ partial \"bookshop\" .Params.component_structure }}"
+    " └─"
+    ""
+    "  ► Render a \"tag\" partial with data:"
+    " ┌─"
+    " │  {{ partial \"bookshop_partial\" (slice \"tag\" (dict \"message\" \"Hello World\")) }}"
+    " └─"
+    " "
+-}}
+{{- partial "_bookshop/errors/err" (delimit $err "\n") -}}
 
-{{- $component_slice_example := "{{ partial \"bookshop\" (slice \"button\" (dict \"text\" .button.text)) }}" -}}
-{{- $component_with_example := "{{ with (dict \"text\" .button.text) }}\n|     {{ partial \"bookshop\" (slice \"button\" .) }}\n|   {{ end }}" -}}
-{{- $component_slice_message := printf "  Render a \"button\" component with data:\n\n|   %s\n\n|   %s" $component_slice_example $component_with_example -}}
-
-{{- $component_example := "{{ partial \"bookshop\" (dict \"_bookshop_name\" \"button\" \"text\" .button.text) }}" -}}
-{{- $component_params_example := "{{ partial \"bookshop\" .Params.component_structure }}" -}}
-{{- $component_message := printf "  Render a component from a struct, where the struct contains a _bookshop_name key:\n\n|   %s\n\n|   %s" $component_example $component_params_example -}}
-
-{{- $include_example := "{{ partial \"bookshop_partial\" (slice \"tag\" (dict \"message\" \"Hello World\")) }}" -}}
-{{- $include_message := printf "  Render a \"tag\" partial with data:\n\n|   %s" $include_example  -}}
-
-{{- partial "_bookshop/errors/err" (printf "%s\n\n%s\n\n%s\n\n%s\n\n" $message $component_slice_message $component_message $include_message) -}}

@@ -7,25 +7,22 @@
 {{- $is_string := eq "string" (printf "%T" .) -}}
 
 {{- if $is_string -}}
-    {{- $ok := true -}}
-    {{- $segments := split . ", " -}}
-    {{- range $segments -}}
-        {{- $operators := split . ": " -}}
-        {{- if ne (len $operators) 2 -}}
-            {{- $expected := "title: .Params.object.title, excerpt: .Params.description" -}}
-            {{- partial "_bookshop/errors/err" (printf "\"%s\" passed to bookshop_bindings didn't validate.\nExpected the following format: \"%s\"" $ $expected) -}}
-            {{- $ok = false -}}
-        {{- else -}}
-            {{- if not (hasPrefix (index $operators 1) ".Params") -}}
-                {{- partial "_bookshop/errors/err" (printf "Bookshop can only bind to fields in .Params — received \"%s\" as part of \"%s\"" (index $operators 1) $) -}}    
-                {{- $ok = false -}}
-            {{- end -}}
-        {{- end -}}
-    {{- end -}}
-
-    {{- if $ok -}}
-        {{ (printf "<!--bookshop-live name(__bookshop__subsequent) params(%s) context() -->" .) | safeHTML }}
-    {{- end -}}
+    {{ (printf "<!--bookshop-live name(__bookshop__subsequent) params(bind: %s) context() -->" .) | safeHTML }}
 {{- else -}}
-    {{- partial "_bookshop/errors/err" (printf "\"%s\" passed to bookshop_bindings was not a string." .) -}}
+    {{- $err := slice 
+        (printf "bookshop_bindings expected a string but received \"%s\"" .)
+        "     The `bookshop_bindings` partial should be passed a string"
+        "     representation of the arguments to the component."
+        "     Example usage:"
+        " ┌─"
+        " │    {{ partial \"bookshop_bindings\" `.Params.content_blocks` }}"
+        ` │    {{ partial "bookshop_partial" (slice "page" .Params.content_blocks) }}`
+        " ├─"
+        " │    {{ partial \"bookshop_bindings\" `(dict \"content_html\" .Params.note_html \"type\" \"note\")` }}"
+        ` │    {{ partial "bookshop" (slice "content" (dict "content_html" .Params.note_html "type" "note")) }}`
+        " └─"
+        "     NB: The bookshop_bindings partial is only required in site layouts."
+        "     It is not needed within Bookshop components."
+    -}}
+    {{- partial "_bookshop/errors/err" (delimit $err "\n") -}}
 {{- end -}}
