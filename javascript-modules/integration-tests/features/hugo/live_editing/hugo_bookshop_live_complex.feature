@@ -22,12 +22,86 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <span>{{ .inner.text }}</span>
       """
+    * a component-lib/shared/hugo/span.hugo.html file containing:
+      """
+      <span>{{ .text }}</span>
+      """
+
+  Scenario: Bookshop live renders a subcomponent
+    Given a component-lib/components/outer/outer.hugo.html file containing:
+      """
+      <div> {{ partial "bookshop" (slice "single" (dict "title" .contents.title)) }} </div>
+      """
+    Given [front_matter]:
+      """
+      contents:
+        title: My title
+      """
+    And a site/content/_index.md file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      """
+    And a site/layouts/index.html file containing:
+      """
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `(dict "contents" .Params.contents )` }}
+      {{ partial "bookshop" (slice "outer" (dict "contents" .Params.contents )) }}
+      </body>
+      </html>
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      contents:
+        title: Your title
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Your title"
+  
+  Scenario: Bookshop live renders a subinclude
+    Given a component-lib/components/outer/outer.hugo.html file containing:
+      """
+      <div> {{ partial "bookshop_partial" (slice "span" (dict "text" .contents.title)) }} </div>
+      """
+    Given [front_matter]:
+      """
+      contents:
+        title: My title
+      """
+    And a site/content/_index.md file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      """
+    And a site/layouts/index.html file containing:
+      """
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `.Params` }}
+      {{ partial "bookshop" (slice "outer" (dict "contents" .Params.contents )) }}
+      </body>
+      </html>
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      contents:
+        title: The title
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector span should contain "The title"
 
   Scenario: Bookshop live renders through an assign
     Given a component-lib/components/assigner/assigner.hugo.html file containing:
       """
       {{ $test_var := .contents._bookshop_name }}
-      <div> {{ partial "bookshop" (dict "component" $test_var "title" .contents.title) }} </div>
+      <div> {{ partial "bookshop" (slice $test_var (dict "title" .contents.title)) }} </div>
       """
     Given [front_matter]:
       """
@@ -45,8 +119,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" "bind: .Params" }}
-      {{ partial "bookshop" (dict "component" "assigner" "contents" .Params.contents ) }}
+      {{ partial "bookshop_bindings" `.Params` }}
+      {{ partial "bookshop" (slice "assigner" (dict "contents" .Params.contents )) }}
       </body>
       </html>
       """
@@ -80,8 +154,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       <html>
       <body>
       {{ range $index, $element := .Params.titles }}
-      {{ partial "bookshop_bindings" (printf "title: .Params.titles.%d" $index) }}
-      {{ partial "bookshop" (dict "component" "single" "title" $element ) }}
+      {{ partial "bookshop_bindings" (printf "(dict \"title\" .Params.titles.%d )" $index) }}
+      {{ partial "bookshop" (slice "single" (dict "title" $element )) }}
       {{ end }}
       </body>
       </html>
@@ -103,7 +177,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <div>
       {{ range seq .max }}
-      {{ partial "bookshop" (dict "component" "single" "title" . ) }}
+      {{ partial "bookshop" (slice "single" (dict "title" . )) }}
       {{ end }}
       </div>
       """
@@ -121,8 +195,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" "max: .Params.max" }}
-      {{ partial "bookshop" (dict "component" "range" "max" .Params.max ) }}
+      {{ partial "bookshop_bindings" `(dict "max" .Params.max )` }}
+      {{ partial "bookshop" (slice "range" (dict "max" .Params.max )) }}
       </body>
       </html>
       """
@@ -140,7 +214,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <div class="page">
       {{ range .content_blocks }}
-        {{ partial "bookshop" (merge . (dict "component" ._bookshop_name)) }}
+        {{ partial "bookshop" . }}
       {{ end }}
       </div>
       """
@@ -165,8 +239,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" "content_blocks: .Params.components" }}
-      {{ partial "bookshop" (dict "component" "page" "content_blocks" .Params.components) }}
+      {{ partial "bookshop_bindings" `(dict "content_blocks" .Params.components)` }}
+      {{ partial "bookshop" (slice "page" (dict "content_blocks" .Params.components)) }}
       </body>
       </html>
       """

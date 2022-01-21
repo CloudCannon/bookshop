@@ -45,7 +45,7 @@ Feature: Basic Hugo Bookshop
       """
     And a site/layouts/index.html file containing:
       """
-      {{ partial "bookshop" (dict "component" "title" "text" "Result 🧄") }}
+      {{ partial "bookshop" (slice "title" (dict "text" "Result 🧄")) }}
       """
     When I run "hugo" in the site directory
     Then stderr should be empty
@@ -59,7 +59,7 @@ Feature: Basic Hugo Bookshop
       """
     And a site/layouts/index.html file containing:
       """
-      {{ partial "bookshop" (dict "component" "title" "text" .Params.title_text) }}
+      {{ partial "bookshop" (slice "title" (dict "text" .Params.title_text)) }}
       """
     And a site/content/_index.md file containing:
       """
@@ -76,7 +76,7 @@ Feature: Basic Hugo Bookshop
     Given a component-lib/components/hero/hero.hugo.html file containing:
       """
       <h1>{{ .text }}</h1>
-      {{ partial "bookshop" (dict "component" "tag" "tag" .tag) }}
+      {{ partial "bookshop" (slice "tag" (dict "tag" .tag)) }}
       """
     And a component-lib/components/tag/tag.hugo.html file containing:
       """
@@ -84,7 +84,7 @@ Feature: Basic Hugo Bookshop
       """
     And a site/layouts/index.html file containing:
       """
-      {{ partial "bookshop" (dict "component" "hero" "text" .Params.title_text "tag" .Params.tag) }}
+      {{ partial "bookshop" (slice "hero" (dict "text" .Params.title_text "tag" .Params.tag)) }}
       """
     And a site/content/_index.md file containing:
       """
@@ -109,7 +109,7 @@ Feature: Basic Hugo Bookshop
       """
     And a site/layouts/index.html file containing:
       """
-      {{ partial "bookshop" (merge .Params.card (dict "component" "card")) }}
+      {{ partial "bookshop" (slice "card" .Params.card) }}
       """
     And a site/content/_index.md file containing:
       """
@@ -131,7 +131,7 @@ Feature: Basic Hugo Bookshop
     And a site/layouts/index.html file containing:
       """
       {{ range .Params.components }}
-        {{ partial "bookshop" (merge . (dict "component" ._name)) }}
+        {{ partial "bookshop" (slice ._name .) }}
       {{ end }}
       """
     And a site/content/_index.md file containing:
@@ -153,12 +153,16 @@ Feature: Basic Hugo Bookshop
   Scenario: Bookshop page building components should work
     Given a component-lib/components/page/page.hugo.html file containing:
       """
-      {{ partial "bookshop" .column_contents }}
+      {{ range .column_contents }}
+        {{ partial "bookshop" . }}
+      {{ end }}
       """
     And a component-lib/components/tag/tag.hugo.html file containing "tag-{{.tag}}-tag"
     And a site/layouts/index.html file containing:
       """
-      {{ partial "bookshop" .Params.components }}
+      {{ range .Params.components }}
+        {{ partial "bookshop" . }}
+      {{ end }}
       """
     And a site/content/_index.md file containing:
       """

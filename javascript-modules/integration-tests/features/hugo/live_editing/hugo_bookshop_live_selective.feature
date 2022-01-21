@@ -22,16 +22,16 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <div>
       {{ range .items }}
-        {{ partial "bookshop" (merge . (dict "component" "single")) }}
+        {{ partial "bookshop" (slice "single" .) }}
       {{ end }}
       </div>
       """
     * a component-lib/components/uppermost/uppermost.hugo.html file containing:
       """
       <div>
-      {{ partial "bookshop" (merge .one (dict "component" "multiple")) }}
+      {{ partial "bookshop" (slice "multiple" .one) }}
       <span>{{ .two }}</span>
-      {{ partial "bookshop" (dict "component" "single" "title" .three) }}
+      {{ partial "bookshop" (slice "single" (dict "title" .three)) }}
       </div>
       """
 
@@ -53,8 +53,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" "bind: .Params" }}
-      {{ partial "bookshop" (dict "component" "multiple" "items" .Params.items) }}
+      {{ partial "bookshop_bindings" `(dict "items" .Params.items)` }}
+      {{ partial "bookshop" (slice "multiple" (dict "items" .Params.items)) }}
       </body>
       </html>
       """
@@ -95,12 +95,14 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" "bind: .Params.data" }}
-      {{ partial "bookshop" (merge .Params.data (dict "component" "uppermost")) }}
+      {{ partial "bookshop_bindings" ".Params.data" }}
+      {{ partial "bookshop" (slice "uppermost" .Params.data) }}
       </body>
       </html>
       """
     Given 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
     And  🌐 I have added a click listener to span
     When 🌐 CloudCannon pushes new yaml:
       """

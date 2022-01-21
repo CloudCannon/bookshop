@@ -76,19 +76,31 @@ func RetrieveBookshopPartial(bookshop_key string) (*template.Template, bool) {
 	return nil, false
 }
 
-// UnwrapBookshopPartial takes the dict that the {{ partial "bookshop" ... }}
+// UnwrapBookshopPartial takes the dict or slice that the {{ partial "bookshop" ... }}
 // was given, and pulls out the component / partial name that should be rendered.
 // TODO(bookshop): Ideally our templating support gets better,
 // and we can call the production bookshop module partials.
-func UnwrapBookshopPartial(context interface{}) (string, interface{}) {
+func UnwrapBookshopComponent(context interface{}) (string, interface{}) {
 	if componentData, ok := context.(map[string]interface{}); ok {
-		if component, ok := componentData["component"]; ok {
+		if component, ok := componentData["_bookshop_name"]; ok {
 			key := fmt.Sprintf("components/%s/%s.hugo.html", component.(string), component.(string))
 			return key, context
 		}
-		if partial, ok := componentData["partial"]; ok {
-			key := fmt.Sprintf("shared/hugo/%s.hugo.html", partial.(string))
-			return key, context
+	}
+	if componentData, ok := context.([]interface{}); ok {
+		if component, ok := componentData[0].(string); ok {
+			key := fmt.Sprintf("components/%s/%s.hugo.html", component, component)
+			return key, componentData[1]
+		}
+	}
+	return "err_no_bookshop_name", context
+}
+
+func UnwrapBookshopPartial(context interface{}) (string, interface{}) {
+	if partialData, ok := context.([]interface{}); ok {
+		if partial, ok := partialData[0].(string); ok {
+			key := fmt.Sprintf("shared/hugo/%s.hugo.html", partial)
+			return key, partialData[1]
 		}
 	}
 	return "err_no_bookshop_name", context

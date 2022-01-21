@@ -39,7 +39,7 @@ type Namespace struct {
 // If the partial contains a return statement, that value will be returned.
 // Else, the rendered output will be returned:
 // A string if the partial is a text/template, or template.HTML when html/template.
-func (ns *Namespace) Include(name string, contextList ...interface{}) (interface{}, error) {
+func (ns *Namespace) Include(tagname string, contextList ...interface{}) (interface{}, error) {
 	// TODO(bookshop): Fallback to this
 	_ = strings.TrimPrefix(name, "partials/")
 
@@ -48,7 +48,17 @@ func (ns *Namespace) Include(name string, contextList ...interface{}) (interface
 		context = contextList[0]
 	}
 
-	name, context = library.UnwrapBookshopPartial(context)
+	var name string
+
+	switch tagname {
+	case "bookshop":
+		name, context = library.UnwrapBookshopComponent(context)
+	case "bookshop_partial":
+		name, context = library.UnwrapBookshopPartial(context)
+	default:
+		panic("Can't render standard includes yet")
+	}
+
 	templ, found := library.RetrieveBookshopPartial(name)
 
 	if !found {

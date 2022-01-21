@@ -39,8 +39,8 @@ Feature: Bookshop Structure Generation
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" "bind: .Params" }}
-      {{ partial "bookshop" (dict "component" "card" "card_text" .Params.card_text "card_color" .Params.card_color) }}
+      {{ partial "bookshop_bindings" `(dict "card_text" .Params.card_text "card_color" .Params.card_color)` }}
+      {{ partial "bookshop" (slice "card" (dict "card_text" .Params.card_text "card_color" .Params.card_color)) }}
       </body>
       </html>
       """

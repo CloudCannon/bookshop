@@ -22,8 +22,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" "bind: .Params.block" }}
-      {{ partial "bookshop" (dict "component" "single" "title" .Params.block.title) }}
+      {{ partial "bookshop_bindings" `.Params.block` }}
+      {{ partial "bookshop" (slice "single" (dict "title" .Params.block.title)) }}
       </body>
       </html>
       """

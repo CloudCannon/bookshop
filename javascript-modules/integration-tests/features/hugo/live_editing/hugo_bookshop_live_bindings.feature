@@ -34,8 +34,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Automatic Data Bindings
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" "innards: .Params.hero" }}
-      {{ partial "bookshop" (dict "component" "title" "innards" .Params.hero) }}
+      {{ partial "bookshop_bindings" `(dict "innards" .Params.hero)` }}
+      {{ partial "bookshop" (slice "title" (dict "innards" .Params.hero)) }}
       </body>
       </html>
       """
@@ -47,7 +47,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Automatic Data Bindings
   Scenario: Bookshop live renders a nested data binding
     Given a component-lib/components/loop/loop.hugo.html file containing:
       """
-      <div>{{ range .rows }}{{ partial "bookshop" (dict "component" "title" "innards" .) }}{{ end }}</div>
+      <div>{{ range .rows }}{{ partial "bookshop" (slice "title" (dict "innards" .)) }}{{ end }}</div>
       """
     And [front_matter]:
       """
@@ -66,8 +66,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Automatic Data Bindings
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" "bind: .Params" }}
-      {{ partial "bookshop" (dict "component" "loop" "rows" .Params.rows) }}
+      {{ partial "bookshop_bindings" `(dict "rows" .Params.rows)` }}
+      {{ partial "bookshop" (slice "loop" (dict "rows" .Params.rows)) }}
       </body>
       </html>
       """
@@ -81,7 +81,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Automatic Data Bindings
   Scenario: Bookshop live renders a parent data binding over a child
     Given a component-lib/components/loop/loop.hugo.html file containing:
       """
-      {{ range .rows }}{{ partial "bookshop" (dict "component" "title" "innards" .) }}{{ end }}
+      {{ range .rows }}{{ partial "bookshop" (slice "title" (dict "innards" .)) }}{{ end }}
       """
     And [front_matter]:
       """
@@ -100,8 +100,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Automatic Data Bindings
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" "rows: .Params.rows" }}
-      {{ partial "bookshop" (dict "component" "loop" "rows" .Params.rows) }}
+      {{ partial "bookshop_bindings" `(dict "rows" .Params.rows)` }}
+      {{ partial "bookshop" (slice "loop" (dict "rows" .Params.rows)) }}
       </body>
       </html>
       """
@@ -127,22 +127,22 @@ Feature: Hugo Bookshop CloudCannon Live Editing Automatic Data Bindings
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" "innards: .Params.hero dataBinding: false" }}
-      {{ partial "bookshop" (dict "component" "title" "innards" .Params.hero "dataBinding" false) }}
-      {{ partial "bookshop_bindings" "innards: .Params.hero _dataBinding: false" }}
-      {{ partial "bookshop" (dict "component" "title" "innards" .Params.hero "_dataBinding" false) }}
-      {{ partial "bookshop_bindings" "innards: .Params.hero data_binding: false" }}
-      {{ partial "bookshop" (dict "component" "title" "innards" .Params.hero "data_binding" false) }}
-      {{ partial "bookshop_bindings" "innards: .Params.hero _data_binding: false" }}
-      {{ partial "bookshop" (dict "component" "title" "innards" .Params.hero "_data_binding" false) }}
-      {{ partial "bookshop_bindings" "innards: .Params.hero editorLink: false" }}
-      {{ partial "bookshop" (dict "component" "title" "innards" .Params.hero "editorLink" false) }}
-      {{ partial "bookshop_bindings" "innards: .Params.hero _editorLink: false" }}
-      {{ partial "bookshop" (dict "component" "title" "innards" .Params.hero "_editorLink" false) }}
-      {{ partial "bookshop_bindings" "innards: .Params.hero editor_link: false" }}
-      {{ partial "bookshop" (dict "component" "title" "innards" .Params.hero "editor_link" false) }}
-      {{ partial "bookshop_bindings" "innards: .Params.hero _editor_link: false" }}
-      {{ partial "bookshop" (dict "component" "title" "innards" .Params.hero "_editor_link" false) }}
+      {{ partial "bookshop_bindings" `(dict "innards" .Params.hero "dataBinding" false)` }}
+      {{ partial "bookshop" (slice "title" (dict "innards" .Params.hero "dataBinding" false)) }}
+      {{ partial "bookshop_bindings" `(dict "innards" .Params.hero "_dataBinding" false)` }}
+      {{ partial "bookshop" (slice "title" (dict "innards" .Params.hero "_dataBinding" false)) }}
+      {{ partial "bookshop_bindings" `(dict "innards" .Params.hero "data_binding" false)` }}
+      {{ partial "bookshop" (slice "title" (dict "innards" .Params.hero "data_binding" false)) }}
+      {{ partial "bookshop_bindings" `(dict "innards" .Params.hero "_data_binding" false)` }}
+      {{ partial "bookshop" (slice "title" (dict "innards" .Params.hero "_data_binding" false)) }}
+      {{ partial "bookshop_bindings" `(dict "innards" .Params.hero "editorLink" false)` }}
+      {{ partial "bookshop" (slice "title" (dict "innards" .Params.hero "editorLink" false)) }}
+      {{ partial "bookshop_bindings" `(dict "innards" .Params.hero "_editorLink" false)` }}
+      {{ partial "bookshop" (slice "title" (dict "innards" .Params.hero "_editorLink" false)) }}
+      {{ partial "bookshop_bindings" `(dict "innards" .Params.hero "editor_link" false)` }}
+      {{ partial "bookshop" (slice "title" (dict "innards" .Params.hero "editor_link" false)) }}
+      {{ partial "bookshop_bindings" `(dict "innards" .Params.hero "_editor_link" false)` }}
+      {{ partial "bookshop" (slice "title" (dict "innards" .Params.hero "_editor_link" false)) }}
       </body>
       </html>
       """
@@ -174,8 +174,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Automatic Data Bindings
       <html>
       <body>
       <script>window.bookshopDataBindings = false;</script>
-      {{ partial "bookshop_bindings" "innards: .Params.hero" }}
-      {{ partial "bookshop" (dict "component" "title" "innards" .Params.hero) }}
+      {{ partial "bookshop_bindings" `(dict "innards" .Params.hero)` }}
+      {{ partial "bookshop" (slice "title" (dict "innards" .Params.hero)) }}
       </body>
       </html>
       """

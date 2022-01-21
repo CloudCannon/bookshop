@@ -29,12 +29,12 @@ Feature: Hugo Bookshop Includes
       """
     And a component-lib/components/block/block.hugo.html file containing:
       """
-      <div>{{ partial "bookshop" (dict "partial" "basic" "label" .title) }}-Block</div>
+      <div>{{ partial "bookshop_partial" (slice "basic" (dict "label" .title)) }}-Block</div>
       """
     And a site/layouts/index.html file containing:
       """
-      {{ partial "bookshop" (dict "component" "block" "title" "Component") }}
-      <span>{{ partial "bookshop" (dict "partial" "basic" "label" "Site") }}-Inline</span>
+      {{ partial "bookshop" (slice "block" (dict "title" "Component")) }}
+      <span>{{ partial "bookshop_partial" (slice "basic" (dict "label" "Site")) }}-Inline</span>
       """
     When I run "hugo" in the site directory
     Then stderr should be empty
