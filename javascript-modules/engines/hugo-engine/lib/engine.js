@@ -95,30 +95,14 @@ export class Engine {
     }
 
     async eval(str, props = [{}]) {
-        if (/^(false|true)$/.test(str)) {
-            return str === "true";
-        }
-        if (/^\d+$/.test(str)) {
-            return parseInt(str);
-        }
-        if (/^(\".+\"|\'.+\')/.test(str)) {
-            return str.replace(/^.|.$/g, '');
-        }
-        if (!/^\.Params(\.\S+)*$/.test(str)) {
-            console.error([
-                `Bookshop Hugo: Couldn't evaluate \`${str}\`.`,
-                `For Bookshop bindings, only \`.Params.*\` are supported.`,
-                `Arrays can be indexed into using dot notation: \`.Params.some_array.4\``,
-                `Raw values can be passed: true,false,"string",1234`,
-            ].join(' '));
-            return '';
-        }
+        while (!window.renderHugo) await sleep(10);
+
+        const eval_str = `{{ jsonify (${str}) }}`;
+        const props_obj = props.reduce((a, b) => { return { ...b, ...a } })
+        const output = window.renderHugo(eval_str, JSON.stringify(props_obj));
+
         try {
-            for (let prop_object of props) {
-                const val = dig(prop_object, str.replace(/^\./, ''));
-                if (val) return val;
-            }
-            return null;
+            return JSON.parse(output);
         } catch (e) {
             console.error(`Error evaluating ${str}`, e.toString());
             return null;
