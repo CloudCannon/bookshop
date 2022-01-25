@@ -10,7 +10,7 @@ const TOKENS = {
 }
 
 /**
- * Takes in a param string and returns an object of [identifier: value] pairs
+ * Takes in a param string and returns an array of [identifier: value] pairs
  */
 export class ParamsParser {
   constructor(input) {
@@ -52,19 +52,20 @@ export class ParamsParser {
 
       if (!this.deps.identifier) { throw new Error("No identifier provided"); }
       this.state = 'VALUE';
-      this.deps = { identifier: this.deps.identifier }
-    } else {
-      if (TOKENS.ESCAPE.test(t) && !this.deps.escape) {
-        //   ↓  
-        // ti\:tle: page.title
-        this.deps.escape = true;
-      } else {
-        // ↓↓↓↓↓  
-        // title: page.title
-        this.deps.identifier += t;
-        this.deps.escape = false;
-      }
+      this.deps = { identifier: this.deps.identifier };
+      return;
     }
+
+    if (TOKENS.ESCAPE.test(t) && !this.deps.escape) {
+      //   ↓  
+      // ti\:tle: page.title
+      return this.deps.escape = true;
+    }
+
+    // ↓↓↓↓↓  
+    // title: page.title
+    this.deps.identifier += t;
+    this.deps.escape = false;
   }
 
   processVALUE(t) {

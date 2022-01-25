@@ -1,9 +1,10 @@
-import { ParamsParser } from './params-parser.js';
+import { ParamsParser } from './parsers/params-parser.js';
+import { CommentParser } from './parsers/comment-parser.js';
 
 //    <!--bookshop-live name(...) params(...)-->
 // or <!--bookshop-live name(...) params(...) context(...)-->
 // or <!--bookshop-live end-->
-const liveMatchRegex = /bookshop-live ((?<end>end)|name\((?<name>[^)]*)\) params\((?<params>[^)]*)\)).*/;
+const liveMatchRegex = /bookshop-live ((?<end>end)|name\((?<name>[^)]*)\) params\((?<params>.*)\)).*/;
 //    <!--bookshop-live context(...)-->
 const contextMatchRegex = /bookshop-live.*context\((?<context>.+)\)\s*$/;
 
@@ -16,10 +17,7 @@ const getTemplateCommentIterator = node => {
     return documentNode.evaluate("//comment()[contains(.,'bookshop-live')]", node, null, XPathResult.ANY_TYPE, null);
 }
 const parseComment = node => {
-    return {
-        matches: node.textContent.match(liveMatchRegex),
-        contextMatches: node.textContent.match(contextMatchRegex),
-    }
+    return (new CommentParser(node.textContent.replace(/^bookshop-live /, ''))).build()
 }
 const nodeIsBefore = (a, b) => {
     return a && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
@@ -112,9 +110,9 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
     let currentNode = iterator.iterateNext();
 
     while (currentNode) {
-        const { matches, contextMatches } = parseComment(currentNode);
+        const liveTag = parseComment(currentNode);
 
-        for (const [name, identifier] of parseParams(contextMatches?.groups["context"])) {
+        for (const [name, identifier] of parseParams(liveTag?.context)) {
             // TODO: This shouldn't be required post-tokenizer 
             if (!identifier) return;
             // TODO: bindings here has no encapsulation / stack, which feels too SSG-coupled for assigns
@@ -123,17 +121,18 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             storeResolvedPath(name, identifier, pathStack);
         }
 
-        if (matches?.groups["end"]) {
+        if (liveTag?.end) {
             currentScope().endNode = currentNode;
             await templateBlockHandler(stack.pop());
             pathStack.pop();
-        } else if (matches && matches.groups["name"] === "__bookshop__subsequent") { // Entering a bookshop_bindings rule
+        } else if (liveTag && liveTag?.name === "__bookshop__subsequent") { // Entering a bookshop_bindings rule
             stashedNodes.push(currentNode);
-            stashedParams = [...stashedParams, ...parseParams(matches.groups["params"])];
-        } else if (matches) { // Entering a new component
+            stashedParams = [...stashedParams, ...parseParams(liveTag?.params)];
+        } else if (liveTag?.name) { // Entering a new component
             let scope = {};
-            const params = [...stashedParams, ...parseParams(matches.groups["params"])];
+            const params = [...stashedParams, ...parseParams(liveTag?.params)];
             pathStack.push({});
+            // console.log(JSON.stringify(params));
             for (const [name, identifier] of params) {
                 // TODO: This shouldn't be required post-tokenizer 
                 if (!identifier) return;
@@ -152,7 +151,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
 
             stack.push({
                 startNode: currentNode,
-                name: normalizeName(matches.groups["name"]),
+                name: normalizeName(liveTag?.name),
                 bindings: JSON.parse(JSON.stringify(bindings)),
                 pathStack: JSON.parse(JSON.stringify(pathStack)),
                 scope,
