@@ -1,16 +1,8 @@
 import { ParamsParser } from './parsers/params-parser.js';
 import { CommentParser } from './parsers/comment-parser.js';
 
-//    <!--bookshop-live name(...) params(...)-->
-// or <!--bookshop-live name(...) params(...) context(...)-->
-// or <!--bookshop-live end-->
-const liveMatchRegex = /bookshop-live ((?<end>end)|name\((?<name>[^)]*)\) params\((?<params>.*)\)).*/;
-//    <!--bookshop-live context(...)-->
-const contextMatchRegex = /bookshop-live.*context\((?<context>.+)\)\s*$/;
-
 // TODO: Use the @bookshop/helpers package for name normalization
 const normalizeName = name => name.replace(/\/[\w-]+\..+$/, '').replace(/\..+$/, '');
-// const parseParams = params => params ? params.replace(/: /g, '=').split(' ').map(p => p.split('=')) : [];
 const parseParams = params => params ? (new ParamsParser(params)).build() : [];
 const getTemplateCommentIterator = node => {
     const documentNode = node.ownerDocument ?? document;
@@ -28,8 +20,6 @@ const nodeIsBefore = (a, b) => {
  * and note down the sum absolute path of the new name if we can
  */
 export const storeResolvedPath = (name, identifier, pathStack) => {
-    // TODO: This shouldn't be required post-tokenizer 
-    if (!name || !identifier) return;
     // TODO: The `include.` replacement feels too SSG coupled.
     //                       v v v v v v v v v v v v 
     identifier = identifier.replace(/^include\./, '').replace(/\[(\d+)]/g, '.$1').split('.');
@@ -54,28 +44,6 @@ const dig = (obj, path) => {
 }
 
 /**
- * Returns a string digest of the HTML between two nodes
- */
-export const buildDigest = (startNode, endNode) => {
-    let node = startNode.nextSibling;
-    let digest = ''
-    while (nodeIsBefore(node, endNode)) {
-        switch (node.nodeType) {
-            case Node.ELEMENT_NODE:
-                digest += node.outerHTML;
-                break;
-            case Node.COMMENT_NODE:
-                digest += `<!--${node.textContent}-->`;
-                break;
-            default:
-                digest += node.textContent || '';
-        }
-        node = node.nextSibling;
-    }
-    return digest;
-}
-
-/**
  * Replaces all nodes between startNode and endNode (exclusive)
  * with the _inner_ nodes of outputElement
  * Doesn't persist the outputElement itself, only its children
@@ -96,9 +64,9 @@ export const replaceHTMLRegion = (startNode, endNode, outputElement) => {
  * Takes in a DOM tree containing Bookshop live comments
  * Calls a given callback whenever a component end tag is hit
  */
-const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, templateBlockHandler = () => { }) => {
+const evaluateTemplate = async (liveInstance, documentNode, templateBlockHandler = () => { }) => {
     const stack = [];           // The stack of component data scopes
-    const pathStack = parentPathStack || [{}];     // The paths from the root to any assigned variables
+    const pathStack = [{}];     // The paths from the root to any assigned variables
     const bindings = {};        // Anything assigned through assigns or loops
     let stashedNodes = [];    // bookshop_bindings tags that we should keep track of for the next component
     let stashedParams = [];    // Params from the bookshop_bindings tag that we should include in the next component tag
@@ -113,8 +81,6 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
         const liveTag = parseComment(currentNode);
 
         for (const [name, identifier] of parseParams(liveTag?.context)) {
-            // TODO: This shouldn't be required post-tokenizer 
-            if (!identifier) return;
             // TODO: bindings here has no encapsulation / stack, which feels too SSG-coupled for assigns
             // TODO: bindings here has no encapsulation / stack, which is wrong for loops
             bindings[name] = await liveInstance.eval(identifier, combinedScope());
@@ -132,10 +98,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             let scope = {};
             const params = [...stashedParams, ...parseParams(liveTag?.params)];
             pathStack.push({});
-            // console.log(JSON.stringify(params));
             for (const [name, identifier] of params) {
-                // TODO: This shouldn't be required post-tokenizer 
-                if (!identifier) return;
                 // Currently 'bind' is used in Jekyll/11ty and '.' is used in Hugo
                 if (name === 'bind' || name === '.') {
                     const bindVals = await liveInstance.eval(identifier, combinedScope());
@@ -189,7 +152,7 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
         updates.push({ startNode, endNode, output, pathStack, scope, name, stashedNodes });
     }
 
-    await evaluateTemplate(liveInstance, documentNode, null, templateBlockHandler);
+    await evaluateTemplate(liveInstance, documentNode, templateBlockHandler);
 
     return updates;
 }
@@ -199,7 +162,7 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
  * Updates all components found within to have data bindings
  * pointing to the front matter path passed to that component (if possible)
  */
-export const hydrateDataBindings = async (liveInstance, documentNode, pathsInScope, preComment, postComment, stashedNodes) => {
+export const hydrateDataBindings = async (liveInstance, documentNode, preComment, postComment, stashedNodes) => {
     const vDom = documentNode.ownerDocument;
     const components = [];     // Rendered components and their path stack
 
@@ -217,11 +180,7 @@ export const hydrateDataBindings = async (liveInstance, documentNode, pathsInSco
         components.push(component);
     }
 
-    // pathsInScope are from an earlier render pass, so will contain any paths
-    // at a higher level than the documentNode we're working on. Without this,
-    // if documentNode is a subcomponent we wouldn't be able to know
-    // its path back to the root data.
-    await evaluateTemplate(liveInstance, documentNode, pathsInScope, templateBlockHandler);
+    await evaluateTemplate(liveInstance, documentNode, templateBlockHandler);
 
     for (let { startNode, endNode, params, pathStack, scope, name } of components) {
         // By default, don't add bindings for bookshop shared includes
