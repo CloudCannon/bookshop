@@ -34,6 +34,7 @@ const run = async () => {
         case 'vendor':
             console.log(`* Vendoring`);
             vendorGems(packages.rubygems, packages.version);
+            vendorCustom(packages.custom);
             console.log(`* * Vendoring done`);
             process.exit(0);
         case 'git':
@@ -42,6 +43,7 @@ const run = async () => {
         case 'test':
             console.log(`* Vendoring`);
             vendorGems(packages.rubygems, version);
+            vendorCustom(packages.custom);
             console.log(`* * Vendoring done`);
 
             console.log(`* Running tests`);
@@ -70,6 +72,7 @@ const run = async () => {
 
     console.log(`* Vendoring`);
     vendorGems(packages.rubygems, version);
+    vendorCustom(packages.custom);
     console.log(`* * Vendoring done`);
 
     console.log(`* Running unit tests`);
@@ -311,6 +314,23 @@ const vendorGems = async (gems, version) => {
                 recursiveCopy(`${pkg}/package/`, `${target}/node_modules/@bookshop/${path.basename(pkg)}/`);
                 fs.rmSync(`${pkg}/package`, { recursive: true });
                 fs.rmSync(`${pkg}/package.tgz`);
+            });
+        }
+    });
+};
+
+const vendorCustom = async (directories) => {
+    console.log(`* * Vendoring custom directories`);
+    Object.entries(directories).forEach(([directory, opts]) => {
+        if (/\.\./.test(directory)) return;
+        const target = path.join(__dirname, '../', directory);
+        if (opts.commands && opts.commands.length) {
+            opts.commands.forEach(command => {
+                if (/\.\./.test(command)) return;
+                if (/-rf|-fr/.test(command)) return;
+                cmd = `cd ${target} && ${command}`;
+                console.log(`\n$: ${cmd}`);
+                execSync(cmd, { stdio: "inherit" })
             });
         }
     });

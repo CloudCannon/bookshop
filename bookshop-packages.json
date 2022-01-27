@@ -1,5 +1,14 @@
 {
   "version": "2.3.0",
+  "custom": {
+    "javascript-modules/engines/hugo-engine/hugo-renderer": {
+      "versionFile": null,
+      "commands": [
+        "rm -f ./hugo_renderer.wasm",
+        "./build.sh"
+      ]
+    }
+  },
   "rubygems": {
     "generator-plugins/jekyll/cloudcannon-jekyll-bookshop": {
       "vendor_from_npm": [
