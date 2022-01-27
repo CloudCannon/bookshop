@@ -14,6 +14,14 @@ test("Find variable in the stack", async t => {
     t.is(findInStack('c', stack), 'page.c');
 });
 
+test("Find nested variable in the stack", async t => {
+    let stack = [
+        { title: 'items' }
+    ];
+
+    t.is(findInStack('title.text', stack), 'items.text');
+});
+
 test("Set new variable in the stack", async t => {
     let stack = [
         { a: 'page.a' },

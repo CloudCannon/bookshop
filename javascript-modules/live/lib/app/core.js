@@ -31,8 +31,18 @@ export const storeResolvedPath = (name, identifier, pathStack) => {
 }
 
 export const findInStack = (key, stack) => {
+    const [baseIdentifier, ...rest] = key.split('.');
     for (let i = stack.length - 1; i >= 0; i--) {
-        if (stack[i][key]) return stack[i][key]
+        if (stack[i][baseIdentifier]) {
+            if (rest.length) return `${stack[i][baseIdentifier]}.${rest.join('.')}`;
+            return `${stack[i][baseIdentifier]}`;
+        }
+    }
+    // Try again for keys that legitimately contain a .
+    for (let i = stack.length - 1; i >= 0; i--) {
+        if (stack[i][key]) {
+            return `${stack[i][key]}`;
+        }
     }
     return null;
 }
