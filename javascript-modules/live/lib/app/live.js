@@ -53,6 +53,13 @@ export const getLive = (engines) => class BookshopLive {
         return await this.engines[0].eval(identifier, scope);
     }
 
+    normalize(identifier) {
+        if (typeof this.engines[0].normalize === 'function') {
+            return this.engines[0].normalize(identifier);
+        }
+        return identifier;
+    }
+
     async update(data, options) {
         // transformData = false means implementations like Jekyll 
         // won't wrap the data in { page: {} }

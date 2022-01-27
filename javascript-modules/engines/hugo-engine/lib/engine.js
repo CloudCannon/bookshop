@@ -1,5 +1,6 @@
 import hugoWasm from "../hugo-renderer/hugo_renderer.wasm";
 import translateTextTemplate from './translateTextTemplate.js';
+import { IdentifierParser } from './hugoIdentifierParser.js';
 
 const sleep = (ms = 0) => {
     return new Promise(r => setTimeout(r, ms));
@@ -121,6 +122,10 @@ export class Engine {
             console.error(`Error evaluating \`${str}\` in the Hugo engine`, output);
             return null;
         }
+    }
+
+    normalize(str) {
+        return (new IdentifierParser(str)).build();
     }
 
     loader() {
