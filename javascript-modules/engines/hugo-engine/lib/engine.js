@@ -1,4 +1,5 @@
 import hugoWasm from "../hugo-renderer/hugo_renderer.wasm";
+import translateTextTemplate from './translateTextTemplate.js';
 
 const sleep = (ms = 0) => {
     return new Promise(r => setTimeout(r, ms));
@@ -39,7 +40,7 @@ export class Engine {
         const mappedFiles = {};
         for (const file of Object.entries(this.files)) {
             mappedFiles[file[0]] = {
-                contents: file[1]
+                contents: translateTextTemplate(file[1], {})
             }
         }
 
@@ -88,6 +89,8 @@ export class Engine {
             console.warn(`[hugo-engine] No component found for ${name}`);
             return "";
         }
+        // TODO: this template already exists on the other side of the wasm bounary
+        source = translateTextTemplate(source, {});
         if (!globals || typeof globals !== "object") globals = {};
         props = { ...globals, ...props };
         const output = window.renderHugo(source, JSON.stringify(props));
@@ -96,15 +99,26 @@ export class Engine {
 
     async eval(str, props = [{}]) {
         while (!window.renderHugo) await sleep(10);
+        const props_obj = props.reduce((a, b) => { return { ...b, ...a } });
+
+        // We're capable of looking up a simple variable
+        // (and it's hard to pass to wasm since we store variables on the context)
+        if (/^\$/.test(str)) {
+            return props_obj[str] ?? null;
+        }
+
+        // Rewrite array.0 into index array 0
+        str = str.replace(/(.*)\.(\d+)$/, (_, obj, index) => {
+            return `index (${obj}) ${index}`;
+        })
 
         const eval_str = `{{ jsonify (${str}) }}`;
-        const props_obj = props.reduce((a, b) => { return { ...b, ...a } })
         const output = window.renderHugo(eval_str, JSON.stringify(props_obj));
 
         try {
             return JSON.parse(output);
         } catch (e) {
-            console.error(`Error evaluating ${str}`, e.toString());
+            console.error(`Error evaluating \`${str}\` in the Hugo engine`, output);
             return null;
         }
     }
