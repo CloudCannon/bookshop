@@ -39,6 +39,29 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Automatic Data Bindings
     Then 🌐 The selector h1 should match "<h1 data-cms-bind=\"cloudcannon:#hero\">Hello World</h1>"
 
   Scenario: Bookshop live renders a nested data binding
+    Given a component-lib/components/outer/outer.jekyll.html file containing:
+      """
+      <div>{% bookshop title innards=include.title.item %}</div>
+      """
+    And [front_matter]:
+      """
+      layout: default
+      items:
+        item: "Hello There"
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% bookshop outer title=page.items %}
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    Then 🌐 The selector h1 should match "<h1 data-cms-bind=\"cloudcannon:#items.item\">Hello There</h1>"
+
+  Scenario: Bookshop live renders a nested loop data binding
     Given a component-lib/components/loop/loop.jekyll.html file containing:
       """
       <div>{% for row in include.rows %}{% bookshop title innards=row %}{% endfor %}</div>
@@ -64,6 +87,30 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Automatic Data Bindings
     Then 🌐 The selector h1:nth-of-type(1) should match "<h1 data-cms-bind=\"cloudcannon:#rows.0\">Hello There</h1>"
     Then 🌐 The selector h1:nth-of-type(2) should match "<h1 data-cms-bind=\"cloudcannon:#rows.1\">Goodbye You</h1>"
     Then 🌐 The selector h1:nth-of-type(3) should match "<h1 data-cms-bind=\"cloudcannon:#rows.2\">A third one.</h1>"
+
+  Scenario: Bookshop live renders a data binding through an assign
+    Given a component-lib/components/outer/outer.jekyll.html file containing:
+      """
+      {% assign v = include.title.item %}
+      <div>{% bookshop title innards=v %}</div>
+      """
+    And [front_matter]:
+      """
+      layout: default
+      items:
+        item: "Hello There"
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% bookshop outer title=page.items %}
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    Then 🌐 The selector h1 should match "<h1 data-cms-bind=\"cloudcannon:#items.item\">Hello There</h1>"
 
   Scenario: Bookshop live renders a parent data binding over a child
     Given a component-lib/components/loop/loop.jekyll.html file containing:

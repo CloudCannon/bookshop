@@ -119,7 +119,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" `.Params` }}
+      {{ partial "bookshop_bindings" `(dict "contents" .Params.contents )` }}
       {{ partial "bookshop" (slice "assigner" (dict "contents" .Params.contents )) }}
       </body>
       </html>
@@ -154,7 +154,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
       <html>
       <body>
       {{ range $index, $element := .Params.titles }}
-      {{ partial "bookshop_bindings" (printf "(dict \"title\" .Params.titles.%d )" $index) }}
+      {{ partial "bookshop_bindings" (printf "(dict \\"title\\" (index .Params.titles %d) )" $index) }}
       {{ partial "bookshop" (slice "single" (dict "title" $element )) }}
       {{ end }}
       </body>

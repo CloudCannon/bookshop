@@ -22,7 +22,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
       """
       <html>
       <body>
-      {{ partial "bookshop_bindings" `.Params.block` }}
+      {{ partial "bookshop_bindings" `(dict "title" .Params.block.title)` }}
       {{ partial "bookshop" (slice "single" (dict "title" .Params.block.title)) }}
       </body>
       </html>
@@ -45,8 +45,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
     *    stdout should contain "Total in"
     *    site/public/index.html should contain each row: 
       | text |
-      | <!--bookshop-live name(__bookshop__subsequent) params(bind: .Params.block) context() -->  |
-      | <!--bookshop-live name(single) params() context() -->  |
+      | <!--bookshop-live name(__bookshop__subsequent) params(.: (dict "title" .Params.block.title))-->  |
+      | <!--bookshop-live name(single)-->  |
 
   Scenario: Bookshop Generate hydrates live editing
     Given I run "hugo" in the site directory

@@ -48,7 +48,7 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Granular Steps
     *    stdout should contain "Modifying built site at ./site/_site"
     *    stdout should contain "Added live editing to 1 page containing Bookshop components"
 
-  Scenario: Bookshop live renders when CloudCannon initialised
+  Scenario: Bookshop live renders when CloudCannon initialises
     Given [front_matter]:
       """
       block:

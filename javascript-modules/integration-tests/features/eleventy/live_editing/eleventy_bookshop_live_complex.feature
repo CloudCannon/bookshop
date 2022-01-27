@@ -28,6 +28,67 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <span>{{ inner.text }}</span>
       """
+    * a component-lib/shared/eleventy/span.eleventy.liquid file containing:
+      """
+      <span>{{ text }}</span>
+      """
+
+  Scenario: Bookshop live renders a subcomponent
+    Given a component-lib/components/outer/outer.eleventy.liquid file containing:
+      """
+      <div> {% bookshop "single" title: contents.title %} </div>
+      """
+    Given [front_matter]:
+      """
+      layout: layouts/default.liquid
+      contents:
+        title: My title
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% bookshop "outer" contents: contents %}
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      contents:
+        title: Your title
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Your title"
+  
+  Scenario: Bookshop live renders a subinclude
+    Given a component-lib/components/outer/outer.eleventy.liquid file containing:
+      """
+      <div> {% bookshop_include "span" text: contents.title %} </div>
+      """
+    Given [front_matter]:
+      """
+      layout: layouts/default.liquid
+      contents:
+        title: My title
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% bookshop "outer" contents: contents %}
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      contents:
+        title: The title
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector span should contain "The title"
+
 
   Scenario: Bookshop live renders through an assign
     Given a component-lib/components/assigner/assigner.eleventy.liquid file containing:

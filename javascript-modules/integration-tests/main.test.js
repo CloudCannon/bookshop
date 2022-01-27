@@ -29,13 +29,15 @@ test("(unit test) test parity between SSGs", async t => {
         .map(c => c.name)
     ];
   });
+  let errs = [];
   Object.entries(scenarios).forEach(([ssg, tests]) => {
     Object.entries(scenarios).forEach(([otherSsg, otherTests]) => {
       tests.forEach(scenario => {
-        t.is(otherTests.includes(scenario), true,
-          `${ssg} has the scenario "${scenario}". ${otherSsg} should also have this test.`
-        );
+        if (!otherTests.includes(scenario)) {
+          errs.push(`${ssg} has the scenario "${scenario}". ${otherSsg} should also have this test.`);
+        }
       });
     });
   });
+  t.deepEqual(errs, []);
 });
