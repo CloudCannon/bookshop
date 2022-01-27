@@ -1,4 +1,4 @@
-@hugo
+@hugo @web
 Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
 
   Background:

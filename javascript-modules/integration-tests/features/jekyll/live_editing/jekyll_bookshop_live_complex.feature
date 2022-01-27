@@ -1,4 +1,4 @@
-@jekyll
+@jekyll @web
 Feature: Jekyll Bookshop CloudCannon Live Editing Selective Re-rendering
 
   Background:

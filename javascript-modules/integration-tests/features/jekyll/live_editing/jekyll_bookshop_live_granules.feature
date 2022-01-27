@@ -48,6 +48,7 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Granular Steps
     *    stdout should contain "Modifying built site at ./site/_site"
     *    stdout should contain "Added live editing to 1 page containing Bookshop components"
 
+  @web
   Scenario: Bookshop live renders when CloudCannon initialises
     Given [front_matter]:
       """
@@ -59,6 +60,7 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Granular Steps
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Gidday"
 
+  @web
   Scenario: Bookshop live renders when CloudCannon pushes new data
     Given 🌐 I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new yaml:

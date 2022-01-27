@@ -1,4 +1,4 @@
-@eleventy
+@eleventy @web
 Feature: Eleventy Bookshop CloudCannon Live Editing Selective Re-rendering
 
   Background:
