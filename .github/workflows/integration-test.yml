@@ -32,9 +32,16 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
+      - name: Use Go 1.17.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.17.6'
       - run: yarn install --immutable
         working-directory: ${{ env.cwd }}
       - name: Vendor node modules into ruby packages
         run: node ./scripts/publish.js vendor
+      - name: Build Hugo wasm module
+        run: GOOS=js GOARCH=wasm go build -tags nodeploy -o hugo_renderer.wasm
+        working-directory: ${{ env.cwd }}/engines/hugo-engine/hugo-renderer
       - run: yarn run itest
         working-directory: ${{ env.cwd }}/integration-tests
