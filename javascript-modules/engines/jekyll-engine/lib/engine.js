@@ -143,7 +143,7 @@ export class Engine {
             }
             return index ? result?.[index] : result;
         } catch (e) {
-            console.error(`Error evaluating ${str}`, e);
+            console.error(`Error evaluating \`${str}\` in the Jekyll engine`, e);
             return '';
         }
     }

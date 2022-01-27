@@ -129,8 +129,9 @@ for (const impl of ['jekyll', 'eleventy']) {
 
     test.serial(`[${impl}]: Re-renders through an assign`, async t => {
         await initialSub(t.context[impl], 'title', { title: 'Bookshop' }, 'assign-wrapper');
+        const val = (impl === 'jekyll') ? 'include.component' : 'component';
         t.is(getBody(), [
-            `<!--bookshop-live context(test_var="title")-->`,
+            `<!--bookshop-live context(test_var: ${val})-->`,
             `<!--bookshop-live name(title) params(bind: page)-->`,
             `<h1>Bookshop<\/h1>`,
             `<!--bookshop-live end-->`
@@ -138,7 +139,7 @@ for (const impl of ['jekyll', 'eleventy']) {
 
         await t.context[impl].update({ page: { title: 'Live Love Laugh' } })
         t.is(getBody(), [
-            `<!--bookshop-live context(test_var="title")-->`,
+            `<!--bookshop-live context(test_var: ${val})-->`,
             `<!--bookshop-live name(title) params(bind: page)-->`,
             `<h1>Live Love Laugh<\/h1>`,
             `<!--bookshop-live end-->`

@@ -7,7 +7,7 @@
 {{- $is_string := eq "string" (printf "%T" .) -}}
 
 {{- if $is_string -}}
-    {{ (printf "<!--bookshop-live name(__bookshop__subsequent) params(bind: %s) context() -->" .) | safeHTML }}
+    {{ (printf "<!--bookshop-live name(__bookshop__subsequent) params(.: %s)-->" .) | safeHTML }}
 {{- else -}}
     {{- $err := slice 
         (printf "bookshop_bindings expected a string but received \"%s\"" .)

@@ -63,13 +63,13 @@ test("add live markup to bookshop_include tags", t => {
 
 test("add live markup to assigns", t => {
     const input = `{% assign a=b %}`;
-    const expected = `{% assign a=b %}<!--bookshop-live context(a="{{a}}")-->`;
+    const expected = `{% assign a=b %}<!--bookshop-live context(a: b)-->`;
     t.is(translateLiquid(input, { expandBindSyntax: false }), expected);
 });
 
 test("add live markup to local assigns", t => {
     const input = `{% local a=b %}`;
-    const expected = `{% local a=b %}<!--bookshop-live context(a="{{a}}")-->`;
+    const expected = `{% local a=b %}<!--bookshop-live context(a: b)-->`;
     t.is(translateLiquid(input, { expandBindSyntax: false }), expected);
 });
 

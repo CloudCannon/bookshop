@@ -15,7 +15,7 @@
 
 {{- if templates.Exists ( printf "partials/%s" $component_path ) -}}
 
-{{ (printf "<!--bookshop-live name(%s) params() context() -->" $component_name) | safeHTML }}
+{{ (printf "<!--bookshop-live name(%s)-->" $component_name) | safeHTML }}
 {{ partial $component_path $component_props }}
 {{ "<!--bookshop-live end-->" | safeHTML }}
 
