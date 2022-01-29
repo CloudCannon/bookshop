@@ -33,6 +33,14 @@ Before(async function (scenario) {
   fs.mkdirSync(this.tmp_dir, { recursive: true });
 });
 
+const timeout = new Promise((resolve, reject) => {
+  const id = setTimeout(() => {
+    clearTimeout(id);
+    resolve('timeout!');
+  }, 1000);
+});
+
+
 After(async function () {
   if (this.child) {
     kill(this.child.pid);
@@ -41,7 +49,7 @@ After(async function () {
     this.server.close();
   }
   if (this.browser) {
-    await this.browser.close();
+    Promise.race([this.browser.close(), timeout]);
   }
   if (!process.env["DEBUG"]) fs.rmdirSync(this.tmp_dir, { recursive: true });
 });

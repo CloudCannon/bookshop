@@ -70,7 +70,8 @@ Feature: Bookshop Structure Generation
     When I run "npm start" in the . directory
     Then stderr should be empty
     And stdout should contain "Added live editing to 1 page containing Bookshop components"
-    And stdout should contain "Built Bookshop live javascript to site/public/_cloudcannon/bookshop-live.js"
+    And stdout should contain "Built Bookshop live javascript to site"
+    And stdout should contain "bookshop-live.js"
     And site/public/index.html should leniently contain each row: 
       | text |
       | script.src = `/_cloudcannon/bookshop-live.js`; |
