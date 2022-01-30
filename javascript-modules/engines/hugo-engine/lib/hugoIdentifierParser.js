@@ -22,6 +22,13 @@ export class IdentifierParser {
 
   // Some short-circuits for easy to regex patterns to skip the parser
   tryShortCircuit() {
+    // change an index of . to be only the index
+    const indexDotFunc = /^\s*\(\s*index\s+(?:\(\s*\.\s*\)|\.)\s+(\d+)\s*\)\s*$/
+    if (indexDotFunc.test(this.input)) {
+      const [, index] = this.input.match(indexDotFunc);
+      return `${index}`;
+    }
+
     // change the index function into Bookshop dot notation
     const indexFunc = /^\s*\(\s*index\s+\(?\.?(.+?)\)?\s+(\d+)\s*\)\s*$/
     if (indexFunc.test(this.input)) {
@@ -30,7 +37,6 @@ export class IdentifierParser {
     }
 
     // strip the leading . from basic variable references
-    const variableDot = /^\s*\.([^\.\s])/;
     if (/^\s*\./.test(this.input)) {
       return this.input.replace(/^\s*\.([^\.\s])/, '$1');
     }

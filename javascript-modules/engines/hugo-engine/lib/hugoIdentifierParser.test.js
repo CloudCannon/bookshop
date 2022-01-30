@@ -66,7 +66,26 @@ test(`Nested dicts and slices`, async t => {
 });
 
 test(`Converts an index into dot notation`, async t => {
-    const ident = `(index (.items) 5)`;
-    const output = (new IdentifierParser(ident)).build();
+    let ident = `(index (.items) 5)`;
+    let output = (new IdentifierParser(ident)).build();
     t.deepEqual(output, `items.5`);
+
+    ident = `(index .array 5)`;
+    output = (new IdentifierParser(ident)).build();
+    t.deepEqual(output, `array.5`);
+
+    ident = `(index $variable 5)`;
+    output = (new IdentifierParser(ident)).build();
+    t.deepEqual(output, `$variable.5`);
+});
+
+
+test(`Converts a dot index into a JS object property`, async t => {
+    let ident = `(index (.) 5)`;
+    let output = (new IdentifierParser(ident)).build();
+    t.deepEqual(output, `5`);
+
+    ident = `(index . 1234)`;
+    output = (new IdentifierParser(ident)).build();
+    t.deepEqual(output, `1234`);
 });
