@@ -260,3 +260,56 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
     *    🌐 There should be no logs
     *    🌐 The selector span should contain "New Tag"
     *    🌐 The selector .page>*:nth-child(3) should contain "Block Three"
+
+  @bespoke
+  Scenario: Bookshop live renders a non-object argument
+    Given a component-lib/components/page/page.hugo.html file containing:
+      """
+      <div class="page">
+      {{ range . }}
+        {{ partial "bookshop" . }}
+      {{ end }}
+      </div>
+      """
+    Given [front_matter]:
+      """
+      components:
+        - _bookshop_name: single
+          title: Block One
+        - _bookshop_name: tag
+          inner:
+            text: Block Two
+        - _bookshop_name: single
+          title: Block Three
+      """
+    And a site/content/_index.md file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      """
+    And a site/layouts/index.html file containing:
+      """
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `.Params.components` }}
+      {{ partial "bookshop" (slice "page" .Params.components) }}
+      </body>
+      </html>
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      components:
+        - _bookshop_name: single
+          title: Block One
+        - _bookshop_name: tag
+          inner:
+            text: New Tag
+        - _bookshop_name: single
+          title: Block Three
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector span should contain "New Tag"
+    *    🌐 The selector .page>*:nth-child(3) should contain "Block Three"
