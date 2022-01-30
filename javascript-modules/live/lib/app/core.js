@@ -76,13 +76,12 @@ export const replaceHTMLRegion = (startNode, endNode, outputElement) => {
  * Calls a given callback whenever a component end tag is hit
  */
 const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, templateBlockHandler = () => { }) => {
-    const stack = [];           // The stack of component data scopes
+    const stack = [{ scope: {} }];           // The stack of data scopes
     const pathStack = parentPathStack || [{}];     // The paths from the root to any assigned variables
-    const bindings = {};        // Anything assigned through assigns or loops
     let stashedNodes = [];    // bookshop_bindings tags that we should keep track of for the next component
     let stashedParams = [];    // Params from the bookshop_bindings tag that we should include in the next component tag
 
-    const combinedScope = () => [liveInstance.data, ...stack.map(s => s.scope), bindings];
+    const combinedScope = () => [liveInstance.data, ...stack.map(s => s.scope)];
     const currentScope = () => stack[stack.length - 1];
 
     const iterator = getTemplateCommentIterator(documentNode);
@@ -92,9 +91,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
         const liveTag = parseComment(currentNode);
 
         for (const [name, identifier] of parseParams(liveTag?.context)) {
-            // TODO: bindings here has no encapsulation / stack, which feels too SSG-coupled for assigns
-            // TODO: bindings here has no encapsulation / stack, which is wrong for loops
-            bindings[name] = await liveInstance.eval(identifier, combinedScope());
+            currentScope().scope[name] = await liveInstance.eval(identifier, combinedScope());
             const normalizedIdentifier = liveInstance.normalize(identifier);
             if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
                 Object.values(normalizedIdentifier).forEach(value => {
@@ -144,12 +141,11 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             stack.push({
                 startNode: currentNode,
                 name: normalizeName(liveTag?.name),
-                bindings: JSON.parse(JSON.stringify(bindings)),
                 pathStack: JSON.parse(JSON.stringify(pathStack)),
                 scope,
                 params,
                 stashedNodes,
-                depth: stack.length,
+                depth: stack.length - 1,
             });
             stashedParams = [];
             stashedNodes = [];
@@ -167,7 +163,7 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
     const vDom = document.implementation.createHTMLDocument();
     const updates = [];     // Rendered elements and their DOM locations
 
-    const templateBlockHandler = async ({ startNode, endNode, name, scope, bindings, pathStack, depth, stashedNodes }) => {
+    const templateBlockHandler = async ({ startNode, endNode, name, scope, pathStack, depth, stashedNodes }) => {
         // We only need to render the outermost component
         if (depth) return;
 
@@ -175,7 +171,6 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
         await liveInstance.renderElement(
             name,
             scope,
-            bindings,
             output
         )
         updates.push({ startNode, endNode, output, pathStack, scope, name, stashedNodes });

@@ -40,9 +40,9 @@ export const getLive = (engines) => class BookshopLive {
         return this.engines[0].resolveComponentType(componentName);
     }
 
-    async renderElement(componentName, scope, bindings, dom) {
+    async renderElement(componentName, scope, dom) {
         try {
-            await this.engines[0].render(dom, componentName, scope, { ...this.globalData, ...bindings });
+            await this.engines[0].render(dom, componentName, scope, { ...this.globalData });
         } catch (e) {
             console.warn(`Error rendering bookshop component ${componentName}`, e);
             console.warn(`This is expected in certain cases, and may not be an issue, especially when deleting or re-ordering components.`)
