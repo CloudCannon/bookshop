@@ -167,7 +167,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
         } catch (e) {
             if (!isRetry) {
                 // DOM changed under us, start again.
-                await evaluateTemplate(liveInstance, documentNode, parentPathStack, templateBlockHandler, true);
+                return await evaluateTemplate(liveInstance, documentNode, parentPathStack, templateBlockHandler, true);
             }
         }
     }
