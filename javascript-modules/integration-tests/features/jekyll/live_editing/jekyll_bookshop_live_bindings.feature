@@ -36,7 +36,7 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Automatic Data Bindings
     And 🌐 I have loaded my site in CloudCannon
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
-    Then 🌐 The selector h1 should match "<h1 data-cms-bind=\"cloudcannon:#hero\">Hello World</h1>"
+    Then 🌐 The selector h1 should match "<h1 data-cms-bind=\"#hero\">Hello World</h1>"
 
   Scenario: Bookshop live renders a nested data binding
     Given a component-lib/components/outer/outer.jekyll.html file containing:
@@ -59,7 +59,7 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Automatic Data Bindings
     And 🌐 I have loaded my site in CloudCannon
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
-    Then 🌐 The selector h1 should match "<h1 data-cms-bind=\"cloudcannon:#items.item\">Hello There</h1>"
+    Then 🌐 The selector h1 should match "<h1 data-cms-bind=\"#items.item\">Hello There</h1>"
 
   Scenario: Bookshop live renders a nested loop data binding
     Given a component-lib/components/loop/loop.jekyll.html file containing:
@@ -84,9 +84,9 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Automatic Data Bindings
     And 🌐 I have loaded my site in CloudCannon
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
-    Then 🌐 The selector h1:nth-of-type(1) should match "<h1 data-cms-bind=\"cloudcannon:#rows.0\">Hello There</h1>"
-    Then 🌐 The selector h1:nth-of-type(2) should match "<h1 data-cms-bind=\"cloudcannon:#rows.1\">Goodbye You</h1>"
-    Then 🌐 The selector h1:nth-of-type(3) should match "<h1 data-cms-bind=\"cloudcannon:#rows.2\">A third one.</h1>"
+    Then 🌐 The selector h1:nth-of-type(1) should match "<h1 data-cms-bind=\"#rows.0\">Hello There</h1>"
+    Then 🌐 The selector h1:nth-of-type(2) should match "<h1 data-cms-bind=\"#rows.1\">Goodbye You</h1>"
+    Then 🌐 The selector h1:nth-of-type(3) should match "<h1 data-cms-bind=\"#rows.2\">A third one.</h1>"
 
   Scenario: Bookshop live renders a data binding through an assign
     Given a component-lib/components/outer/outer.jekyll.html file containing:
@@ -110,7 +110,7 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Automatic Data Bindings
     And 🌐 I have loaded my site in CloudCannon
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
-    Then 🌐 The selector h1 should match "<h1 data-cms-bind=\"cloudcannon:#items.item\">Hello There</h1>"
+    Then 🌐 The selector h1 should match "<h1 data-cms-bind=\"#items.item\">Hello There</h1>"
 
   Scenario: Bookshop live renders a parent data binding over a child
     Given a component-lib/components/loop/loop.jekyll.html file containing:
@@ -135,9 +135,9 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Automatic Data Bindings
     And 🌐 I have loaded my site in CloudCannon
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
-    Then 🌐 The selector h1:nth-of-type(1) should match "<h1 data-cms-bind=\"cloudcannon:#rows\">Hello There</h1>"
-    Then 🌐 The selector h1:nth-of-type(2) should match "<h1 data-cms-bind=\"cloudcannon:#rows\">Goodbye You</h1>"
-    Then 🌐 The selector h1:nth-of-type(3) should match "<h1 data-cms-bind=\"cloudcannon:#rows\">A third one.</h1>"
+    Then 🌐 The selector h1:nth-of-type(1) should match "<h1 data-cms-bind=\"#rows\">Hello There</h1>"
+    Then 🌐 The selector h1:nth-of-type(2) should match "<h1 data-cms-bind=\"#rows\">Goodbye You</h1>"
+    Then 🌐 The selector h1:nth-of-type(3) should match "<h1 data-cms-bind=\"#rows\">A third one.</h1>"
 
   Scenario: Bookshop live respects the per-component dataBinding flag
     Given [front_matter]:

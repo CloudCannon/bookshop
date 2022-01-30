@@ -270,7 +270,7 @@ export const hydrateDataBindings = async (liveInstance, documentNode, pathsInSco
                 // since we can't wrap the component in any elements
                 let node = startNode.nextElementSibling;
                 while (node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0) {
-                    node.dataset.cmsBind = `cloudcannon:#${dataBinding}`;
+                    node.dataset.cmsBind = `#${dataBinding}`;
                     node = node.nextElementSibling;
                 }
             }
