@@ -8,6 +8,10 @@
   "scripts": {
     "test": "nyc ava -v"
   },
+  "files": [
+    "**/*.js",
+    "!**/*.test.js"
+  ],
   "author": "CloudCannon",
   "license": "MIT",
   "publishConfig": {

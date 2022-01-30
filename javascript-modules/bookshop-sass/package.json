@@ -11,6 +11,9 @@
   "bin": {
     "bookshop-sass": "main.js"
   },
+  "files": [
+    "main.js"
+  ],
   "author": "@bglw",
   "license": "MIT",
   "publishConfig": {

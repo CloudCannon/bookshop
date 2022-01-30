@@ -9,6 +9,9 @@
     "url": "https://github.com/cloudcannon/bookshop.git",
     "directory": "gen"
   },
+  "files": [
+    "src/index.js"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\""
   },

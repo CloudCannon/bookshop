@@ -10,6 +10,12 @@
     ".": "./main.js",
     "./build": "./build.js"
   },
+  "files": [
+    "*.js",
+    "lib/*.js",
+    "!**/*.test.js",
+    "hugo-renderer/hugo_renderer.wasm"
+  ],
   "scripts": {
     "test": "nyc ava -v"
   },
@@ -24,7 +30,7 @@
   },
   "dependencies": {
     "@bookshop/helpers": "2.3.1",
-    "esbuild": "^0.13.10"
+    "es*": "^0.13.10"
   },
   "engines": {
     "node": ">=14.16"

@@ -11,6 +11,11 @@
   "bin": {
     "bookshop-generate": "main.js"
   },
+  "files": [
+    "**/*.js",
+    "!**/*.test.js",
+    "!.test/**/*"
+  ],
   "author": "@bglw",
   "license": "MIT",
   "publishConfig": {

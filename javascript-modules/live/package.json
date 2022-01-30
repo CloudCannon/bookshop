@@ -12,6 +12,11 @@
   "bin": {
     "bookshop-live": "cli.js"
   },
+  "files": [
+    "**/*.js",
+    "!**/*.test.js",
+    "!.test/**/*"
+  ],
   "author": "@bglw",
   "license": "MIT",
   "publishConfig": {

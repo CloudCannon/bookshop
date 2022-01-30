@@ -12,6 +12,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\""
   },
+  "files": [
+    "**/*.js",
+    "**/*.ejs.t",
+    "!**/*.test.js"
+  ],
   "author": "@CloudCannon",
   "license": "MIT",
   "bin": "src/index.js",

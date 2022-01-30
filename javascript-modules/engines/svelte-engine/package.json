@@ -10,6 +10,11 @@
     ".": "./main.js",
     "./build": "./build.js"
   },
+  "files": [
+    "**/*.js",
+    "!**/*.test.js",
+    "!.test/**/*"
+  ],
   "scripts": {
     "test": "nyc ava -v"
   },
