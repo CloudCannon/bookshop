@@ -107,7 +107,7 @@ export class Engine {
 
     async eval(str, props = [{}]) {
         while (!window.renderHugo) await sleep(10);
-        let props_obj = props.reduce((a, b) => { return { ...b, ...a } });
+        let props_obj = props.reduce((a, b) => { return { ...a, ...b } });
 
         // We're capable of looking up a simple variable
         // (and it's hard to pass to wasm since we store variables on the context)
