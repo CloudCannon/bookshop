@@ -26,6 +26,7 @@ test("(unit test) test parity between SSGs", async t => {
       ...scenarios[ssg],
       ...doc.feature.children
         .filter(c => c.type === "Scenario")
+        .filter(c => !c.tags.map(t => t.name).includes("@bespoke"))
         .map(c => c.name)
     ];
   });

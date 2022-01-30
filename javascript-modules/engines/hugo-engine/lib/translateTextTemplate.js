@@ -2,8 +2,11 @@ import { Tokenizer } from 'liquidjs';
 
 const tokens = {
     END: /{{\s*end\s*}}/,
+    BEGIN: /{{\s*(if)/,
+    BEGIN_SCOPED: /{{\s*(range|with|define|block|template)/,
     LOOP: /{{\s*range\s+(.+?)\s*}}/,
     ASSIGN: /{{\s*(\$\S+)\s+:=\s+(.+?)\s*}}/,
+    WITH: /{{\s*with\s+(.+?)\s*}}/,
     BOOKSHOP: /{{\s*partial\s+"bookshop(?:_partial)?"\s+\(\s*slice\s+"(.+?)" (.+?)\s*\)\s*}}/,
 }
 
@@ -12,33 +15,49 @@ const tokens = {
  * that we already have in the bundle.
  * All go templating tags will come through as value tokens.
  */
-const rewriteTag = function (token, src, liveMarkup) {
+const rewriteTag = function (token, src, endTags, liveMarkup) {
     let raw = token.getText();
+    let outputToken = {
+        text: raw
+    }
 
     // Skip non-value tags
-    if (token.kind !== 8) return src;
-    if (tokens.END.test(raw)) return src;
+    if (token.kind !== 8) return outputToken;
+    if (tokens.END.test(raw)) {
+        endTags.push(outputToken);
+        return outputToken;
+    }
+
+    if (tokens.BEGIN.test(raw)) {
+        endTags.pop();
+    }
+
+    if (tokens.BEGIN_SCOPED.test(raw)) {
+        outputToken.text = `${outputToken.text}{{ \`<!--bookshop-live stack-->\` | safeHTML }}`;
+
+        let matchingEnd = endTags.pop();
+        matchingEnd.text = `{{ \`<!--bookshop-live unstack-->\` | safeHTML }}${matchingEnd.text}`;
+    }
 
     if (liveMarkup && tokens.LOOP.test(raw)) {
         let [, iterator] = raw.match(tokens.LOOP);
-        raw = [`{{ $bookshop__live__iterator := 0 }}`,
-            `${raw}`,
+        outputToken.text = [`{{ $bookshop__live__iterator := 0 }}`,
+            `${outputToken.text}`,
             `{{ (printf \`<!--bookshop-live context(.: (index (${iterator}) %d))-->\` $bookshop__live__iterator) | safeHTML }}`,
             `{{ $bookshop__live__iterator = (add $bookshop__live__iterator 1) }}`
         ].join('')
     } else if (liveMarkup && tokens.ASSIGN.test(raw)) {
         let [, identifier, value] = raw.match(tokens.ASSIGN);
-        raw = `${raw}{{ \`<!--bookshop-live context(${identifier}: ${value})-->\` | safeHTML }}`
+        outputToken.text = `${outputToken.text}{{ \`<!--bookshop-live context(${identifier}: ${value})-->\` | safeHTML }}`
+    } else if (liveMarkup && tokens.WITH.test(raw)) {
+        let [, value] = raw.match(tokens.WITH);
+        outputToken.text = `${outputToken.text}{{ \`<!--bookshop-live context(.: ${value})-->\` | safeHTML }}`
     } else if (liveMarkup && tokens.BOOKSHOP.test(raw)) {
         let [, name, params] = raw.match(tokens.BOOKSHOP);
-        raw = `{{ \`<!--bookshop-live name(${name}) params(.: ${params})-->\` | safeHTML }}${raw}{{ \`<!--bookshop-live end-->\` | safeHTML }}`
+        outputToken.text = `{{ \`<!--bookshop-live name(${name}) params(.: ${params})-->\` | safeHTML }}${outputToken.text}{{ \`<!--bookshop-live end-->\` | safeHTML }}`
     }
 
-    return [
-        src.substr(0, token.begin),
-        raw,
-        src.substr(token.end)
-    ].join('');
+    return outputToken;
 }
 
 export default function (text, opts) {
@@ -46,13 +65,14 @@ export default function (text, opts) {
         liveMarkup: true,
         ...opts
     }
-    text = text.toString();
-    const tokenizer = new Tokenizer(text);
-    const output = tokenizer.readTopLevelTokens();
+    const tokenizer = new Tokenizer(text.toString());
+    const tokens = tokenizer.readTopLevelTokens();
+    const output = [];
+    const endTags = [];
 
-    output.reverse().forEach(tag => {
-        text = rewriteTag(tag, text, opts.liveMarkup);
+    tokens.reverse().forEach(tag => {
+        output.unshift(rewriteTag(tag, text, endTags, opts.liveMarkup));
     });
 
-    return text;
+    return output.map(t => t.text).join('');
 };

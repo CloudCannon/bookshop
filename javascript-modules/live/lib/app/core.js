@@ -106,6 +106,16 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             currentScope().endNode = currentNode;
             await templateBlockHandler(stack.pop());
             pathStack.pop();
+        } else if (liveTag.stack) {
+            let scope = {};
+            pathStack.push({});
+            stack.push({
+                pathStack: JSON.parse(JSON.stringify(pathStack)),
+                scope,
+            });
+        } else if (liveTag.unstack) {
+            stack.pop()
+            pathStack.pop();
         } else if (liveTag && liveTag?.name === "__bookshop__subsequent") { // Entering a bookshop_bindings rule
             stashedNodes.push(currentNode);
             stashedParams = [...stashedParams, ...parseParams(liveTag?.params)];
