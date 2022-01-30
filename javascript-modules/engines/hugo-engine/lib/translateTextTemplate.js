@@ -5,6 +5,7 @@ const tokens = {
     BEGIN: /{{\s*(if)/,
     BEGIN_SCOPED: /{{\s*(range|with|define|block|template)/,
     LOOP: /{{\s*range\s+(.+?)\s*}}/,
+    INDEX_LOOP: /{{\s*range\s+(\$.+), \$.+ := (.+?)\s*}}/,
     ASSIGN: /{{\s*(\$\S+)\s+:=\s+(.+?)\s*}}/,
     WITH: /{{\s*with\s+(.+?)\s*}}/,
     BOOKSHOP: /{{\s*partial\s+"bookshop(?:_partial)?"\s+\(\s*slice\s+"(.+?)" (.+?)\s*\)\s*}}/,
@@ -40,7 +41,12 @@ const rewriteTag = function (token, src, endTags, liveMarkup) {
         matchingEnd.text = `{{ \`<!--bookshop-live unstack-->\` | safeHTML }}${matchingEnd.text}`;
     }
 
-    if (liveMarkup && tokens.LOOP.test(raw)) {
+    if (liveMarkup && tokens.INDEX_LOOP.test(raw)) {
+        let [, index_variable, iterator] = raw.match(tokens.INDEX_LOOP);
+        outputToken.text = [`${outputToken.text}`,
+        `{{ (printf \`<!--bookshop-live context(.: (index (${iterator}) %d))-->\` ${index_variable}) | safeHTML }}`
+        ].join('')
+    } else if (liveMarkup && tokens.LOOP.test(raw)) {
         let [, iterator] = raw.match(tokens.LOOP);
         outputToken.text = [`{{ $bookshop__live__iterator := 0 }}`,
             `${outputToken.text}`,

@@ -64,6 +64,18 @@ test("add live markup to loops", t => {
     t.is(translateTextTemplate(input, {}), expected);
 });
 
+test("add live markup to loops with iterators", t => {
+    const input = `{{range $loop_index, $element := .columns}}<p>{{$element}}</p>{{ end }}`;
+    const expected = [`{{range $loop_index, $element := .columns}}`,
+        `{{ \`<!--bookshop-live stack-->\` | safeHTML }}`,
+        `{{ (printf \`<!--bookshop-live context(.: (index (.columns) %d))-->\` $loop_index) | safeHTML }}`,
+        `<p>{{$element}}</p>`,
+        `{{ \`<!--bookshop-live unstack-->\` | safeHTML }}`,
+        `{{ end }}`
+    ].join('');
+    t.is(translateTextTemplate(input, {}), expected);
+});
+
 test("add live markup to complex end structures", t => {
     const input = `
 {{ range .items }}
