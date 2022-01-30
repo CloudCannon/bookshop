@@ -75,7 +75,7 @@ export const replaceHTMLRegion = (startNode, endNode, outputElement) => {
  * Takes in a DOM tree containing Bookshop live comments
  * Calls a given callback whenever a component end tag is hit
  */
-const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, templateBlockHandler = () => { }) => {
+const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, templateBlockHandler = () => { }, isRetry) => {
     const stack = [{ scope: {} }];           // The stack of data scopes
     const pathStack = parentPathStack || [{}];     // The paths from the root to any assigned variables
     let stashedNodes = [];    // bookshop_bindings tags that we should keep track of for the next component
@@ -162,7 +162,14 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             stashedParams = [];
             stashedNodes = [];
         }
-        currentNode = iterator.iterateNext();
+        try {
+            currentNode = iterator.iterateNext();
+        } catch (e) {
+            if (!isRetry) {
+                // DOM changed under us, start again.
+                await evaluateTemplate(liveInstance, documentNode, parentPathStack, templateBlockHandler, true);
+            }
+        }
     }
 }
 
