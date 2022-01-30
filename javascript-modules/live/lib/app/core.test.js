@@ -63,3 +63,51 @@ test("Extend existing variable in the stack", async t => {
         { b: 'page.a.0' }
     ], stack);
 });
+
+test("Extend existing dot context in the stack", async t => {
+    let stack = [
+        { '.': 'Params.content_blocks' },
+        {}
+    ];
+
+    storeResolvedPath('.', 'text', stack);
+
+    t.deepEqual([
+        { '.': 'Params.content_blocks' },
+        { '.': 'Params.content_blocks.text' }
+    ], stack);
+});
+
+test("Track data through context and assigns", async t => {
+    let stack = [
+        { '.': 'Params.content_blocks' },
+        {}
+    ];
+
+    storeResolvedPath('$ace', 'text', stack);
+    storeResolvedPath('something', '$ace.another', stack);
+
+    t.deepEqual([
+        { '.': 'Params.content_blocks' },
+        {
+            '$ace': 'Params.content_blocks.text',
+            'something': 'Params.content_blocks.text.another'
+        }
+    ], stack);
+});
+
+test("$ variables skip scopes", async t => {
+    let stack = [
+        { '$variable': 'path' },
+        { '.': 'Params.content_blocks' },
+        {}
+    ];
+
+    storeResolvedPath('this', '$variable', stack);
+
+    t.deepEqual([
+        { '$variable': 'path' },
+        { '.': 'Params.content_blocks' },
+        { 'this': 'path' }
+    ], stack);
+});

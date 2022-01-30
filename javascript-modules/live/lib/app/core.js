@@ -23,19 +23,32 @@ export const storeResolvedPath = (name, identifier, pathStack) => {
     if (typeof identifier !== 'string') return;
     // TODO: The `include.` replacement feels too SSG coupled.
     //                       v v v v v v v v v v v v 
-    identifier = identifier.replace(/^include\./, '').replace(/\[(\d+)]/g, '.$1').split('.');
-    const baseIdentifier = identifier.shift();
-    const existingPath = findInStack(baseIdentifier, pathStack);
-    const prefix = existingPath ?? baseIdentifier;
-    pathStack[pathStack.length - 1][name] = `${[prefix, ...identifier].join('.')}`;
+    const splitIdentifier = identifier.replace(/^include\./, '').replace(/\[(\d+)]/g, '.$1').split('.');
+    const baseIdentifier = splitIdentifier.shift();
+    if (baseIdentifier) {
+        const existingPath = findInStack(baseIdentifier, pathStack);
+        const prefix = existingPath ?? baseIdentifier;
+        pathStack[pathStack.length - 1][name] = `${[prefix, ...splitIdentifier].join('.')}`;
+    } else {
+        const existingPath = findInStack(identifier, pathStack);
+        const path = existingPath ?? identifier;
+        pathStack[pathStack.length - 1][name] = path;
+    }
 }
 
+// TODO: This is now partially coupled with Hugo.
+// This function should move into each engine.
 export const findInStack = (key, stack) => {
     const [baseIdentifier, ...rest] = key.split('.');
-    for (let i = stack.length - 1; i >= 0; i--) {
-        if (stack[i][baseIdentifier]) {
-            if (rest.length) return `${stack[i][baseIdentifier]}.${rest.join('.')}`;
-            return `${stack[i][baseIdentifier]}`;
+    if (baseIdentifier) {
+        for (let i = stack.length - 1; i >= 0; i--) {
+            if (stack[i][baseIdentifier]) {
+                if (rest.length) return `${stack[i][baseIdentifier]}.${rest.join('.')}`;
+                return `${stack[i][baseIdentifier]}`;
+            }
+            if (stack[i]["."] && stack[i]["."] !== '.' && !/^\$/.test(key)) {
+                return `${stack[i]["."]}.${key}`;
+            }
         }
     }
     // Try again for keys that legitimately contain a .
@@ -141,8 +154,10 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
                     const normalizedIdentifier = liveInstance.normalize(identifier);
                     if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
                         Object.entries(normalizedIdentifier).forEach(([key, value]) => {
-                            return storeResolvedPath(key, value, pathStack)
+                            return storeResolvedPath(key, value, pathStack);
                         });
+                    } else {
+                        storeResolvedPath(name, normalizedIdentifier, pathStack);
                     }
                 } else {
                     scope[name] = await liveInstance.eval(identifier, combinedScope());
@@ -245,7 +260,7 @@ export const hydrateDataBindings = async (liveInstance, documentNode, pathsInSco
         components.push(component);
     }
 
-    await evaluateTemplate(liveInstance, documentNode, pathsInScope, templateBlockHandler);
+    await evaluateTemplate(liveInstance, documentNode, [{}], templateBlockHandler);
 
     for (let { startNode, endNode, params, pathStack, scope, name } of components) {
         // By default, don't add bindings for bookshop shared includes
