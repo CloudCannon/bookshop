@@ -30,7 +30,8 @@
   },
   "dependencies": {
     "@bookshop/helpers": "2.3.1",
-    "es*": "^0.13.10"
+    "esbuild": "^0.13.10",
+    "liquidjs": "9.28.0"
   },
   "engines": {
     "node": ">=14.16"

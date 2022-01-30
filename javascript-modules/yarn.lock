@@ -473,6 +473,7 @@ __metadata:
     "@bookshop/helpers": 2.3.1
     ava: ^3.15.0
     esbuild: ^0.13.10
+    liquidjs: 9.28.0
     nyc: ^15.1.0
   languageName: unknown
   linkType: soft
