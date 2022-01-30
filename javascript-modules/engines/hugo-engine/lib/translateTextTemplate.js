@@ -8,6 +8,7 @@ const tokens = {
     ASSIGN: /{{\s*(\$\S+)\s+:=\s+(.+?)\s*}}/,
     WITH: /{{\s*with\s+(.+?)\s*}}/,
     BOOKSHOP: /{{\s*partial\s+"bookshop(?:_partial)?"\s+\(\s*slice\s+"(.+?)" (.+?)\s*\)\s*}}/,
+    BOOKSHOP_SCOPED: /{{\s*partial\s+"bookshop(?:_partial)?"\s+\(?\s*\.\s*\)?\s*}}/,
 }
 
 /**
@@ -55,6 +56,12 @@ const rewriteTag = function (token, src, endTags, liveMarkup) {
     } else if (liveMarkup && tokens.BOOKSHOP.test(raw)) {
         let [, name, params] = raw.match(tokens.BOOKSHOP);
         outputToken.text = `{{ \`<!--bookshop-live name(${name}) params(.: ${params})-->\` | safeHTML }}${outputToken.text}{{ \`<!--bookshop-live end-->\` | safeHTML }}`
+    } else if (liveMarkup && tokens.BOOKSHOP_SCOPED.test(raw)) {
+        outputToken.text = [`{{ if reflect.IsSlice . }}{{ (printf \`<!--bookshop-live name(%s) params(.: .)-->\` (index . 0)) | safeHTML }}`,
+            `{{- else if reflect.IsMap . -}}{{ (printf \`<!--bookshop-live name(%s) params(.: .)-->\` ._bookshop_name) | safeHTML }}{{ end }}`,
+            `${outputToken.text}`,
+            `{{ \`<!--bookshop-live end-->\` | safeHTML }}`
+        ].join('');
     }
 
     return outputToken;
