@@ -55,13 +55,13 @@ const rewriteTag = function (token, src, endTags, liveMarkup) {
         ].join('')
     } else if (liveMarkup && tokens.ASSIGN.test(raw)) {
         let [, identifier, value] = raw.match(tokens.ASSIGN);
-        outputToken.text = `${outputToken.text}{{ \`<!--bookshop-live context(${identifier}: ${value})-->\` | safeHTML }}`
+        outputToken.text = `${outputToken.text}{{ \`<!--bookshop-live context(${identifier}: (${value}))-->\` | safeHTML }}`
     } else if (liveMarkup && tokens.WITH.test(raw)) {
         let [, value] = raw.match(tokens.WITH);
-        outputToken.text = `${outputToken.text}{{ \`<!--bookshop-live context(.: ${value})-->\` | safeHTML }}`
+        outputToken.text = `${outputToken.text}{{ \`<!--bookshop-live context(.: (${value}))-->\` | safeHTML }}`
     } else if (liveMarkup && tokens.BOOKSHOP.test(raw)) {
         let [, name, params] = raw.match(tokens.BOOKSHOP);
-        outputToken.text = `{{ \`<!--bookshop-live name(${name}) params(.: ${params})-->\` | safeHTML }}${outputToken.text}{{ \`<!--bookshop-live end-->\` | safeHTML }}`
+        outputToken.text = `{{ \`<!--bookshop-live name(${name}) params(.: (${params}))-->\` | safeHTML }}${outputToken.text}{{ \`<!--bookshop-live end-->\` | safeHTML }}`
     } else if (liveMarkup && tokens.BOOKSHOP_SCOPED.test(raw)) {
         outputToken.text = [`{{ if reflect.IsSlice . }}{{ (printf \`<!--bookshop-live name(%s) params(.: .)-->\` (index . 0)) | safeHTML }}`,
             `{{- else if reflect.IsMap . -}}{{ (printf \`<!--bookshop-live name(%s) params(.: .)-->\` ._bookshop_name) | safeHTML }}{{ end }}`,

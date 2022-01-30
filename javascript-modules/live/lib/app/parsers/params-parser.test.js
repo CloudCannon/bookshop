@@ -17,11 +17,27 @@ test(`Nested Hugo dict`, async t => {
     ]);
 });
 
+test(`Hugo double parentheses`, async t => {
+    const params = `bind: ((dict "a" (slice 1 2 3)))`;
+    const output = (new ParamsParser(params)).build();
+    t.deepEqual(output, [
+        ["bind", `(dict "a" (slice 1 2 3))`]
+    ]);
+});
+
 test(`Bare variable`, async t => {
     const params = `title: page.title[3]`;
     const output = (new ParamsParser(params)).build();
     t.deepEqual(output, [
         ["title", `page.title[3]`]
+    ]);
+});
+
+test(`Bare variable parentheses`, async t => {
+    const params = `title: ($g)`;
+    const output = (new ParamsParser(params)).build();
+    t.deepEqual(output, [
+        ["title", `$g`]
     ]);
 });
 
@@ -32,6 +48,16 @@ test(`Quoted strings`, async t => {
         ["a", `"Hello World"`],
         ["b", `'Hi Globe'`],
         ["c", "`Hey Earth`"]
+    ]);
+});
+
+test(`Quoted strings parentheses`, async t => {
+    const params = `a: ("Hello World") b: ('Hi Globe') c: (\`Hey\`)`;
+    const output = (new ParamsParser(params)).build();
+    t.deepEqual(output, [
+        ["a", `("Hello World")`],
+        ["b", `('Hi Globe')`],
+        ["c", "`Hey`"]
     ]);
 });
 

@@ -128,6 +128,10 @@ export class ParamsParser {
     // title: "Hello World" 
     if (this.deps.delim === TOKENS.SPACE && this.deps.delim.test(t)) {
       this.deps.value = this.deps.value.replace(/.$/, '')
+      // Remove redundant parenthesis
+      this.deps.value = this.deps.value.replace(/^\(\(+(.+)\)+\)$/, "($1)");
+      this.deps.value = this.deps.value.replace(/^\((\S+)\)$/, "$1");
+
       this.output.push([this.deps.identifier, this.deps.value]);
       this.state = 'IDENT';
       this.deps = {};
