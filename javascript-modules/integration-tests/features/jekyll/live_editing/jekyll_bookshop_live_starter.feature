@@ -21,14 +21,14 @@ Feature: Jekyll Bookshop CloudCannon Starter Template Live Editing
         {% bookshop {{block._bookshop_name}} bind=block %}
       {% endfor %}
       """
-    * a component-lib/shared/jekyll/tag.jekyll.html file containing:
+    * a component-lib/components/tag/tag.jekyll.html file containing:
       """
       <span class="u-tag">{{ include.text }}</span>
       """
     * a component-lib/components/content/content.jekyll.html file containing:
       """
       <div class="c-content c-content--{{ include.type }}">
-        {% if include.type == "note" %}{% bookshop_include tag text="Note" %}{% endif %}
+        {% if include.type == "note" %}{% bookshop tag text="Note" %}{% endif %}
         {{ include.content_html }}
       </div>
       """
@@ -36,7 +36,7 @@ Feature: Jekyll Bookshop CloudCannon Starter Template Live Editing
       """
       <div class="c-title">
         {% for tag in include.tags %}
-          {% bookshop_include tag bind=tag %}
+          {% bookshop tag bind=tag %}
         {% endfor %}
         <h1 class="c-title__title">
           {{ include.title }}
@@ -98,3 +98,11 @@ Feature: Jekyll Bookshop CloudCannon Starter Template Live Editing
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector .u-tag:nth-of-type(3) should contain "starter"
+
+  Scenario: Bookshop live renders starter template data bindings
+    Given 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector .c-content--note should match "data-cms-bind=\"#note_html\""
+    *    🌐 The selector .c-title should match "data-cms-bind=\"#content_blocks.0\""
+    *    🌐 The selector .u-tag:nth-of-type(2) should match "data-cms-bind=\"#content_blocks.0.tags.1\""

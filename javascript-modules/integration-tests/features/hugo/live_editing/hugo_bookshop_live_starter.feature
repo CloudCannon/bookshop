@@ -22,7 +22,7 @@ Feature: Hugo Bookshop CloudCannon Starter Template Live Editing
       {{ end }}
       </div>
       """
-    * a component-lib/shared/hugo/tag.hugo.html file containing:
+    * a component-lib/components/tag/tag.hugo.html file containing:
       """
       <span class="u-tag">{{ .text }}</span>
       """
@@ -30,7 +30,7 @@ Feature: Hugo Bookshop CloudCannon Starter Template Live Editing
       """
       <div class="c-content c-content--{{ .type }}">
           {{ if eq .type "note" }}
-              {{ partial "bookshop_partial" (slice "tag" (dict "text" "Note")) }}
+              {{ partial "bookshop" (slice "tag" (dict "text" "Note")) }}
           {{ end }}
           {{ .content_html | safeHTML }}
       </div>
@@ -39,7 +39,7 @@ Feature: Hugo Bookshop CloudCannon Starter Template Live Editing
       """
       <div class="c-title">
           {{ range .tags }}
-              {{ partial "bookshop_partial" (slice "tag" (dict "text" .text)) }}
+              {{ partial "bookshop" (slice "tag" (dict "text" .text)) }}
           {{ end }}
           <h1 class="c-title__title">
               {{ .title }}
@@ -108,3 +108,11 @@ Feature: Hugo Bookshop CloudCannon Starter Template Live Editing
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector .u-tag:nth-of-type(3) should contain "starter"
+
+  Scenario: Bookshop live renders starter template data bindings
+    Given 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector .c-content--note should match "data-cms-bind=\"#note_html\""
+    *    🌐 The selector .c-title should match "data-cms-bind=\"#content_blocks.0\""
+    *    🌐 The selector .u-tag:nth-of-type(2) should match "data-cms-bind=\"#content_blocks.0.tags.1.text\""

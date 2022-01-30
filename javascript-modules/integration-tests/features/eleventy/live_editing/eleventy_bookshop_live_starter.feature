@@ -26,14 +26,14 @@ Feature: Eleventy Bookshop CloudCannon Starter Template Live Editing
         {% bookshop "{{block._bookshop_name}}" bind: block %}
       {% endfor %}
       """
-    * a component-lib/shared/eleventy/tag.eleventy.liquid file containing:
+    * a component-lib/components/tag/tag.eleventy.liquid file containing:
       """
       <span class="u-tag">{{ text }}</span>
       """
     * a component-lib/components/content/content.eleventy.liquid file containing:
       """
       <div class="c-content c-content--{{ type }}">
-        {% if type == "note" %}{% bookshop_include "tag" text: "Note" %}{% endif %}
+        {% if type == "note" %}{% bookshop "tag" text: "Note" %}{% endif %}
         {{ content_html }}
       </div>
       """
@@ -41,7 +41,7 @@ Feature: Eleventy Bookshop CloudCannon Starter Template Live Editing
       """
       <div class="c-title">
         {% for tag in tags %}
-          {% bookshop_include "tag" bind: tag %}
+          {% bookshop "tag" bind: tag %}
         {% endfor %}
         <h1 class="c-title__title">
           {{ title }}
@@ -103,3 +103,11 @@ Feature: Eleventy Bookshop CloudCannon Starter Template Live Editing
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector .u-tag:nth-of-type(3) should contain "starter"
+
+  Scenario: Bookshop live renders starter template data bindings
+    Given 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector .c-content--note should match "data-cms-bind=\"#note_html\""
+    *    🌐 The selector .c-title should match "data-cms-bind=\"#content_blocks.0\""
+    *    🌐 The selector .u-tag:nth-of-type(2) should match "data-cms-bind=\"#content_blocks.0.tags.1\""
