@@ -22,13 +22,9 @@ test("add live markup to scoped bookshop tags", t => {
     t.is(translateTextTemplate(input, {}), expected);
 });
 
-test("add live markup to bookshop_partial tags", t => {
+test("don't add live markup to bookshop_partial tags", t => {
     const input = `{{ partial "bookshop_partial" (slice "helper" (dict "text" "input")) }}`;
-    const expected = [
-        `{{ \`<!--bookshop-live name(helper) params(.: (dict "text" "input"))-->\` | safeHTML }}`,
-        `{{ partial "bookshop_partial" (slice "helper" (dict "text" "input")) }}`,
-        `{{ \`<!--bookshop-live end-->\` | safeHTML }}`
-    ].join('');
+    const expected = `{{ partial "bookshop_partial" (slice "helper" (dict "text" "input")) }}`;
     t.is(translateTextTemplate(input, {}), expected);
 });
 

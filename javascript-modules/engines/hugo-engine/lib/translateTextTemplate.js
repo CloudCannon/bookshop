@@ -8,8 +8,8 @@ const tokens = {
     INDEX_LOOP: /{{\s*range\s+(\$.+), \$.+ := (.+?)\s*}}/,
     ASSIGN: /{{\s*(\$\S+)\s+:=\s+(.+?)\s*}}/,
     WITH: /{{\s*with\s+(.+?)\s*}}/,
-    BOOKSHOP: /{{\s*partial\s+"bookshop(?:_partial)?"\s+\(\s*slice\s+"(.+?)" (.+?)\s*\)\s*}}/,
-    BOOKSHOP_SCOPED: /{{\s*partial\s+"bookshop(?:_partial)?"\s+\(?\s*\.\s*\)?\s*}}/,
+    BOOKSHOP: /{{\s*partial\s+"bookshop"\s+\(\s*slice\s+"(.+?)" (.+?)\s*\)\s*}}/,
+    BOOKSHOP_SCOPED: /{{\s*partial\s+"bookshop"\s+\(?\s*\.\s*\)?\s*}}/,
 }
 
 /**
