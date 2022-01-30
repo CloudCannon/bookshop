@@ -38,10 +38,10 @@ func createFuncMap(d *deps.Deps) map[string]interface{} {
 // as well as a JSON blob of its data,
 // and renders it.
 func RenderHugo(templateString string, props string) interface{} {
-	var parsedProps map[string]interface{}
+	var parsedProps interface{}
 	err := json.Unmarshal([]byte(props), &parsedProps)
 	if err != nil {
-		buf := bytes.NewBufferString(fmt.Sprintf("bad json unmarshal: %s", err.Error()))
+		buf := bytes.NewBufferString(fmt.Sprintf("BKSHERR: bad json unmarshal: %s", err.Error()))
 		return buf.String()
 	}
 
@@ -50,14 +50,14 @@ func RenderHugo(templateString string, props string) interface{} {
 
 	templ, err := template.New("").Funcs(funcMap).Parse(templateString)
 	if err != nil {
-		buf := bytes.NewBufferString(fmt.Sprintf("bad template parse: %s", err.Error()))
+		buf := bytes.NewBufferString(fmt.Sprintf("BKSHERR: bad template parse: %s", err.Error()))
 		return buf.String()
 	}
 
 	buf := bytes.NewBufferString("")
 	err = templ.Execute(buf, parsedProps)
 	if err != nil {
-		buf := bytes.NewBufferString(fmt.Sprintf("bad template render: %s", err.Error()))
+		buf := bytes.NewBufferString(fmt.Sprintf("BKSHERR: bad template render: %s", err.Error()))
 		return buf.String()
 	}
 	return buf.String()

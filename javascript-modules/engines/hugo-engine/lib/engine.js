@@ -94,19 +94,29 @@ export class Engine {
         source = translateTextTemplate(source, {});
         if (!globals || typeof globals !== "object") globals = {};
         props = { ...globals, ...props };
+
+        // If we have assigned a root scope we need to pass that in as the context
+        if (props["."]) props = props["."];
         const output = window.renderHugo(source, JSON.stringify(props));
-        target.innerHTML = output;
+        if (/BKSHERR/.test(output)) {
+            console.error(output);
+        } else {
+            target.innerHTML = output;
+        }
     }
 
     async eval(str, props = [{}]) {
         while (!window.renderHugo) await sleep(10);
-        const props_obj = props.reduce((a, b) => { return { ...b, ...a } });
+        let props_obj = props.reduce((a, b) => { return { ...b, ...a } });
 
         // We're capable of looking up a simple variable
         // (and it's hard to pass to wasm since we store variables on the context)
         if (/^\$/.test(str)) {
             return props_obj[str] ?? null;
         }
+
+        // If we have assigned a root scope we need to pass that in as the context
+        if (props_obj["."]) props_obj = props_obj["."];
 
         // Rewrite array.0 into index array 0
         str = str.replace(/(.*)\.(\d+)$/, (_, obj, index) => {

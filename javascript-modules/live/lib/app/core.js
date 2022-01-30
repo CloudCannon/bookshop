@@ -123,8 +123,10 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
                     }
                 } else if (name === ".") {
                     const bindVals = await liveInstance.eval(identifier, combinedScope());
-                    if (bindVals && typeof bindVals === 'object') {
+                    if (bindVals && typeof bindVals === 'object' && !Array.isArray(bindVals)) {
                         scope = { ...scope, ...bindVals };
+                    } else {
+                        scope[name] = bindVals;
                     }
                     const normalizedIdentifier = liveInstance.normalize(identifier);
                     if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
