@@ -1,5 +1,9 @@
 import * as core from './core.js';
 
+const sleep = (ms = 0) => {
+    return new Promise(r => setTimeout(r, ms));
+}
+
 export const getLive = (engines) => class BookshopLive {
     constructor(options) {
         this.engines = engines;
@@ -7,7 +11,6 @@ export const getLive = (engines) => class BookshopLive {
         this.globalData = {};
         this.data = {};
         this.renderOptions = {};
-        this.pendingRender = false;
         this.hasRendered = false;
         this.awaitingDataFetches = options?.remoteGlobals?.length || 0;
         options?.remoteGlobals?.forEach(this.fetchGlobalData.bind(this));
@@ -21,9 +24,6 @@ export const getLive = (engines) => class BookshopLive {
             this.awaitingDataFetches -= 1;
         } catch (e) {
             this.awaitingDataFetches -= 1;
-        }
-        if (this.awaitingDataFetches <= 0 && this.pendingRender) {
-            await this.render()
         }
     }
 
@@ -71,11 +71,10 @@ export const getLive = (engines) => class BookshopLive {
             this.data = data;
         }
         this.renderOptions = options;
-        if (this.awaitingDataFetches > 0) {
-            this.pendingRender = true;
-        } else {
-            await this.render();
+        while (this.awaitingDataFetches > 0) {
+            await sleep(100);
         }
+        await this.render();
         this.hasRendered = true;
     }
 
