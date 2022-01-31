@@ -28,6 +28,8 @@ path = 'github.com/cloudcannon/bookshop/hugo/v2'
 
 To pull in a specific version, use `go get`. i.e. `go get github.com/cloudcannon/bookshop/hugo/v2@2.4.0`.
 
+NOTE: Since Hugo Bookshop utilizes the Hugo module system, the link:https://go.dev/doc/install[Go Programming Language] needs to be installed.
+
 The best workflow is then to create a new Hugo module to house your components. This can then be used across multiple websites using the Hugo module system.
 
 .*bash*
@@ -86,7 +88,7 @@ To use components directly in a template, use the `bookshop` partial.
 
 This tag expects a slice where the first element is the Bookshop key of a component, and the second element is the value to pass to the component.
 
-If your component is coming from front-matter and has a `_bookshop_name` field, you can pass that object directly to the `bookshop` partial.
+If your component is coming from front-matter and has a `_bookshop_name` field, you can pass that object directly to the `bookshop` partial:
 
 .*index.html*
 ```html
@@ -119,7 +121,7 @@ component-library/
     └─ helper.hugo.html
 ```
 
-This can then be included using the `bookshop` partial with the `partial` syntax:
+This can then be included using the `bookshop_partial` partial:
 ```html
   {{ partial "bookshop_partial" (slice "helper" (dict "lorem" "ipsum")) }}
 ```
@@ -155,7 +157,7 @@ The `bookshop_bindings` partial should be given a string representation of the d
 
 ---
 
-If your layout is rendering a loop of components, that loop will need to exist within a Bookshop component or partial so that new components can be rendered when visual editing. This tend to be in the form of a `page.hugo.html` partial in the `shared/hugo` folder of your Bookshop module:
+If your layout is rendering a loop of components, that loop will need to exist within a Bookshop component or partial so that new components can be rendered when visual editing. This tends to take the form of a `page.hugo.html` partial in the `shared/hugo` folder of your Bookshop module:
 
 .*bookshop/shared/hugo/page.hugo.html*
 ```html
@@ -165,6 +167,7 @@ If your layout is rendering a loop of components, that loop will need to exist w
 ```
 
 Used in your layout:
+
 .*baseof.html*
 ```html
 {{ partial "bookshop_bindings" `.Params.content_blocks` }}
