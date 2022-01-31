@@ -28,6 +28,8 @@ path = 'github.com/cloudcannon/bookshop/hugo/v2'
 
 To pull in a specific version, use `go get`. i.e. `go get github.com/cloudcannon/bookshop/hugo/v2@2.4.0`.
 
+NOTE: To use a module in Hugo, your site must first be a module itself. After running `hugo mod init github.com/<username>/<repo>` in your site, running Hugo should download the bookshop dependency.
+
 NOTE: Since Hugo Bookshop utilizes the Hugo module system, the link:https://go.dev/doc/install[Go Programming Language] needs to be installed.
 
 The best workflow is then to create a new Hugo module to house your components. This can then be used across multiple websites using the Hugo module system.
