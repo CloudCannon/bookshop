@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/hugo-engine",
   "packageManager": "yarn@3.0.0",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "Bookshop frontend Hugo renderer",
   "type": "module",
   "sideEffects": false,
@@ -29,7 +29,7 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/helpers": "2.3.1",
+    "@bookshop/helpers": "2.4.0",
     "esbuild": "^0.13.10",
     "liquidjs": "9.28.0"
   },

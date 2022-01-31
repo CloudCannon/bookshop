@@ -1,3 +1,19 @@
+# [2.4.0](https://github.com/CloudCannon/bookshop/compare/v2.3.1...v2.4.0) (2022-01-31)
+
+
+### Bug Fixes
+* fix complex assignments and loops that were breaking live editing in Jekyll and Eleventy
+* fix initial render of data bindings on Jekyll sites that load external data
+* improved resolution of complex data bindings
+
+### Features
+* Hugo Bookshop support 🎉
+* Hugo live editing beta 🎉
+* Hugo component browser beta 🎉
+* new method of updating the page when live editing — image flickering should be greatly reduced
+* new @bookshop/generate command for structures and live editing — Jekyll and Eleventy documentation to come
+
+
 ## [2.3.1](https://github.com/CloudCannon/bookshop/compare/v2.3.0...v2.3.1) (2022-01-19)
 
 
