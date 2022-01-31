@@ -1,3 +1,4 @@
+@jekyll
 Feature: Basic Jekyll Bookshop
   As a user of Jekyll with Bookshop
   I want to be able to use components

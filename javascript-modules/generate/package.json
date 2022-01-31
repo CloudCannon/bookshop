@@ -11,6 +11,11 @@
   "bin": {
     "bookshop-generate": "main.js"
   },
+  "files": [
+    "**/*.js",
+    "!**/*.test.js",
+    "!.test/**/*"
+  ],
   "author": "@bglw",
   "license": "MIT",
   "publishConfig": {
@@ -24,6 +29,7 @@
     "@bookshop/builder": "2.3.1",
     "@bookshop/cloudcannon-structures": "2.3.1",
     "@bookshop/helpers": "2.3.1",
+    "@bookshop/live": "2.3.1",
     "@bookshop/toml-narrator": "2.3.1",
     "@ltd/j-toml": "^1.17.0",
     "commander": "^8.1.0",

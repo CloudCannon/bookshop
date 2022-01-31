@@ -1,5 +1,9 @@
 import * as core from './core.js';
 
+const sleep = (ms = 0) => {
+    return new Promise(r => setTimeout(r, ms));
+}
+
 export const getLive = (engines) => class BookshopLive {
     constructor(options) {
         this.engines = engines;
@@ -7,7 +11,7 @@ export const getLive = (engines) => class BookshopLive {
         this.globalData = {};
         this.data = {};
         this.renderOptions = {};
-        this.pendingRender = false;
+        this.hasRendered = false;
         this.awaitingDataFetches = options?.remoteGlobals?.length || 0;
         options?.remoteGlobals?.forEach(this.fetchGlobalData.bind(this));
     }
@@ -20,9 +24,6 @@ export const getLive = (engines) => class BookshopLive {
             this.awaitingDataFetches -= 1;
         } catch (e) {
             this.awaitingDataFetches -= 1;
-        }
-        if (this.awaitingDataFetches <= 0 && this.pendingRender) {
-            await this.render()
         }
     }
 
@@ -39,9 +40,9 @@ export const getLive = (engines) => class BookshopLive {
         return this.engines[0].resolveComponentType(componentName);
     }
 
-    async renderElement(componentName, scope, bindings, dom) {
+    async renderElement(componentName, scope, dom) {
         try {
-            await this.engines[0].render(dom, componentName, scope, { ...this.globalData, ...bindings });
+            await this.engines[0].render(dom, componentName, scope, { ...this.globalData });
         } catch (e) {
             console.warn(`Error rendering bookshop component ${componentName}`, e);
             console.warn(`This is expected in certain cases, and may not be an issue, especially when deleting or re-ordering components.`)
@@ -52,25 +53,45 @@ export const getLive = (engines) => class BookshopLive {
         return await this.engines[0].eval(identifier, scope);
     }
 
-    async update(data, options) {
-        this.data = data;
-        this.renderOptions = options;
-        if (this.awaitingDataFetches > 0) {
-            this.pendingRender = true;
-        } else {
-            await this.render();
+    normalize(identifier) {
+        if (typeof this.engines[0].normalize === 'function') {
+            return this.engines[0].normalize(identifier);
         }
+        return identifier;
+    }
+
+    async update(data, options) {
+        // transformData = false means implementations like Jekyll 
+        // won't wrap the data in { page: {} }
+        // (this is currently only used for tests)
+        if (typeof this.engines[0].transformData === 'function'
+            && options?.transformData !== false) {
+            this.data = this.engines[0].transformData(data);
+        } else {
+            this.data = data;
+        }
+        this.renderOptions = options;
+        while (this.awaitingDataFetches > 0) {
+            await sleep(100);
+        }
+        await this.render();
+        this.hasRendered = true;
     }
 
     async render() {
         const CCEditorPanelSupport = typeof window === 'undefined' || typeof window !== 'undefined' && window.CloudCannon?.refreshInterface;
         const options = {
-            editorLinks: CCEditorPanelSupport,
+            dataBindings: CCEditorPanelSupport,
             ...this.renderOptions
         };
 
-        if (typeof window !== 'undefined' && window.bookshopEditorLinks === false) {
-            options.editorLinks = false;
+        if (typeof window !== 'undefined' && (window.bookshopEditorLinks === false || window.bookshopDataBindings === false)) {
+            options.dataBindings = false;
+        }
+
+        // Legacy flag
+        if (options.editorLinks === false) {
+            options.dataBindings = false;
         }
 
         // Render _all_ components found on the page into virtual DOM nodes
@@ -83,19 +104,14 @@ export const getLive = (engines) => class BookshopLive {
             endNode,    // The bookshop-live end comment following this component's location in real-DOM
             output,     // A virtual-DOM node containing contents of the just-rendered component
             pathStack,  // Any "absolute paths" to data in scope for this component
+            stashedNodes, // Any bookshop_bindings tags that were applied to this component
         } of componentUpdates) {
-            if (options.editorLinks) { // If we should be adding editor links _in general_
-                // Re-traverse this component to inject any editor links we can to it or its children.
-                await core.hydrateEditorLinks(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode());
+            if (options.dataBindings) { // If we should be adding data bindings _in general_
+                // Re-traverse this component to inject any data bindings we can to it or its children.
+                await core.hydrateDataBindings(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode(), stashedNodes.map(n => n.cloneNode()));
             }
 
-            // We can short-circuit doing any slow real-DOM work here
-            // if we can tell that this render didn't change anything.
-            if (core.buildDigest(startNode, endNode) === output.innerHTML) {
-                continue;
-            }
-
-            core.replaceHTMLRegion(startNode, endNode, output);
+            core.graftTrees(startNode, endNode, output);
         }
     }
 }

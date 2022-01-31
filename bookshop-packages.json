@@ -1,5 +1,14 @@
 {
   "version": "2.3.1",
+  "custom": {
+    "javascript-modules/engines/hugo-engine/hugo-renderer": {
+      "versionFile": null,
+      "commands": [
+        "rm -f ./hugo_renderer.wasm",
+        "./build.sh"
+      ]
+    }
+  },
   "rubygems": {
     "generator-plugins/jekyll/cloudcannon-jekyll-bookshop": {
       "vendor_from_npm": [
@@ -17,6 +26,7 @@
     "javascript-modules/engines/jekyll-engine": {},
     "javascript-modules/engines/eleventy-engine": {},
     "javascript-modules/engines/svelte-engine": {},
+    "javascript-modules/engines/hugo-engine": {},
     "javascript-modules/gen": {},
     "javascript-modules/generate": {},
     "javascript-modules/generator-plugins/eleventy/cloudcannon-eleventy-bookshop": {},

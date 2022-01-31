@@ -16,9 +16,11 @@ Bookshop provides the ability for your editors to preview changes live while edi
 
 IMPORTANT: This is an experimental feature
 
+IMPORTANT: Live editing configuration is different for users of Hugo Bookshop. See the link:hugo.adoc[Hugo Guide] for steps
+
 == Configuration
 
-Live editing relies on the Bookshop Live package.
+Live editing on Jekyll and Eleventy relies on the Bookshop Live package.
 
 To install this as a development dependency, run: +
 `npm i -D @bookshop/live`

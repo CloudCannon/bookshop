@@ -5,18 +5,24 @@
   "main": "index.js",
   "scripts": {
     "test": "ava -v && echo \"* * * *\n* * * * Run `yarn run itest` to run the integration tests\n* * * *\"",
-    "itest": "node prep.js && cucumber-js --parallel 4 --tags \"not @skip\"",
+    "itest": "node prep.js && cucumber-js --parallel 8 --tags \"not @skip\"",
     "itest:skipped": "node prep.js && cucumber-js --parallel 4 --tags \"@skip\""
   },
   "author": "@bglw",
   "license": "MIT",
   "dependencies": {
-    "@11ty/eleventy": "beta",
+    "@11ty/eleventy": "1.0.0",
     "@11ty/eleventy-zero": "npm:@11ty/eleventy@0.12.1",
-    "@bookshop/gen": "2.3.1",
     "@bookshop/generate": "2.3.1",
+    "@bookshop/init": "2.3.1",
     "@bookshop/sass": "2.3.1",
-    "eleventy-plugin-cloudcannon": "^0.0.17"
+    "cloudcannon-hugo": "0.12.5",
+    "eleventy-plugin-cloudcannon": "^0.0.17",
+    "get-port": "^6.0.0",
+    "js-yaml": "^4.1.0",
+    "puppeteer": "^13.0.1",
+    "serve-handler": "^6.1.3",
+    "tree-kill": "^1.2.2"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^7.3.1",

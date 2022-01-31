@@ -1,3 +1,4 @@
+@jekyll
 Feature: Jekyll Bookshop Component Browser
   As a user of Jekyll with Bookshop
   I want my component browser to be preconfigured to my bookshop

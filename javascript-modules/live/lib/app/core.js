@@ -1,22 +1,18 @@
-//    <!--bookshop-live name(...) params(...)-->
-// or <!--bookshop-live name(...) params(...) context(...)-->
-// or <!--bookshop-live end-->
-const liveMatchRegex = /bookshop-live ((?<end>end)|name\((?<name>[^)]*)\) params\((?<params>[^)]*)\)).*/;
-//    <!--bookshop-live context(...)-->
-const contextMatchRegex = /bookshop-live.*context\((?<context>.+)\)\s*$/;
+import { ParamsParser } from './parsers/params-parser.js';
+import { CommentParser } from './parsers/comment-parser.js';
 
 // TODO: Use the @bookshop/helpers package for name normalization
 const normalizeName = name => name.replace(/\/[\w-]+\..+$/, '').replace(/\..+$/, '');
-const parseParams = params => params ? params.replace(/: /g, '=').split(' ').map(p => p.split('=')) : [];
+const parseParams = params => params ? (new ParamsParser(params)).build() : [];
 const getTemplateCommentIterator = node => {
     const documentNode = node.ownerDocument ?? document;
     return documentNode.evaluate("//comment()[contains(.,'bookshop-live')]", node, null, XPathResult.ANY_TYPE, null);
 }
 const parseComment = node => {
-    return {
-        matches: node.textContent.match(liveMatchRegex),
-        contextMatches: node.textContent.match(contextMatchRegex),
-    }
+    return (new CommentParser(node.textContent.replace(/^bookshop-live /, ''))).build()
+}
+const nodeIsBefore = (a, b) => {
+    return a && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
 }
 
 /**
@@ -24,20 +20,42 @@ const parseComment = node => {
  * and note down the sum absolute path of the new name if we can
  */
 export const storeResolvedPath = (name, identifier, pathStack) => {
-    // TODO: This shouldn't be required post-tokenizer 
-    if (!name || !identifier) return;
+    if (typeof identifier !== 'string') return;
     // TODO: The `include.` replacement feels too SSG coupled.
     //                       v v v v v v v v v v v v 
-    identifier = identifier.replace(/^include\./, '').replace(/\[(\d+)]/g, '.$1').split('.');
-    const baseIdentifier = identifier.shift();
-    const existingPath = findInStack(baseIdentifier, pathStack);
-    const prefix = existingPath ?? baseIdentifier;
-    pathStack[pathStack.length - 1][name] = `${[prefix, ...identifier].join('.')}`;
+    const splitIdentifier = identifier.replace(/^include\./, '').replace(/\[(\d+)]/g, '.$1').split('.');
+    const baseIdentifier = splitIdentifier.shift();
+    if (baseIdentifier) {
+        const existingPath = findInStack(baseIdentifier, pathStack);
+        const prefix = existingPath ?? baseIdentifier;
+        pathStack[pathStack.length - 1][name] = `${[prefix, ...splitIdentifier].join('.')}`;
+    } else {
+        const existingPath = findInStack(identifier, pathStack);
+        const path = existingPath ?? identifier;
+        pathStack[pathStack.length - 1][name] = path;
+    }
 }
 
+// TODO: This is now partially coupled with Hugo.
+// This function should move into each engine.
 export const findInStack = (key, stack) => {
+    const [baseIdentifier, ...rest] = key.split('.');
+    if (baseIdentifier) {
+        for (let i = stack.length - 1; i >= 0; i--) {
+            if (stack[i][baseIdentifier]) {
+                if (rest.length) return `${stack[i][baseIdentifier]}.${rest.join('.')}`;
+                return `${stack[i][baseIdentifier]}`;
+            }
+            if (stack[i]["."] && stack[i]["."] !== '.' && !/^\$/.test(key)) {
+                return `${stack[i]["."]}.${key}`;
+            }
+        }
+    }
+    // Try again for keys that legitimately contain a .
     for (let i = stack.length - 1; i >= 0; i--) {
-        if (stack[i][key]) return stack[i][key]
+        if (stack[i][key]) {
+            return `${stack[i][key]}`;
+        }
     }
     return null;
 }
@@ -47,28 +65,6 @@ const dig = (obj, path) => {
     obj = obj[path.shift()];
     if (obj && path.length) return dig(obj, path);
     return obj;
-}
-
-/**
- * Returns a string digest of the HTML between two nodes
- */
-export const buildDigest = (startNode, endNode) => {
-    let node = startNode.nextSibling;
-    let digest = ''
-    while (node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0) {
-        switch (node.nodeType) {
-            case Node.ELEMENT_NODE:
-                digest += node.outerHTML;
-                break;
-            case Node.COMMENT_NODE:
-                digest += `<!--${node.textContent}-->`;
-                break;
-            default:
-                digest += node.textContent || '';
-        }
-        node = node.nextSibling;
-    }
-    return digest;
 }
 
 /**
@@ -92,45 +88,76 @@ export const replaceHTMLRegion = (startNode, endNode, outputElement) => {
  * Takes in a DOM tree containing Bookshop live comments
  * Calls a given callback whenever a component end tag is hit
  */
-const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, templateBlockHandler = () => { }) => {
-    const stack = [];           // The stack of component data scopes
+const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, templateBlockHandler = () => { }, isRetry) => {
+    const stack = [{ scope: {} }];           // The stack of data scopes
     const pathStack = parentPathStack || [{}];     // The paths from the root to any assigned variables
-    const bindings = {};        // Anything assigned through assigns or loops
+    let stashedNodes = [];    // bookshop_bindings tags that we should keep track of for the next component
+    let stashedParams = [];    // Params from the bookshop_bindings tag that we should include in the next component tag
 
-    const combinedScope = () => [liveInstance.data, ...stack.map(s => s.scope), bindings];
+    const combinedScope = () => [liveInstance.data, ...stack.map(s => s.scope)];
     const currentScope = () => stack[stack.length - 1];
 
     const iterator = getTemplateCommentIterator(documentNode);
     let currentNode = iterator.iterateNext();
 
     while (currentNode) {
-        const { matches, contextMatches } = parseComment(currentNode);
+        const liveTag = parseComment(currentNode);
 
-        for (const [name, identifier] of parseParams(contextMatches?.groups["context"])) {
-            // TODO: This shouldn't be required post-tokenizer 
-            if (!identifier) continue;
-            // TODO: bindings here has no encapsulation / stack, which feels too SSG-coupled for assigns
-            // TODO: bindings here has no encapsulation / stack, which is wrong for loops
-            bindings[name] = await liveInstance.eval(identifier, combinedScope());
-            storeResolvedPath(name, identifier, pathStack);
+        for (const [name, identifier] of parseParams(liveTag?.context)) {
+            currentScope().scope[name] = await liveInstance.eval(identifier, combinedScope());
+            const normalizedIdentifier = liveInstance.normalize(identifier);
+            if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
+                Object.values(normalizedIdentifier).forEach(value => {
+                    return storeResolvedPath(name, value, pathStack)
+                });
+            } else {
+                storeResolvedPath(name, normalizedIdentifier, pathStack);
+            }
         }
 
-        if (matches?.groups["end"]) {
+        if (liveTag?.end) {
             currentScope().endNode = currentNode;
             await templateBlockHandler(stack.pop());
             pathStack.pop();
-        } else if (matches) { // Entering a new component
+        } else if (liveTag.stack) {
             let scope = {};
-            const params = parseParams(matches.groups["params"]);
+            pathStack.push({});
+            stack.push({
+                pathStack: JSON.parse(JSON.stringify(pathStack)),
+                scope,
+            });
+        } else if (liveTag.unstack) {
+            stack.pop()
+            pathStack.pop();
+        } else if (liveTag && liveTag?.name === "__bookshop__subsequent") { // Entering a bookshop_bindings rule
+            stashedNodes.push(currentNode);
+            stashedParams = [...stashedParams, ...parseParams(liveTag?.params)];
+        } else if (liveTag?.name) { // Entering a new component
+            let scope = {};
+            const params = [...stashedParams, ...parseParams(liveTag?.params)];
             pathStack.push({});
             for (const [name, identifier] of params) {
-                // TODO: This shouldn't be required post-tokenizer 
-                if (!identifier) continue;
+                // Currently 'bind' is used in Jekyll/11ty and '.' is used in Hugo
                 if (name === 'bind') {
                     const bindVals = await liveInstance.eval(identifier, combinedScope());
                     if (bindVals && typeof bindVals === 'object') {
                         scope = { ...scope, ...bindVals };
                         Object.keys(bindVals).forEach(key => storeResolvedPath(key, `${identifier}.${key}`, pathStack));
+                    }
+                } else if (name === ".") {
+                    const bindVals = await liveInstance.eval(identifier, combinedScope());
+                    if (bindVals && typeof bindVals === 'object' && !Array.isArray(bindVals)) {
+                        scope = { ...scope, ...bindVals };
+                    } else {
+                        scope[name] = bindVals;
+                    }
+                    const normalizedIdentifier = liveInstance.normalize(identifier);
+                    if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
+                        Object.entries(normalizedIdentifier).forEach(([key, value]) => {
+                            return storeResolvedPath(key, value, pathStack);
+                        });
+                    } else {
+                        storeResolvedPath(name, normalizedIdentifier, pathStack);
                     }
                 } else {
                     scope[name] = await liveInstance.eval(identifier, combinedScope());
@@ -140,14 +167,24 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
 
             stack.push({
                 startNode: currentNode,
-                name: normalizeName(matches.groups["name"]),
-                bindings: JSON.parse(JSON.stringify(bindings)),
+                name: normalizeName(liveTag?.name),
                 pathStack: JSON.parse(JSON.stringify(pathStack)),
                 scope,
-                params
+                params,
+                stashedNodes,
+                depth: stack.length - 1,
             });
+            stashedParams = [];
+            stashedNodes = [];
         }
-        currentNode = iterator.iterateNext();
+        try {
+            currentNode = iterator.iterateNext();
+        } catch (e) {
+            if (!isRetry) {
+                // DOM changed under us, start again.
+                return await evaluateTemplate(liveInstance, documentNode, parentPathStack, templateBlockHandler, true);
+            }
+        }
     }
 }
 
@@ -160,15 +197,17 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
     const vDom = document.implementation.createHTMLDocument();
     const updates = [];     // Rendered elements and their DOM locations
 
-    const templateBlockHandler = async ({ startNode, endNode, name, scope, bindings, pathStack }) => {
+    const templateBlockHandler = async ({ startNode, endNode, name, scope, pathStack, depth, stashedNodes }) => {
+        // We only need to render the outermost component
+        if (depth) return;
+
         const output = vDom.createElement('div');
         await liveInstance.renderElement(
             name,
             scope,
-            bindings,
             output
         )
-        updates.push({ startNode, endNode, output, pathStack, scope, name });
+        updates.push({ startNode, endNode, output, pathStack, scope, name, stashedNodes });
     }
 
     await evaluateTemplate(liveInstance, documentNode, null, templateBlockHandler);
@@ -176,18 +215,43 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
     return updates;
 }
 
+const findDataBinding = (identifier, liveInstance, pathStack) => {
+    const normalizedIdentifier = liveInstance.normalize(identifier);
+    if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
+        for (const innerIdentifier of Object.values(normalizedIdentifier)) {
+            let dataBinding = findDataBinding(innerIdentifier, liveInstance, pathStack);
+            if (dataBinding) return dataBinding;
+        }
+        return null;
+    }
+
+    let path = (findInStack(normalizedIdentifier, pathStack) ?? normalizedIdentifier);
+    let pathResolves = dig(liveInstance.data, path);
+    if (pathResolves) {
+        // TODO: This special page case feels too SSG-coupled
+        let dataBinding = path.replace(/^page(\.|$)/, '');
+
+        // TODO: This special Params case feels too SSG-coupled
+        dataBinding = dataBinding.replace(/^Params(\.|$)/, '');
+        return dataBinding;
+    }
+}
+
 /**
  * Takes in a real-or-virtual-DOM tree containing Bookshop live comments
- * Updates all components found within to have editor links
+ * Updates all components found within to have data bindings
  * pointing to the front matter path passed to that component (if possible)
  */
-export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScope, preComment, postComment) => {
+export const hydrateDataBindings = async (liveInstance, documentNode, pathsInScope, preComment, postComment, stashedNodes) => {
     const vDom = documentNode.ownerDocument;
     const components = [];     // Rendered components and their path stack
 
     // documentNode won't contain the bookshopLive comments that triggered its render,
-    // which have the context we need for giving it editor links. So we sneak them in
+    // which have the context we need for giving it data bindings. So we sneak them in
     documentNode.prepend(preComment);
+    for (let node of stashedNodes.reverse()) {
+        documentNode.prepend(node);
+    }
     documentNode.append(postComment);
     // v v v This is here for the tests, see jsdom #3269: https://github.com/jsdom/jsdom/issues/3269
     vDom.body.appendChild(documentNode);
@@ -196,37 +260,32 @@ export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScop
         components.push(component);
     }
 
-    // pathsInScope are from an earlier render pass, so will contain any paths
-    // at a higher level than the documentNode we're working on. Without this,
-    // if documentNode is a subcomponent we wouldn't be able to know
-    // its path back to the root data.
-    await evaluateTemplate(liveInstance, documentNode, pathsInScope, templateBlockHandler);
+    await evaluateTemplate(liveInstance, documentNode, [{}], templateBlockHandler);
 
     for (let { startNode, endNode, params, pathStack, scope, name } of components) {
-        // By default, don't add editor links for bookshop shared includes
+        // By default, don't add bindings for bookshop shared includes
         const isStandardComponent = liveInstance.resolveComponentType(name) === 'component';
-        const editorLinkFlag = scope?.editorLink
+        const dataBindingFlag = scope?.editorLink
             ?? scope?.editor_link
             ?? scope?._editorLink
             ?? scope?._editor_link
+            ?? scope?.dataBinding
+            ?? scope?.data_binding
+            ?? scope?._dataBinding
+            ?? scope?._data_binding
             ?? isStandardComponent;
-        if (editorLinkFlag) { // If we should be adding an editor link _for this component_
-            let editorLink = null;
+        if (dataBindingFlag) { // If we should be adding a data binding _for this component_
+            let dataBinding = null;
             for (const [, identifier] of params) {
-                const path = (findInStack(identifier, pathStack) ?? identifier);
-                let pathResolves = dig(liveInstance.data, path);
-                if (pathResolves) {
-                    // TODO: This special page case feels too SSG-coupled
-                    editorLink = path.replace(/^page(\.|$)/, '');
-                    break;
-                }
+                dataBinding = findDataBinding(identifier, liveInstance, pathStack);
+                if (dataBinding) break;
             }
-            if (editorLink) {
-                // Add the editor link to all top-level elements of the component,
+            if (dataBinding) {
+                // Add the data binding to all top-level elements of the component,
                 // since we can't wrap the component in any elements
                 let node = startNode.nextElementSibling;
                 while (node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0) {
-                    node.dataset.cmsEditorLink = `cloudcannon:#${editorLink}`;
+                    node.dataset.cmsBind = `#${dataBinding}`;
                     node = node.nextElementSibling;
                 }
             }
@@ -235,6 +294,66 @@ export const hydrateEditorLinks = async (liveInstance, documentNode, pathsInScop
 
     preComment.remove();
     postComment.remove();
+    for (let node of stashedNodes) {
+        node.remove();
+    }
     // v v v This is here for the tests, see jsdom #3269: https://github.com/jsdom/jsdom/issues/3269
     documentNode.remove();
+}
+
+/**
+ * Update the block of HTML between DOMStart and DOMEnd to match the contents of vDOMObject
+ * This will walk the tree and make only the most fine-grained changes possible.
+ * - Any changes to attributes like classnames will re-render the entire DOM node & children
+ * - Adding or removing elements will re-render from the parent DOM node
+ * - Most other changes should only update a text node
+ */
+export const graftTrees = (DOMStart, DOMEnd, vDOMObject) => {
+    // Collapse each NodeList into an array so that moving elements doesn't truncate a list
+    let existingNodes = [], incomingNodes = [...vDOMObject.childNodes];
+
+    let existingNode = DOMStart.nextSibling;
+    while (nodeIsBefore(existingNode, DOMEnd)) {
+        existingNodes.push(existingNode);
+        existingNode = existingNode.nextSibling;
+    }
+
+    if (existingNodes.length !== incomingNodes.length) {
+        // Root-level children have been added or removed, re-render the whole block
+        replaceHTMLRegion(DOMStart, DOMEnd, vDOMObject);
+        return;
+    }
+
+    for (let i = 0; i < existingNodes.length; i++) {
+        diffAndUpdateNode(existingNodes[i], incomingNodes[i]);
+    }
+}
+
+const diffAndUpdateNode = (existingNode, incomingNode) => {
+    if (existingNode.isEqualNode(incomingNode)) {
+        // Node and full subtree is identical
+        return;
+    }
+
+    if (!existingNode.cloneNode(false).isEqualNode(incomingNode.cloneNode(false))) {
+        // Node sans-children has changes, update this whole node (and thus children)
+        existingNode.replaceWith(incomingNode);
+        return;
+    }
+
+    if (existingNode.childNodes.length !== incomingNode.childNodes.length) {
+        // Node children have been added or removed, update this whole node
+        existingNode.replaceWith(incomingNode);
+        return;
+    }
+    // Existing node is fine, we can reach parity by updating one/some of the child nodes.
+
+
+    // Collapse each NodeList into an array so that moving an element
+    // in incomingChildren doesn't remove it from the list (and change our indexing)
+    const existingChildren = [...existingNode.childNodes];
+    const incomingChildren = [...incomingNode.childNodes];
+    for (let i = 0; i < existingChildren.length; i++) {
+        diffAndUpdateNode(existingChildren[i], incomingChildren[i]);
+    }
 }

@@ -1,3 +1,4 @@
+@sass
 Feature: Building Bookshop Sass
   As a user who is using a bookshop
   I want to compile my Sass files to CSS

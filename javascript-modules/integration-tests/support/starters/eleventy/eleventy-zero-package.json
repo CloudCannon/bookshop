@@ -3,7 +3,7 @@
   "private": true,
   "main": ".eleventy.js",
   "scripts": {
-    "start": "node ../../../../node_modules/@11ty/eleventy-zero/cmd.js"
+    "start": "node ../../../../node_modules/@11ty/eleventy-zero/cmd.js --quiet"
   },
   "devDependencies": {
     "@bookshop/cloudcannon-eleventy-bookshop": "file:../../../../../javascript-modules/generator-plugins/eleventy/cloudcannon-eleventy-bookshop",

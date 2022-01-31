@@ -1,3 +1,4 @@
+@jekyll
 Feature: Jekyll Bookshop CloudCannon Integration
   As a user of Jekyll with Bookshop
   I want my CMS interfaces to be preconfigured

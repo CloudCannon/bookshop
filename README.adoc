@@ -33,6 +33,8 @@ link:guides/jekyll.adoc[Jekyll Guide]:: How to integrate your Bookshop project i
 
 link:guides/eleventy.adoc[Eleventy Guide]:: How to integrate your Bookshop projects into an Eleventy website.
 
+link:guides/hugo.adoc[Hugo Guide]:: How to integrate your Bookshop projects into a Hugo website.
+
 link:guides/browser.adoc[Browser Guide]:: How to setup and use the Bookshop component browser locally and on a hosted URL.
 
 link:guides/live-editing.adoc[Live Editing Guide]:: Information on how the experimental live editing works, and how to configure it.

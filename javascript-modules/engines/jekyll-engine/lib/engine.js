@@ -103,6 +103,17 @@ export class Engine {
         return false;
     }
 
+    transformData(data) {
+        let keys = Object.keys(data);
+        if (keys && keys.length === 1 && keys[0] === 'page') {
+            // This likely came from an older version of cloudcannon-jekyll-bookshop
+            return data;
+        }
+        return {
+            page: data
+        };
+    }
+
     async render(target, name, props, globals) {
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
@@ -132,7 +143,7 @@ export class Engine {
             }
             return index ? result?.[index] : result;
         } catch (e) {
-            console.error(`Error evaluating ${str}`, e);
+            console.error(`Error evaluating \`${str}\` in the Jekyll engine`, e);
             return '';
         }
     }

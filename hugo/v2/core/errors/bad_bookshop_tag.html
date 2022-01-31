@@ -1,16 +1,34 @@
 {{/*
     Prints examples of correct usage of the bookshop tag options
+
+    Expects a String containing a helpful error message.
 */}}
 
-{{- $message := "Unknown Bookshop tag was used — the following Bookshop tag formats are valid:" -}}
+{{- $err := slice 
+    .
+    "    The following Bookshop tag formats are valid:"
+    ""
+    "  ► Render a \"button\" component with data:"
+    " ┌─"
+    " │  {{ partial \"bookshop\" (slice \"button\" (dict \"text\" .button.text)) }}"
+    " ├─"
+    " │  {{ with (dict \"text\" .button.text) }}"
+    " │     {{ partial \"bookshop\" (slice \"button\" .) }}"
+    " │  {{ end }}"
+    " └─"
+    ""
+    "  ► Render a component from a struct, where the struct contains a _bookshop_name key:"
+    " ┌─"
+    " │  {{ partial \"bookshop\" (dict \"_bookshop_name\" \"button\" \"text\" .button.text) }}"
+    " ├─"
+    " │  {{ partial \"bookshop\" .Params.component_structure }}"
+    " └─"
+    ""
+    "  ► Render a \"tag\" partial with data:"
+    " ┌─"
+    " │  {{ partial \"bookshop_partial\" (slice \"tag\" (dict \"message\" \"Hello World\")) }}"
+    " └─"
+    " "
+-}}
+{{- partial "_bookshop/errors/err" (delimit $err "\n") -}}
 
-{{- $structures_example := "{{ partial \"bookshop\" .Params.path.to.structures }}" -}}
-{{- $structures_message := printf "  Render components from front matter:\n    %s" $structures_example  -}}
-
-{{- $component_example := "{{ partial \"bookshop\" (dict \"component\" \"button\" \"text\" .button.text) }}" -}}
-{{- $component_message := printf "  Render a \"button\" component with data:\n    %s" $component_example  -}}
-
-{{- $include_example := "{{ partial \"bookshop\" (dict \"include\" \"tag\" \"message\" \"Hello World\") }}" -}}
-{{- $include_message := printf "  Render a \"tag\" include with data:\n    %s" $include_example  -}}
-
-{{- partial "_bookshop/errors/err" (printf "%s\n\n%s\n%s\n%s" $message $structures_message $component_message $include_message) -}}

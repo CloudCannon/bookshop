@@ -1,6 +1,6 @@
 import { Tokenizer } from 'liquidjs';
 
-const rewriteTag = function(token, src, liveMarkup) {
+const rewriteTag = function (token, src, liveMarkup) {
     let raw = token.getText();
 
     // Skip html and {% end... %} tags
@@ -10,13 +10,13 @@ const rewriteTag = function(token, src, liveMarkup) {
     // Cached includes can be treated as includes
     if (token.name && token.name === 'include_cached') raw = raw.replace(/include_cached/, 'include');
 
-    if (liveMarkup && token.name && token.name === 'for'){
+    if (liveMarkup && token.name && token.name === 'for') {
         raw = `${raw}{% loop_context ${token.args} %}`
     }
 
-    if (liveMarkup && token.name && (token.name === 'assign' || token.name === 'local')){
-        let identifier = token.args.split('=').shift().trim();
-        raw = `${raw}<!--bookshop-live context(${identifier}="{{${identifier}}}")-->`
+    if (liveMarkup && token.name && (token.name === 'assign' || token.name === 'local')) {
+        let [, identifier, value] = token.args.match(/^\s*([^=]+?)\s*=\s*(.+?)\s*$/);
+        raw = `${raw}<!--bookshop-live context(${identifier}: ${value})-->`
     }
 
     // Rewrite bookshop_include tag to standard includes — within bookshop they're first class
@@ -24,11 +24,11 @@ const rewriteTag = function(token, src, liveMarkup) {
         let componentName;
         token.name = 'include';
         raw = raw.replace(
-        /bookshop_include (\S+)/,
-        (_, component) => {
-            componentName = component
-            return `include _bookshop_include_${component}`
-        }
+            /bookshop_include (\S+)/,
+            (_, component) => {
+                componentName = component
+                return `include _bookshop_include_${component}`
+            }
         );
         if (liveMarkup) {
             let params = token.args.split(' ');
@@ -42,11 +42,11 @@ const rewriteTag = function(token, src, liveMarkup) {
         let componentName;
         token.name = 'include';
         raw = raw.replace(
-        /bookshop (\S+)/,
-        (_, component) => {
-            componentName = component;
-            return `include _bookshop_${component}`
-        }
+            /bookshop (\S+)/,
+            (_, component) => {
+                componentName = component;
+                return `include _bookshop_${component}`
+            }
         );
         if (liveMarkup) {
             let params = token.args.split(' ');
@@ -61,7 +61,7 @@ const rewriteTag = function(token, src, liveMarkup) {
         raw = raw.replace(/=/g, ': ');
         raw = raw.replace(/\%\s+?include\s([^"'][^\s]+)/gi, '% include "$1"');
     }
-    
+
     return [
         src.substr(0, token.begin),
         raw,
@@ -69,7 +69,7 @@ const rewriteTag = function(token, src, liveMarkup) {
     ].join('');
 }
 
-export default function(text, opts) {
+export default function (text, opts) {
     opts = {
         isInclude: false,
         expandBindSyntax: true,

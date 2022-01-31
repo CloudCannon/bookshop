@@ -9,6 +9,7 @@
         "engines/jekyll-engine",
         "engines/eleventy-engine",
         "engines/svelte-engine",
+        "engines/hugo-engine",
         "gen",
         "generate",
         "generator-plugins/eleventy/cloudcannon-eleventy-bookshop",

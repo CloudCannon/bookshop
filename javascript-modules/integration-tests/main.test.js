@@ -4,7 +4,7 @@ const parser = require("gherkin-parse");
 const fastGlob = require('fast-glob');
 
 
-const ssgs = /^(eleventy-one|eleventy-zero|jekyll|hugo)/;
+const ssgs = /^(eleventy|jekyll|hugo)\//;
 
 
 const getFeatures = async () => {
@@ -26,16 +26,19 @@ test("(unit test) test parity between SSGs", async t => {
       ...scenarios[ssg],
       ...doc.feature.children
         .filter(c => c.type === "Scenario")
+        .filter(c => !c.tags.map(t => t.name).includes("@bespoke"))
         .map(c => c.name)
     ];
   });
+  let errs = [];
   Object.entries(scenarios).forEach(([ssg, tests]) => {
     Object.entries(scenarios).forEach(([otherSsg, otherTests]) => {
       tests.forEach(scenario => {
-        t.is(otherTests.includes(scenario), true,
-          `${ssg} has the scenario "${scenario}". ${otherSsg} should also have this test.`
-        );
+        if (!otherTests.includes(scenario)) {
+          errs.push(`${ssg} has the scenario "${scenario}". ${otherSsg} should also have this test.`);
+        }
       });
     });
   });
+  t.deepEqual(errs, []);
 });

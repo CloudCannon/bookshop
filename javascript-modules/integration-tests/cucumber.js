@@ -7,6 +7,9 @@
 //-└───────────────────────────────────────────────────────────┘
 const retries = process.platform === "win32" ? " --retry 2" : '';
 
+// TODO: Puppeteer tests are flaky on Windows.
+const web = process.platform === "win32" ? " --tags \"not @web\"" : '';
+
 module.exports = { 
-    default: `--publish-quiet --require support${retries}`
+    default: `--publish-quiet --require support${retries}${web}`
 }

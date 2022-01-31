@@ -39,25 +39,25 @@ This allows you to create, for example, a page include that renders your compone
 
 The behavior of each scenario can be customised by including a flag in the component's props. Bookshop will look for any of the following attributes:
 
-* editor_link
-* editorLink
-* _editor_link
-* _editorLink
+* data_binding
+* dataBinding
+* _data_binding
+* _dataBinding
 
 So for example, in Eleventy:
 
 .*index.html*
 ```
 <!-- This component will **not** get a binding -->
-{% bookshop 'item' editor_link: false, props: props %}
+{% bookshop 'item' data_binding: false, props: props %}
 
 <!-- This include will get a binding -->
-{% bookshop_include 'page' editor_link: true, props: props %}
+{% bookshop_include 'page' data_binding: true, props: props %}
 ```
 
 NOTE: This flag only applies to the component directly and doesn't cascade down. Any subcomponents will follow the standard rules, or can also specify their own Data Binding flag.
 
-If you have a specific component that you never want bindings generated for, you can set `_editor_link` in the component props. 
+If you have a specific component that you never want bindings generated for, you can set `_data_binding` in the component props. 
 
 .*component.bookshop.toml*
 ```
@@ -65,7 +65,7 @@ If you have a specific component that you never want bindings generated for, you
 ...
 
 [props]
-_editor_link: false
+_data_binding: false
 ...
 ```
 
@@ -73,4 +73,4 @@ This will be hidden from editors due to the leading underscore, and will disable
 
 == Disabling
 
-This behavior is enabled by default. If you want to opt out entirely and configure Visual Data Bindings manually, you can set `window.bookshopEditorLinks = false` anywhere in your page's javascript.
+This behavior is enabled by default. If you want to opt out entirely and configure Visual Data Bindings manually, you can set `window.bookshopDataBindings = false` anywhere in your page's javascript.

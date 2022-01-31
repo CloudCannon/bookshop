@@ -8,6 +8,11 @@
   "scripts": {
     "test": "nyc ava -v"
   },
+  "files": [
+    "**/*.js",
+    "!**/*.test.js",
+    "!.test/**/*"
+  ],
   "author": "@bglw",
   "license": "MIT",
   "publishConfig": {

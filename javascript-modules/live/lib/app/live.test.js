@@ -129,8 +129,9 @@ for (const impl of ['jekyll', 'eleventy']) {
 
     test.serial(`[${impl}]: Re-renders through an assign`, async t => {
         await initialSub(t.context[impl], 'title', { title: 'Bookshop' }, 'assign-wrapper');
+        const val = (impl === 'jekyll') ? 'include.component' : 'component';
         t.is(getBody(), [
-            `<!--bookshop-live context(test_var="title")-->`,
+            `<!--bookshop-live context(test_var: ${val})-->`,
             `<!--bookshop-live name(title) params(bind: page)-->`,
             `<h1>Bookshop<\/h1>`,
             `<!--bookshop-live end-->`
@@ -138,7 +139,7 @@ for (const impl of ['jekyll', 'eleventy']) {
 
         await t.context[impl].update({ page: { title: 'Live Love Laugh' } })
         t.is(getBody(), [
-            `<!--bookshop-live context(test_var="title")-->`,
+            `<!--bookshop-live context(test_var: ${val})-->`,
             `<!--bookshop-live name(title) params(bind: page)-->`,
             `<h1>Live Love Laugh<\/h1>`,
             `<!--bookshop-live end-->`
@@ -149,7 +150,7 @@ for (const impl of ['jekyll', 'eleventy']) {
         await initial(t.context[impl], 'title-loop', { titles: ['Bookshop', 'Jekyll', 'Eleventy'] });
         t.regex(getBody(), /<h1>Jekyll<\/h1>/);
 
-        await t.context[impl].update({ titles: ['Bookshop', 'Hugo', 'Eleventy'] }, { editorLinks: false })
+        await t.context[impl].update({ titles: ['Bookshop', 'Hugo', 'Eleventy'] }, { editorLinks: false, transformData: false })
         t.regex(getBody(), /<h1>Hugo<\/h1>/);
         t.notRegex(getBody(), /<h1>Jekyll<\/h1>/);
     });
@@ -159,7 +160,7 @@ for (const impl of ['jekyll', 'eleventy']) {
         t.regex(getBody(), /<h1>0<\/h1>.*<h1>1<\/h1>/);
         t.notRegex(getBody(), /<h1>2<\/h1>/);
 
-        await t.context[impl].update({ min: 4, max: 5 }, { editorLinks: false });
+        await t.context[impl].update({ min: 4, max: 5 }, { editorLinks: false, transformData: false });
         t.regex(getBody(), /<h1>4<\/h1>.*<h1>5<\/h1>/);
         t.notRegex(getBody(), /<h1>0<\/h1>/);
     });
@@ -214,7 +215,7 @@ for (const impl of ['jekyll', 'eleventy']) {
                     ]
                 }
             ]
-        }, { editorLinks: false })
+        }, { editorLinks: false, transformData: false })
         t.regex(getBody(), /<h1>First Changed Inner Hello World<\/h1>/);
         t.notRegex(getBody(), /<h1>First Inner Hello World<\/h1>/);
         t.regex(getBody(), /<h1>Third Inner Hello World<\/h1>/);
@@ -252,7 +253,7 @@ for (const impl of ['jekyll', 'eleventy']) {
         const pagedot = impl === `jekyll` ? `page.` : ``;
         t.is(getBody(), [
             `<!--bookshop-live name(title) params(title: ${pagedot}title)-->`,
-            `<h1 data-cms-editor-link="cloudcannon:#title">Live Love Laugh<\/h1>`,
+            `<h1 data-cms-bind="#title">Live Love Laugh<\/h1>`,
             `<!--bookshop-live end-->`
         ].join(''));
     });
@@ -262,9 +263,9 @@ for (const impl of ['jekyll', 'eleventy']) {
 
         const data = wrapDataFor(impl, { data: { one: "One", two: "Two", three: "Three" } });
         await t.context[impl].update(data)
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#data">One<\/h1>/);
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#data">Two<\/h1>/);
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#data">Three<\/h1>/);
+        t.regex(getBody(), /<h1 data-cms-bind="#data">One<\/h1>/);
+        t.regex(getBody(), /<h1 data-cms-bind="#data">Two<\/h1>/);
+        t.regex(getBody(), /<h1 data-cms-bind="#data">Three<\/h1>/);
     });
 
     test.serial(`[${impl}]: Renders nested editor links`, async t => {
@@ -272,9 +273,9 @@ for (const impl of ['jekyll', 'eleventy']) {
 
         const data = wrapDataFor(impl, { titles: ['Bookshop', 'Jekyll', 'Eleventy'] });
         await t.context[impl].update(data)
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.0">Bookshop<\/h1>/);
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.1">Jekyll<\/h1>/);
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.2">Eleventy<\/h1>/);
+        t.regex(getBody(), /<h1 data-cms-bind="#titles.0">Bookshop<\/h1>/);
+        t.regex(getBody(), /<h1 data-cms-bind="#titles.1">Jekyll<\/h1>/);
+        t.regex(getBody(), /<h1 data-cms-bind="#titles.2">Eleventy<\/h1>/);
     });
 
     test.serial(`[${impl}]: Cleans up paths for editor links when going out of scope`, async t => {
@@ -282,8 +283,8 @@ for (const impl of ['jekyll', 'eleventy']) {
 
         const data = wrapDataFor(impl, { titles: ['Bookshop', 'Jekyll', 'Eleventy'] });
         await t.context[impl].update(data, { editorLinks: true })
-        t.regex(getBody(), /<h1 data-cms-editor-link="cloudcannon:#titles.0">Bookshop<\/h1>/);
-        t.notRegex(getBody(), /<null data-cms-editor-link/);
+        t.regex(getBody(), /<h1 data-cms-bind="#titles.0">Bookshop<\/h1>/);
+        t.notRegex(getBody(), /<null data-cms-bind/);
     });
 
     test.serial(`[${impl}]: Re-renders editor links depth first`, async t => {
@@ -321,28 +322,28 @@ for (const impl of ['jekyll', 'eleventy']) {
         let data = wrapDataFor(impl, { data: { editorLink: false, inner: { one: "One", two: "Two", three: "Three" } } });
         await t.context[impl].update(data, { editorLinks: true })
 
-        t.notRegex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
-        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+        t.notRegex(getBody(), /<div data-cms-bind="#data">/);
+        t.regex(getBody(), /<div data-cms-bind="#data.inner">/);
 
         // Render without the inner editor link
         data = wrapDataFor(impl, { data: { editorLink: true, inner: { editorLink: false, one: "One", two: "Two", three: "Three" } } });
         await t.context[impl].update(data, { editorLinks: true })
 
-        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
-        t.notRegex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+        t.regex(getBody(), /<div data-cms-bind="#data">/);
+        t.notRegex(getBody(), /<div data-cms-bind="#data.inner">/);
 
         // Render with both editor links
         data = wrapDataFor(impl, { data: { inner: { one: "One", two: "Two", three: "Three" } } });
         await t.context[impl].update(data, { editorLinks: true })
 
-        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
-        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+        t.regex(getBody(), /<div data-cms-bind="#data">/);
+        t.regex(getBody(), /<div data-cms-bind="#data.inner">/);
 
         // Render without the inner editor link using the other syntax
         data = wrapDataFor(impl, { data: { editor_link: true, inner: { editor_link: false, one: "One", two: "Two", three: "Three" } } });
         await t.context[impl].update(data, { editorLinks: true })
 
-        t.regex(getBody(), /<div data-cms-editor-link="cloudcannon:#data">/);
-        t.notRegex(getBody(), /<div data-cms-editor-link="cloudcannon:#data.inner">/);
+        t.regex(getBody(), /<div data-cms-bind="#data">/);
+        t.notRegex(getBody(), /<div data-cms-bind="#data.inner">/);
     });
 }
