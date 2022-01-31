@@ -86,7 +86,6 @@ To use components directly in a template, use the `bookshop` partial.
 
 This tag expects a slice where the first element is the Bookshop key of a component, and the second element is the value to pass to the component.
 
-To render a list of components, you can pass a structure or an array of structures to the `bookshop` partial:
 If your component is coming from front-matter and has a `_bookshop_name` field, you can pass that object directly to the `bookshop` partial.
 
 .*index.html*
