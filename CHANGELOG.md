@@ -1,3 +1,12 @@
+## [2.4.1](https://github.com/CloudCannon/bookshop/compare/v2.4.0...v2.4.1) (2022-02-01)
+
+
+### Features
+
+* attempt to load the hugo wasm from a cdn where possible ([8423acb](https://github.com/CloudCannon/bookshop/commit/8423acb8d7c6bacaa3afad25480293e346822219))
+
+
+
 # [2.4.0](https://github.com/CloudCannon/bookshop/compare/v2.3.1...v2.4.0) (2022-01-31)
 
 

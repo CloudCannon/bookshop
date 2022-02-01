@@ -13,9 +13,9 @@
   "dependencies": {
     "@11ty/eleventy": "1.0.0",
     "@11ty/eleventy-zero": "npm:@11ty/eleventy@0.12.1",
-    "@bookshop/generate": "2.4.0",
-    "@bookshop/init": "2.4.0",
-    "@bookshop/sass": "2.4.0",
+    "@bookshop/generate": "2.4.1",
+    "@bookshop/init": "2.4.1",
+    "@bookshop/sass": "2.4.1",
     "cloudcannon-hugo": "0.12.5",
     "eleventy-plugin-cloudcannon": "^0.0.17",
     "get-port": "^6.0.0",

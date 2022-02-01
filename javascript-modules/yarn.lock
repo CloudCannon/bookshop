@@ -336,8 +336,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/browser@workspace:browser"
   dependencies:
-    "@bookshop/builder": 2.4.0
-    "@bookshop/helpers": 2.4.0
+    "@bookshop/builder": 2.4.1
+    "@bookshop/helpers": 2.4.1
     "@codemirror/basic-setup": ^0.18.2
     "@codemirror/commands": ^0.18.3
     "@codemirror/legacy-modes": ^0.18.1
@@ -362,13 +362,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/builder@2.4.0, @bookshop/builder@workspace:builder":
+"@bookshop/builder@2.4.1, @bookshop/builder@workspace:builder":
   version: 0.0.0-use.local
   resolution: "@bookshop/builder@workspace:builder"
   dependencies:
-    "@bookshop/helpers": 2.4.0
-    "@bookshop/jekyll-engine": 2.4.0
-    "@bookshop/styles": 2.4.0
+    "@bookshop/helpers": 2.4.1
+    "@bookshop/jekyll-engine": 2.4.1
+    "@bookshop/styles": 2.4.1
     ava: ^3.15.0
     esbuild: ^0.13.10
     fast-glob: ^3.2.7
@@ -381,9 +381,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/cloudcannon-eleventy-bookshop@workspace:generator-plugins/eleventy/cloudcannon-eleventy-bookshop"
   dependencies:
-    "@bookshop/cloudcannon-structures": 2.4.0
-    "@bookshop/helpers": 2.4.0
-    "@bookshop/toml-narrator": 2.4.0
+    "@bookshop/cloudcannon-structures": 2.4.1
+    "@bookshop/helpers": 2.4.1
+    "@bookshop/toml-narrator": 2.4.1
     "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
     fast-glob: ^3.2.7
@@ -392,11 +392,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/cloudcannon-structures@2.4.0, @bookshop/cloudcannon-structures@workspace:cloudcannon-structures":
+"@bookshop/cloudcannon-structures@2.4.1, @bookshop/cloudcannon-structures@workspace:cloudcannon-structures":
   version: 0.0.0-use.local
   resolution: "@bookshop/cloudcannon-structures@workspace:cloudcannon-structures"
   dependencies:
-    "@bookshop/toml-narrator": 2.4.0
+    "@bookshop/toml-narrator": 2.4.1
     "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
     nyc: ^15.1.0
@@ -408,18 +408,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/eleventy-bookshop@workspace:generator-plugins/eleventy/eleventy-bookshop"
   dependencies:
-    "@bookshop/helpers": 2.4.0
+    "@bookshop/helpers": 2.4.1
     ava: ^3.15.0
     normalize-path: ^3.0.0
     nyc: ^15.1.0
   languageName: unknown
   linkType: soft
 
-"@bookshop/eleventy-engine@2.4.0, @bookshop/eleventy-engine@workspace:engines/eleventy-engine":
+"@bookshop/eleventy-engine@2.4.1, @bookshop/eleventy-engine@workspace:engines/eleventy-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/eleventy-engine@workspace:engines/eleventy-engine"
   dependencies:
-    "@bookshop/helpers": 2.4.0
+    "@bookshop/helpers": 2.4.1
     ava: ^3.15.0
     esbuild: ^0.13.10
     liquidjs: 9.28.0
@@ -436,15 +436,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/generate@2.4.0, @bookshop/generate@workspace:generate":
+"@bookshop/generate@2.4.1, @bookshop/generate@workspace:generate":
   version: 0.0.0-use.local
   resolution: "@bookshop/generate@workspace:generate"
   dependencies:
-    "@bookshop/builder": 2.4.0
-    "@bookshop/cloudcannon-structures": 2.4.0
-    "@bookshop/helpers": 2.4.0
-    "@bookshop/live": 2.4.0
-    "@bookshop/toml-narrator": 2.4.0
+    "@bookshop/builder": 2.4.1
+    "@bookshop/cloudcannon-structures": 2.4.1
+    "@bookshop/helpers": 2.4.1
+    "@bookshop/live": 2.4.1
+    "@bookshop/toml-narrator": 2.4.1
     "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
     commander: ^8.1.0
@@ -456,7 +456,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/helpers@2.4.0, @bookshop/helpers@workspace:helpers":
+"@bookshop/helpers@2.4.1, @bookshop/helpers@workspace:helpers":
   version: 0.0.0-use.local
   resolution: "@bookshop/helpers@workspace:helpers"
   dependencies:
@@ -470,7 +470,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/hugo-engine@workspace:engines/hugo-engine"
   dependencies:
-    "@bookshop/helpers": 2.4.0
+    "@bookshop/helpers": 2.4.1
     ava: ^3.15.0
     esbuild: ^0.13.10
     liquidjs: 9.28.0
@@ -478,11 +478,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/init@2.4.0, @bookshop/init@workspace:init":
+"@bookshop/init@2.4.1, @bookshop/init@workspace:init":
   version: 0.0.0-use.local
   resolution: "@bookshop/init@workspace:init"
   dependencies:
-    "@bookshop/helpers": 2.4.0
+    "@bookshop/helpers": 2.4.1
     ejs: ^3.1.6
     yargs: ^17.2.1
   bin:
@@ -490,11 +490,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/jekyll-engine@2.4.0, @bookshop/jekyll-engine@workspace:engines/jekyll-engine":
+"@bookshop/jekyll-engine@2.4.1, @bookshop/jekyll-engine@workspace:engines/jekyll-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/jekyll-engine@workspace:engines/jekyll-engine"
   dependencies:
-    "@bookshop/helpers": 2.4.0
+    "@bookshop/helpers": 2.4.1
     ava: ^3.15.0
     esbuild: ^0.13.10
     js-base64: ^3.6.1
@@ -504,14 +504,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/live@2.4.0, @bookshop/live@workspace:live":
+"@bookshop/live@2.4.1, @bookshop/live@workspace:live":
   version: 0.0.0-use.local
   resolution: "@bookshop/live@workspace:live"
   dependencies:
-    "@bookshop/builder": 2.4.0
-    "@bookshop/eleventy-engine": 2.4.0
-    "@bookshop/helpers": 2.4.0
-    "@bookshop/jekyll-engine": 2.4.0
+    "@bookshop/builder": 2.4.1
+    "@bookshop/eleventy-engine": 2.4.1
+    "@bookshop/helpers": 2.4.1
+    "@bookshop/jekyll-engine": 2.4.1
     ava: ^3.15.0
     commander: ^8.1.0
     jsdom: ^18.0.0
@@ -521,12 +521,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/sass@2.4.0, @bookshop/sass@workspace:bookshop-sass":
+"@bookshop/sass@2.4.1, @bookshop/sass@workspace:bookshop-sass":
   version: 0.0.0-use.local
   resolution: "@bookshop/sass@workspace:bookshop-sass"
   dependencies:
-    "@bookshop/builder": 2.4.0
-    "@bookshop/helpers": 2.4.0
+    "@bookshop/builder": 2.4.1
+    "@bookshop/helpers": 2.4.1
     ava: ^3.15.0
     commander: ^8.1.0
     fast-glob: ^3.2.7
@@ -536,11 +536,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/styles@2.4.0, @bookshop/styles@workspace:styles":
+"@bookshop/styles@2.4.1, @bookshop/styles@workspace:styles":
   version: 0.0.0-use.local
   resolution: "@bookshop/styles@workspace:styles"
   dependencies:
-    "@bookshop/helpers": 2.4.0
+    "@bookshop/helpers": 2.4.1
     ava: ^3.15.0
     esbuild: ^0.13.10
     fast-glob: ^3.2.7
@@ -557,8 +557,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/svelte-engine@workspace:engines/svelte-engine"
   dependencies:
-    "@bookshop/builder": 2.4.0
-    "@bookshop/helpers": 2.4.0
+    "@bookshop/builder": 2.4.1
+    "@bookshop/helpers": 2.4.1
     ava: ^3.15.0
     esbuild: ^0.13.10
     esbuild-svelte: ^0.5.3
@@ -567,7 +567,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/toml-narrator@2.4.0, @bookshop/toml-narrator@workspace:toml-narrator":
+"@bookshop/toml-narrator@2.4.1, @bookshop/toml-narrator@workspace:toml-narrator":
   version: 0.0.0-use.local
   resolution: "@bookshop/toml-narrator@workspace:toml-narrator"
   dependencies:
@@ -4456,9 +4456,9 @@ fsevents@~2.3.2:
   dependencies:
     "@11ty/eleventy": 1.0.0
     "@11ty/eleventy-zero": "npm:@11ty/eleventy@0.12.1"
-    "@bookshop/generate": 2.4.0
-    "@bookshop/init": 2.4.0
-    "@bookshop/sass": 2.4.0
+    "@bookshop/generate": 2.4.1
+    "@bookshop/init": 2.4.1
+    "@bookshop/sass": 2.4.1
     "@cucumber/cucumber": ^7.3.1
     ava: ^3.15.0
     cloudcannon-hugo: 0.12.5
