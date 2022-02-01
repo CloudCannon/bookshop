@@ -8,6 +8,8 @@ const readline = require('readline');
 const packages = require('../bookshop-packages.json');
 const ver = process.argv[2];
 
+let env = process.env;
+
 const run = async () => {
     const next = nextVersion(packages.version);
     if (!ver) {
@@ -33,6 +35,7 @@ const run = async () => {
             break;
         case 'vendor':
             console.log(`* Vendoring`);
+            env.BOOKSHOP_VERSION = packages.version;
             vendorGems(packages.rubygems, packages.version);
             vendorCustom(packages.custom);
             console.log(`* * Vendoring done`);
@@ -55,6 +58,7 @@ const run = async () => {
             console.log(`* * Integration tests passed`);
             process.exit(0);
     }
+    env.BOOKSHOP_VERSION = version;
 
     if (!checkVersion(version)) {
         console.error(box(`Invalid version: \`${version}\`
@@ -71,6 +75,7 @@ const run = async () => {
     console.log(`* * Versions set`);
 
     console.log(`* Vendoring`);
+    env.PUBLISH_BOOKSHOP_CDN = true;
     vendorGems(packages.rubygems, version);
     vendorCustom(packages.custom);
     console.log(`* * Vendoring done`);
@@ -121,7 +126,7 @@ const run = async () => {
 
 const steps = {
     ensureReady: async () => {
-        const gitStatus = execSync('git status --porcelain', { stdio: "pipe" });
+        const gitStatus = execSync('git status --porcelain', { stdio: "pipe", env });
         if (gitStatus.toString().length) {
             console.error(box(`Git is dirty. Please commit or stash your changes first.`));
             process.exit(1);
@@ -148,7 +153,7 @@ const steps = {
         process.stdout.write(`* * `);
         const testResult = await new Promise((resolve, reject) => {
             try {
-                execSync(`cd javascript-modules/integration-tests && yarn run itest`, { stdio: "ignore" });
+                execSync(`cd javascript-modules/integration-tests && yarn run itest`, { stdio: "ignore", env });
                 resolve({ err: null });
                 console.log(' 🎉');
             } catch (err) {
@@ -168,14 +173,14 @@ const steps = {
         }
     },
     changelog: async () => {
-        console.log(execSync(`npx conventional-changelog -i CHANGELOG.md -s --pkg javascript-modules/browser/package.json -p angular`).toString());
+        console.log(execSync(`npx conventional-changelog -i CHANGELOG.md -s --pkg javascript-modules/browser/package.json -p angular`, { env }).toString());
     },
     updateGit: async (version) => {
         console.log(`* * Updating git`);
-        execSync(`git add -A && git commit -m "build: releasing ${version}"`);
-        execSync(`git tag -a v${version} -m "build: releasing ${version}"`);
-        execSync(`git tag -a hugo/v${version} -m "build: releasing ${version}"`);
-        execSync(`git push && git push --tags`);
+        execSync(`git add -A && git commit -m "build: releasing ${version}"`, { env });
+        execSync(`git tag -a v${version} -m "build: releasing ${version}"`, { env });
+        execSync(`git tag -a hugo/v${version} -m "build: releasing ${version}"`, { env });
+        execSync(`git push && git push --tags`, { env });
         console.log(`* * * Git updated`);
     }
 }
@@ -187,7 +192,7 @@ const testNPM = async (pkgs) => {
     const tests = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
             try {
-                execSync(`cd ${pkg} && yarn test`, { stdio: "ignore" });
+                execSync(`cd ${pkg} && yarn test`, { stdio: "ignore", env });
                 resolve({ pkg, err: null });
                 process.stdout.write('👏 ');
             } catch (err) {
@@ -203,7 +208,7 @@ const testGems = async (pkgs) => {
     const tests = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
             try {
-                execSync(`cd ${pkg} && bundle exec rake test`, { stdio: "ignore" });
+                execSync(`cd ${pkg} && bundle exec rake test`, { stdio: "ignore", env });
                 resolve({ pkg, err: null });
                 process.stdout.write('👏 ');
             } catch (err) {
@@ -225,7 +230,7 @@ const publishNPM = async (pkgs, version, otp) => {
             try {
                 const cmd = `yarn --cwd ${pkg} publish${npmTag} --non-interactive --access public --otp ${otp}`;
                 console.log(`\n$: ${cmd}`);
-                execSync(cmd, { stdio: "inherit" });
+                execSync(cmd, { stdio: "inherit", env });
                 resolve({ pkg, version, err: null });
             } catch (err) {
                 resolve({ pkg, err });
@@ -243,11 +248,11 @@ const publishGems = async (pkgs, version) => {
                 const packageName = path.basename(pkg);
                 let cmd = `gem build ${pkg}/${packageName}.gemspec`;
                 console.log(`\n$: ${cmd}`);
-                execSync(cmd, { stdio: "inherit" })
+                execSync(cmd, { stdio: "inherit", env })
                 cmd = `gem push ${pkg}/${packageName}-${gemVersion}.gem`;
                 console.log(`\n$: ${cmd}`);
-                execSync(cmd, { stdio: "inherit" })
-                execSync(`rm ${pkg}/*.gem`);
+                execSync(cmd, { stdio: "inherit", env })
+                execSync(`rm ${pkg}/*.gem`, { env });
                 resolve({ pkg, version: gemVersion, err: null });
             } catch (err) {
                 resolve({ pkg, err });
@@ -266,14 +271,14 @@ const getPrereleaseTag = ver => ver.match(/^\d+\.\d+\.\d+(?:-([a-z]+)\.\d+)$/)?.
 
 const versionNpm = (pkgs, version) => {
     pkgs.forEach(pkg => {
-        const npmBump = execSync(`npm --prefix ${pkg} version ${version} --allow-same-version --no-git-tag-version --no-commit-hooks`);
+        const npmBump = execSync(`npm --prefix ${pkg} version ${version} --allow-same-version --no-git-tag-version --no-commit-hooks`, { env });
         if (npmBump.stderr) {
             console.error(box(`yarn version bump failed:
                                ${npmBump.stderr}`));
             process.exit(1);
         }
     });
-    execSync(`cd javascript-modules && yarn up '@bookshop/*@${version}'`);
+    execSync(`cd javascript-modules && yarn up '@bookshop/*@${version}'`, { env });
 };
 
 const formatGemVersion = (ver) => ver.replace(/-/, '.pre.');
@@ -309,8 +314,8 @@ const vendorGems = async (gems, version) => {
             opts.vendor_from_npm.forEach(packageName => {
                 const pkg = path.join(process.cwd(), packageName);
                 fs.mkdirSync(`${target}/node_modules/@bookshop/${path.basename(pkg)}`, { recursive: true });
-                execSync(`cd ${pkg} && yarn pack`);
-                execSync(`cd ${pkg} && tar -Pxzf package.tgz`);
+                execSync(`cd ${pkg} && yarn pack`, { env });
+                execSync(`cd ${pkg} && tar -Pxzf package.tgz`, { env });
                 recursiveCopy(`${pkg}/package/`, `${target}/node_modules/@bookshop/${path.basename(pkg)}/`);
                 fs.rmSync(`${pkg}/package`, { recursive: true });
                 fs.rmSync(`${pkg}/package.tgz`);
@@ -330,7 +335,7 @@ const vendorCustom = async (directories) => {
                 if (/-rf|-fr/.test(command)) return;
                 cmd = `cd ${target} && ${command}`;
                 console.log(`\n$: ${cmd}`);
-                execSync(cmd, { stdio: "inherit" })
+                execSync(cmd, { stdio: "inherit", env })
             });
         }
     });
