@@ -1,6 +1,7 @@
 import hugoWasm from "../hugo-renderer/hugo_renderer.wasm";
 import translateTextTemplate from './translateTextTemplate.js';
 import { IdentifierParser } from './hugoIdentifierParser.js';
+import { version } from '../package.json';
 
 const sleep = (ms = 0) => {
     return new Promise(r => setTimeout(r, ms));
@@ -24,18 +25,17 @@ export class Engine {
         this.key = 'hugo';
         this.name = options.name;
         this.files = options.files;
+        this.origin = document.currentScript?.src || `/bookshop.js`;
 
         this.initializeHugo();
     }
 
     async initializeHugo() {
-        const scriptOrigin = document.currentScript?.src || `/bookshop.js`;
-        const wasmOrigin = scriptOrigin.replace(/\/[^\.\/]+\.js$/, hugoWasm.replace(/^\./, ''));
-        const go = new Go();
-        const response = await fetch(wasmOrigin);
-        const buffer = await response.arrayBuffer();
-        const result = await WebAssembly.instantiate(buffer, go.importObject);
-        go.run(result.instance)
+        if (window.CloudCannon?.isMocked) {
+            await this.initializeLocalHugo();
+        } else {
+            await this.initializeRemoteHugo();
+        }
 
         // TODO: Tidy
         const mappedFiles = {};
@@ -46,6 +46,33 @@ export class Engine {
         }
 
         const success = window.loadHugoBookshopPartials(JSON.stringify(mappedFiles));
+    }
+
+    async initializeRemoteHugo() {
+        try {
+            const go = new Go();
+            const remoteWasmOrigin = `https://cdn.bookshop.build/hugo/hugo_renderer_${version}.wasm`;
+            const remoteResponse = await fetch(remoteWasmOrigin);
+            const remoteBuffer = await remoteResponse.arrayBuffer();
+
+            // Check the magic word at the start of the buffer as a way to verify the CDN download worked.
+            const isWasm = ([...new Uint8Array(remoteBuffer, 0, 4)]).map(g => g.toString(16).padStart(2, '0')).join('') === "0061736d";
+            if (!isWasm) throw "Not WASM";
+
+            const remoteResult = await WebAssembly.instantiate(remoteBuffer, go.importObject);
+            go.run(remoteResult.instance);
+        } catch (e) {
+            await this.initializeLocalHugo();
+        }
+    }
+
+    async initializeLocalHugo() {
+        const go = new Go();
+        const wasmOrigin = this.origin.replace(/\/[^\.\/]+\.js$/, hugoWasm.replace(/^\./, ''));
+        const response = await fetch(wasmOrigin);
+        const buffer = await response.arrayBuffer();
+        const result = await WebAssembly.instantiate(buffer, go.importObject);
+        go.run(result.instance);
     }
 
     getShared(name) {
