@@ -178,6 +178,13 @@ Used in your layout:
 
 === Configuring Live Editing and Structures
 
+Live Editing with Hugo will require the following npm packages to be installed:
+```bash
+npm i @bookshop/browser @bookshop/generate @bookshop/hugo-engine
+```
+
+These should be in the `package.json` folder at the root of your repository. 
+
 The CloudCannon integration is enabled by the `@bookshop/generate` package. After building your site on CloudCannon, `npx @bookshop/generate` will configure the site for live editing. The recommended script to add is:
 
 .*.cloudcannon/postbuild*
