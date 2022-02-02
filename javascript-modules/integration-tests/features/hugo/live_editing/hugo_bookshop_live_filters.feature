@@ -18,11 +18,12 @@ Feature: Hugo Bookshop CloudCannon Live Editing Filters and Functions
   Scenario: Bookshop live renders markdown
     Given a component-lib/components/beetroot/beetroot.hugo.html file containing:
       """
-      <div><code>{{ .md | markdownify }}</code></div>
+      <div>{{ .md | markdownify }}</div>
       """
     Given [front_matter]:
       """
       md: title
+      multi_md: title
       """
     And a site/content/_index.md file containing:
       """
@@ -36,6 +37,9 @@ Feature: Hugo Bookshop CloudCannon Live Editing Filters and Functions
       <body>
       {{ partial "bookshop_bindings" `(dict "md" .Params.md )` }}
       {{ partial "bookshop" (slice "beetroot" (dict "md" .Params.md )) }}
+
+      {{ partial "bookshop_bindings" `(dict "md" .Params.multi_md )` }}
+      {{ partial "bookshop" (slice "beetroot" (dict "md" .Params.multi_md )) }}
       </body>
       </html>
       """
@@ -43,8 +47,15 @@ Feature: Hugo Bookshop CloudCannon Live Editing Filters and Functions
     When 🌐 CloudCannon pushes new yaml:
       """
       md: "**bold** title"
+      multi_md: >-
+        # Hello  
+
+        World
       """
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
-    *    🌐 The selector code should match "<p><strong>bold</strong> title</p>"
+    # Hugo strips single <p> tags
+    *    🌐 The selector div:nth-of-type(1) should match "<strong>bold</strong> title"
+    *    🌐 The selector div:nth-of-type(2) should match "<h1>Hello</h1>"
+    *    🌐 The selector div:nth-of-type(2) should match "<p>World</p>"
   

@@ -99,6 +99,9 @@ func (ns *Namespace) Markdownify(s interface{}) (template.HTML, error) {
 	// This includes using a different (smaller) markdown implementation.
 	output := markdown.ToHTML([]byte(ss), nil, nil)
 
+	// Strip if this is a short inline type of text.
+	output = helpers.TrimShortHTML(output)
+
 	return helpers.BytesToHTML(output), nil
 }
 

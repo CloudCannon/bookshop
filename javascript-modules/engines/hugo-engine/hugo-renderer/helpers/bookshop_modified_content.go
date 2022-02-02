@@ -18,11 +18,19 @@
 package helpers
 
 import (
+	"bytes"
 	"html/template"
 	"strings"
 	"unicode"
 
 	bp "github.com/gohugoio/hugo/bufferpool"
+)
+
+var (
+	openingPTag        = []byte("<p>")
+	closingPTag        = []byte("</p>")
+	paragraphIndicator = []byte("<p")
+	closingIndicator   = []byte("</")
 )
 
 var stripHTMLReplacer = strings.NewReplacer("\n", " ", "</p>", "\n", "<br>", "\n", "<br />", "\n")
@@ -67,4 +75,24 @@ func StripHTML(s string) string {
 // BytesToHTML converts bytes to type template.HTML.
 func BytesToHTML(b []byte) template.HTML {
 	return template.HTML(string(b))
+}
+
+// TrimShortHTML removes the <p>/</p> tags from HTML input in the situation
+// where said tags are the only <p> tags in the input and enclose the content
+// of the input (whitespace excluded).
+// Bookshop: Changed this to _not_ be a method of *ContentSpec
+func TrimShortHTML(input []byte) []byte {
+	firstOpeningP := bytes.Index(input, paragraphIndicator)
+	lastOpeningP := bytes.LastIndex(input, paragraphIndicator)
+
+	lastClosingP := bytes.LastIndex(input, closingPTag)
+	lastClosing := bytes.LastIndex(input, closingIndicator)
+
+	if firstOpeningP == lastOpeningP && lastClosingP == lastClosing {
+		input = bytes.TrimSpace(input)
+		input = bytes.TrimPrefix(input, openingPTag)
+		input = bytes.TrimSuffix(input, closingPTag)
+		input = bytes.TrimSpace(input)
+	}
+	return input
 }
