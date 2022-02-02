@@ -30,6 +30,7 @@
     "@bookshop/helpers": "2.4.1",
     "esbuild": "^0.13.10",
     "js-base64": "^3.6.1",
+    "kramed": "^0.5.6",
     "liquidjs": "9.28.0",
     "slugify": "^1.5.3"
   },
