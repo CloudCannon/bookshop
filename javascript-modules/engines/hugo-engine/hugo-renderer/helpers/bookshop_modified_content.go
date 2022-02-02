@@ -18,6 +18,7 @@
 package helpers
 
 import (
+	"html/template"
 	"strings"
 	"unicode"
 
@@ -61,4 +62,9 @@ func StripHTML(s string) string {
 
 	}
 	return b.String()
+}
+
+// BytesToHTML converts bytes to type template.HTML.
+func BytesToHTML(b []byte) template.HTML {
+	return template.HTML(string(b))
 }
