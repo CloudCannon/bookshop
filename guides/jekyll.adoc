@@ -178,3 +178,21 @@ bookshop_locations:
 
 With that dependency installed, follow the instructions in the link:live-editing.adoc[Live Editing Guide]
 
+
+=== Jekyll Live Editing Support
+
+Bookshop's Jekyll live editing is built on top of the liquidjs package. As such, not all Jekyll features are supported within Bookshop components. Generally, functions that interact with Jekyll or the site as a whole are unavailable. The following features have been re-implemented for live editing in Jekyll:
+
+[cols="1,1"]
+|===
+|Jekyll Feature |Notes 
+
+|Filters: `slugify`, `jsonify`
+|✅
+
+|Filter: `markdownify`
+|ℹ️ Uses a different markdown engine, so output isn't guaranteed to match Jekyll 1:1
+
+|Accessing `site.*`
+|ℹ️ Some site data is surfaced through the `cloudcannon-jekyll-bookshop` plugin. Iterating through collections and data files should be possible when live editing Bookshop components.
+|===

@@ -1,11 +1,5 @@
-if [[ -z "${BOOKSHOP_VERSION}" ]]; then
-    echo "ERROR: BOOKSHOP_VERSION environment variable does not exist"
-    exit 1
-fi
-
 TMPFILENAME="hugo_renderer_$(date +%s).wasm"
 OUTPUTFILENAME="hugo_renderer.wasm"
-CDNFILENAME="../../../../../bookshopcdn/hugo/hugo_renderer_$BOOKSHOP_VERSION.wasm"
 
 # Clean
 rm -f $OUTPUTFILENAME
@@ -32,6 +26,13 @@ if [[ -z "${PUBLISH_BOOKSHOP_CDN}" ]]; then
     echo "Not publishing to CDN."
     exit 0
 fi
+
+if [[ -z "${BOOKSHOP_VERSION}" ]]; then
+    echo "ERROR: BOOKSHOP_VERSION environment variable does not exist"
+    exit 1
+fi
+
+CDNFILENAME="../../../../../bookshopcdn/hugo/hugo_renderer_$BOOKSHOP_VERSION.wasm"
 
 # Check CDN
 if [ ! -d ../../../../../bookshopcdn/hugo ]; then

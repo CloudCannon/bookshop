@@ -498,6 +498,7 @@ __metadata:
     ava: ^3.15.0
     esbuild: ^0.13.10
     js-base64: ^3.6.1
+    kramed: ^0.5.6
     liquidjs: 9.28.0
     nyc: ^15.1.0
     slugify: ^1.5.3
@@ -5151,6 +5152,15 @@ fsevents@~2.3.2:
   dependencies:
     seed-random: ~2.2.0
   checksum: 3f30993233570e461626e20349cde7e56ce713d7f2af8b0e2762ee5d1b37d1fc3cbf018c71b4122a2cd2eb24dc18621b32ae7e4310840d775b4aec7a29ba270d
+  languageName: node
+  linkType: hard
+
+"kramed@npm:^0.5.6":
+  version: 0.5.6
+  resolution: "kramed@npm:0.5.6"
+  bin:
+    kramed: ./bin/kramed
+  checksum: 46162eace44bdc28f1b13d6203897b17e26a7f66dd7b16e09fc2107857942e7cf0d383ad6f6307f3fc0f3ab5116fd1949aaa693d0210b87e86a4d4a53471034c
   languageName: node
   linkType: hard
 

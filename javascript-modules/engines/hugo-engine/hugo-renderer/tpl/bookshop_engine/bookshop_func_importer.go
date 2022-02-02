@@ -29,6 +29,6 @@ import (
 	_ "hugo-renderer/tpl/strings" // ———————————————— 🥴 TODO: Only the "Go" title formatting is supported
 	// _ "hugo-renderer/tpl/templates" // ——————————— ❗ TODO: Maybe a rabbit hole
 	// _ "hugo-renderer/tpl/time" // ———————————————— ❗ TODO: This relies on lang stuff that is thus far excluded
-	// _ "hugo-renderer/tpl/transform" // ——————————— ❗ TODO: Definitely a rabbit hole
+	_ "hugo-renderer/tpl/transform" // —————————————— 🥴 TODO: Highlight, unmarshal, commonmark compat
 	// _ "hugo-renderer/tpl/urls" // ———————————————— ❗ TODO: Relies on pathspec that relies on FS impls
 )

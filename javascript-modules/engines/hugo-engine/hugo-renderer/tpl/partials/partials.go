@@ -26,6 +26,8 @@ import (
 	"hugo-renderer/deps"
 )
 
+// Bookshop: This file has been stripped to only support Bookshop partials when live editing.
+
 // New returns a new instance of the templates-namespaced template functions.
 func New(deps *deps.Deps) *Namespace {
 	return &Namespace{}

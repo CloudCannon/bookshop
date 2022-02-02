@@ -20,6 +20,8 @@ import (
 	"hugo-renderer/deps"
 )
 
+// Bookshop: This file has been stripped due to irrelevancy with live editing.
+
 // New returns a new instance of the fmt-namespaced template functions.
 func New(d *deps.Deps) *Namespace {
 	return &Namespace{}

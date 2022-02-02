@@ -10,6 +10,7 @@ import jsonify from './plugins/jsonify.js';
 import slugify from './plugins/slugify-plugin.js';
 import unbind from './plugins/unbind.js';
 import loop_context from './plugins/loop_context.js';
+import markdownify from './plugins/markdownify.js';
 import emulateJekyll from './plugins/emulate-jekyll.js';
 import local from './plugins/local.js';
 
@@ -26,7 +27,7 @@ export class Engine {
         this.name = options.name;
         this.files = options.files;
         this.plugins = options.plugins || [];
-        this.plugins.push(jsonify, slugify, unbind, emulateJekyll, local, liquidHighlight, loop_context);
+        this.plugins.push(jsonify, slugify, unbind, emulateJekyll, local, liquidHighlight, loop_context, markdownify);
 
         this.initializeLiquid();
         this.applyLiquidPlugins();

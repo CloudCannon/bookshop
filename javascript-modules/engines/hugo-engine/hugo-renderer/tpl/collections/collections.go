@@ -380,6 +380,7 @@ func (ns *Namespace) IsSet(a interface{}, key interface{}) (bool, error) {
 			return av.MapIndex(kv).IsValid(), nil
 		}
 	default:
+		// Bookshop: Removed deep Hugo function.
 		// helpers.DistinctErrorLog.Printf("WARNING: calling IsSet with unsupported type %q (%T) will always return false.\n", av.Kind(), a)
 	}
 
