@@ -3,7 +3,7 @@ import fs from 'fs';
 import fastGlob from 'fast-glob';
 
 const getLiveEditingConnector = () => {
-    return `
+  return `
 <script>
 (function(){
     const bookshopLiveSetup = (CloudCannon) => {
@@ -17,7 +17,10 @@ const getLiveEditingConnector = () => {
           remoteGlobals: []
         });
         const updateBookshopLive = async () => {
-          const frontMatter = await CloudCannon.value();
+          const frontMatter = await CloudCannon.value({
+            keepMarkdownAsHTML: false,
+            preferBlobs: true
+          });
           const options = window.bookshopLiveOptions || {};
           await window.bookshopLive.update(frontMatter, options);
           CloudCannon?.refreshInterface?.();
@@ -36,35 +39,35 @@ const getLiveEditingConnector = () => {
 }
 
 export const hydrateLiveForSite = async (siteRoot, options) => {
-    const siteHTMLFiles = await fastGlob(`**/*.html`, {
-        cwd: siteRoot,
-        dot: !!options.dot
-    });
+  const siteHTMLFiles = await fastGlob(`**/*.html`, {
+    cwd: siteRoot,
+    dot: !!options.dot
+  });
 
-    let connected = 0;
-    for (const file of siteHTMLFiles) {
-        const filePath = path.join(siteRoot, file);
-        let contents = fs.readFileSync(filePath, "utf8");
-        const contains_bookshop = /<!--bookshop/.test(contents);
-        if (!contains_bookshop) {
-            continue;
-        }
-
-        contents = contents.replace('</body>', `${getLiveEditingConnector()}\n</body>`);
-
-        fs.writeFileSync(filePath, contents);
-        connected += 1;
+  let connected = 0;
+  for (const file of siteHTMLFiles) {
+    const filePath = path.join(siteRoot, file);
+    let contents = fs.readFileSync(filePath, "utf8");
+    const contains_bookshop = /<!--bookshop/.test(contents);
+    if (!contains_bookshop) {
+      continue;
     }
 
-    if (!connected) {
-        console.log(`📚 ———— No live editing connected as no pages contained Bookshop components`);
-        return false;
-    }
+    contents = contents.replace('</body>', `${getLiveEditingConnector()}\n</body>`);
 
-    console.log(`📚 ———— Added live editing to ${connected} page${connected === 1 ? '' : 's'} containing Bookshop components`);
-    const skipped = siteHTMLFiles.length - connected;
-    if (skipped) {
-        console.log(`📚 ———— Skipped ${skipped} page${skipped === 1 ? '' : 's'} that didn't contain Bookshop components.`);
-    }
-    return true;
+    fs.writeFileSync(filePath, contents);
+    connected += 1;
+  }
+
+  if (!connected) {
+    console.log(`📚 ———— No live editing connected as no pages contained Bookshop components`);
+    return false;
+  }
+
+  console.log(`📚 ———— Added live editing to ${connected} page${connected === 1 ? '' : 's'} containing Bookshop components`);
+  const skipped = siteHTMLFiles.length - connected;
+  if (skipped) {
+    console.log(`📚 ———— Skipped ${skipped} page${skipped === 1 ? '' : 's'} that didn't contain Bookshop components.`);
+  }
+  return true;
 }
