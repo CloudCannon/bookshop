@@ -65,7 +65,7 @@ If you have a specific component that you never want bindings generated for, you
 ...
 
 [props]
-_data_binding: false
+_data_binding = false
 ...
 ```
 
