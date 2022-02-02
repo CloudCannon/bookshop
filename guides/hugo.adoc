@@ -239,10 +239,6 @@ NOTE: Work is underway to expand support for many of the functions below. Open a
 |❌
 |absURL / absLangURL
 |❌
-|highlight
-|❌
-|htmlEscape/htmlUnescape
-|❌
 |humanize
 |❌
 |now
@@ -253,17 +249,25 @@ NOTE: Work is underway to expand support for many of the functions below. Open a
 |❌
 |getenv
 |❌
-|markdownify / plainify / emojify
-|❌
 |fileExists / readDir / readFile
 |❌
 |ref / relref
 |❌
 |relURL / relLangURL
 |❌
+|highlight
+|ℹ️ Will pass through the input string unchanged (i.e. it won't work, but it won't error)
+|markdownify
+|ℹ️ Uses a different markdown implementation. Output isn't guaranteed to match Hugo 1:1
 |strings.*
 |✅
 |reflect.*
+|✅
+|plainify
+|✅
+|emojify
+|✅
+|htmlEscape/htmlUnescape
 |✅
 |merge
 |✅
