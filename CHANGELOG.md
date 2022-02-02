@@ -1,3 +1,28 @@
+## [2.4.2](https://github.com/CloudCannon/bookshop/compare/v2.4.1...v2.4.2) (2022-02-02)
+
+
+### Features
+
+* **hugo-engine:** implement many transforms for hugo live editing ([98024f8](https://github.com/CloudCannon/bookshop/commit/98024f8a80f0737db0866f483e5efd6845fbc286))
+    * Now supported:
+        * `markdownify`
+        * `plainify`
+        * `emojify`
+        * `htmlEscape`
+        * `htmlUnescape`
+        * *`highlight`
+
+    * `markdownify` uses a different implementation than hugo,
+        so the output is not guaranteed to be identical.
+
+    * *`highlight` is not supported, but will no longer error.
+        It will now pass through the input unchanged.
+* **jekyll-engine:** implement markdownify for jekyll live editing ([53af90d](https://github.com/CloudCannon/bookshop/commit/53af90db0028224bdc7e40e87f8045483293cda9))
+    * `markdownify` uses a different kramdown implementation than jekyll,
+so the output is not guaranteed to be identical.
+
+
+
 ## [2.4.1](https://github.com/CloudCannon/bookshop/compare/v2.4.0...v2.4.1) (2022-02-01)
 
 
