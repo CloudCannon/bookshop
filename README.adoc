@@ -12,7 +12,7 @@ https://github.com/CloudCannon/bookshop/actions/workflows/test-node.yml[image:ht
 https://github.com/CloudCannon/bookshop/actions/workflows/test-ruby.yml[image:https://github.com/CloudCannon/bookshop/actions/workflows/test-ruby.yml/badge.svg?branch=main&event=push[Ruby Test Status]]
 
 [.lead]
-Bookshop is a component development workflow for static websites. Bookshop currently supports Jekyll and Eleventy, with Hugo support coming in the near future.
+Bookshop is a component development workflow for static websites. Bookshop currently supports Jekyll and Eleventy, and Hugo with support for Vue, React, and Svelte coming in the near future.
 
 image::bookshop-hero.png[Iconography representing some components that might reside in a component library. There are lines connecting some of the components to wireframed areas of two example website pages.]
 
