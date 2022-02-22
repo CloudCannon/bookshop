@@ -39,7 +39,7 @@ export default async (options) => {
             ...esbuildOptions.loader,
             ...(engine?.buildLoaders || {})
         };
-        engine?.esbuildConfigFn?.(esbuildOptions);
+        engine?.esbuildConfigFn?.(esbuildOptions, options);
     });
 
     return await esbuild.build({

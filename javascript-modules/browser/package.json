@@ -11,7 +11,7 @@
     "manual-test-watch": "node main.js -b .test/fixtures -p 7923"
   },
   "bin": {
-    "bookshop-browser": "main.js"
+    "bookshop-browser": "cli.js"
   },
   "files": [
     "**/*.js",

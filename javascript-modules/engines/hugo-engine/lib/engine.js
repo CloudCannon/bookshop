@@ -31,10 +31,15 @@ export class Engine {
     }
 
     async initializeHugo() {
-        if (window.CloudCannon?.isMocked) {
-            await this.initializeLocalHugo();
+        // When this script is run locally, the hugo wasm is loaded as binary rather than output as a file.
+        if (hugoWasm?.constructor === Uint8Array) {
+            await this.initializeInlineHugo();
         } else {
-            await this.initializeRemoteHugo();
+            if (window.CloudCannon?.isMocked) {
+                await this.initializeLocalHugo();
+            } else {
+                await this.initializeRemoteHugo();
+            }
         }
 
         // TODO: Tidy
@@ -71,6 +76,13 @@ export class Engine {
         const wasmOrigin = this.origin.replace(/\/[^\.\/]+\.js$/, hugoWasm.replace(/^\./, ''));
         const response = await fetch(wasmOrigin);
         const buffer = await response.arrayBuffer();
+        const result = await WebAssembly.instantiate(buffer, go.importObject);
+        go.run(result.instance);
+    }
+
+    async initializeInlineHugo() {
+        const go = new Go();
+        const buffer = hugoWasm.buffer;
         const result = await WebAssembly.instantiate(buffer, go.importObject);
         go.run(result.instance);
     }

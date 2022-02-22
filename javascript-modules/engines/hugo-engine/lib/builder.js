@@ -6,11 +6,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const extensions = [".hugo.html"];
 
-export const esbuildConfigFn = (esbuildConfig) => {
+export const esbuildConfigFn = (esbuildConfig, options) => {
     esbuildConfig.loader = {
         ...esbuildConfig.loader,
         ".hugo.html": "text",
-        ".wasm": "file"
+        ".wasm": options?.hosted ? "file" : "binary"
     };
 
     const wasm_exec_banner = fs.readFileSync(path.join(__dirname, "../hugo-renderer/wasm_exec.js"));

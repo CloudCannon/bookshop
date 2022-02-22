@@ -11,7 +11,7 @@ import BrowserServer from "./lib/build/browserServer.js";
 
 export const runner = async (options) => {
     const bookshopDirs = options.bookshop.map(d => path.join(process.cwd(), d));
-    const outputFile = path.join(process.cwd(), options.output);
+    const outputFile = options.output ? path.join(process.cwd(), options.output) : null;
     const port = options.port ?? null;
     let server = null;
     const watch = outputFile ? null : {
@@ -53,7 +53,8 @@ export const runner = async (options) => {
         },
         exclude: JSON.stringify(options.exclude || []),
         onlyEngines: options.onlyEngines,
-        bookshopDirs: bookshopDirs
+        bookshopDirs: bookshopDirs,
+        hosted: !!outputFile,
     }
 
     const output = await Builder(builderOptions);
