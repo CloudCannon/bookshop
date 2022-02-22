@@ -358,7 +358,7 @@ __metadata:
     nyc: ^15.1.0
     svelte: ^3.39.0
   bin:
-    bookshop-browser: main.js
+    bookshop-browser: cli.js
   languageName: unknown
   linkType: soft
 

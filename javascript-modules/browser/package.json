@@ -39,12 +39,12 @@
     "@codemirror/view": "^0.18.19",
     "@ltd/j-toml": "^1.17.0",
     "@material-design-icons/svg": "^0.2.7",
-    "fast-glob": "^3.2.7",
     "commander": "^8.1.0",
     "esbuild": "^0.13.10",
     "esbuild-svelte": "^0.5.3",
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
+    "fast-glob": "^3.2.7",
     "js-yaml": "^4.1.0",
     "normalize-path": "^3.0.0",
     "svelte": "^3.39.0"
