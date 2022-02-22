@@ -50,7 +50,7 @@ Feature: Hugo Bookshop Component Browser Granular Steps
     *    stdout should contain "Total in"
     *    site/public/index.html should contain each row: 
       | text |
-      | <script src="/_bookshop/bookshop-browser.js"></script>  |
+      | <script class="cms-no-rewrite" src="/_bookshop/bookshop-browser.js?cb=  |
 
   Scenario: Bookshop Generate hydrates component browser
     Given I run "hugo" in the site directory

@@ -27,7 +27,7 @@
     <script src="http://localhost:{{ $port }}/bookshop.js"></script>
 {{- else -}}
     <div data-bookshop-browser=""></div>
-    <script src="/_bookshop/bookshop-browser.js"></script>
+    <script class="cms-no-rewrite" src="/_bookshop/bookshop-browser.js?cb={{ now.UnixMilli }}"></script>
 {{- end -}}
 <script>
     window.bookshopBrowser = new window.BookshopBrowser({globals: []}); 
