@@ -141,7 +141,7 @@ To import Bookshop styles in Hugo, the plugin provides a `bookshop_scss` partial
 <link rel="stylesheet" href="{{ $scss.Permalink }}">
 ```
 
-== Live Editing with Hugo
+== Live Editing and Component Browsing with Hugo
 
 Live editing on CloudCannon works mostly out of the box with Bookshop and Hugo. The one piece of information needed is the entry point from a site layout into a component.
 
@@ -199,6 +199,19 @@ npx "@bookshop/generate"
 ```
 
 This will add your component structures to the CMS, and configure live editing on all pages that contain Bookshop components.
+
+=== Configuring the Component Browser
+
+The packages installed above will also enable the component browser. To install the component browser on a page of your site, use the `bookshop_component_browser` partial in that page's layout.
+
+.*components.html*
+```html
+{{ partial "bookshop_component_browser" }}
+```
+
+If you're running Hugo locally with `hugo server`, open another terminal and run `npx "@bookshop/browser"` in your Bookshop, or a parent directory. You should now be able to visit the page that you installed the component browser on, and see your components in a playground environment.
+
+The same partial enables a hosted version of the component browser with no extra steps. The `@bookshop/generate` command in the `postbuild` above will connect a hosted component library to this tag if it is found in your site.
 
 === Hugo Live Editing Support
 

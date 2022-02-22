@@ -16,43 +16,14 @@ The Bookshop component browser is an embedded component library on your website,
 
 An example browser showing the components in our Eleventy starter template can be seen here: https://winged-cat.cloudvent.net/components/
 
-== Configuration
-
-To install the Bookshop browser as a development dependency, run: +
-`npm i -D @bookshop/browser`
-
 == Building the browser
 
 In your local development environment, run: +
-`npx bookshop-browser -b ./path/to/components -p 6061`
+`npx "@bookshop/browser"`
 
-[cols="2", options="header"]
-|===
-|Flag
-|Purpose
+By default, this will discover any Bookshop directories in or under the current working directory, and will host a component library on port 30775.
 
-|-b, --bookshop
-|Bookshop directories to build into the browser.
-
-|-p, --port
-|Local port to host the browser javascript on
-
-|-o, --output
-|File path to save a javascript file to
-|===
-
-This is best used in an npm script, eg:
-```json
-{
-    "scripts": {
-        "start": "bookshop-browser -b ./path/to/components -p 6061"
-    }
-}
-```
-
-TIP: You can supply the `-b` flag multiple times if you want to merge Bookshops.
-
-NOTE: One of port _or_ output must be supplied, not both. If a port is supplied, the browser will watch files. If an output is supplied, the browser will build once and exit.
+Run `npx "@bookshop/browser" --help` to see the available options.
 
 After running this command, a component browser will be viewable on localhost at the given port. +
 However, much of the component browser's power comes from its ability to integrate into your website, so see below for how to achieve this.
