@@ -1,4 +1,4 @@
-@hugo
+@hugo @bespoke
 Feature: Hugo Bookshop Component Browser Granular Steps
 
   Background:
