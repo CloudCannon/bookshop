@@ -12,7 +12,7 @@ import BrowserServer from "./lib/build/browserServer.js";
 export const runner = async (options) => {
     const bookshopDirs = options.bookshop.map(d => path.join(process.cwd(), d));
     const outputFile = options.output ? path.join(process.cwd(), options.output) : null;
-    const port = options.port ?? null;
+    let port = options.port ?? null;
     let server = null;
     const watch = outputFile ? null : {
         onRebuild(error, result) {
@@ -29,9 +29,8 @@ export const runner = async (options) => {
         process.exit(1);
     }
 
-    if (!outputFile && !port) {
-        console.error(`One of output or port must be provided.`);
-        process.exit(1);
+    if (!outputFile) {
+        port = 30775;
     }
 
     const builderOptions = {
