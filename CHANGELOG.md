@@ -1,3 +1,21 @@
+# [2.5.0](https://github.com/CloudCannon/bookshop/compare/v2.4.2...v2.5.0) (2022-02-22)
+
+
+### Bug Fixes
+
+* **hugo:** bundle hugo correctly when running local component browser ([089dcf3](https://github.com/CloudCannon/bookshop/commit/089dcf39324e321031a58ce1f75a72e00554cfd8))
+* match hugo's (bizzare) handling of short markdown strings ([f14261f](https://github.com/CloudCannon/bookshop/commit/f14261f6ff0ae8db70f543ba2230633d0f95d3da))
+
+
+### Features
+
+* add component browser setup to `bookshop/generate`'s toolkit ([70cbab9](https://github.com/CloudCannon/bookshop/commit/70cbab9577fc0380e71b76cb9bcc54f536b14d18))
+    * As mentioned in the [Hugo Guide](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo.adoc#configuring-the-component-browser)
+* **browser:** bookshop/browser can now be called without arguments ([dd13a13](https://github.com/CloudCannon/bookshop/commit/dd13a1348d33f5d1952c73af4fb17abff978c58c))
+    * See the [Component Browser guide](https://github.com/CloudCannon/bookshop/blob/main/guides/browser.adoc)
+
+
+
 ## [2.4.2](https://github.com/CloudCannon/bookshop/compare/v2.4.1...v2.4.2) (2022-02-02)
 
 
