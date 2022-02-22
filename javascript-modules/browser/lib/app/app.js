@@ -23,6 +23,7 @@ const registerBrowserClass = () => {
             this.styles = styles;
             this.components = components;
             this.elements = [];
+            this.hasRendered = false;
 
             this.globalData = {};
             options?.globals?.forEach(global => {
@@ -53,6 +54,7 @@ const registerBrowserClass = () => {
             BookshopBrowser.stripDocumentBookshopStyles();
             this.injectHeadBookshopStyles();
             this.elements.forEach(this.renderElement.bind(this));
+            this.hasRendered = true;
         }
 
         async renderElement(el) {
@@ -105,7 +107,7 @@ const registerBrowserClass = () => {
                     });
                     // Delete the bookshop blocks, bottom up
                     bookshopRules.forEach(i => ss.deleteRule(i));
-                } catch(e) {}
+                } catch (e) { }
             })
         }
     }

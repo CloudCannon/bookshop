@@ -332,7 +332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bookshop/browser@workspace:browser":
+"@bookshop/browser@2.4.2, @bookshop/browser@workspace:browser":
   version: 0.0.0-use.local
   resolution: "@bookshop/browser@workspace:browser"
   dependencies:
@@ -358,7 +358,7 @@ __metadata:
     nyc: ^15.1.0
     svelte: ^3.39.0
   bin:
-    bookshop-browser: main.js
+    bookshop-browser: cli.js
   languageName: unknown
   linkType: soft
 
@@ -440,6 +440,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/generate@workspace:generate"
   dependencies:
+    "@bookshop/browser": 2.4.2
     "@bookshop/builder": 2.4.2
     "@bookshop/cloudcannon-structures": 2.4.2
     "@bookshop/helpers": 2.4.2

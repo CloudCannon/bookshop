@@ -245,6 +245,18 @@ When(/^🌐 I (?:add|have added) a click listener to (\S+)$/i, { timeout: 60 * 1
   }, selector);
 });
 
+When(/^🌐 I click (\S+)$/i, { timeout: 60 * 1000 }, async function (selector) {
+  await this.page.evaluate((selector) => {
+    document.querySelector(selector).click();
+  }, selector);
+});
+
+When(/^🌐 I trigger a (\S+) on (\S+)$/i, { timeout: 60 * 1000 }, async function (action, selector) {
+  await this.page.evaluate((action, selector) => {
+    document.querySelector(selector).dispatchEvent(new Event(action))
+  }, action, selector);
+});
+
 Then(/^🌐 There should be a click listener on (\S+)$/i, { timeout: 60 * 1000 }, async function (selector) {
   await this.page.evaluate((selector) => {
     document.querySelector(selector).click();
@@ -283,19 +295,22 @@ Then(/^🌐 There should be no logs$/i, { timeout: 60 * 1000 }, async function (
  *             *
  * * * * * * * */
 
-Given(/^🌐 I (?:have loaded|load) my site in CloudCannon$/i, { timeout: 60 * 1000 }, async function () {
+Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 * 1000 }, async function (inCloudCannon) {
   if (!this.storage.ssg) {
     throw new Error(`Expected ssg to be set with a "Given [ssg]:" step`);
   }
   if (!/^jekyll|eleventy|hugo$/.test(this.storage.ssg)) {
     throw new Error(`SSG was ${this.storage.ssg}, expected one of: jekyll, eleventy, hugo`);
   }
-
-  if (!this.storage.front_matter) {
-    throw new Error(`Expected front matter to be set with a "Given [front_matter]:" step`);
-  }
-  const page_data = JSON.stringify(yaml.load(this.storage.front_matter));
   const ssg = this.storage.ssg;
+
+  let page_data;
+  if (inCloudCannon) {
+    if (!this.storage.front_matter) {
+      throw new Error(`Expected front matter to be set with a "Given [front_matter]:" step`);
+    }
+    page_data = JSON.stringify(yaml.load(this.storage.front_matter));
+  }
 
   // SSG build
   switch (ssg) {
@@ -327,13 +342,15 @@ Given(/^🌐 I (?:have loaded|load) my site in CloudCannon$/i, { timeout: 60 * 1
       this.serveDir("site/public");
   }
   await loadPage("http://localhost:__PORT__", this);
-  // Trigger cloudcannon:load
-  await readyCloudCannon(page_data, this);
-  try {
-    await this.page.waitForFunction("window.bookshopLive?.hasRendered === true", { timeout: 4 * 1000 });
-  } catch (e) {
-    this.trackPuppeteerError(e.toString());
-    this.trackPuppeteerError(`Bookshop didn't do an initial render within 4s`);
+  if (inCloudCannon) {
+    // Trigger cloudcannon:load
+    await readyCloudCannon(page_data, this);
+    try {
+      await this.page.waitForFunction("window.bookshopLive?.hasRendered === true", { timeout: 4 * 1000 });
+    } catch (e) {
+      this.trackPuppeteerError(e.toString());
+      this.trackPuppeteerError(`Bookshop didn't do an initial render within 4s`);
+    }
   }
 
   assert.deepEqual(this.puppeteerErrors(), []);

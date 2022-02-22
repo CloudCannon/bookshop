@@ -6,23 +6,15 @@ import { Command } from "commander";
 import sveltePlugin from "esbuild-svelte";
 import svelteFixPlugin from "./lib/build/svelteFixPlugin.js";
 import materialIconPlugin from "./lib/build/materialIconPlugin.js";
-import {__dirname} from "./lib/build/util.js";
+import { __dirname } from "./lib/build/util.js";
 import BrowserServer from "./lib/build/browserServer.js";
 
-const program = new Command();
-
-async function run() {
-    program.requiredOption("-b, --bookshop <paths...>", "Paths to bookshops (space seperated)");
-    program.option("-o, --output <filename>", "Output JS to given filename");
-    program.option("-p, --port <number>", "Host bookshop browser server on a local port");
-    program.option("--only-engines <engines...>", "Only load the specified engines");
-    program.parse(process.argv);
-    const options = program.opts();
+export const runner = async (options) => {
     const bookshopDirs = options.bookshop.map(d => path.join(process.cwd(), d));
-    const outfile = options.output ? path.join(process.cwd(), options.output) : null;
-    const port = options.port ?? null;
+    const outputFile = options.output ? path.join(process.cwd(), options.output) : null;
+    let port = options.port ?? null;
     let server = null;
-    const watch = outfile ? null : {
+    const watch = outputFile ? null : {
         onRebuild(error, result) {
             if (error) {
                 console.error('📚 Renderer rebuild failed:', error)
@@ -32,20 +24,19 @@ async function run() {
         },
     };
 
-    if (outfile && port) {
-        console.error(`Output file and port both specified — one or the other must be passed.`);
+    if (outputFile && port) {
+        console.error(`Output file and port both specified — one or the other must be provided.`);
         process.exit(1);
     }
 
-    if (!outfile && !port) {
-        console.error(`One of --output or --port must be passed.`);
-        process.exit(1);
+    if (!outputFile) {
+        port = 30775;
     }
 
     const builderOptions = {
         esbuild: {
             plugins: [
-                sveltePlugin({compileOptions: {css: true}}),
+                sveltePlugin({ compileOptions: { css: true } }),
                 materialIconPlugin(),
                 svelteFixPlugin
             ],
@@ -55,13 +46,14 @@ async function run() {
             define: {
                 BOOKSHOP_HMR_PORT: port ?? false
             },
-            ...(outfile ? {outfile} : null),
-            ...(watch ? {watch, write: false} : null),
+            ...(outputFile ? { outfile: outputFile } : null),
+            ...(watch ? { watch, write: false } : null),
             entryPoints: [path.join(__dirname(import.meta.url), 'lib/app/app.js')]
         },
         exclude: JSON.stringify(options.exclude || []),
         onlyEngines: options.onlyEngines,
-        bookshopDirs: bookshopDirs
+        bookshopDirs: bookshopDirs,
+        hosted: !!outputFile,
     }
 
     const output = await Builder(builderOptions);
@@ -74,5 +66,3 @@ async function run() {
         });
     }
 }
-
-run();

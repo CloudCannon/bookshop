@@ -11,7 +11,7 @@
     "manual-test-watch": "node main.js -b .test/fixtures -p 7923"
   },
   "bin": {
-    "bookshop-browser": "main.js"
+    "bookshop-browser": "cli.js"
   },
   "files": [
     "**/*.js",
@@ -26,7 +26,6 @@
   },
   "devDependencies": {
     "ava": "^3.15.0",
-    "fast-glob": "^3.2.7",
     "nyc": "^15.1.0"
   },
   "dependencies": {
@@ -45,6 +44,7 @@
     "esbuild-svelte": "^0.5.3",
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
+    "fast-glob": "^3.2.7",
     "js-yaml": "^4.1.0",
     "normalize-path": "^3.0.0",
     "svelte": "^3.39.0"

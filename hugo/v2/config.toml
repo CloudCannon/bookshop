@@ -22,3 +22,7 @@ target = "layouts/partials/bookshop_scss.html"
 [[module.mounts]]
 source = "core/bookshop_bindings.html"
 target = "layouts/partials/bookshop_bindings.html"
+
+[[module.mounts]]
+source = "core/bookshop_component_browser.html"
+target = "layouts/partials/bookshop_component_browser.html"

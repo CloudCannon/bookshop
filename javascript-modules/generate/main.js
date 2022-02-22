@@ -9,6 +9,8 @@ import Structures from "@bookshop/cloudcannon-structures";
 import Narrator from "@bookshop/toml-narrator";
 import { hydrateLiveForSite } from "./lib/live-connector.js";
 import { buildLiveScript } from "./lib/live-builder.js";
+import { hydrateComponentBrowserForSite } from "./lib/browser-connector.js";
+import { buildBrowserScript } from "./lib/browser-builder.js";
 
 const cwd = process.cwd();
 const program = new Command();
@@ -91,9 +93,15 @@ async function run() {
 
         fs.writeFileSync(infoJsonFile, JSON.stringify(info_json, null, 2));
         console.log(`📚 ———— Added components as CloudCannon Structures`);
+
         const liveEditingNeeded = await hydrateLiveForSite(siteRoot, options);
         if (liveEditingNeeded) {
             await buildLiveScript(siteRoot, bookshopRoots);
+        }
+
+        const componentBrowserNeeded = await hydrateComponentBrowserForSite(siteRoot, options);
+        if (componentBrowserNeeded) {
+            await buildBrowserScript(siteRoot, bookshopRoots);
         }
     }
 

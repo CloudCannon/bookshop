@@ -22,6 +22,7 @@ test("(unit test) test parity between SSGs", async t => {
     scenarios[ssg] = scenarios[ssg] || [];
 
     const doc = parser.convertFeatureFileToJSON(path.join(__dirname, 'features', f));
+    if (doc.feature.tags.map(d => d.name).includes("@bespoke")) return;
     scenarios[ssg] = [
       ...scenarios[ssg],
       ...doc.feature.children
