@@ -115,6 +115,30 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             }
         }
 
+        // Hunt through the stack and try to reassign an existing variable.
+        // This is currently only done in Hugo templates
+        for (const [name, identifier] of parseParams(liveTag?.reassign)) {
+            for (let i = stack.length - 1; i >= 0; i -= 1) {
+                if (stack[i].scope[name] !== undefined) {
+                    stack[i].scope[name] = await liveInstance.eval(identifier, combinedScope());
+                    break;
+                }
+            }
+            for (let i = pathStack.length - 1; i >= 0; i -= 1) {
+                if (pathStack[i][name] !== undefined) {
+                    const normalizedIdentifier = liveInstance.normalize(identifier);
+                    if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
+                        Object.values(normalizedIdentifier).forEach(value => {
+                            return storeResolvedPath(name, value, [pathStack[i]])
+                        });
+                    } else {
+                        storeResolvedPath(name, normalizedIdentifier, [pathStack[i]]);
+                    }
+                    break;
+                }
+            }
+        }
+
         if (liveTag?.end) {
             currentScope().endNode = currentNode;
             await templateBlockHandler(stack.pop());
