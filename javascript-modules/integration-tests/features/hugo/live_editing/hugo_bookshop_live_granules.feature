@@ -79,3 +79,24 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Rerendered"
+
+  @web
+  Scenario: Bookshop doesn't live render flagged components
+    Given a site/layouts/index.html file containing:
+      """
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `(dict "title" .Params.block.title "_live_render" false)` }}
+      {{ partial "bookshop" (slice "single" (dict "title" .Params.block.title "_live_render" false)) }}
+      </body>
+      </html>
+      """
+    Given 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      block:
+        title: "Rerendered"
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Hello There"

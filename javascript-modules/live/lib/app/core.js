@@ -201,6 +201,13 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
         // We only need to render the outermost component
         if (depth) return;
 
+        const liveRenderFlag = scope?.live_render
+            ?? scope?.liveRender
+            ?? scope?._live_render
+            ?? scope?._liveRender
+            ?? true;
+        if (!liveRenderFlag) return;
+
         const output = vDom.createElement('div');
         await liveInstance.renderElement(
             name,
