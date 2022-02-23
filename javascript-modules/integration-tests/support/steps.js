@@ -267,14 +267,14 @@ Then(/^🌐 There should be a click listener on (\S+)$/i, { timeout: 60 * 1000 }
   assert.equal(clicked, true, `Clicking the element did fire the expected handler. Expected window["${selector}:clicked"] to be true.`);
 });
 
-Then(/^🌐 The selector (\S+) should contain "(.+)"$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
+Then(/^🌐 The selector (\S+) should contain ['"](.+)['"]$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
   if (!this.page) throw Error("No page open");
   const innerText = await this.page.$eval(selector, (node) => node.innerText);
   const contains = innerText.includes(unescape(contents));
   assert.equal(innerText, contains ? innerText : `innerText containing \`${contents}\``);
 });
 
-Then(/^🌐 The selector (\S+) should match "(.+)"$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
+Then(/^🌐 The selector (\S+) should match ['"](.+)['"]$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
   if (!this.page) throw Error("No page open");
   const outerHTML = await this.page.$eval(selector, (node) => node.outerHTML);
   const contains = outerHTML.includes(unescape(contents));
