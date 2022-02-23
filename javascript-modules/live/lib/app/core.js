@@ -46,7 +46,7 @@ export const findInStack = (key, stack) => {
                 if (rest.length) return `${stack[i][baseIdentifier]}.${rest.join('.')}`;
                 return `${stack[i][baseIdentifier]}`;
             }
-            if (stack[i]["."] && stack[i]["."] !== '.' && !/^\$/.test(key)) {
+            if (stack[i]["."] && stack[i]["."] !== '.' && !/^(\$|Params)/.test(key)) {
                 return `${stack[i]["."]}.${key}`;
             }
         }
