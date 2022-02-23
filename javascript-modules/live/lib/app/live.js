@@ -11,7 +11,11 @@ export const getLive = (engines) => class BookshopLive {
         this.globalData = {};
         this.data = {};
         this.renderOptions = {};
-        this.hasRendered = false;
+        this.renderCount = 0;
+        this.renderedAt = 0;
+        this.shouldRenderAt = null;
+        this.renderFrequency = 1000;
+        this.renderTimeout = null;
         this.awaitingDataFetches = options?.remoteGlobals?.length || 0;
         options?.remoteGlobals?.forEach(this.fetchGlobalData.bind(this));
     }
@@ -61,6 +65,7 @@ export const getLive = (engines) => class BookshopLive {
     }
 
     async update(data, options) {
+        const now = Date.now();
         // transformData = false means implementations like Jekyll 
         // won't wrap the data in { page: {} }
         // (this is currently only used for tests)
@@ -74,8 +79,19 @@ export const getLive = (engines) => class BookshopLive {
         while (this.awaitingDataFetches > 0) {
             await sleep(100);
         }
+        if (now - this.renderedAt < this.renderFrequency) {
+            const shouldRenderAt = this.renderedAt + this.renderFrequency;
+            this.shouldRenderAt = shouldRenderAt;
+            await sleep(shouldRenderAt - now);
+            if (shouldRenderAt !== this.shouldRenderAt) {
+                // We have a newer update() call running, so we can bail on this render.
+                return false;
+            }
+        }
+        this.shouldRenderAt = null;
+        this.renderedAt = Date.now();
         await this.render();
-        this.hasRendered = true;
+        return true;
     }
 
     async render() {
@@ -113,5 +129,6 @@ export const getLive = (engines) => class BookshopLive {
 
             core.graftTrees(startNode, endNode, output);
         }
+        this.renderCount += 1;
     }
 }

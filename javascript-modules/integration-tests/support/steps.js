@@ -281,6 +281,15 @@ Then(/^🌐 The selector (\S+) should match "(.+)"$/i, { timeout: 60 * 1000 }, a
   assert.equal(outerHTML, contains ? outerHTML : `outerHTML containing \`${contents}\``);
 });
 
+Then(/^🌐 "(.+)" should evaluate$/i, { timeout: 5 * 1000 }, async function (statement) {
+  if (!this.page) throw Error("No page open");
+  try {
+    await this.page.waitForFunction(statement, { timeout: 4 * 1000 });
+  } catch (e) {
+    throw Error(`${statement} didn't evaluate within 4s`)
+  }
+});
+
 Then(/^🌐 There should be no errors$/i, { timeout: 60 * 1000 }, async function () {
   assert.deepEqual(this.puppeteerErrors(), []);
 });
@@ -346,7 +355,7 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 
     // Trigger cloudcannon:load
     await readyCloudCannon(page_data, this);
     try {
-      await this.page.waitForFunction("window.bookshopLive?.hasRendered === true", { timeout: 4 * 1000 });
+      await this.page.waitForFunction("window.bookshopLive?.renderCount > 0", { timeout: 4 * 1000 });
     } catch (e) {
       this.trackPuppeteerError(e.toString());
       this.trackPuppeteerError(`Bookshop didn't do an initial render within 4s`);

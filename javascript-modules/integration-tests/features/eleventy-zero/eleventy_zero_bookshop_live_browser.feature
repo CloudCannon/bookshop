@@ -71,7 +71,7 @@ Feature: Eleventy Bookshop CloudCannon Live Editing
         } ]
       }
       """
-       * 🌐 "window.bookshopLive?.hasRendered === true" evaluates
+       * 🌐 "window.bookshopLive?.renderCount > 0" evaluates
     Then 🌐 The selector h1 should contain "Gidday"
     # Testing CloudCannon data changing
     When 🌐 CloudCannon pushes new json:
