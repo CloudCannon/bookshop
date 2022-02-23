@@ -219,7 +219,11 @@ When(/^🌐 CloudCannon pushes new json:$/i, { timeout: 60 * 1000 }, async funct
   if (!this.page) throw Error("No page open");
   const script = `window.CloudCannon.newData(${input});`;
   await this.page.addScriptTag({ content: script });
-  await p_sleep(50);
+  try {
+    await this.page.waitForFunction(`window.bookshopLive?.renderCount >= 2`, { timeout: 4 * 1000 });
+  } catch (e) {
+    this.trackPuppeteerError(`Bookshop didn't re-render within 4s`);
+  }
 });
 
 When(/^🌐 CloudCannon pushes new yaml:$/i, { timeout: 60 * 1000 }, async function (input) {
@@ -227,7 +231,11 @@ When(/^🌐 CloudCannon pushes new yaml:$/i, { timeout: 60 * 1000 }, async funct
   const page_data = JSON.stringify(yaml.load(input));
   const script = `window.CloudCannon.newData(${page_data});`;
   await this.page.addScriptTag({ content: script });
-  await p_sleep(50);
+  try {
+    await this.page.waitForFunction(`window.bookshopLive?.renderCount >= 2`, { timeout: 4 * 1000 });
+  } catch (e) {
+    this.trackPuppeteerError(`Bookshop didn't re-render within 4s`);
+  }
 });
 
 When(/^🌐 "(.+)" evaluates$/i, { timeout: 5 * 1000 }, async function (statement) {
