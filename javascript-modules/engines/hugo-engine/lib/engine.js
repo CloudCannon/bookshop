@@ -162,7 +162,16 @@ export class Engine {
             return `index (${obj}) ${index}`;
         })
 
-        const eval_str = `{{ jsonify (${str}) }}`;
+        const assignments = Object.entries(props_obj).filter(([key]) => key.startsWith('$')).map(([key, value]) => {
+            if (Array.isArray(value)) {
+                return `{{ ${key} := index ( \`{"a": ${JSON.stringify(value)}}\` | transform.BookshopUnmarshal ) "a" }}`
+            } else if (typeof value === 'object') {
+                return `{{ ${key} := \`${JSON.stringify(value)}\` | transform.BookshopUnmarshal }}`
+            } else {
+                return `{{ ${key} := ${JSON.stringify(value)} }}`
+            }
+        }).join('');
+        const eval_str = `${assignments}{{ jsonify (${str}) }}`;
         const output = window.renderHugo(eval_str, JSON.stringify(props_obj));
 
         try {
