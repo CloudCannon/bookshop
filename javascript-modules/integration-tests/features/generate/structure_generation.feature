@@ -80,7 +80,7 @@ Feature: Bookshop Structure Generation
       | {{ .card_text }} |
 
   Scenario: Can skip live editing
-    When I run "npm run generate-no-live" in the . directory
+    When I run "npm run generate-no-live --scripts-prepend-node-path" in the . directory
     Then stderr should be empty
     And stdout should contain "Skipping live editing generation"
     And site/public/index.html should not contain the text "_cloudcannon"
