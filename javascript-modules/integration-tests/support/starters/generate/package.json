@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "start": "bookshop-generate",
+    "generate-no-live": "bookshop-generate --skip-live",
     "cc-hugo": "cloudcannon-hugo --baseURL /"
   },
   "devDependencies": {

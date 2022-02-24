@@ -32,6 +32,8 @@ const addComponentTo = (obj, component) => {
 
 async function run() {
     program.option("-d, --dot", "Look for Bookshops inside . directories");
+    program.option("--skip-live", "Don't build live editing JS or add live editing scripts to HTML");
+    program.option("--skip-components", "Don't build the component browser JS or add component browser scripts to HTML");
     program.parse(process.argv);
     const options = program.opts();
 
@@ -94,14 +96,22 @@ async function run() {
         fs.writeFileSync(infoJsonFile, JSON.stringify(info_json, null, 2));
         console.log(`📚 ———— Added components as CloudCannon Structures`);
 
-        const liveEditingNeeded = await hydrateLiveForSite(siteRoot, options);
-        if (liveEditingNeeded) {
-            await buildLiveScript(siteRoot, bookshopRoots);
+        if (!options.skipLive) {
+            const liveEditingNeeded = await hydrateLiveForSite(siteRoot, options);
+            if (liveEditingNeeded) {
+                await buildLiveScript(siteRoot, bookshopRoots);
+            }
+        } else {
+            console.log(`📚 ———— Skipping live editing generation`);
         }
 
-        const componentBrowserNeeded = await hydrateComponentBrowserForSite(siteRoot, options);
-        if (componentBrowserNeeded) {
-            await buildBrowserScript(siteRoot, bookshopRoots);
+        if (!options.skipComponents) {
+            const componentBrowserNeeded = await hydrateComponentBrowserForSite(siteRoot, options);
+            if (componentBrowserNeeded) {
+                await buildBrowserScript(siteRoot, bookshopRoots);
+            }
+        } else {
+            console.log(`📚 ———— Skipping component browser generation`);
         }
     }
 
