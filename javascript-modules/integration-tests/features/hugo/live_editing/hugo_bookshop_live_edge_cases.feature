@@ -76,3 +76,57 @@ Feature: Hugo Bookshop CloudCannon Live Editing Edge Cases
     *    🌐 There should be no logs
     *    🌐 The selector h2 should match '<h2 class="class-two" data-cms-bind="#heading"><!--bookshop-live name(text) params(.: (.))--><span data-cms-bind="#heading.copy">New heading.</span><!--bookshop-live end--></h2>'
   
+  Scenario: Hugo Bookshop live renders a map iterator
+    Given a component-lib/components/page/page.hugo.html file containing:
+      """
+      {{ range . }}
+      <div>
+        {{ partial "bookshop" . }}
+        {{ range $key, $value := . }}
+          <span>{{ $key }}: {{ . }}</span>
+        {{ end }}
+      </div>
+      {{ end }}
+      """
+    Given a component-lib/components/text/text.hugo.html file containing:
+      """
+      <p>{{ markdownify .text }}</p>
+      """
+    Given [front_matter]:
+      """
+      components:
+        - _bookshop_name: text
+          text: Hello
+      """
+    And a site/content/_index.md file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      """
+    And a site/layouts/index.html file containing:
+      """
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `.Params.components` }}
+      {{ partial "bookshop" (slice "page" .Params.components) }}
+      </body>
+      </html>
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      components:
+        - _bookshop_name: text
+          text: Hello
+        - _bookshop_name: text
+          text: Hooray
+      """
+    And  🌐 "window.bookshopLive?.renderCount === 2" evaluates
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector div:nth-of-type(1)>span:nth-of-type(1) should contain '_bookshop_name: text'
+    *    🌐 The selector div:nth-of-type(1)>span:nth-of-type(2) should contain 'text: Hello'
+    *    🌐 The selector div:nth-of-type(2)>span:nth-of-type(1) should contain '_bookshop_name: text'
+    *    🌐 The selector div:nth-of-type(2)>span:nth-of-type(2) should contain 'text: Hooray'
+  

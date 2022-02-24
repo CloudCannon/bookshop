@@ -54,7 +54,7 @@ const rewriteTag = function (token, src, endTags, liveMarkup) {
         let [, index_variable, iterator] = raw.match(TOKENS.INDEX_LOOP);
         const r = required_wrapper_hugo_func(iterator);
         outputToken.text = [`${outputToken.text}`,
-        `{{${r[0]} (printf \`<!--bookshop-live context(.: (index (${tidy(iterator)}) %d))-->\` ${index_variable})${r[1]} | safeHTML }}`
+        `{{${r[0]} (printf \`<!--bookshop-live context(.: (index (${tidy(iterator)}) %v))-->\` (jsonify ${index_variable}))${r[1]} | safeHTML }}`
         ].join('')
     } else if (liveMarkup && TOKENS.LOOP.test(raw)) {
         let [, iterator] = raw.match(TOKENS.LOOP);

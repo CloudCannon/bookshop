@@ -72,7 +72,7 @@ test("add live markup to loops with iterators", t => {
     const input = `{{range $loop_index, $element := .columns}}<p>{{$element}}</p>{{ end }}`;
     const expected = [`{{range $loop_index, $element := .columns}}`,
         `{{ \`<!--bookshop-live stack-->\` | safeHTML }}`,
-        `{{ (printf \`<!--bookshop-live context(.: (index (.columns) %d))-->\` $loop_index) | safeHTML }}`,
+        `{{ (printf \`<!--bookshop-live context(.: (index (.columns) %v))-->\` (jsonify $loop_index)) | safeHTML }}`,
         `<p>{{$element}}</p>`,
         `{{ \`<!--bookshop-live unstack-->\` | safeHTML }}`,
         `{{ end }}`
