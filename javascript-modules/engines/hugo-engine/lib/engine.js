@@ -177,7 +177,7 @@ export class Engine {
         try {
             return JSON.parse(output);
         } catch (e) {
-            console.error(`Error evaluating \`${str}\` in the Hugo engine`, output);
+            console.warn(`Error evaluating \`${str}\` in the Hugo engine`, output);
             return null;
         }
     }
