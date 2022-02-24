@@ -1,7 +1,7 @@
 const TOKENS = {
   DELIM: /"|'|`/,
   ESCAPE: /\\/,
-  SPACE: /\s/,
+  SPACE: /\s|\r|\n/,
   INSCOPE: /\(/,
   OUTSCOPE: /\)/,
   SCOPE: /\./,

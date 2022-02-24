@@ -24,7 +24,7 @@ const rewriteTag = function (token, src, liveMarkup) {
         let componentName;
         token.name = 'include';
         raw = raw.replace(
-            /bookshop_include (\S+)/,
+            /bookshop_include[\r\n\s]+(\S+)/,
             (_, component) => {
                 componentName = component
                 return `include _bookshop_include_${component}`
@@ -42,7 +42,7 @@ const rewriteTag = function (token, src, liveMarkup) {
         let componentName;
         token.name = 'include';
         raw = raw.replace(
-            /bookshop (\S+)/,
+            /bookshop[\r\n\s]+(\S+)/,
             (_, component) => {
                 componentName = component;
                 return `include _bookshop_${component}`
@@ -59,7 +59,7 @@ const rewriteTag = function (token, src, liveMarkup) {
     // {% include some-file.html prop=value %} --> {% include "some-file.html" prop: value %}
     if (token.name && token.name.match(/^include/)) {
         raw = raw.replace(/=/g, ': ');
-        raw = raw.replace(/\%\s+?include\s([^"'][^\s]+)/gi, '% include "$1"');
+        raw = raw.replace(/\%[\r\n\s]+?include[\r\n\s]+([^"'][^\s]+)/gi, '% include "$1"');
     }
 
     return [

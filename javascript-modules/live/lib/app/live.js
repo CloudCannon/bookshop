@@ -48,7 +48,7 @@ export const getLive = (engines) => class BookshopLive {
         try {
             await this.engines[0].render(dom, componentName, scope, { ...this.globalData });
         } catch (e) {
-            console.warn(`Error rendering bookshop component ${componentName}`, e);
+            console.warn(`Error rendering bookshop component ${componentName}`, e.toString());
             console.warn(`This is expected in certain cases, and may not be an issue, especially when deleting or re-ordering components.`)
         }
     }

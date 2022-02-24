@@ -111,3 +111,23 @@ test(`Ranges`, async t => {
         ["t", `(min..max)[0]`]
     ]);
 });
+
+test(`Multiline Hugo dict`, async t => {
+    const params = `bind: (dict 
+"a" (slice 
+        1 
+        2 
+        3
+    )
+)`;
+    const output = (new ParamsParser(params)).build();
+    t.deepEqual(output, [
+        ["bind", `(dict 
+"a" (slice 
+        1 
+        2 
+        3
+    )
+)`]
+    ]);
+});

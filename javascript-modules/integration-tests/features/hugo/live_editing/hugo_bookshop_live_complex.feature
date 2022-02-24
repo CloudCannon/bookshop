@@ -313,3 +313,64 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
     *    🌐 There should be no logs
     *    🌐 The selector span should contain "New Tag"
     *    🌐 The selector .page>*:nth-child(3) should contain "Block Three"
+
+  Scenario: Bookshop live renders a multiline component tag
+    Given a component-lib/components/outer/outer.hugo.html file containing:
+      """
+      <div> 
+        {{ partial 
+          "bookshop" 
+          (
+            slice 
+            "single" 
+            (
+              dict 
+              "title" 
+              .contents.title
+            )
+          ) 
+        }}
+      </div>
+      """
+    Given [front_matter]:
+      """
+      contents:
+        title: My title
+      """
+    And a site/content/_index.md file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      """
+    And a site/layouts/index.html file containing:
+      """
+      <html>
+      <body>
+      {{ partial 
+        "bookshop_bindings" 
+        `(dict "contents" .Params.contents )`
+      }}
+      {{ partial 
+        "bookshop" 
+        (
+          slice 
+          "outer" 
+          (
+            dict 
+            "contents" .Params.contents
+          )
+        )
+      }}
+      </body>
+      </html>
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      contents:
+        title: Your title
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Your title"

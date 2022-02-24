@@ -34,7 +34,7 @@ const rewriteTag = function (token, src, liveMarkup) {
         let componentName;
         token.name = 'include';
         raw = raw.replace(
-            /bookshop_include ('|")?(\S+)/,
+            /bookshop_include[\r\n\s]+('|")?(\S+)/,
             (_, quote, component) => {
                 componentName = component.replace(/('|")$/, '');
                 return `include ${quote || ''}_bookshop_include_${component}`
@@ -54,7 +54,7 @@ const rewriteTag = function (token, src, liveMarkup) {
         let componentName;
         token.name = 'include';
         raw = raw.replace(
-            /bookshop ('|")?(\S+)/,
+            /bookshop[\r\n\s]+('|")?(\S+)/,
             (_, quote, component) => {
                 componentName = component.replace(/('|")$/, '');
                 return `include ${quote || ''}_bookshop_${component}`
