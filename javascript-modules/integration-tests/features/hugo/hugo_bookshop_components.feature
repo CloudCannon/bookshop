@@ -209,4 +209,4 @@ Feature: Basic Hugo Bookshop
     When I run "hugo" in the site directory
     Then stderr should be empty
     And stdout should contain "Total in"
-    And DEBUG site/public/index.html should contain the text "Hello :)"
+    And site/public/index.html should contain the text "Hello :)"
