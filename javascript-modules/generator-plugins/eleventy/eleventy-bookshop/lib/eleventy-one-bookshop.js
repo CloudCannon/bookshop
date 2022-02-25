@@ -29,9 +29,9 @@ const contextHunt = (ctx, hash, index) => {
 module.exports = (tagType, locations, baseLocation) => (liquidEngine) => {
     return {
         parse: function (tagToken, remainingTokens) {
-            const [, component, args] = tagToken.args.match(/^['"]?([^\s'"]+)['"]?[\r\n\s]+([\s\S]*)$/);
+            const [, component, args] = tagToken.args.match(/^['"]?([^\s'"]+)['"]?(?:[\r\n\s]+([\s\S]*))?$/);
             this.component = component;
-            this.args = args;
+            this.args = args ?? "";
         },
         render: async function (ctx) {
             let { component } = this;

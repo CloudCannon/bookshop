@@ -268,3 +268,25 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Selective Re-rendering
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Your title"
+
+  Scenario: Bookshop live renders a component without props
+    Given a component-lib/components/outer/outer.eleventy.liquid file containing:
+      """
+      <div> {% bookshop "inner" %} </div>
+      """
+    Given a component-lib/components/inner/inner.eleventy.liquid file containing:
+      """
+      <h1>Hello :)</h1>
+      """
+    Given [front_matter]: "layout: layouts/default.liquid"
+    And a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% bookshop "outer" %}
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Hello :)"

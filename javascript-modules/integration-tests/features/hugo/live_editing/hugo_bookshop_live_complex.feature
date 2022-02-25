@@ -374,3 +374,32 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Your title"
+
+  Scenario: Bookshop live renders a component without props
+    Given a component-lib/components/outer/outer.hugo.html file containing:
+      """
+      <div> {{ partial "bookshop" "inner" }} </div>
+      """
+    Given a component-lib/components/inner/inner.hugo.html file containing:
+      """
+      <h1>Hello :)</h1>
+      """
+    Given [front_matter]: "empty: true"
+    And a site/content/_index.md file containing:
+      """
+      ---
+      ---
+      """
+    And a site/layouts/index.html file containing:
+      """
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" "" }}
+      {{ partial "bookshop" "outer" }}
+      </body>
+      </html>
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Hello :)"

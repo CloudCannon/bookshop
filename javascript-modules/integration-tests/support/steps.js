@@ -58,7 +58,7 @@ Given(/^\[(.+)\]:$/i, function (variable, input) {
   this.storage[variable] = input;
 });
 
-Given(/^\[(.+)\]: "(.+)"$/i, function (variable, input) {
+Given(/^\[(.+)\]: "(.*)"$/i, function (variable, input) {
   this.storage[variable] = input;
 });
 

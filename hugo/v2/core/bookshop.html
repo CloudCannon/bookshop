@@ -12,6 +12,8 @@
         _bookshop_name: <string>, # Component name
         ...,                      # Component props
     }
+
+    Or a <string>: # Component name
 */}}
 
 {{- $component_name := false -}}
@@ -38,11 +40,14 @@
         {{- $err := printf "Expected the provided map to contain a _bookshop_name key. Was given %+v" . -}}
         {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
     {{- end -}}
+{{- else if eq (printf "%T" .) "string" -}}
+    {{- $component_name = . -}}
+    {{- $component_props = true -}}
 {{- else if . -}}
-    {{- $err := printf "Expected a map or a slice. Was given the %T: %+v" . . -}}
+    {{- $err := printf "Expected a map, slice, or string. Was given the %T: %+v" . . -}}
     {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
 {{- else -}}
-    {{- $err := printf "Expected a map or a slice. Was provided with no arguments" -}}
+    {{- $err := printf "Expected a map, slice, or string. Was provided with no arguments" -}}
     {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
 {{- end -}}
 
