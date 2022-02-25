@@ -68,7 +68,7 @@ components/
 ```
 These files are namespaced for the static site generator when the filetype is ambiguous, which is why the file is `button.hugo.html` and not `button.html`. Beyond the naming convention, these files are what you would expect when working with Hugo. Our `button.hugo.html` file might look like:
 ```go
-<a class="c-button" href="{{ .link_url }}">{{ .text }}</a>
+<a class="c-button" href="{{ .link_url }}">{{ .link_text }}</a>
 ```
 This looks like a normal Hugo include because... it is. While Bookshop provides developer tooling, the job of the `bookshop/hugo` module is to tell Hugo where to find component files. Loading and parsing these files goes through the normal Hugo partial flow.
 
@@ -83,7 +83,7 @@ To use components directly in a template, use the `bookshop` partial.
 ...
 <div class="hero">
   {{ partial "bookshop" (slice "hero" (dict "title" .Params.title "image" .Params.image)) }}
-  {{ partial "bookshop" (slice "button" (dict "label" .Params.cta_text "link_url" .Params.cta_url)) }}
+  {{ partial "bookshop" (slice "button" (dict "link_text" .Params.cta_text "link_url" .Params.cta_url)) }}
 </div>
 ...
 ```
