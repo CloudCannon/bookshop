@@ -1,3 +1,31 @@
+# [2.6.0](https://github.com/CloudCannon/bookshop/compare/v2.5.0...v2.6.0) (2022-02-25)
+
+
+### Bug Fixes
+
+* bookshop tags can now be broken up onto multiple lines in all ssgs ([9ea3462](https://github.com/CloudCannon/bookshop/commit/9ea346243fc7a193234077e1d8bef4b4a7c9db8c))
+* bookshop tags can now be called without props in all ssgs ([3e370e8](https://github.com/CloudCannon/bookshop/commit/3e370e8a77612573a76c04b4a228560ef3e6f10b))
+* **browser:** prevent compression of the bookshop browser javascript ([ba132d9](https://github.com/CloudCannon/bookshop/commit/ba132d9955667e6e89b4e60ff1867f6706950887))
+* **hugo:** components passed params directly would not get a binding ([77ec44b](https://github.com/CloudCannon/bookshop/commit/77ec44b7f69f673d3eb4a4480311e90091f7b469))
+* **hugo:** hugo partials passed only a string would error in live editor ([8ae7e67](https://github.com/CloudCannon/bookshop/commit/8ae7e677365e8912a74836e0903a465a3efa82cb))
+* **hugo:** improve complex templating support in the live editor ([5706627](https://github.com/CloudCannon/bookshop/commit/5706627d8bfecdffeaa540dc3bca9cad71bba1ea))
+* **hugo:** iterating over a map now works correctly when live editing ([408573f](https://github.com/CloudCannon/bookshop/commit/408573f6df15a95fddff3cd28ed687d49aba223b))
+* **hugo:** reduce errors when using assigned variables in components ([e6a85c2](https://github.com/CloudCannon/bookshop/commit/e6a85c2c33acb419f2ba750f4f1f6e51c3178ca7))
+* **live:** downgrade data binding errors to console warnings ([66e9dfe](https://github.com/CloudCannon/bookshop/commit/66e9dfeee65de9adf4a0df374c590c12f260619a))
+
+
+### Features
+
+* **generate:** add flags to skip default steps ([8660328](https://github.com/CloudCannon/bookshop/commit/86603282265c8f1c88cfaa4221ec5ac021cd8c3e))
+* **live:** opt-out of live rendering with the live_render flag in props ([939be4c](https://github.com/CloudCannon/bookshop/commit/939be4cb4b0b16133ae96184773887b847f33165))
+
+
+### Performance Improvements
+
+* **live:** improve performance by throttling renders ([c34e2d4](https://github.com/CloudCannon/bookshop/commit/c34e2d401b27f3c377c17c19f2d3c49efbff9cb5))
+
+
+
 # [2.5.0](https://github.com/CloudCannon/bookshop/compare/v2.4.2...v2.5.0) (2022-02-22)
 
 
