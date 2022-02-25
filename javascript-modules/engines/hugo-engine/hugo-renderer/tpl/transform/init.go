@@ -99,6 +99,13 @@ func init() {
 
 		// Bookshop: unmarshal has been removed (for now) due to tendrils
 
+		ns.AddMethodMapping(ctx.BookshopUnmarshal,
+			[]string{"bookshopunmarshal"},
+			[][2]string{
+				{`{{ "{ hello = \"Hello World\" }" | transform.BookshopUnmarshal }}`, "map[hello:Hello World]"},
+			},
+		)
+
 		return ns
 	}
 

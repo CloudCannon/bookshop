@@ -46,7 +46,7 @@ export const findInStack = (key, stack) => {
                 if (rest.length) return `${stack[i][baseIdentifier]}.${rest.join('.')}`;
                 return `${stack[i][baseIdentifier]}`;
             }
-            if (stack[i]["."] && stack[i]["."] !== '.' && !/^\$/.test(key)) {
+            if (stack[i]["."] && stack[i]["."] !== '.' && !/^(\$|Params)/.test(key)) {
                 return `${stack[i]["."]}.${key}`;
             }
         }
@@ -112,6 +112,30 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
                 });
             } else {
                 storeResolvedPath(name, normalizedIdentifier, pathStack);
+            }
+        }
+
+        // Hunt through the stack and try to reassign an existing variable.
+        // This is currently only done in Hugo templates
+        for (const [name, identifier] of parseParams(liveTag?.reassign)) {
+            for (let i = stack.length - 1; i >= 0; i -= 1) {
+                if (stack[i].scope[name] !== undefined) {
+                    stack[i].scope[name] = await liveInstance.eval(identifier, combinedScope());
+                    break;
+                }
+            }
+            for (let i = pathStack.length - 1; i >= 0; i -= 1) {
+                if (pathStack[i][name] !== undefined) {
+                    const normalizedIdentifier = liveInstance.normalize(identifier);
+                    if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
+                        Object.values(normalizedIdentifier).forEach(value => {
+                            return storeResolvedPath(name, value, [pathStack[i]])
+                        });
+                    } else {
+                        storeResolvedPath(name, normalizedIdentifier, [pathStack[i]]);
+                    }
+                    break;
+                }
             }
         }
 
@@ -200,6 +224,13 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
     const templateBlockHandler = async ({ startNode, endNode, name, scope, pathStack, depth, stashedNodes }) => {
         // We only need to render the outermost component
         if (depth) return;
+
+        const liveRenderFlag = scope?.live_render
+            ?? scope?.liveRender
+            ?? scope?._live_render
+            ?? scope?._liveRender
+            ?? true;
+        if (!liveRenderFlag) return;
 
         const output = vDom.createElement('div');
         await liveInstance.renderElement(

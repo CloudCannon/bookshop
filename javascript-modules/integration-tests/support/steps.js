@@ -58,7 +58,7 @@ Given(/^\[(.+)\]:$/i, function (variable, input) {
   this.storage[variable] = input;
 });
 
-Given(/^\[(.+)\]: "(.+)"$/i, function (variable, input) {
+Given(/^\[(.+)\]: "(.*)"$/i, function (variable, input) {
   this.storage[variable] = input;
 });
 
@@ -219,7 +219,11 @@ When(/^🌐 CloudCannon pushes new json:$/i, { timeout: 60 * 1000 }, async funct
   if (!this.page) throw Error("No page open");
   const script = `window.CloudCannon.newData(${input});`;
   await this.page.addScriptTag({ content: script });
-  await p_sleep(50);
+  try {
+    await this.page.waitForFunction(`window.bookshopLive?.renderCount >= 2`, { timeout: 4 * 1000 });
+  } catch (e) {
+    this.trackPuppeteerError(`Bookshop didn't re-render within 4s`);
+  }
 });
 
 When(/^🌐 CloudCannon pushes new yaml:$/i, { timeout: 60 * 1000 }, async function (input) {
@@ -227,7 +231,11 @@ When(/^🌐 CloudCannon pushes new yaml:$/i, { timeout: 60 * 1000 }, async funct
   const page_data = JSON.stringify(yaml.load(input));
   const script = `window.CloudCannon.newData(${page_data});`;
   await this.page.addScriptTag({ content: script });
-  await p_sleep(50);
+  try {
+    await this.page.waitForFunction(`window.bookshopLive?.renderCount >= 2`, { timeout: 4 * 1000 });
+  } catch (e) {
+    this.trackPuppeteerError(`Bookshop didn't re-render within 4s`);
+  }
 });
 
 When(/^🌐 "(.+)" evaluates$/i, { timeout: 5 * 1000 }, async function (statement) {
@@ -267,18 +275,27 @@ Then(/^🌐 There should be a click listener on (\S+)$/i, { timeout: 60 * 1000 }
   assert.equal(clicked, true, `Clicking the element did fire the expected handler. Expected window["${selector}:clicked"] to be true.`);
 });
 
-Then(/^🌐 The selector (\S+) should contain "(.+)"$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
+Then(/^🌐 The selector (\S+) should contain ['"](.+)['"]$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
   if (!this.page) throw Error("No page open");
   const innerText = await this.page.$eval(selector, (node) => node.innerText);
   const contains = innerText.includes(unescape(contents));
   assert.equal(innerText, contains ? innerText : `innerText containing \`${contents}\``);
 });
 
-Then(/^🌐 The selector (\S+) should match "(.+)"$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
+Then(/^🌐 The selector (\S+) should match ['"](.+)['"]$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
   if (!this.page) throw Error("No page open");
   const outerHTML = await this.page.$eval(selector, (node) => node.outerHTML);
   const contains = outerHTML.includes(unescape(contents));
   assert.equal(outerHTML, contains ? outerHTML : `outerHTML containing \`${contents}\``);
+});
+
+Then(/^🌐 "(.+)" should evaluate$/i, { timeout: 5 * 1000 }, async function (statement) {
+  if (!this.page) throw Error("No page open");
+  try {
+    await this.page.waitForFunction(statement, { timeout: 4 * 1000 });
+  } catch (e) {
+    throw Error(`${statement} didn't evaluate within 4s`)
+  }
 });
 
 Then(/^🌐 There should be no errors$/i, { timeout: 60 * 1000 }, async function () {
@@ -346,7 +363,7 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 
     // Trigger cloudcannon:load
     await readyCloudCannon(page_data, this);
     try {
-      await this.page.waitForFunction("window.bookshopLive?.hasRendered === true", { timeout: 4 * 1000 });
+      await this.page.waitForFunction("window.bookshopLive?.renderCount > 0", { timeout: 4 * 1000 });
     } catch (e) {
       this.trackPuppeteerError(e.toString());
       this.trackPuppeteerError(`Bookshop didn't do an initial render within 4s`);

@@ -181,3 +181,32 @@ Feature: Basic Hugo Bookshop
     And stdout should contain "Total in"
     And site/public/index.html should contain the text "tag-contents-tag"
     And site/public/index.html should contain the text "tag-another-tag"
+
+  @bespoke
+  Scenario: Bookshop components without props
+    Given a component-lib/components/outer/outer.hugo.html file containing:
+      """
+      <div> {{ partial "bookshop" "inner" }} </div>
+      """
+    Given a component-lib/components/inner/inner.hugo.html file containing:
+      """
+      <h1>Hello :)</h1>
+      """
+    And a site/content/_index.md file containing:
+      """
+      ---
+      ---
+      """
+    And a site/layouts/index.html file containing:
+      """
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" "" }}
+      {{ partial "bookshop" "outer" }}
+      </body>
+      </html>
+      """
+    When I run "hugo" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Total in"
+    And site/public/index.html should contain the text "Hello :)"

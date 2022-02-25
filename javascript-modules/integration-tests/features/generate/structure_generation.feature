@@ -78,3 +78,10 @@ Feature: Bookshop Structure Generation
     And site/public/_cloudcannon/bookshop-live.js should leniently contain each row: 
       | text |
       | {{ .card_text }} |
+
+  Scenario: Can skip live editing
+    When I run "npm run generate-no-live --scripts-prepend-node-path" in the . directory
+    Then stderr should be empty
+    And stdout should contain "Skipping live editing generation"
+    And site/public/index.html should not contain the text "_cloudcannon"
+    And site/public/_cloudcannon/bookshop-live.js should not exist

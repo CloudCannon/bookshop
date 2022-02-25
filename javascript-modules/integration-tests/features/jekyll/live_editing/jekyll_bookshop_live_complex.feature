@@ -222,3 +222,63 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Selective Re-rendering
     *    🌐 There should be no logs
     *    🌐 The selector span should contain "New Tag"
     *    🌐 The selector .page>*:nth-child(3) should contain "Block Three"
+
+  Scenario: Bookshop live renders a multiline component tag
+    Given a component-lib/components/outer/outer.jekyll.html file containing:
+      """
+      <div> 
+        {% 
+          bookshop 
+          single 
+          title=include.contents.title
+        %} 
+      </div>
+      """
+    Given [front_matter]:
+      """
+      layout: default
+      contents:
+        title: My title
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% 
+        bookshop 
+        outer 
+        contents=page.contents
+      %}
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      contents:
+        title: Your title
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Your title"
+
+  Scenario: Bookshop live renders a component without props
+    Given a component-lib/components/outer/outer.jekyll.html file containing:
+      """
+      <div> {% bookshop inner %} </div>
+      """
+    Given a component-lib/components/inner/inner.jekyll.html file containing:
+      """
+      <h1>Hello :)</h1>
+      """
+    Given [front_matter]: "layout: default"
+    And a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% bookshop outer %}
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Hello :)"

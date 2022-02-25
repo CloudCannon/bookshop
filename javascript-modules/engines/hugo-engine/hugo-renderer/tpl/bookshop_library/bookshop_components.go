@@ -86,14 +86,24 @@ func UnwrapBookshopComponent(context interface{}) (string, interface{}) {
 			key := fmt.Sprintf("components/%s/%s.hugo.html", component.(string), component.(string))
 			return key, context
 		}
+		return "err_no_bookshop_name_key", context
 	}
 	if componentData, ok := context.([]interface{}); ok {
 		if component, ok := componentData[0].(string); ok {
 			key := fmt.Sprintf("components/%s/%s.hugo.html", component, component)
 			return key, componentData[1]
 		}
+		return "err_slice_zero_not_string", context
 	}
-	return "err_no_bookshop_name", context
+	if componentData, ok := context.([]string); ok {
+		key := fmt.Sprintf("components/%s/%s.hugo.html", componentData[0], componentData[0])
+		return key, componentData[1]
+	}
+	if componentName, ok := context.(string); ok {
+		key := fmt.Sprintf("components/%s/%s.hugo.html", componentName, componentName)
+		return key, nil
+	}
+	return "err_not_map_slice_or_string", context
 }
 
 func UnwrapBookshopPartial(context interface{}) (string, interface{}) {
@@ -102,6 +112,11 @@ func UnwrapBookshopPartial(context interface{}) (string, interface{}) {
 			key := fmt.Sprintf("shared/hugo/%s.hugo.html", partial)
 			return key, partialData[1]
 		}
+		return "err_slice_zero_not_string", context
 	}
-	return "err_no_bookshop_name", context
+	if partialName, ok := context.(string); ok {
+		key := fmt.Sprintf("shared/hugo/%s.hugo.html", partialName)
+		return key, nil
+	}
+	return "err_not_slice_or_string", context
 }

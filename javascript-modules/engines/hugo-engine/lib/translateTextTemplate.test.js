@@ -36,6 +36,10 @@ test("add live markup to assigns", t => {
     input = `{{ $a := .b | chomp }}`;
     expected = `{{ $a := .b | chomp }}{{ \`<!--bookshop-live context($a: (.b | chomp))-->\` | safeHTML }}`;
     t.is(translateTextTemplate(input, {}), expected);
+
+    input = `{{ $a = .b }}`;
+    expected = `{{ $a = .b }}{{ \`<!--bookshop-live reassign($a: (.b))-->\` | safeHTML }}`;
+    t.is(translateTextTemplate(input, {}), expected);
 });
 
 test("add live markup to withs", t => {
@@ -68,11 +72,17 @@ test("add live markup to loops with iterators", t => {
     const input = `{{range $loop_index, $element := .columns}}<p>{{$element}}</p>{{ end }}`;
     const expected = [`{{range $loop_index, $element := .columns}}`,
         `{{ \`<!--bookshop-live stack-->\` | safeHTML }}`,
-        `{{ (printf \`<!--bookshop-live context(.: (index (.columns) %d))-->\` $loop_index) | safeHTML }}`,
+        `{{ (printf \`<!--bookshop-live context(.: (index (.columns) %v))-->\` (jsonify $loop_index)) | safeHTML }}`,
         `<p>{{$element}}</p>`,
         `{{ \`<!--bookshop-live unstack-->\` | safeHTML }}`,
         `{{ end }}`
     ].join('');
+    t.is(translateTextTemplate(input, {}), expected);
+});
+
+test("escape backticks in values", t => {
+    let input = `{{ $a := "hi\`:)" }}`;
+    let expected = `{{ $a := "hi\`:)" }}{{ replace \`<!--bookshop-live context($a: ("hiBKSH_BACKTICK:)"))-->\` "BKSH_BACKTICK" "\`" | safeHTML }}`;
     t.is(translateTextTemplate(input, {}), expected);
 });
 
@@ -108,6 +118,52 @@ test("add live markup to complex end structures", t => {
         {{ \`<!--bookshop-live unstack-->\` | safeHTML }}{{end}}
     {{ end }}
 
+{{ \`<!--bookshop-live unstack-->\` | safeHTML }}{{ end }}`;
+    t.is(translateTextTemplate(input, {}), expected);
+});
+
+test("add live markup to complex components", t => {
+    const input = `
+{{ $level := default 2 .level }}
+{{ $level = string
+    $level }}
+{{ $level_classes := dict 
+    "1" "border-b py-8 text-4xl"
+    "2" "border-b py-6 text-3xl"
+    "3" "border-b py-4 text-2xl font-bold"
+    "4" "border-b text-xl font-bold"
+}}
+{{ $level_class := "lg" }}
+{{ with index $level_classes $level }}
+    {{ $level_class = . }}
+{{ end }}
+{{ $open := printf \`<h%s class="%s">\` $level $level_class }}
+{{ $close := printf \`</h%s>\` $level }}
+{{ with .copy }}
+    {{ safeHTML $open }}
+    {{ markdownify . }} | bookshop
+    {{ safeHTML $close }}
+{{ end }}`;
+    const expected = `
+{{ $level := default 2 .level }}{{ \`<!--bookshop-live context($level: (default 2 .level))-->\` | safeHTML }}
+{{ $level = string
+    $level }}{{ \`<!--bookshop-live reassign($level: (string     $level))-->\` | safeHTML }}
+{{ $level_classes := dict 
+    "1" "border-b py-8 text-4xl"
+    "2" "border-b py-6 text-3xl"
+    "3" "border-b py-4 text-2xl font-bold"
+    "4" "border-b text-xl font-bold"
+}}{{ \`<!--bookshop-live context($level_classes: (dict      "1" "border-b py-8 text-4xl"     "2" "border-b py-6 text-3xl"     "3" "border-b py-4 text-2xl font-bold"     "4" "border-b text-xl font-bold"))-->\` | safeHTML }}
+{{ $level_class := "lg" }}{{ \`<!--bookshop-live context($level_class: ("lg"))-->\` | safeHTML }}
+{{ with index $level_classes $level }}{{ \`<!--bookshop-live stack-->\` | safeHTML }}{{ \`<!--bookshop-live context(.: (index $level_classes $level))-->\` | safeHTML }}
+    {{ $level_class = . }}{{ \`<!--bookshop-live reassign($level_class: (.))-->\` | safeHTML }}
+{{ \`<!--bookshop-live unstack-->\` | safeHTML }}{{ end }}
+{{ $open := printf \`<h%s class="%s">\` $level $level_class }}{{ replace \`<!--bookshop-live context($open: (printf BKSH_BACKTICK<h%s class="%s">BKSH_BACKTICK $level $level_class))-->\` "BKSH_BACKTICK" "\`" | safeHTML }}
+{{ $close := printf \`</h%s>\` $level }}{{ replace \`<!--bookshop-live context($close: (printf BKSH_BACKTICK</h%s>BKSH_BACKTICK $level))-->\` "BKSH_BACKTICK" "\`" | safeHTML }}
+{{ with .copy }}{{ \`<!--bookshop-live stack-->\` | safeHTML }}{{ \`<!--bookshop-live context(.: (.copy))-->\` | safeHTML }}
+    {{ safeHTML $open }}
+    {{ markdownify . }} | bookshop
+    {{ safeHTML $close }}
 {{ \`<!--bookshop-live unstack-->\` | safeHTML }}{{ end }}`;
     t.is(translateTextTemplate(input, {}), expected);
 });

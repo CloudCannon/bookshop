@@ -22,8 +22,8 @@ const getLiveEditingConnector = () => {
             preferBlobs: true
           });
           const options = window.bookshopLiveOptions || {};
-          await window.bookshopLive.update(frontMatter, options);
-          CloudCannon?.refreshInterface?.();
+          const rendered = await window.bookshopLive.update(frontMatter, options);
+          if (rendered) CloudCannon?.refreshInterface?.();
         }
         document.addEventListener('cloudcannon:update', updateBookshopLive);
         updateBookshopLive();

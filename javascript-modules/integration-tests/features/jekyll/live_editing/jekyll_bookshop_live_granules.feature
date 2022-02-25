@@ -71,3 +71,22 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Granular Steps
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Rerendered"
+
+  @web
+  Scenario: Bookshop doesn't live render flagged components
+    Given a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% bookshop single bind=page.block liveRender=false %}
+      """
+    Given 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      block:
+        title: "Rerendered"
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Hello There"

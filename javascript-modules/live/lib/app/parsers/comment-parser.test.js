@@ -36,3 +36,13 @@ test(`Handles EOS as boolean`, async t => {
     });
 });
 
+test(`Handles multiline comments`, async t => {
+    const comment = `name(test)
+                     another_name(inner 
+                                        text)`;
+    const output = (new CommentParser(comment)).build();
+    t.deepEqual(output, {
+        name: "test",
+        another_name: "inner \n                                        text"
+    });
+});

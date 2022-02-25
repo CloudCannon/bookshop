@@ -89,3 +89,41 @@ As a result, it is recommended to render groups of Bookshop components using a `
 == Editor Links
 
 When live editing, Bookshop will automatically add CloudCannon Editor Links to your components. See the link:editor-links.adoc[Editor Links Guide] for more.
+
+== Customization
+
+Bookshop enables live editing for any component found on the page. For most use cases this will work out-of-the-box, but for complex components that use site functions or data, you might want to disable the live render, so that the component doesn't break in the Visual Editor.
+
+Bookshop can disable live rendering based a flag in the component's props. Bookshop will look for any of the following attributes:
+
+* live_render
+* liveRender
+* _live_render
+* _liveRender
+
+So for example, in Eleventy:
+
+.*index.html*
+```
+<!-- This component will re-render in the visual editor -->
+{% bookshop 'item' props: props %}
+
+<!-- This component will **not** re-render in the visual editor -->
+{% bookshop 'page' live_render: false props: props %}
+```
+
+If you have a specific component that you never want to live render, you can set `_live_render` in the component props. 
+
+.*component.bookshop.toml*
+```
+[component]
+...
+
+[props]
+_live_render = false
+...
+```
+
+This will be hidden from editors due to the leading underscore, and will disable live rendering for that component anywhere it is used.
+
+NOTE: This flag will only work correctly if the component is rendered directly from a site layout. If this component is within another component, it will still update live (as the parent re-rendering will encapsulate it)

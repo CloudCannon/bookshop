@@ -89,3 +89,22 @@ test(`Converts a dot index into a JS object property`, async t => {
     output = (new IdentifierParser(ident)).build();
     t.deepEqual(output, `1234`);
 });
+
+test(`Multiline dicts and slices`, async t => {
+    const ident = `(dict 
+"contents" 
+(slice 1 "2" 
+    (dict 
+        "a" .Params.b)
+) "len" (
+    len
+    .some_array
+))`;
+    const output = (new IdentifierParser(ident)).build();
+    t.deepEqual(output, {
+        "contents": ["1", `"2"`, {
+            "a": "Params.b"
+        }],
+        "len": `(\n    len\n    .some_array\n)`
+    });
+});

@@ -126,7 +126,7 @@ export class Engine {
             }
             return index ? result?.[index] : result;
         } catch (e) {
-            console.error(`Error evaluating \`${str}\` in the Eleventy engine`, e);
+            console.warn(`Error evaluating \`${str}\` in the Eleventy engine`, e.toString());
             return '';
         }
     }
