@@ -5,6 +5,6 @@ import kramed from 'kramed';
  */
 export default function (Liquid) {
     this.registerFilter('markdownify', (input) => {
-        return kramed(input);
+        return kramed(input ?? "");
     });
 }
