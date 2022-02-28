@@ -15,10 +15,6 @@ Feature: Eleventy Bookshop CloudCannon Starter Template Live Editing
         _includes/
           layouts/
             default.liquid from starters/eleventy/default.liquid
-        cloudcannon/
-          info.11tydata.js from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.11tydata.js
-          info.njk from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.njk
-          inject-cloudcannon.config.js from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/inject-cloudcannon.config.js
       """
     Given a component-lib/shared/eleventy/page.eleventy.liquid file containing:
       """
