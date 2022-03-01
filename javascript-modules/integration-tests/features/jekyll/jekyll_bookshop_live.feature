@@ -38,13 +38,27 @@ Feature: Jekyll Bookshop CloudCannon Integration
     And stdout should contain "Bookshop site data generated"
     And site/_site/_cloudcannon/bookshop-site-data.json should contain the text "Zuchinni"
 
+  # All components should get component schema comments
+  # Only outer-most components should get meta comments
   Scenario: Bookshop Live schema comments
+    Given a site/_config.yml file containing:
+      """
+      title: "My Site"
+      baseurl: "/documentation"
+
+      bookshop_locations:
+        - ../component-lib
+
+      plugins:
+        - jekyll-bookshop
+      """
     Given a component-lib/components/page/page.jekyll.html file containing:
       """
-      {% for block in include.content_blocks %}
-        {% assign b = block %}
-        <p>{{ b._bookshop_name }}</p>
-      {% endfor %}
+      {%- for block in include.content_blocks -%}
+      {%- assign b = block -%}
+      <p>{{ b._bookshop_name }}</p>
+      {% bookshop single _bookshop_name="inner" %}
+      {%- endfor -%}
       """
     Given a component-lib/components/single/single.jekyll.html file containing:
       """
@@ -56,17 +70,24 @@ Feature: Jekyll Bookshop CloudCannon Integration
       content_blocks:
         - _bookshop_name: fake
       ---
-      {% bookshop page content_blocks=page.content_blocks %}
-      {% for block in page.content_blocks %}
-        {% bookshop single bind=block %}
-      {% endfor %}
+      {%- bookshop page content_blocks=page.content_blocks -%}
+      {% for block in page.content_blocks -%}
+      {% bookshop single bind=block -%}
+      {%- endfor -%}
       """
     When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     And stdout should contain "Bookshop site data generated"
-    And site/_site/index.html should contain each row: 
-      | text |
-      | <p>fake</p> |
-      | <!--bookshop-live name(page/page.jekyll.html) params(content_blocks=page.content_blocks) context() -->  |
-      | <span>fake</span> |
-      | <!--bookshop-live name(single/single.jekyll.html) params(bind=block) context(block=page.content_blocks[0]) -->  |
+    And site/_site/index.html should contain the text: 
+      """
+      <!--bookshop-live meta(baseurl="/documentation" title="My Site") -->
+      <!--bookshop-live name(page/page.jekyll.html) params(content_blocks=page.content_blocks) context() -->
+      <p>fake</p>
+      <!--bookshop-live name(single/single.jekyll.html) params(_bookshop_name="inner") context(block=content_blocks[0]) -->
+      <span>inner</span>
+      <!--bookshop-live end-->
+      <!--bookshop-live end--><!--bookshop-live meta(baseurl="/documentation" title="My Site") -->
+      <!--bookshop-live name(single/single.jekyll.html) params(bind=block) context(block=page.content_blocks[0]) -->
+      <span>fake</span>
+      <!--bookshop-live end-->
+      """

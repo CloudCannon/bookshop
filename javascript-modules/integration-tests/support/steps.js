@@ -87,6 +87,25 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain the text "(.+)"$/i, funct
   else assert.ok(contains, `${file} matches ${contents}`);
 });
 
+Then(/^(debug )?(\S+) should (not |leniently )?contain the text:$/i, function (debug, file, modifier, contents) {
+  assert.ok(this.fileExists(file), `${file} exists`);
+  const fileContents = this.fileContents(file);
+  if (debug) this.debugStep(fileContents);
+
+  let negation = modifier === 'not ';
+  contents = unescape(contents);
+  if (modifier === 'leniently ') {
+    contents = strToLenientRegExp(contents);
+    fileContents = fileContents.replace(/\n/g, ' ');
+  } else {
+    contents = strToStrictRegExp(contents);
+  }
+
+  const contains = contents.test(fileContents);
+  if (negation) assert.ok(!contains, `${file} does not match ${contents}`);
+  else assert.ok(contains, `${file} matches ${contents}`);
+});
+
 Then(/^(debug )?(\S+) should (not |leniently )?contain each row:$/i, function (debug, file, modifier, table) {
   assert.ok(this.fileExists(file), `${file} exists`);
   let fileContents = this.fileContents(file);

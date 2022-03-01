@@ -37,12 +37,17 @@ module JekyllBookshop
         loop_context = "#{name}[#{index}]"
       end
 
+      # If this component is not a subcomponent,
+      # we also drop in some site metadata here so that it can be used in the render.
+      meta_comment = context["__bookshop__nested"] ? "" : "<!--bookshop-live meta(baseurl=\"#{site.baseurl}\" title=\"#{site.config["title"]&.gsub('"', '\"') || ""}\") -->\n"
+
       context.stack do
         context["include"] = parse_params(context) if @params
+        context["__bookshop__nested"] = true
         begin
-          "<!--bookshop-live name(#{file}) params(#{@params}) context(#{loop_context.gsub(/-/, '=').gsub(/=include\./, '=')}) -->
-          #{partial.render!(context)}
-          <!--bookshop-live end-->"
+          "#{meta_comment}<!--bookshop-live name(#{file}) params(#{@params}) context(#{loop_context.gsub(/-/, '=').gsub(/=include\./, '=')}) -->
+#{partial.render!(context)}
+<!--bookshop-live end-->"
         rescue Liquid::Error => e
           e.template_name = path
           e.markup_context = "included " if e.markup_context.nil?

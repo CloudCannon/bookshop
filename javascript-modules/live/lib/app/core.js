@@ -94,6 +94,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
     const pathStack = parentPathStack || [{}];     // The paths from the root to any assigned variables
     let stashedNodes = [];    // bookshop_bindings tags that we should keep track of for the next component
     let stashedParams = [];    // Params from the bookshop_bindings tag that we should include in the next component tag
+    let meta = [];    // Metadata set in the teplate
 
     const combinedScope = () => [liveInstance.data, ...stack.map(s => s.scope)];
     const currentScope = () => stack[stack.length - 1];
@@ -103,6 +104,11 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
 
     while (currentNode) {
         const liveTag = parseComment(currentNode);
+
+        // Keep track of any metadata that the renderer wants
+        for (const [name, identifier] of parseParams(liveTag?.meta)) {
+            meta[name] = identifier;
+        }
 
         for (const [name, identifier] of parseParams(liveTag?.context)) {
             currentScope().scope[name] = await liveInstance.eval(identifier, combinedScope());
@@ -198,6 +204,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
                 params,
                 stashedNodes,
                 depth: stack.length - 1,
+                meta,
             });
             stashedParams = [];
             stashedNodes = [];
@@ -222,7 +229,7 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
     const vDom = document.implementation.createHTMLDocument();
     const updates = [];     // Rendered elements and their DOM locations
 
-    const templateBlockHandler = async ({ startNode, endNode, name, scope, pathStack, depth, stashedNodes }) => {
+    const templateBlockHandler = async ({ startNode, endNode, name, scope, pathStack, depth, stashedNodes, meta }) => {
         // We only need to render the outermost component
         if (depth) return;
 
@@ -237,6 +244,7 @@ export const renderComponentUpdates = async (liveInstance, documentNode) => {
         await liveInstance.renderElement(
             name,
             scope,
+            meta,
             output
         )
         updates.push({ startNode, endNode, output, pathStack, scope, name, stashedNodes });

@@ -115,7 +115,19 @@ export class Engine {
         };
     }
 
-    async render(target, name, props, globals) {
+    injectInfo(props, info = {}, meta = {}) {
+        return {
+            site: {
+                ...(info.collections || {}),
+                data: (info.data || {}),
+                baseurl: meta.baseurl || "",
+                title: meta.title || "",
+            },
+            ...props,
+        };
+    }
+
+    async render(target, name, props, globals, cloudcannonInfo, meta) {
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
         if (!source) source = this.getShared(name);
@@ -125,7 +137,7 @@ export class Engine {
         }
         source = translateLiquid(source, {});
         if (!globals || typeof globals !== "object") globals = {};
-        props = { ...globals, include: props };
+        props = this.injectInfo({ ...globals, include: props }, cloudcannonInfo, meta);
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
     }
 

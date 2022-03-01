@@ -10,14 +10,28 @@ export const getLive = (engines) => class BookshopLive {
         this.elements = [];
         this.globalData = {};
         this.data = {};
+        this.cloudcannonInfo = {};
         this.renderOptions = {};
         this.renderCount = 0;
         this.renderedAt = 0;
         this.shouldRenderAt = null;
         this.renderFrequency = 1000;
         this.renderTimeout = null;
-        this.awaitingDataFetches = options?.remoteGlobals?.length || 0;
+
+        const remoteGlobals = options?.remoteGlobals?.length || 0;
+        this.awaitingDataFetches = remoteGlobals + 1;
         options?.remoteGlobals?.forEach(this.fetchGlobalData.bind(this));
+        this.fetchInfo();
+    }
+
+    async fetchInfo() {
+        try {
+            const dataReq = await fetch(`/_cloudcannon/info.json`);
+            this.cloudcannonInfo = await dataReq.json();
+            this.awaitingDataFetches -= 1;
+        } catch (e) {
+            this.awaitingDataFetches -= 1;
+        }
     }
 
     async fetchGlobalData(path) {
@@ -44,9 +58,9 @@ export const getLive = (engines) => class BookshopLive {
         return this.engines[0].resolveComponentType(componentName);
     }
 
-    async renderElement(componentName, scope, dom) {
+    async renderElement(componentName, scope, meta, dom) {
         try {
-            await this.engines[0].render(dom, componentName, scope, { ...this.globalData });
+            await this.engines[0].render(dom, componentName, scope, { ...this.globalData }, { ...this.cloudcannonInfo }, meta);
         } catch (e) {
             console.warn(`Error rendering bookshop component ${componentName}`, e.toString());
             console.warn(`This is expected in certain cases, and may not be an issue, especially when deleting or re-ordering components.`)
