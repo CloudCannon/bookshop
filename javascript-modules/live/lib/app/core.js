@@ -61,6 +61,7 @@ export const findInStack = (key, stack) => {
 }
 
 const dig = (obj, path) => {
+    if (typeof path === 'string' && /^\s*['"`]/.test(path)) return false;
     if (typeof path === 'string') path = path.replace(/\[(\d+)]/g, '.$1').split('.');
     obj = obj[path.shift()];
     if (obj && path.length) return dig(obj, path);
