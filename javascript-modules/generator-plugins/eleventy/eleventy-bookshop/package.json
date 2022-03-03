@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/eleventy-bookshop",
   "packageManager": "yarn@3.0.0",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "Eleventy plugin for consuming Bookshop components",
   "main": "main.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/helpers": "2.6.0",
+    "@bookshop/helpers": "2.6.1",
     "normalize-path": "^3.0.0"
   },
   "engines": {

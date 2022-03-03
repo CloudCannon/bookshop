@@ -1,3 +1,14 @@
+## [2.6.1](https://github.com/CloudCannon/bookshop/compare/v2.6.0...v2.6.1) (2022-03-03)
+
+
+### Bug Fixes
+
+* **eleventy:** fixes live rendering of string arguments ([1e5b979](https://github.com/CloudCannon/bookshop/commit/1e5b979f8db17feb5819190bd736fc32e06ea240))
+* **jekyll/eleventy:** multiline assign tags now render correctly ([2756be2](https://github.com/CloudCannon/bookshop/commit/2756be2e68424c4e2acafe1e46bc04e9e1cc614c))
+* **jekyll:** fail markdownify gracefully if the input is undefined ([3238f8d](https://github.com/CloudCannon/bookshop/commit/3238f8df522875b2d627ee10c9ddaf7f1f4d1c18))
+
+
+
 # [2.6.0](https://github.com/CloudCannon/bookshop/compare/v2.5.0...v2.6.0) (2022-02-25)
 
 
