@@ -15,3 +15,29 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Edge Cases
         _layouts/
           default.html from starters/jekyll/default.html
       """
+
+  Scenario: Bookshop live renders blank markdown
+    Given a component-lib/components/md/md.jekyll.html file containing:
+      """
+      <div> md - {{ include.md | markdownify }} - md </div>
+      """
+    Given [front_matter]:
+      """
+      layout: default
+      md: Hello
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% bookshop md md=page.md %}
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      md:
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector div should contain "md - - md"
