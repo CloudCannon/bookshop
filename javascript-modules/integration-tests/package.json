@@ -16,7 +16,7 @@
     "@bookshop/generate": "2.6.1",
     "@bookshop/init": "2.6.1",
     "@bookshop/sass": "2.6.1",
-    "cloudcannon-hugo": "0.12.5",
+    "cloudcannon-hugo": "0.13.2",
     "eleventy-plugin-cloudcannon": "^1.0",
     "get-port": "^6.0.0",
     "js-yaml": "^4.1.0",

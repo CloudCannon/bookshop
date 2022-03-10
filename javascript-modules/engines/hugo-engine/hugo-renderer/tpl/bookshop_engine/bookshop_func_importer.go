@@ -24,9 +24,10 @@ import (
 	_ "hugo-renderer/tpl/reflect"
 
 	// _ "hugo-renderer/tpl/resources" // ——————————— ⏭️ NTBI: Bookshop components won't support resources
-	_ "hugo-renderer/tpl/safe" // ——————————————————— 🥴 TODO: `SanitizeURL` NYI — helpers require is too large
-	// _ "hugo-renderer/tpl/site" // ———————————————— ❗ TODO: Should this be stubbed out ??
+	_ "hugo-renderer/tpl/safe"    // ———————————————— 🥴 TODO: `SanitizeURL` NYI — helpers require is too large
+	_ "hugo-renderer/tpl/site"    // ———————————————— 🥴 TODO: Partially stubbing out site variables. WIP
 	_ "hugo-renderer/tpl/strings" // ———————————————— 🥴 TODO: Only the "Go" title formatting is supported
+
 	// _ "hugo-renderer/tpl/templates" // ——————————— ❗ TODO: Maybe a rabbit hole
 	// _ "hugo-renderer/tpl/time" // ———————————————— ❗ TODO: This relies on lang stuff that is thus far excluded
 	_ "hugo-renderer/tpl/transform" // —————————————— 🥴 TODO: Highlight, unmarshal, commonmark compat

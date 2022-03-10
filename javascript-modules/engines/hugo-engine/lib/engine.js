@@ -119,8 +119,9 @@ export class Engine {
         };
     }
 
-    async render(target, name, props, globals) {
+    async render(target, name, props, globals, cloudcannonInfo, meta) {
         while (!window.renderHugo) await sleep(10);
+        window.loadHugoBookshopData(JSON.stringify(cloudcannonInfo));
 
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared

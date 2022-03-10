@@ -11,6 +11,7 @@ func main() {
 	c := make(chan struct{}, 0)
 	js.Global().Set("renderHugo", js.FuncOf(renderHugo))
 	js.Global().Set("loadHugoBookshopPartials", js.FuncOf(loadHugoBookshopPartials))
+	js.Global().Set("loadHugoBookshopData", js.FuncOf(loadHugoBookshopData))
 	<-c
 }
 
@@ -25,4 +26,10 @@ func loadHugoBookshopPartials(this js.Value, args []js.Value) interface{} {
 	bookshopPartials := args[0].String()
 
 	return library.LoadHugoBookshopPartials(bookshopPartials)
+}
+
+func loadHugoBookshopData(this js.Value, args []js.Value) interface{} {
+	bookshopData := args[0].String()
+
+	return library.LoadHugoBookshopData(bookshopData)
 }
