@@ -94,7 +94,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
     const pathStack = parentPathStack || [{}];     // The paths from the root to any assigned variables
     let stashedNodes = [];    // bookshop_bindings tags that we should keep track of for the next component
     let stashedParams = [];    // Params from the bookshop_bindings tag that we should include in the next component tag
-    let meta = [];    // Metadata set in the teplate
+    let meta = {};    // Metadata set in the teplate
 
     const combinedScope = () => [liveInstance.data, ...stack.map(s => s.scope)];
     const currentScope = () => stack[stack.length - 1];

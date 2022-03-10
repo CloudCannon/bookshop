@@ -26,7 +26,7 @@ const contextHunt = (ctx, hash, index) => {
     return "UNKNOWN";
 }
 
-module.exports = (tagType, locations, baseLocation) => (liquidEngine) => {
+module.exports = (tagType, locations, baseLocation, bookshopConfig) => (liquidEngine) => {
     return {
         parse: function (tagToken, remainingTokens) {
             const [, component, args] = tagToken.args.match(/^['"]?([^\s'"]+)['"]?(?:[\r\n\s]+([\s\S]*))?$/);
@@ -84,7 +84,9 @@ module.exports = (tagType, locations, baseLocation) => (liquidEngine) => {
                 process.exit(1);
             }
 
-            let componentScope = {};
+            let componentScope = {
+                __bookshop__nested: true
+            };
             // Support the bookshop bind property
             const tokenizer = new Tokenizer(this.args, {})
             for (const hash of tokenizer.readHashes()) {
@@ -99,7 +101,12 @@ module.exports = (tagType, locations, baseLocation) => (liquidEngine) => {
             const output = await liquidEngine.parseAndRender(convertedBookshopTag, ctx.getAll());
 
             ctx.pop();
-            return `${preComment}${output}${postComment}`;
+
+            let metaComment = "";
+            if (!ctx.getAll()["__bookshop__nested"]) {
+                metaComment = `<!--bookshop-live meta(${bookshopConfig.pathPrefix ? `pathPrefix: "${bookshopConfig.pathPrefix}"` : ''}) -->\n`;
+            }
+            return `${metaComment}${preComment}${output}${postComment}`;
         }
     };
 }

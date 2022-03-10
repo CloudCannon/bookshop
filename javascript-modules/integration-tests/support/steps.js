@@ -294,15 +294,23 @@ Then(/^🌐 There should be a click listener on (\S+)$/i, { timeout: 60 * 1000 }
   assert.equal(clicked, true, `Clicking the element did fire the expected handler. Expected window["${selector}:clicked"] to be true.`);
 });
 
-Then(/^🌐 The selector (\S+) should contain ['"](.+)['"]$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
+Then(/^🌐(debug)? The selector (\S+) should contain ['"](.+)['"]$/i, { timeout: 60 * 1000 }, async function (debug, selector, contents) {
   if (!this.page) throw Error("No page open");
+  if (debug) {
+    const data = await this.page.evaluate(() => document.querySelector('body').outerHTML);
+    this.debugStep(data);
+  }
   const innerText = await this.page.$eval(selector, (node) => node.innerText);
   const contains = innerText.includes(unescape(contents));
   assert.equal(innerText, contains ? innerText : `innerText containing \`${contents}\``);
 });
 
-Then(/^🌐 The selector (\S+) should match ['"](.+)['"]$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
+Then(/^🌐(debug)? The selector (\S+) should match ['"](.+)['"]$/i, { timeout: 60 * 1000 }, async function (debug, selector, contents) {
   if (!this.page) throw Error("No page open");
+  if (debug) {
+    const data = await this.page.evaluate(() => document.querySelector('body').outerHTML);
+    this.debugStep(data);
+  }
   const outerHTML = await this.page.$eval(selector, (node) => node.outerHTML);
   const contains = outerHTML.includes(unescape(contents));
   assert.equal(outerHTML, contains ? outerHTML : `outerHTML containing \`${contents}\``);
@@ -367,6 +375,8 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 
 
   // @bookshop/generate
   await this.runCommand(`npm start`, `.`);
+  assert.strictEqual(this.stderr, "");
+  assert.strictEqual(this.commandError, "");
 
   // Open the site in a browser
   switch (ssg) {

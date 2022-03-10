@@ -47,8 +47,8 @@ module.exports = (bookshopConfig) => {
             ? require('./lib/eleventy-one-bookshop.js')
             : require('./lib/eleventy-zero-bookshop.js');
         eleventyConfig.bookshopOptions = { locations, baseLocation };
-        eleventyConfig.addLiquidTag("bookshop", bookshopTag('component', locations, baseLocation));
-        eleventyConfig.addLiquidTag("bookshop_include", bookshopTag('include', locations, baseLocation));
+        eleventyConfig.addLiquidTag("bookshop", bookshopTag('component', locations, baseLocation, bookshopConfig));
+        eleventyConfig.addLiquidTag("bookshop_include", bookshopTag('include', locations, baseLocation, bookshopConfig));
         eleventyConfig.addLiquidTag("bookshop_browser", browserTagHandler);
     };
 }

@@ -7,6 +7,7 @@ import translateLiquid from './translateLiquid.js';
 import unbind from './plugins/unbind.js';
 import slug from './plugins/slug-plugin.js';
 import loopContext from './plugins/loop_context.js';
+import urlFilterBuilder from './plugins/url.js';
 
 export class Engine {
     constructor(options) {
@@ -21,6 +22,9 @@ export class Engine {
         this.files = options.files;
         this.plugins = options.plugins || [];
         this.plugins.push(unbind, slug, loopContext);
+
+        this.meta = {};
+        this.plugins.push(urlFilterBuilder(this.meta));
 
         this.initializeLiquid();
         this.applyLiquidPlugins();
@@ -97,7 +101,7 @@ export class Engine {
         return false;
     }
 
-    injectInfo(props, info = {}) {
+    injectInfo(props, info = {}, meta = {}) {
         return {
             ...(info.collections || {}),
             ...(info.data || {}),
@@ -105,7 +109,11 @@ export class Engine {
         };
     }
 
-    async render(target, name, props, globals, cloudcannonInfo) {
+    async updateMeta(meta) {
+        this.meta.pathPrefix = meta.pathPrefix ? await this.eval(meta.pathPrefix) : undefined;
+    }
+
+    async render(target, name, props, globals, cloudcannonInfo, meta) {
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
         if (!source) source = this.getShared(name);
@@ -115,7 +123,8 @@ export class Engine {
         }
         source = translateLiquid(source);
         if (!globals || typeof globals !== "object") globals = {};
-        props = this.injectInfo({ ...globals, ...props }, cloudcannonInfo);
+        props = this.injectInfo({ ...globals, ...props }, cloudcannonInfo, meta);
+        await this.updateMeta(meta);
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
     }
 

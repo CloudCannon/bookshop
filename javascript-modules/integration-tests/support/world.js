@@ -110,8 +110,18 @@ class CustomWorld {
     this.page_errors.push(e);
   }
 
+  // If errors exist, returns the errors (and also the logs, to help with debugging)
   puppeteerErrors() {
-    return this.page_errors;
+    if (this.page_errors.length) {
+      return [
+        "LOGS:",
+        ...this.page_logs,
+        "ERRORS:",
+        ...this.page_errors,
+      ];
+    } else {
+      return this.page_errors;
+    }
   }
 
   trackPuppeteerLog(e) {

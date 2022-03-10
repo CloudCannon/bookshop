@@ -55,6 +55,8 @@ TIP: If you specify multiple paths, the components will be merged.
 
 TIP: Paths that don't exist will be skipped. If you specify local and production paths, the one that exists will be used.
 
+NOTE: The pathPrefix provided must match the pathPrefix configured in your `.eleventy.js`. If you aren't using the `url` filter anywhere, this option can be omitted.
+
 .*.eleventy.js*
 ```javascript
 const pluginBookshop = require("@bookshop/eleventy-bookshop");
@@ -62,9 +64,10 @@ const pluginBookshop = require("@bookshop/eleventy-bookshop");
 module.exports = function (eleventyConfig) {
   // ...
 
-	eleventyConfig.addPlugin(pluginBookshop({
-		bookshopLocations: ["component-library"]
-	}));
+  eleventyConfig.addPlugin(pluginBookshop({
+    bookshopLocations: ["component-library"],
+    pathPrefix: '',
+  }));
 
   // ...
 };
@@ -190,10 +193,11 @@ const pluginCloudCannonBookshop = require("@bookshop/cloudcannon-eleventy-booksh
 module.exports = function (eleventyConfig) {
   // ...
 
-	eleventyConfig.addPlugin(pluginBookshop({
-		bookshopLocations: ["component-library"]
-	}));
-	eleventyConfig.addPlugin(pluginCloudCannonBookshop);
+  eleventyConfig.addPlugin(pluginBookshop({
+    bookshopLocations: ["component-library"],
+    pathPrefix: '',
+  }));
+  eleventyConfig.addPlugin(pluginCloudCannonBookshop);
 
   // ...
 };
