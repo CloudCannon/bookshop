@@ -13,6 +13,7 @@ import loop_context from './plugins/loop_context.js';
 import markdownify from './plugins/markdownify.js';
 import emulateJekyll from './plugins/emulate-jekyll.js';
 import local from './plugins/local.js';
+import relativeUrlFilterBuilder from './plugins/relative_url.js';
 
 
 export class Engine {
@@ -28,6 +29,9 @@ export class Engine {
         this.files = options.files;
         this.plugins = options.plugins || [];
         this.plugins.push(jsonify, slugify, unbind, emulateJekyll, local, liquidHighlight, loop_context, markdownify);
+
+        this.meta = {};
+        this.plugins.push(relativeUrlFilterBuilder(this.meta));
 
         this.initializeLiquid();
         this.applyLiquidPlugins();
@@ -127,6 +131,10 @@ export class Engine {
         };
     }
 
+    async updateMeta(meta) {
+        this.meta.baseurl = meta.baseurl ? await this.eval(meta.baseurl) : undefined;
+    }
+
     async render(target, name, props, globals, cloudcannonInfo, meta) {
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
@@ -138,6 +146,7 @@ export class Engine {
         source = translateLiquid(source, {});
         if (!globals || typeof globals !== "object") globals = {};
         props = this.injectInfo({ ...globals, include: props }, cloudcannonInfo, meta);
+        await this.updateMeta(meta);
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
     }
 

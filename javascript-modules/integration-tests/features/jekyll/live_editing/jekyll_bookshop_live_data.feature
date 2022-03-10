@@ -66,7 +66,8 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Site Data
       """
       {% if include.show %}
       <h1>{{ site.baseurl }}</h1>
-      <h2>{{ site.title }}</h2>
+      <h2>{{ "/home" | relative_url }}</h2>
+      <h3>{{ site.title }}</h3>
       {% endif %}
       """
     * 🌐 I have loaded my site in CloudCannon
@@ -77,4 +78,5 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Site Data
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "/documentation"
-    *    🌐 The selector h2 should contain "My Site"
+    *    🌐 The selector h2 should contain "/documentation/home"
+    *    🌐 The selector h3 should contain "My Site"
