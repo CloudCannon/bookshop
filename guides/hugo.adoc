@@ -160,7 +160,7 @@ This takes the form of the `bookshop_bindings` partial:
 
 
   {{ partial "bookshop_bindings" `.Params.content_blocks` }}
-  {{ partial "bookshop_partial" (slice "page" .Params.content_blocks) }}
+  {{ partial "bookshop" (slice "page" .Params.content_blocks) }}
 ```
 
 The `bookshop_bindings` partial should be given a string representation of the data passed to the bookshop tag. This allows Bookshop to connect that component with the correct front-matter values when visual editing. This tag is only needed in your site layouts — a Bookshop component using another Bookshop component does not need explicit `bookshop_bindings`.
