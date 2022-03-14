@@ -55,6 +55,8 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
     Then stderr should be empty
     *    stdout should contain "Modifying built site at ./site/public"
     *    stdout should contain "Added live editing to 1 page containing Bookshop components"
+    *    site/public/_cloudcannon/info.json should exist
+    *    site/public/_cloudcannon/bookshop-live.js should contain the text "hugo_renderer-"
 
   @web
   Scenario: Bookshop live renders when CloudCannon initialises

@@ -13,7 +13,8 @@ export const runner = async (options) => {
         },
         exclude: JSON.stringify(options.exclude || []),
         onlyEngines: options.onlyEngines,
-        bookshopDirs: bookshopDirs
+        bookshopDirs: bookshopDirs,
+        hosted: true
     }
 
     const output = await Builder(builderOptions);
