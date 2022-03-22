@@ -7,6 +7,7 @@ Feature: Jekyll Bookshop CloudCannon Integration
   Background:
     Given the file tree:
       """
+      package.json from starters/generate/package.json # <-- this .json line hurts my syntax highlighting
       component-lib/
         bookshop/
           bookshop.config.js from starters/jekyll/bookshop.config.js
@@ -32,6 +33,8 @@ Feature: Jekyll Bookshop CloudCannon Integration
       color.default = "Blue" #: Comment
       """
     When I run "bundle exec jekyll build --trace" in the site directory
+    Then stderr should be empty
+    When I run "npm start" in the . directory
     Then stderr should be empty
     And site/_site/_cloudcannon/info.json should leniently contain each row: 
       | text |

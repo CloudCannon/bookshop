@@ -136,8 +136,8 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain each row:$/i, function (d
   }
 
   table.hashes().forEach(row => {
-    contents = subVariables(row.text, this.storage);
-    let contents = unescape(contents);
+    let contents = subVariables(row.text, this.storage);
+    contents = unescape(contents);
     if (modifier === 'leniently ') {
       contents = strToLenientRegExp(contents);
     } else {

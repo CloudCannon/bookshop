@@ -31,7 +31,7 @@ Feature: Jekyll Bookshop Component Browser
       """
     When I run "bundle exec jekyll build --trace --unpublished" in the site directory
     Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
+    And stdout should contain "done in"
     And site/_site/components.html should contain each row: 
       | text |
       | <div data-bookshop-browser></div>                             |
@@ -41,16 +41,3 @@ Feature: Jekyll Bookshop Component Browser
       | <script src=\"//example.com/bookshop.js\"></script>           |
       | <script src=\"https://example.com/bookshop.js\"></script>     |
       | <script src=\"/_folder/bookshop-browser.js\"></script>        |
-
-  Scenario: Bookshop extracted site data
-    Given a site/components.html file containing:
-      """
-      ---
-      ---
-      {% bookshop_browser :8465 %}
-      """
-    And a site/_data/test.yml file containing "title: Zuchinni"
-    When I run "bundle exec jekyll build --trace" in the site directory
-    Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
-    And site/_site/components.html should contain the text "Zuchinni"

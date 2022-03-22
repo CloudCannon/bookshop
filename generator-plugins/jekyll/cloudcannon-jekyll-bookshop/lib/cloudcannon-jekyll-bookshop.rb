@@ -1,16 +1,7 @@
 # frozen_string_literal: true
 
-require "jekyll"
-require_relative "./cloudcannon-jekyll-bookshop/output-site-data"
-require_relative "./cloudcannon-jekyll-bookshop/structures"
-require_relative "./cloudcannon-jekyll-bookshop/tags/live-tag"
+warn "CloudCannon Jekyll Bookshop has been removed in Bookshop 3.0"
+warn "This functionality is now provided by the npm package @bookshop/generate"
+warn "See the migration guide at https://github.com/cloudcannon/bookshop"
 
-Liquid::Template.register_tag("bookshop_live", CloudCannonJekyllBookshop::LiveTag)
-
-Jekyll::Hooks.register :site, :after_init do |site|
-  CloudCannonJekyllBookshop::Structures.build_structures(site)
-end
-
-Jekyll::Hooks.register :site, :post_write do |site|
-  CloudCannonJekyllBookshop::SiteData.output(site)
-end
+exit 1

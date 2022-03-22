@@ -36,7 +36,7 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Granular Steps
   Scenario: Bookshop adds live editing markup
     When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
-    *    stdout should contain "Bookshop site data generated"
+    *    stdout should contain "done in"
     *    site/_site/index.html should contain each row: 
       | text |
       | <!--bookshop-live name(single/single.jekyll.html) params(bind=page.block) context() -->  |

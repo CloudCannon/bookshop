@@ -16,28 +16,6 @@ Feature: Jekyll Bookshop CloudCannon Integration
         Gemfile.lock from starters/jekyll/Gemfile.lock
       """
 
-  Scenario: Bookshop Live tag
-    Given a site/components.html file containing:
-      """
-      ---
-      ---
-      {% bookshop_live _cloudcannon/bookshop-live.js %}
-      """
-    When I run "bundle exec jekyll build --trace" in the site directory
-    Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
-    And site/_site/components.html should contain each row: 
-      | text |
-      | script.src = `/_cloudcannon/bookshop-live.js`;               |
-      | document.addEventListener('cloudcannon:load', function (e) { |
-
-  Scenario: Site data extracted for live editing
-    Given a site/_data/test.yml file containing "title: Zuchinni"
-    When I run "bundle exec jekyll build --trace" in the site directory
-    Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
-    And site/_site/_cloudcannon/bookshop-site-data.json should contain the text "Zuchinni"
-
   # All components should get component schema comments
   # Only outer-most components should get meta comments
   Scenario: Bookshop Live schema comments
@@ -77,7 +55,7 @@ Feature: Jekyll Bookshop CloudCannon Integration
       """
     When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
+    And stdout should contain "done in"
     And site/_site/index.html should contain the text: 
       """
       <!--bookshop-live meta(baseurl="/documentation" title="My Site") -->

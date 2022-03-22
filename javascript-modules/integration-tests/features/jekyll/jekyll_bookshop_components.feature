@@ -25,7 +25,7 @@ Feature: Basic Jekyll Bookshop
       """
     When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
+    And stdout should contain "done in"
     And site/_site/index.html should contain the text "Hello World"
 
   Scenario: Components are rendered from bookshop
@@ -41,7 +41,7 @@ Feature: Basic Jekyll Bookshop
       """
     When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
+    And stdout should contain "done in"
     And site/_site/index.html should contain the text "Bookshop: Result 🧄"
 
   Scenario: Components can use the page front matter
@@ -58,7 +58,7 @@ Feature: Basic Jekyll Bookshop
       """
     When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
+    And stdout should contain "done in"
     And site/_site/index.html should contain the text "Bookshop: Result 👍"
 
   Scenario: Components can use further components
@@ -82,7 +82,7 @@ Feature: Basic Jekyll Bookshop
       """
     When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
+    And stdout should contain "done in"
     And site/_site/index.html should contain the text "<h1>🩳</h1>"
     And site/_site/index.html should contain the text "<span>🪣</span>"
 
@@ -103,7 +103,7 @@ Feature: Basic Jekyll Bookshop
       """
     When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
+    And stdout should contain "done in"
     And site/_site/index.html should contain the text "<h1>🧻</h1>"
     And site/_site/index.html should contain the text "<p>⛳</p>"
 
@@ -125,7 +125,7 @@ Feature: Basic Jekyll Bookshop
       """
     When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
+    And stdout should contain "done in"
     And site/_site/index.html should contain the text "🅰️🫀"
     And site/_site/index.html should contain the text "🅱️🫑"
 
@@ -154,7 +154,7 @@ Feature: Basic Jekyll Bookshop
       """
     When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
+    And stdout should contain "done in"
     And site/_site/index.html should contain the text "tag-contents-tag"
     And site/_site/index.html should contain the text "tag-another-tag"
 

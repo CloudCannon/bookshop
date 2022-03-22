@@ -74,6 +74,7 @@ const registerBrowserClass = () => {
                     components: this.components
                 });
             }
+            this.hasRendered = true;
         }
 
         injectHeadBookshopStyles() {

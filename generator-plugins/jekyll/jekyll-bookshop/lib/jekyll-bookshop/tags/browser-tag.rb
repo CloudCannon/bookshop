@@ -30,17 +30,11 @@ module JekyllBookshop
       site = context.registers[:site]
       page = context.registers[:page]
 
-      site.data["_bookshop_data_pages"] ||= []
-      unless site.data["_bookshop_data_pages"].include?(page["url"])
-        site.data["_bookshop_data_pages"].push(page["url"])
-      end
-
       "<div data-bookshop-browser></div>
-<script>window.bookshop_browser_site_data = null;</script>
 <script src=\"#{host}\"></script>
 <script>
   window.bookshopBrowser = new window.BookshopBrowser({
-    globals: [window.bookshop_browser_site_data]
+    globals: []
   }); 
   window.bookshopBrowser.render();
 </script>"

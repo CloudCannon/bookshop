@@ -23,22 +23,6 @@ Feature: Hugo Bookshop CloudCannon Integration
       """
 
   @skip # NYI
-  Scenario: Bookshop Live tag
-    Given a site/layouts/index.html file containing:
-      """
-      {{ partial "bookshop_live" "_cloudcannon/bookshop-live.js" }}
-      """
-    When I run "hugo" in the site directory
-    Then stderr should be empty
-    And stdout should contain "Total in"
-    And site/public/index.html should contain each row: 
-      | text |
-      | script.src = `/_cloudcannon/bookshop-live.js`; |
-
-  @skip # NYI
-  Scenario: Site data extracted for live editing
-
-  @skip # NYI
   Scenario: Bookshop Live schema comments
     Given a component-lib/components/a/a.hugo.html file containing:
       """

@@ -34,7 +34,7 @@ Feature: Jekyll Bookshop Includes
       """
     When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
+    And stdout should contain "done in"
     And site/_site/index.html should leniently contain each row:
       | text |
       | Component🎉 <!--bookshop-live end--> -Block |
