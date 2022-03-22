@@ -35,6 +35,7 @@
     "javascript-modules/init": {},
     "javascript-modules/live": {},
     "javascript-modules/styles": {},
-    "javascript-modules/toml-narrator": {}
+    "javascript-modules/toml-narrator": {},
+    "javascript-modules/up": {}
   }
 }

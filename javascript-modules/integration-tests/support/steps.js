@@ -71,10 +71,13 @@ Then(/^(\S+) should (not )?exist$/i, function (file, negation) {
 Then(/^(debug )?(\S+) should (not |leniently )?contain the text "(.+)"$/i, function (debug, file, modifier, contents) {
   assert.ok(this.fileExists(file), `${file} exists`);
   const fileContents = this.fileContents(file);
-  if (debug) this.debugStep(fileContents);
 
   let negation = modifier === 'not ';
+  contents = subVariables(contents, this.storage);
   contents = unescape(contents);
+  if (debug) {
+    this.debugStep(`${fileContents}\n - - VS:\n${contents}`);
+  }
   if (modifier === 'leniently ') {
     contents = strToLenientRegExp(contents);
     fileContents = fileContents.replace(/\n/g, ' ');
@@ -90,10 +93,13 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain the text "(.+)"$/i, funct
 Then(/^(debug )?(\S+) should (not |leniently )?contain the text:$/i, function (debug, file, modifier, contents) {
   assert.ok(this.fileExists(file), `${file} exists`);
   const fileContents = this.fileContents(file);
-  if (debug) this.debugStep(fileContents);
 
   let negation = modifier === 'not ';
+  contents = subVariables(contents, this.storage);
   contents = unescape(contents);
+  if (debug) {
+    this.debugStep(`${fileContents}\n - - VS:\n${contents}`);
+  }
   if (modifier === 'leniently ') {
     contents = strToLenientRegExp(contents);
     fileContents = fileContents.replace(/\n/g, ' ');
@@ -104,6 +110,19 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain the text:$/i, function (d
   const contains = contents.test(fileContents);
   if (negation) assert.ok(!contains, `${file} does not match ${contents}`);
   else assert.ok(contains, `${file} matches ${contents}`);
+});
+
+Then(/^(debug )?(\S+) should contain exactly:$/i, function (debug, file, contents) {
+  assert.ok(this.fileExists(file), `${file} exists`);
+  const fileContents = this.fileContents(file);
+
+  contents = subVariables(contents, this.storage);
+  contents = unescape(contents);
+  if (debug) {
+    this.debugStep(`${fileContents}\n - - VS:\n${contents}`);
+  }
+
+  assert.equal(fileContents, contents);
 });
 
 Then(/^(debug )?(\S+) should (not |leniently )?contain each row:$/i, function (debug, file, modifier, table) {
@@ -117,7 +136,8 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain each row:$/i, function (d
   }
 
   table.hashes().forEach(row => {
-    let contents = unescape(row.text);
+    contents = subVariables(row.text, this.storage);
+    let contents = unescape(contents);
     if (modifier === 'leniently ') {
       contents = strToLenientRegExp(contents);
     } else {
@@ -139,10 +159,10 @@ Given(/^I serve the (\S+) directory$/i, { timeout: 60 * 1000 }, function (dir) {
   this.serveDir(dir); // We'll need to kill this later
 });
 
-When(/^I run "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (command, dir) {
+When(/^I (try )?run "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (allow_fail, command, dir) {
   command = this.replacePort(command);
   await this.runCommand(unescape(command), dir);
-  assert.strictEqual(this.commandError, "");
+  if (!allow_fail) assert.strictEqual(this.commandError, "");
 });
 
 When(/^I daemonize "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (command, dir) {

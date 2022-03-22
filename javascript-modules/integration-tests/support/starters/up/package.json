@@ -1,0 +1,10 @@
+{
+  "name": "bookshop-up-cucumber-site",
+  "private": true,
+  "scripts": {
+    "start": "bookshop-up"
+  },
+  "devDependencies": {
+    "@bookshop/up": "file:../../../javascript-modules/up"
+  }
+}

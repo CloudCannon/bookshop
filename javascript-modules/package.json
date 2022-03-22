@@ -19,7 +19,8 @@
         "integration-tests",
         "live",
         "styles",
-        "toml-narrator"
+        "toml-narrator",
+        "up"
     ],
     "scripts": {
         "postinstall": "node ./cloudcannon-structures/vendor-hoisted-pluralize.js"
