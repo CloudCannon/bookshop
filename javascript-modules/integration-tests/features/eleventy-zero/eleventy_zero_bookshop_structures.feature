@@ -7,6 +7,7 @@ Feature: Eleventy Bookshop CloudCannon Integration
   Background:
     Given the file tree:
       """
+      package.json from starters/generate/package.json # <-- this .json line hurts my syntax highlighting
       component-lib/
         bookshop/
           bookshop.config.js from starters/eleventy/bookshop.config.js
@@ -46,6 +47,8 @@ Feature: Eleventy Bookshop CloudCannon Integration
     When I run "npm start" in the site directory
     Then stderr should be empty
     And stdout should not be empty
+    When I run "npm start" in the . directory
+    Then stderr should be empty
     And site/_site/_cloudcannon/info.json should leniently contain each row: 
       | text |
       | "id_key" : "_bookshop_name" |

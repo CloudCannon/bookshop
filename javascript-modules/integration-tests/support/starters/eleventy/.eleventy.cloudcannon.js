@@ -1,5 +1,4 @@
 const pluginBookshop = require("@bookshop/eleventy-bookshop");
-const pluginCloudCannonBookshop = require("@bookshop/cloudcannon-eleventy-bookshop");
 const pluginCloudCannon = require('eleventy-plugin-cloudcannon');
 
 module.exports = function (eleventyConfig) {
@@ -15,8 +14,6 @@ module.exports = function (eleventyConfig) {
 			pages: 'pages'
 		}
 	};
-
-	eleventyConfig.addPlugin(pluginCloudCannonBookshop);
 
 	eleventyConfig.addPlugin(pluginCloudCannon);
 };

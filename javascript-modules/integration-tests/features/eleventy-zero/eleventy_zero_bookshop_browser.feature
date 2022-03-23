@@ -39,16 +39,3 @@ Feature: Eleventy Bookshop Component Browser
       | <script src=\"//example.com/bookshop.js\"></script>           |
       | <script src=\"https://example.com/bookshop.js\"></script>     |
       | <script src=\"/_folder/bookshop-browser.js\"></script>        |
-
-  @skip # TODO: Eleventy does not yet support pulling data into bookshop
-  Scenario: Bookshop extracted site data
-    Given a site/components.html file containing:
-      """
-      ---
-      ---
-      {% bookshop_browser :8465 %}
-      """
-    And a site/_data/test.yml file containing "title: Zuchinni"
-    When I run "npm start" in the site directory
-    Then stderr should be empty
-    And site/_site/components/index.html should contain the text "Zuchinni"

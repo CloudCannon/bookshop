@@ -24,11 +24,10 @@ const browserTagHandler = (liquidEngine) => {
         render: async function (ctx, hash) {
             return `
 <div data-bookshop-browser></div>
-<script>window.bookshop_browser_site_data = null;</script>
 <script src="${this.host}"></script>
 <script>
     window.bookshopBrowser = new window.BookshopBrowser({
-    globals: [window.bookshop_browser_site_data]
+    globals: []
     }); 
     window.bookshopBrowser.render();
 </script>`;

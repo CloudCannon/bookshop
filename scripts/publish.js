@@ -191,6 +191,10 @@ const steps = {
 const testNPM = async (pkgs) => {
     const tests = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
+            if (/cloudcannon-eleventy-bookshop/.test(pkg)) {
+                process.stdout.write('⏭️ ');
+                return resolve({ pkg, err: null });
+            }
             try {
                 execSync(`cd ${pkg} && yarn test`, { stdio: "ignore", env });
                 resolve({ pkg, err: null });
