@@ -31,11 +31,12 @@ export class Engine {
     }
 
     async initializeHugo() {
+        const useLocalHugo = window.CloudCannon?.isMocked || /localhost|127\.0\.0\.1/i.test(window.location.host);
         // When this script is run locally, the hugo wasm is loaded as binary rather than output as a file.
         if (hugoWasm?.constructor === Uint8Array) {
             await this.initializeInlineHugo();
         } else {
-            if (window.CloudCannon?.isMocked) {
+            if (useLocalHugo) {
                 await this.initializeLocalHugo();
             } else {
                 await this.initializeRemoteHugo();
@@ -73,7 +74,7 @@ export class Engine {
 
     async initializeLocalHugo() {
         const go = new Go();
-        const wasmOrigin = this.origin.replace(/\/[^\.\/]+\.js$/, hugoWasm.replace(/^\./, ''));
+        const wasmOrigin = this.origin.replace(/\/[^\.\/]+\.js/, hugoWasm.replace(/^\./, ''));
         const response = await fetch(wasmOrigin);
         const buffer = await response.arrayBuffer();
         const result = await WebAssembly.instantiate(buffer, go.importObject);
@@ -121,6 +122,7 @@ export class Engine {
 
     async render(target, name, props, globals, cloudcannonInfo, meta) {
         while (!window.renderHugo) await sleep(10);
+        await sleep(2000);
         window.loadHugoBookshopData(JSON.stringify(cloudcannonInfo));
 
         let source = this.getComponent(name);

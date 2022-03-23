@@ -1,16 +1,18 @@
 <script>
-    import {iconSvg} from './icons.js';
+    import { iconSvg } from "./icons.js";
 
     export let components = {};
     export let selectedComponent = "";
     export let selectingComponent = true;
     export let framework = "none";
 
-    let list, input, searchTerm = "";
+    let list,
+        input,
+        searchTerm = "";
 
     const init = () => {
         input.focus();
-    }
+    };
 
     $: if (selectingComponent && list) init();
 
@@ -20,45 +22,58 @@
             framework = components[c]?.frameworks?.[0] ?? "none";
         }
         blurry();
-    }
+    };
 
     const blurry = (e) => {
         searchTerm = "";
         if (e?.relatedTarget?.dataset?.blur !== "list-child") {
             selectingComponent = false;
         }
-    }
+    };
 
-    const filter = (list, term) => list.filter(([k, c]) => {
-        console.log(term);
-        if (!term) return true;
-        let searchKey = (k + c?.identity?.label).toLowerCase();
-        return searchKey.includes(term.toLowerCase());
-    });
+    const filter = (list, term) =>
+        list.filter(([k, c]) => {
+            if (!term) return true;
+            let searchKey = (k + c?.identity?.label).toLowerCase();
+            return searchKey.includes(term.toLowerCase());
+        });
 </script>
 
-<div class="component-list"
-     class:show={selectingComponent}
-     on:blur={blurry}
-     bind:this={list}
-     tabindex="-1">
-    <p class="title animate bookshop-icon-string">{@html iconSvg("folder_open")} Components</p>
+<div
+    class="component-list"
+    class:show={selectingComponent}
+    on:blur={blurry}
+    bind:this={list}
+    tabindex="-1"
+>
+    <p class="title animate bookshop-icon-string">
+        {@html iconSvg("folder_open")} Components
+    </p>
     <button class="animate close">{@html iconSvg("close")}</button>
     <div class="search animate">
-        <input data-blur="list-child" on:blur={blurry} bind:this={input} type="text" bind:value={searchTerm} placeholder="Search">
+        <input
+            data-blur="list-child"
+            on:blur={blurry}
+            bind:this={input}
+            type="text"
+            bind:value={searchTerm}
+            placeholder="Search"
+        />
     </div>
     <ul>
-    {#each filter(Object.entries(components), searchTerm) as [key, component], i}
-        <li class="animate" style="transition-delay: {i/70}s;">
-            <button class="component bookshop-icon-string"
-                data-blur="list-child" 
-                on:mousedown={set(key)}
-                on:blur={blurry}>
-                {@html iconSvg(component?.identity?.icon)}
-                {component?.identity?.label}
-            </button>
-        </li>
-    {/each}
+        {#each filter(Object.entries(components), searchTerm) as [key, component], i}
+            <li class="animate" style="transition-delay: {i / 70}s;">
+                <button
+                    class="component bookshop-icon-string"
+                    data-blur="list-child"
+                    on:mousedown={set(key)}
+                    on:blur={blurry}
+                >
+                    {@html iconSvg(component?.identity?.icon)}
+                    {component?.identity?.label}
+                </button>
+            </li>
+        {/each}
     </ul>
 </div>
 
@@ -67,7 +82,7 @@
         position: absolute;
         z-index: 999999999;
         background-color: #fff;
-        border-right: solid 2px #AAA;
+        border-right: solid 2px #aaa;
         width: 300px;
         min-width: 300px;
         max-height: 100vh;

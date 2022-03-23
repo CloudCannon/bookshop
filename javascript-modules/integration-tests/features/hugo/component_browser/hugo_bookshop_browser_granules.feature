@@ -71,10 +71,10 @@ Feature: Hugo Bookshop Component Browser Granular Steps
   @web
   Scenario: Bookshop component browser renders a component
     When 🌐 I load my site
+    And 🌐 "typeof window.BookshopBrowser !== 'undefined'" evaluates
     And 🌐 "window.bookshopBrowser?.hasRendered === true" evaluates
-    And 🌐 "window.bookshopBrowser.hasRendered = true" evaluates
     And 🌐 I trigger a mousedown on li:nth-of-type(2)>button
-    And 🌐 "window.bookshopBrowser.hasRendered === true" evaluates
+    And 🌐 "window.bookshopComponentHasRendered === true" evaluates
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Hello There, World"

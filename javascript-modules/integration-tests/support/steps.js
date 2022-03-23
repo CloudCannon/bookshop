@@ -212,6 +212,10 @@ const p_retry = async (fn, wait, attempts) => {
 
 const loadPage = async (url, world) => {
   await ensurePage(world);
+  world.page
+    .on('console', message => world.trackPuppeteerLog(`${message.type().toUpperCase()}: ${message.text()}`))
+    .on('pageerror', ({ message }) => world.trackPuppeteerError(message))
+    .on('requestfailed', request => world.trackPuppeteerError(`${request.failure().errorText} ${request.url()}`));
   await p_retry(
     () => world.page.goto(world.replacePort(url), {
       waitUntil: 'networkidle0',
@@ -219,10 +223,6 @@ const loadPage = async (url, world) => {
     500, // ms between attempts
     20 // attempts
   );
-  world.page
-    .on('console', message => world.trackPuppeteerLog(`${message.type().toUpperCase()}: ${message.text()}`))
-    .on('pageerror', ({ message }) => world.trackPuppeteerError(message))
-    .on('requestfailed', request => world.trackPuppeteerError(`${request.failure().errorText} ${request.url()}`));
 }
 
 const readyCloudCannon = async (data, world) => {
@@ -236,6 +236,14 @@ const readyCloudCannon = async (data, world) => {
     async value() { return this.data; }
   };
   window.CloudCannon = new window.CC({ data: ${data} })`;
+  await world.page.addScriptTag({ content: script });
+  await p_sleep(50);
+}
+
+// This flag is used in some tests to determine whether to load a remote file
+const readyEmptyCloudCannon = async (world) => {
+  if (!world.page) throw Error("No page open");
+  const script = `window.CloudCannon = { isMocked : true };`;
   await world.page.addScriptTag({ content: script });
   await p_sleep(50);
 }
@@ -282,7 +290,8 @@ When(/^🌐 "(.+)" evaluates$/i, { timeout: 5 * 1000 }, async function (statemen
   try {
     await this.page.waitForFunction(statement, { timeout: 4 * 1000 });
   } catch (e) {
-    this.trackPuppeteerError(`${statement} didn't evaluate within 4s`);
+    this.trackPuppeteerError(`${statement} failed:\n${e.toString()}`);
+    assert.deepEqual(this.puppeteerErrors(), []);
   }
 });
 
@@ -341,7 +350,8 @@ Then(/^🌐 "(.+)" should evaluate$/i, { timeout: 5 * 1000 }, async function (st
   try {
     await this.page.waitForFunction(statement, { timeout: 4 * 1000 });
   } catch (e) {
-    throw Error(`${statement} didn't evaluate within 4s`)
+    this.trackPuppeteerError(`${statement} failed:\n${e.toString()}`);
+    assert.deepEqual(this.puppeteerErrors(), []);
   }
 });
 
@@ -417,6 +427,8 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 
       this.trackPuppeteerError(e.toString());
       this.trackPuppeteerError(`Bookshop didn't do an initial render within 4s`);
     }
+  } else {
+    await readyEmptyCloudCannon(this);
   }
 
   assert.deepEqual(this.puppeteerErrors(), []);
