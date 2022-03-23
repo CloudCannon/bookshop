@@ -109,7 +109,7 @@ export class Engine {
         };
     }
 
-    async updateMeta(meta) {
+    async updateMeta(meta = {}) {
         this.meta.pathPrefix = meta.pathPrefix ? await this.eval(meta.pathPrefix) : undefined;
     }
 

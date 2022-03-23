@@ -131,7 +131,7 @@ export class Engine {
         };
     }
 
-    async updateMeta(meta) {
+    async updateMeta(meta = {}) {
         this.meta.baseurl = meta.baseurl ? await this.eval(meta.baseurl) : undefined;
     }
 
