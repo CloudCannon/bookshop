@@ -22,20 +22,6 @@ module JekyllBookshop
       expect(output_file).must_match %r!#{Regexp.quote(target)}!
     end
 
-    it "should render the bookshop data script" do
-      output_file = TestHelpers.read_output_file("index.html")
-
-      target = "window.bookshop_browser_site_data"
-      expect(output_file).must_match %r!#{Regexp.quote(target)}!
-    end
-
-    it "should have hydrated the bookshop data script" do
-      output_file = TestHelpers.read_output_file("index.html")
-
-      target = "<script>window.bookshop_browser_site_data = null;</script>"
-      expect(output_file).wont_match %r!#{Regexp.quote(target)}!
-    end
-
     it "should escape script tags" do
       output_file = TestHelpers.read_output_file("index.html")
 
