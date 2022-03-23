@@ -15,8 +15,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "devDependencies": {},
-  "dependencies": {},
   "engines": {
     "node": ">=14.16"
   }
