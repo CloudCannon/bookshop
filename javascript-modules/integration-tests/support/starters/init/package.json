@@ -1,0 +1,10 @@
+{
+  "name": "bookshop-init-cucumber-site",
+  "private": true,
+  "scripts": {
+    "start": "bookshop-init"
+  },
+  "devDependencies": {
+    "@bookshop/init": "file:../../../javascript-modules/init"
+  }
+}
