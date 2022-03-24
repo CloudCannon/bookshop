@@ -22,7 +22,6 @@
     "javascript-modules/engines/eleventy-engine": {},
     "javascript-modules/engines/svelte-engine": {},
     "javascript-modules/engines/hugo-engine": {},
-    "javascript-modules/gen": {},
     "javascript-modules/generate": {},
     "javascript-modules/generator-plugins/eleventy/cloudcannon-eleventy-bookshop": {},
     "javascript-modules/generator-plugins/eleventy/eleventy-bookshop": {},
