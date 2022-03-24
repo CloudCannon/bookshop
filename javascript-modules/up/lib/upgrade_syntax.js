@@ -1,6 +1,5 @@
 import { createRequire } from "module";
 import Narrator from "@bookshop/toml-narrator";
-import Structures from "@bookshop/cloudcannon-structures";
 import fs from 'fs';
 import path from 'path';
 import fastGlob from 'fast-glob';

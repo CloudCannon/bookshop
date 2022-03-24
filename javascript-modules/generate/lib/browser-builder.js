@@ -9,5 +9,5 @@ export const buildBrowserScript = async (siteRoot, bookshopDirs) => {
     output: scriptLocation
   });
 
-  console.log(`📚 ———— Built Bookshop browser javascript to ${scriptLocation}`);
+  console.log(chalk.green(`Built Bookshop browser javascript to ${scriptLocation}`));
 }

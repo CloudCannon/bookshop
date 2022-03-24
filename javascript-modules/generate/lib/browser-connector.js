@@ -21,10 +21,10 @@ export const hydrateComponentBrowserForSite = async (siteRoot, options) => {
   }
 
   if (!connected) {
-    console.log(`📚 ———— No live editing connected as no pages contained Bookshop component browsers`);
+    console.log(chalk.gray(`No component browser generated as no pages contained Bookshop component browsers`));
     return false;
   }
 
-  console.log(`📚 ———— Built component browser into ${connected} page${connected === 1 ? '' : 's'}`);
+  console.log(chalk.green(`Built component browser into ${connected} page${connected === 1 ? '' : 's'}`));
   return true;
 }

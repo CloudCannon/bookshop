@@ -60,14 +60,14 @@ export const hydrateLiveForSite = async (siteRoot, options) => {
   }
 
   if (!connected) {
-    console.log(`📚 ———— No live editing connected as no pages contained Bookshop components`);
+    console.log(chalk.gray(`No live editing connected as no pages contained Bookshop components`));
     return false;
   }
 
-  console.log(`📚 ———— Added live editing to ${connected} page${connected === 1 ? '' : 's'} containing Bookshop components`);
+  console.log(chalk.green(`Added live editing to ${connected} page${connected === 1 ? '' : 's'} containing Bookshop components`));
   const skipped = siteHTMLFiles.length - connected;
   if (skipped) {
-    console.log(`📚 ———— Skipped ${skipped} page${skipped === 1 ? '' : 's'} that didn't contain Bookshop components.`);
+    console.log(chalk.gray(`Skipped ${skipped} page${skipped === 1 ? '' : 's'} that didn't contain Bookshop components.`));
   }
   return true;
 }

@@ -439,10 +439,13 @@ __metadata:
     "@bookshop/toml-narrator": 2.6.1
     "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
+    chalk: ^5.0.1
     commander: ^8.1.0
     fast-glob: ^3.2.7
     normalize-path: ^3.0.0
     nyc: ^15.1.0
+    pluralize: ^8.0.0
+    yaml: ^2.0.0-11
   bin:
     bookshop-generate: main.js
   languageName: unknown
@@ -573,7 +576,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/up@workspace:up"
   dependencies:
-    "@bookshop/cloudcannon-structures": 2.6.1
     "@bookshop/helpers": 2.6.1
     "@bookshop/toml-narrator": 2.6.1
     "@ltd/j-toml": ^1.17.0
@@ -9220,6 +9222,13 @@ resolve@~1.1.7:
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
   checksum: ce4ada136e8a78a0b08dc10b4b900936912d15de59905b2bf415b4d33c63df1d555d23acb2a41b23cf9fb5da41c256441afca3d6509de7247daa062fd2c5ea5f
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.0.0-11":
+  version: 2.0.0-11
+  resolution: "yaml@npm:2.0.0-11"
+  checksum: 0ac71874182034605aa7bf8ab8b18d6b664f7939b3571d0d8c7ed91af15ee24ec3277460e9a663008cab58fb455e2d4dfb038885a15c7228965d0a7a57a504b6
   languageName: node
   linkType: hard
 

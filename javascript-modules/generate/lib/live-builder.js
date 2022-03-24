@@ -9,5 +9,5 @@ export const buildLiveScript = async (siteRoot, bookshopDirs) => {
     output: scriptLocation
   });
 
-  console.log(`📚 ———— Built Bookshop live javascript to ${scriptLocation}`);
+  console.log(chalk.green(`Built Bookshop live javascript to ${scriptLocation}`));
 }

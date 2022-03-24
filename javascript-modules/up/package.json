@@ -26,7 +26,6 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/cloudcannon-structures": "2.6.1",
     "@bookshop/helpers": "2.6.1",
     "@bookshop/toml-narrator": "2.6.1",
     "@ltd/j-toml": "^1.17.0",
