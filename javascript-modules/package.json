@@ -5,7 +5,6 @@
         "bookshop-sass",
         "browser",
         "builder",
-        "cloudcannon-structures",
         "engines/jekyll-engine",
         "engines/eleventy-engine",
         "engines/svelte-engine",
