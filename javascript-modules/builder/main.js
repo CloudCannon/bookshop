@@ -21,6 +21,8 @@ export default async (options) => {
         ...(options.esbuild || {})
     }
     esbuildOptions.loader[".bookshop.toml"] = "text";
+    esbuildOptions.loader[".bookshop.yml"] = "text";
+    esbuildOptions.loader[".bookshop.json"] = "text";
 
     options.bookshopDirs = filterBookshops(options.bookshopDirs);
     options.bookshopConfig = await loadConfig(options.bookshopDirs[0]);
