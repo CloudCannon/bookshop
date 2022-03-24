@@ -384,18 +384,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/cloudcannon-structures@workspace:cloudcannon-structures":
-  version: 0.0.0-use.local
-  resolution: "@bookshop/cloudcannon-structures@workspace:cloudcannon-structures"
-  dependencies:
-    "@bookshop/toml-narrator": 2.6.1
-    "@ltd/j-toml": ^1.17.0
-    ava: ^3.15.0
-    nyc: ^15.1.0
-    pluralize: ^8.0.0
-  languageName: unknown
-  linkType: soft
-
 "@bookshop/eleventy-bookshop@workspace:generator-plugins/eleventy/eleventy-bookshop":
   version: 0.0.0-use.local
   resolution: "@bookshop/eleventy-bookshop@workspace:generator-plugins/eleventy/eleventy-bookshop"
@@ -556,21 +544,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/toml-narrator@2.6.1, @bookshop/toml-narrator@workspace:toml-narrator":
-  version: 0.0.0-use.local
-  resolution: "@bookshop/toml-narrator@workspace:toml-narrator"
-  dependencies:
-    ava: ^3.15.0
-    nyc: ^15.1.0
-  languageName: unknown
-  linkType: soft
-
 "@bookshop/up@workspace:up":
   version: 0.0.0-use.local
   resolution: "@bookshop/up@workspace:up"
   dependencies:
     "@bookshop/helpers": 2.6.1
-    "@bookshop/toml-narrator": 2.6.1
     "@ltd/j-toml": ^1.17.0
     ava: ^3.15.0
     chalk: ^5.0.1
