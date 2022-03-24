@@ -1,5 +1,5 @@
 import { createRequire } from "module";
-import Narrator from "@bookshop/toml-narrator";
+import { rewriteLegacyToml } from "./util.js";
 import fs from 'fs';
 import path from 'path';
 import fastGlob from 'fast-glob';
@@ -17,7 +17,7 @@ const cwd = process.cwd();
 
 const loadTOML = (file) => {
     let contents = fs.readFileSync(file, "utf8");
-    contents = Narrator.RewriteTOML(contents);
+    contents = rewriteLegacyToml(contents);
     return TOML.parse(contents, 1.0, '\n', false);
 }
 

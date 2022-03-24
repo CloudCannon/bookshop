@@ -17,7 +17,6 @@
         "integration-tests",
         "live",
         "styles",
-        "toml-narrator",
         "up"
     ],
     "scripts": {
