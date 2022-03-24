@@ -405,6 +405,7 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 
 
   // @bookshop/generate
   await this.runCommand(`npm start`, `.`);
+  console.log(this.stdout);
   assert.strictEqual(this.stderr, "");
   assert.strictEqual(this.commandError, "");
 

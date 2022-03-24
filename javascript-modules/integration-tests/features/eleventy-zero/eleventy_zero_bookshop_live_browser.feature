@@ -52,7 +52,7 @@ Feature: Eleventy Bookshop CloudCannon Live Editing
     # Running Bookshop Generate
     When I run "npm start" in the . directory
     Then stderr should be empty
-    Then stdout should contain "Modifying built site at ./site/_site"
+    Then stdout should contain "Modifying output site at ./site/_site"
     Then stdout should contain "Added live editing to 1 page containing Bookshop components"
     # Testing CloudCannon initialising
     When I serve the site/_site directory

@@ -31,7 +31,8 @@
     "commander": "^9.1.0",
     "ejs": "^3.1.6",
     "fast-glob": "^3.2.11",
-    "inquirer": "^8.2.1"
+    "inquirer": "^8.2.1",
+    "chalk": "^5.0.1"
   },
   "engines": {
     "node": ">=14.16"

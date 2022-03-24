@@ -1,4 +1,5 @@
 import path from 'path';
+import chalk from 'chalk';
 import { runner } from '@bookshop/browser';
 
 export const buildBrowserScript = async (siteRoot, bookshopDirs) => {

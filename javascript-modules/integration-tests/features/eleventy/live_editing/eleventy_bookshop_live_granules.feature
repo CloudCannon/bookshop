@@ -46,7 +46,7 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Granular Steps
     Given I run "npm start" in the site directory
     When I run "npm start" in the . directory
     Then stderr should be empty
-    *    stdout should contain "Modifying built site at ./site/_site"
+    *    stdout should contain "Modifying output site at ./site/_site"
     *    stdout should contain "Added live editing to 1 page containing Bookshop components"
 
   @web

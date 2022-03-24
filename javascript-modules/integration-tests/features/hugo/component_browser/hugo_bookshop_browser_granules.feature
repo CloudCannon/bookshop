@@ -16,14 +16,14 @@ Feature: Hugo Bookshop Component Browser Granular Steps
       """
     * a component-lib/components/single/single.bookshop.toml file containing:
       """
-      [component]
+      [spec]
       structures = [ "content_blocks" ]
       label = "Single"
       description = "Single component"
       icon = "nature_people"
       tags = ["Basic"]
 
-      [props]
+      [blueprint]
       title = "Hello There, World"
       """
     * a component-lib/components/single/single.hugo.html file containing:
@@ -57,7 +57,7 @@ Feature: Hugo Bookshop Component Browser Granular Steps
     *     I run "cloudcannon-hugo --baseurl /" in the site directory
     When I run "npm start" in the . directory
     Then stderr should be empty
-    *    stdout should contain "Modifying built site at ./site/public"
+    *    stdout should contain "Modifying output site at ./site/public"
     *    stdout should contain "Built component browser into 1 page"
 
   @web

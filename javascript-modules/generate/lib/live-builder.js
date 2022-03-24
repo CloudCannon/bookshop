@@ -1,4 +1,5 @@
 import path from 'path';
+import chalk from 'chalk';
 import { runner } from '@bookshop/live';
 
 export const buildLiveScript = async (siteRoot, bookshopDirs) => {

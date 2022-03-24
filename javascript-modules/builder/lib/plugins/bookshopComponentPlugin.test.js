@@ -1,6 +1,6 @@
 import test from 'ava';
 import path from 'path';
-import {stubExternalPlugin} from '../../.test/common.js';
+import { stubExternalPlugin } from '../../.test/common.js';
 import bookshopComponentPlugin from './bookshopComponentPlugin.js';
 import esbuild from 'esbuild';
 
@@ -26,9 +26,9 @@ test('defer the work to the bookshopGlobPlugin', async t => {
         write: false,
         bundle: true
     });
-    
+
     t.is(result.errors.length, 0);
     t.is(result.warnings.length, 0);
-    let m = /import components from "__bookshop_glob__\(.bookshop.toml\)";/;
+    let m = /import components from "__bookshop_glob__\(.bookshop.*\)";/;
     t.regex(result.outputFiles[0].text, m);
 });

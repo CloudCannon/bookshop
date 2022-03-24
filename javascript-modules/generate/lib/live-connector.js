@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import fastGlob from 'fast-glob';
+import chalk from 'chalk';
 
 const getLiveEditingConnector = () => {
   return `

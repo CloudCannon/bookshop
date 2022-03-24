@@ -38,7 +38,7 @@ async function run() {
         console.error(chalk.bold.yellow(`\n — Does it have a config file? To be discovered, it needs a ${chalk.cyan(`bookshop/bookshop.config.js`)} file`));
         process.exit(1);
     }
-    console.log(`Loaded ${bookshopRoots.length} ${plur(bookshopRoots.length, "Bookshop")}`);
+    console.log(`Loaded ${plur(bookshopRoots.length, "Bookshop")}`);
 
     console.log(chalk.bold(`\nLooking for output sites...`));
 
@@ -55,7 +55,7 @@ async function run() {
         console.error(chalk.bold.yellow(`\nSee https://cloudcannon.com/documentation/articles/integrating-your-site/ for help, or contact support`));
         process.exit(1);
     }
-    console.log(`Found ${infoJsonFiles.length} ${plur(infoJsonFiles.length, "site")}`);
+    console.log(`Found ${plur(infoJsonFiles.length, "site")}`);
 
     for (const infoJsonFile of infoJsonFiles) {
         const siteRoot = path.dirname(path.dirname(infoJsonFile));
