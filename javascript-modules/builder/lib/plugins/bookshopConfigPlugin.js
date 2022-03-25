@@ -26,10 +26,15 @@ const bundledEngine = (resolveDir) => {
         data.plugins = data.plugins || [];
 
         let engineImportPath = engine;
-        try {
-            // Try to force loading the engine from cwd if we can resolve it
-            engineImportPath = resolve.sync(engine, { basedir: process.cwd() });
-        } catch (e) { }
+        if (process.platform !== "win32") {
+            // TODO: It looks like resolve is mangling this path on Windows
+            // This is a pretty obscure fix and is more likely to affect CI,
+            // so opting Windows out of this for now.
+            try {
+                // Try to force loading the engine from cwd if we can resolve it
+                engineImportPath = resolve.sync(engine, { basedir: process.cwd() });
+            } catch (e) { }
+        }
         return `
         import {Engine as ${engineKey}} from '${engineImportPath}';
         import ${engineKey}Files from "__bookshop_glob__${joinExtensions(__engine.extensions)}";
