@@ -72,6 +72,7 @@ const run = async () => {
     console.log(`* Setting versions`);
     versionNpm(Object.keys(packages.npm), version);
     versionGems(Object.keys(packages.rubygems), version);
+    versionStrings(packages.versionStrings, version);
     console.log(`* * Versions set`);
 
     console.log(`* Vendoring`);
@@ -305,6 +306,16 @@ const versionGems = (gems, version) => {
         fs.writeFileSync(packageVersionFile, versionFileContents);
     });
 };
+
+const versionStrings = (files, version) => {
+    Object.entries(files).forEach(([file, { regex, replacement }]) => {
+        let fileContents = fs.readFileSync(path.join(__dirname, '../', file), 'utf8');
+        let r = new RegExp(regex, 'g');
+        let new_text = replacement.replace(/NEW_VERSION/g, version);
+        fileContents = fileContents.replace(r, new_text);
+        fs.writeFileSync(file, fileContents);
+    })
+}
 
 const nextVersion = (ver) => {
     return ver.replace(/\d+$/, (m) => parseInt(m) + 1);

@@ -60,13 +60,13 @@ Feature: Eleventy Bookshop CloudCannon Integration
     And stdout should not be empty
     And site/_site/index.html should contain the text: 
       """
-      <!--bookshop-live meta(pathPrefix: "/documentation/") -->
+      <!--bookshop-live meta(version: "[version]" pathPrefix: "/documentation/") -->
       <!--bookshop-live name(page) params(content_blocks: content_blocks) context() -->
 
       <p>fake</p>
       <!--bookshop-live name(single) params(_bookshop_name: "inner") context(block: content_blocks[0]) --><span>inner</span><!--bookshop-live end-->
       <!--bookshop-live end-->
       
-      <!--bookshop-live meta(pathPrefix: "/documentation/") -->
+      <!--bookshop-live meta(version: "[version]" pathPrefix: "/documentation/") -->
       <!--bookshop-live name(single) params(bind: block) context(block: content_blocks[0]) --><span>fake</span><!--bookshop-live end-->
       """

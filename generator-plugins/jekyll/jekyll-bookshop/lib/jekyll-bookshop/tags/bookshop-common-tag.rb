@@ -39,7 +39,7 @@ module JekyllBookshop
 
       # If this component is not a subcomponent,
       # we also drop in some site metadata here so that it can be used in the render.
-      meta_comment = context["__bookshop__nested"] ? "" : "<!--bookshop-live meta(baseurl=\"#{site.baseurl}\" title=\"#{site.config["title"]&.gsub('"', '\"') || ""}\") -->\n"
+      meta_comment = context["__bookshop__nested"] ? "" : "<!--bookshop-live meta(version=\"#{JekyllBookshop::VERSION.gsub(".pre.", "-")}\" baseurl=\"#{site.baseurl}\" title=\"#{site.config["title"]&.gsub('"', '\"') || ""}\") -->\n"
 
       context.stack do
         context["include"] = parse_params(context) if @params

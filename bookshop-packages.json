@@ -9,6 +9,16 @@
       ]
     }
   },
+  "versionStrings": {
+    "hugo/v2/core/bookshop_bindings.html": {
+      "regex": "version: \"[^\"]\"",
+      "replacement": "version: \"NEW_VERSION\""
+    },
+    "README.adoc": {
+      "regex": ":version: .+",
+      "replacement": ":version: NEW_VERSION"
+    }
+  },
   "rubygems": {
     "generator-plugins/jekyll/cloudcannon-jekyll-bookshop": {},
     "generator-plugins/jekyll/jekyll-bookshop": {}

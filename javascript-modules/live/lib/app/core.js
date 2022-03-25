@@ -15,6 +15,11 @@ const nodeIsBefore = (a, b) => {
     return a && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
 }
 
+let bookshop_version = null;
+if (typeof BOOKSHOP_VERSION !== "undefined") {
+    bookshop_version = BOOKSHOP_VERSION;
+}
+
 /**
  * Try find an existing absolute path to the given identifier,
  * and note down the sum absolute path of the new name if we can
@@ -110,6 +115,21 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
         for (const [name, identifier] of parseParams(liveTag?.meta)) {
             meta[name] = identifier;
             logger?.log?.(`Registered metadata ${name} as ${identifier}`);
+
+            if (name === "version" && bookshop_version) {
+                const expected_version = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
+                if (expected_version !== bookshop_version) {
+                    console.error([
+                        `Your Bookshop SSG plugin is running version ${expected_version}, but @bookshop/live is running version ${bookshop_version}.`,
+                        `Bookshop follows semantic versioning with regard to your site and components,`,
+                        `but this does not extend to Bookshop packages being compatible with each other across any version jump.`,
+                        `\nRun %cnpx @bookshop/up@latest%c in your root directory to upgrade all Bookshop dependencies.`
+                    ].join('\n'),
+                        `color: #FF4C29; font-family: monospace; font-weight: bold;`,
+                        `color: unset; font-family: unset; font-weight: unset;`
+                    );
+                }
+            }
         }
 
         for (const [name, identifier] of parseParams(liveTag?.context)) {

@@ -2,6 +2,7 @@ const LiquidJS = require("liquidjs");
 const path = require("path");
 const fs = require("fs");
 const normalizePath = require("normalize-path");
+const { version } = require("../package.json");
 
 const { Tokenizer } = LiquidJS;
 
@@ -104,7 +105,7 @@ module.exports = (tagType, locations, baseLocation, bookshopConfig) => (liquidEn
 
             let metaComment = "";
             if (!ctx.getAll()["__bookshop__nested"]) {
-                metaComment = `<!--bookshop-live meta(${bookshopConfig.pathPrefix ? `pathPrefix: "${bookshopConfig.pathPrefix}"` : ''}) -->\n`;
+                metaComment = `<!--bookshop-live meta(version: "${version}" ${bookshopConfig.pathPrefix ? `pathPrefix: "${bookshopConfig.pathPrefix}"` : ''}) -->\n`;
             }
             return `${metaComment}${preComment}${output}${postComment}`;
         }

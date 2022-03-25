@@ -4,7 +4,8 @@
     Expects one argument, a string to use as the data binding in CloudCannon
 */}}
 
-{{- $is_string := eq "string" (printf "%T" .) -}}
+{{- (printf `<!--bookshop-live meta(version: "2.6.1")-->`) | safeHTML }}
+{{ $is_string := eq "string" (printf "%T" .) -}}
 
 {{- if $is_string -}}
     {{ (printf "<!--bookshop-live name(__bookshop__subsequent) params(.: %s)-->" .) | safeHTML }}

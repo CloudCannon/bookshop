@@ -58,13 +58,13 @@ Feature: Jekyll Bookshop CloudCannon Integration
     And stdout should contain "done in"
     And site/_site/index.html should contain the text: 
       """
-      <!--bookshop-live meta(baseurl="/documentation" title="My Site") -->
+      <!--bookshop-live meta(version="[version]" baseurl="/documentation" title="My Site") -->
       <!--bookshop-live name(page/page.jekyll.html) params(content_blocks=page.content_blocks) context() -->
       <p>fake</p>
       <!--bookshop-live name(single/single.jekyll.html) params(_bookshop_name="inner") context(block=content_blocks[0]) -->
       <span>inner</span>
       <!--bookshop-live end-->
-      <!--bookshop-live end--><!--bookshop-live meta(baseurl="/documentation" title="My Site") -->
+      <!--bookshop-live end--><!--bookshop-live meta(version="[version]" baseurl="/documentation" title="My Site") -->
       <!--bookshop-live name(single/single.jekyll.html) params(bind=block) context(block=page.content_blocks[0]) -->
       <span>fake</span>
       <!--bookshop-live end-->

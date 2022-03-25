@@ -10,6 +10,7 @@ const kill = require('tree-kill');
 const getPort = import('get-port');
 const serve_handler = require('serve-handler');
 const http = require('http');
+const { version } = require("../../../bookshop-packages.json");
 
 
 // The 3x,xxx port block seems the most free on macOS
@@ -63,7 +64,7 @@ class CustomWorld {
     this.commandError = null;
     this.stdout = null;
     this.stderr = null;
-    this.storage = {}; // Generic storage that steps can use
+    this.storage = { version }; // Generic storage that steps can use
     this.puppeteer = puppeteer; // The puppeteer instance that our steps can use
     this.browser = null; // An active puppeteer browser
     this.page = null; // An active puppeteer page
