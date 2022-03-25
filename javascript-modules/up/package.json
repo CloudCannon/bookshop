@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@bookshop/helpers": "2.6.1",
-    "@ltd/j-toml": "^1.17.0",
+    "@ltd/j-toml": "^1.30.0",
     "chalk": "^5.0.1",
     "commander": "^8.1.0",
     "fast-glob": "^3.2.7",

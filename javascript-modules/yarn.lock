@@ -344,7 +344,7 @@ __metadata:
     "@codemirror/state": ^0.18.7
     "@codemirror/stream-parser": ^0.18.2
     "@codemirror/view": ^0.18.19
-    "@ltd/j-toml": ^1.17.0
+    "@ltd/j-toml": ^1.30.0
     "@material-design-icons/svg": ^0.2.7
     ava: ^3.15.0
     commander: ^8.1.0
@@ -416,7 +416,7 @@ __metadata:
     "@bookshop/builder": 2.6.1
     "@bookshop/helpers": 2.6.1
     "@bookshop/live": 2.6.1
-    "@ltd/j-toml": ^1.17.0
+    "@ltd/j-toml": ^1.30.0
     ava: ^3.15.0
     chalk: ^5.0.1
     commander: ^8.1.0
@@ -457,6 +457,7 @@ __metadata:
   resolution: "@bookshop/init@workspace:init"
   dependencies:
     "@bookshop/helpers": 2.6.1
+    chalk: ^5.0.1
     commander: ^9.1.0
     ejs: ^3.1.6
     fast-glob: ^3.2.11
@@ -549,7 +550,7 @@ __metadata:
   resolution: "@bookshop/up@workspace:up"
   dependencies:
     "@bookshop/helpers": 2.6.1
-    "@ltd/j-toml": ^1.17.0
+    "@ltd/j-toml": ^1.30.0
     ava: ^3.15.0
     chalk: ^5.0.1
     commander: ^8.1.0
@@ -1001,10 +1002,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ltd/j-toml@npm:^1.17.0":
-  version: 1.24.0
-  resolution: "@ltd/j-toml@npm:1.24.0"
-  checksum: 03d1eb022b7bf0ac10bb16a3b5ca8b22ca80ddf853adea0f7769f274c2d6417edcb59e4a548a9513cfa6270627b4d65dceb48288e9a256bb0ed5a0769ad73778
+"@ltd/j-toml@npm:^1.30.0":
+  version: 1.30.0
+  resolution: "@ltd/j-toml@npm:1.30.0"
+  checksum: 2f8ba33d9f3adef9a0dac357b55a54073229fd808a3487c5941b210103b9eda06800de86ce8fb3a0246bdd38341c0f313c43bbecc3cbbb2f6738dc5b4e2d72d9
   languageName: node
   linkType: hard
 

@@ -444,11 +444,11 @@ Feature: Bookshop Config File Upgrades
       """
       # [spec_comment]
       [spec]
-      structures = [ 'content_blocks' ]
+      structures = ['content_blocks']
       label = 'Hero'
       description = 'Main page hero block'
       icon = 'title'
-      tags = [ 'Hero', 'WYSIWYG' ]
+      tags = ['Hero', 'WYSIWYG']
 
       # [blueprint_comment]
       [blueprint]
@@ -469,11 +469,11 @@ Feature: Bookshop Config File Upgrades
 
       # [spec_comment]
       [spec]
-      structures = [ 'content_blocks' ]
+      structures = ['content_blocks']
       label = 'Hero'
       description = 'Main page hero block'
       icon = 'title'
-      tags = [ 'Hero', 'WYSIWYG' ]
+      tags = ['Hero', 'WYSIWYG']
 
       # [blueprint_comment]
       [blueprint]
