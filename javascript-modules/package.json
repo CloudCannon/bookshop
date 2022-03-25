@@ -19,9 +19,6 @@
         "styles",
         "up"
     ],
-    "scripts": {
-        "postinstall": "node ./cloudcannon-structures/vendor-hoisted-pluralize.js"
-    },
     "engines": {
         "npm": "please-use-yarn"
     }
