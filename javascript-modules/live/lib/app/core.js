@@ -130,6 +130,8 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
                     );
                 }
             }
+
+            await liveInstance.storeMeta(meta);
         }
 
         for (const [name, identifier] of parseParams(liveTag?.context)) {
@@ -233,7 +235,6 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
                 params,
                 stashedNodes,
                 depth: stack.length - 1,
-                meta,
             });
             stashedParams = [];
             stashedNodes = [];
@@ -260,7 +261,7 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
     const vDom = document.implementation.createHTMLDocument();
     const updates = [];     // Rendered elements and their DOM locations
 
-    const templateBlockHandler = async ({ startNode, endNode, name, scope, pathStack, depth, stashedNodes, meta }, logger) => {
+    const templateBlockHandler = async ({ startNode, endNode, name, scope, pathStack, depth, stashedNodes }, logger) => {
         // We only need to render the outermost component
         logger?.log?.(`Received a template block to render for ${name}`);
         if (depth) {
@@ -282,7 +283,6 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
         await liveInstance.renderElement(
             name,
             scope,
-            meta,
             output,
             logger?.nested?.(),
         )

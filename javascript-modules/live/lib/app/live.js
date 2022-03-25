@@ -43,6 +43,7 @@ export const getLive = (engines) => class BookshopLive {
             this.logFn.log(`Trying to load /_cloudcannon/info.json`);
             const dataReq = await fetch(`/_cloudcannon/info.json`);
             this.cloudcannonInfo = await dataReq.json();
+            await this.engines[0].storeInfo?.(this.cloudcannonInfo);
             this.awaitingDataFetches -= 1;
             this.logFn.log(`Loaded /_cloudcannon/info.json`);
         } catch (e) {
@@ -75,10 +76,14 @@ export const getLive = (engines) => class BookshopLive {
         return this.engines[0].resolveComponentType(componentName);
     }
 
-    async renderElement(componentName, scope, meta, dom, logger) {
+    async storeMeta(meta) {
+        await this.engines[0].storeMeta?.(meta);
+    }
+
+    async renderElement(componentName, scope, dom, logger) {
         try {
             logger?.log?.(`Rendering ${componentName}`);
-            await this.engines[0].render(dom, componentName, scope, { ...this.globalData }, { ...this.cloudcannonInfo }, meta, logger?.nested?.());
+            await this.engines[0].render(dom, componentName, scope, { ...this.globalData }, logger?.nested?.());
             logger?.log?.(`Rendered ${componentName}`);
         } catch (e) {
             logger?.log?.(`Error rendering ${componentName}`);

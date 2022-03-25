@@ -30,3 +30,24 @@ func LoadHugoBookshopData(data string) interface{} {
 func RetrieveHugoBookshopData() *bookshopData {
 	return &bookshopDataStorage
 }
+
+var bookshopMetaStorage map[string]interface{}
+
+// loadHugoBookshopMeta takes any data that hugo/bookshop
+// injected into the template and stashes it all away
+// on this side of the wasm boundary, for the site
+// function to use.
+func LoadHugoBookshopMeta(data string) interface{} {
+	err := json.Unmarshal([]byte(data), &bookshopMetaStorage)
+	if err != nil {
+		buf := bytes.NewBufferString(fmt.Sprintf("bad json unmarshal: %s", err.Error()))
+		return buf.String()
+	}
+
+	buf := bytes.NewBufferString("loaded Bookshop site data")
+	return buf.String()
+}
+
+func RetrieveHugoBookshopMeta() map[string]interface{} {
+	return bookshopMetaStorage
+}

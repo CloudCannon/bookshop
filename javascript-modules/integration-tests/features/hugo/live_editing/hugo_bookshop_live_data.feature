@@ -14,20 +14,6 @@ Feature: Hugo Bookshop CloudCannon Live Editing Site Data
         go.mod from starters/hugo/site.go.mod
         config.toml from starters/hugo/site.config.toml
       """
-
-  Scenario: Bookshop live renders website data
-    Given a site/cloudcannon.config.yml file containing:
-      """
-      data_config: true
-      """
-    Given a site/data/cat.yml file containing:
-      """
-      name: Cheeka
-      """
-    * a component-lib/components/cat/cat.hugo.html file containing:
-      """
-      <h1>{{ if .show }}{{ site.Data.cat.name }}{{ end }}</h1>
-      """
     * [front_matter]:
       """
       show: false
@@ -43,9 +29,23 @@ Feature: Hugo Bookshop CloudCannon Live Editing Site Data
       <html>
       <body>
       {{ partial "bookshop_bindings" `(dict "show" .Params.show)` }}
-      {{ partial "bookshop" (slice "cat" (dict "show" .Params.show)) }}
+      {{ partial "bookshop" (slice "block" (dict "show" .Params.show)) }}
       </body>
       </html>
+      """
+
+  Scenario: Bookshop live renders website data
+    Given a site/cloudcannon.config.yml file containing:
+      """
+      data_config: true
+      """
+    Given a site/data/cat.yml file containing:
+      """
+      name: Cheeka
+      """
+    * a component-lib/components/block/block.hugo.html file containing:
+      """
+      <h1>{{ if .show }}{{ site.Data.cat.name }}{{ end }}</h1>
       """
     * 🌐 I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new yaml:
@@ -74,32 +74,13 @@ Feature: Hugo Bookshop CloudCannon Live Editing Site Data
       useful: yes
       messy: yes
       """
-    * a component-lib/components/cat/cat.hugo.html file containing:
+    * a component-lib/components/block/block.hugo.html file containing:
       """
       {{ if .show }}
         {{ range site.Data.cats }}
           <p>{{ .name }} — {{ .useful }}/{{ .messy }}</p>
         {{ end }}
       {{ end }}
-      """
-    * [front_matter]:
-      """
-      show: false
-      """
-    * a site/content/_index.md file containing:
-      """
-      ---
-      [front_matter]
-      ---
-      """
-    * a site/layouts/index.html file containing:
-      """
-      <html>
-      <body>
-      {{ partial "bookshop_bindings" `(dict "show" .Params.show)` }}
-      {{ partial "bookshop" (slice "cat" (dict "show" .Params.show)) }}
-      </body>
-      </html>
       """
     * 🌐 I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new yaml:
@@ -110,3 +91,23 @@ Feature: Hugo Bookshop CloudCannon Live Editing Site Data
     *    🌐 There should be no logs
     *    🌐 The selector p:nth-of-type(1) should contain "Cheeka — no/no"
     *    🌐 The selector p:nth-of-type(2) should contain "Smudge — yes/yes"
+
+  Scenario: Bookshop live renders special website config
+    Given a component-lib/components/block/block.hugo.html file containing:
+      """
+      {{ if .show }}
+        <h1>{{ site.BaseURL }}</h1>
+        <h2>{{ site.Copyright }}</h2>
+        <h3>{{ site.Title }}</h3>
+      {{ end }}
+      """
+    * 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      show: true
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "https://bookshop.build/"
+    *    🌐 The selector h2 should contain "🎉"
+    *    🌐 The selector h3 should contain "Hugo Bookshop Cucumber"

@@ -36,3 +36,24 @@ func (ns *Namespace) Data() (map[string]interface{}, error) {
 
 	return data.Data, nil
 }
+
+// site.Title should have been stashed inside a Bookshop meta comment
+func (ns *Namespace) Title() (interface{}, error) {
+	meta := library.RetrieveHugoBookshopMeta()
+
+	return meta["title"], nil
+}
+
+// site.Copyright should have been stashed inside a Bookshop meta comment
+func (ns *Namespace) Copyright() (interface{}, error) {
+	meta := library.RetrieveHugoBookshopMeta()
+
+	return meta["copyright"], nil
+}
+
+// site.BaseURL should have been stashed inside a Bookshop meta comment
+func (ns *Namespace) BaseURL() (interface{}, error) {
+	meta := library.RetrieveHugoBookshopMeta()
+
+	return meta["baseurl"], nil
+}

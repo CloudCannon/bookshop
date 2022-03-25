@@ -120,13 +120,25 @@ export class Engine {
         };
     }
 
-    async render(target, name, props, globals, cloudcannonInfo, meta, logger) {
+    async storeMeta(meta = {}) {
+        while (!window.loadHugoBookshopMeta) {
+            await sleep(100);
+        };
+        window.loadHugoBookshopMeta(JSON.stringify(meta));
+    }
+
+    async storeInfo(info = {}) {
+        while (!window.loadHugoBookshopData) {
+            await sleep(100);
+        };
+        window.loadHugoBookshopData(JSON.stringify(info));
+    }
+
+    async render(target, name, props, globals, logger) {
         while (!window.renderHugo) {
             logger?.log?.(`Waiting for the Hugo WASM to be available...`);
             await sleep(100);
         };
-        logger?.log?.(`Moving cloudcannonInfo across the WASM boundary`);
-        window.loadHugoBookshopData(JSON.stringify(cloudcannonInfo));
 
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared

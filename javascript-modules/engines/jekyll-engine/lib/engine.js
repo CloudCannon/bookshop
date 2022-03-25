@@ -31,6 +31,7 @@ export class Engine {
         this.plugins.push(jsonify, slugify, unbind, emulateJekyll, local, liquidHighlight, loop_context, markdownify);
 
         this.meta = {};
+        this.info = {};
         this.plugins.push(relativeUrlFilterBuilder(this.meta));
 
         this.initializeLiquid();
@@ -119,23 +120,28 @@ export class Engine {
         };
     }
 
-    injectInfo(props, info = {}, meta = {}) {
+    injectInfo(props) {
         return {
             site: {
-                ...(info.collections || {}),
-                data: (info.data || {}),
-                baseurl: meta.baseurl || "",
-                title: meta.title || "",
+                ...(this.info.collections || {}),
+                data: (this.info.data || {}),
+                baseurl: this.meta.baseurl || "",
+                title: this.meta.title || "",
             },
             ...props,
         };
     }
 
-    async updateMeta(meta = {}) {
+    async storeMeta(meta = {}) {
         this.meta.baseurl = meta.baseurl ? await this.eval(meta.baseurl) : undefined;
+        this.meta.title = meta.title ? await this.eval(meta.title) : undefined;
     }
 
-    async render(target, name, props, globals, cloudcannonInfo, meta, logger) {
+    async storeInfo(info = {}) {
+        this.info = info;
+    }
+
+    async render(target, name, props, globals, logger) {
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
         if (!source) source = this.getShared(name);
@@ -147,8 +153,7 @@ export class Engine {
         source = translateLiquid(source, {});
         logger?.log?.(`Rewritten the template for ${name}`);
         if (!globals || typeof globals !== "object") globals = {};
-        props = this.injectInfo({ ...globals, include: props }, cloudcannonInfo, meta);
-        await this.updateMeta(meta);
+        props = this.injectInfo({ ...globals, include: props });
         logger?.log?.(`Rendered ${name}`);
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
     }

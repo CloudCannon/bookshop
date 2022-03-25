@@ -24,6 +24,7 @@ export class Engine {
         this.plugins.push(unbind, slug, loopContext);
 
         this.meta = {};
+        this.info = {};
         this.plugins.push(urlFilterBuilder(this.meta));
 
         this.initializeLiquid();
@@ -101,19 +102,23 @@ export class Engine {
         return false;
     }
 
-    injectInfo(props, info = {}, meta = {}) {
+    injectInfo(props) {
         return {
-            ...(info.collections || {}),
-            ...(info.data || {}),
+            ...(this.info.collections || {}),
+            ...(this.info.data || {}),
             ...props,
         };
     }
 
-    async updateMeta(meta = {}) {
+    async storeMeta(meta = {}) {
         this.meta.pathPrefix = meta.pathPrefix ? await this.eval(meta.pathPrefix) : undefined;
     }
 
-    async render(target, name, props, globals, cloudcannonInfo, meta, logger) {
+    async storeInfo(info = {}) {
+        this.info = info;
+    }
+
+    async render(target, name, props, globals, logger) {
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
         if (!source) source = this.getShared(name);
@@ -125,8 +130,7 @@ export class Engine {
         source = translateLiquid(source);
         logger?.log?.(`Rewritten the template for ${name}`);
         if (!globals || typeof globals !== "object") globals = {};
-        props = this.injectInfo({ ...globals, ...props }, cloudcannonInfo, meta);
-        await this.updateMeta(meta);
+        props = this.injectInfo({ ...globals, ...props });
         logger?.log?.(`Rendered ${name}`);
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
     }

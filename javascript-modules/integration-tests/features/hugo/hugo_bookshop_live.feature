@@ -51,7 +51,7 @@ Feature: Hugo Bookshop CloudCannon Integration
     And stdout should contain "Total in"
     And site/public/index.html should contain the text: 
       """
-      <!--bookshop-live meta(version: "[version]")-->
+      <!--bookshop-live meta(version: "[version]" baseurl: "https://bookshop.build/" copyright: "🎉" title: "Hugo Bookshop Cucumber")-->
       <!--bookshop-live name(__bookshop__subsequent) params(.: .Params)-->
       <!--bookshop-live name(page)-->
       
