@@ -135,7 +135,7 @@ export class Engine {
         this.meta.baseurl = meta.baseurl ? await this.eval(meta.baseurl) : undefined;
     }
 
-    async render(target, name, props, globals, cloudcannonInfo, meta) {
+    async render(target, name, props, globals, cloudcannonInfo, meta, logger) {
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
         if (!source) source = this.getShared(name);
@@ -143,10 +143,13 @@ export class Engine {
             console.warn(`[jekyll-engine] No component found for ${name}`);
             return "";
         }
+        logger?.log?.(`Going to render ${name}`);
         source = translateLiquid(source, {});
+        logger?.log?.(`Rewritten the template for ${name}`);
         if (!globals || typeof globals !== "object") globals = {};
         props = this.injectInfo({ ...globals, include: props }, cloudcannonInfo, meta);
         await this.updateMeta(meta);
+        logger?.log?.(`Rendered ${name}`);
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
     }
 

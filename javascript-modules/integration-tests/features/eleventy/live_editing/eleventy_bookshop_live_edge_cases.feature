@@ -21,7 +21,7 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Edge Cases
     Given a component-lib/components/map/map.eleventy.liquid file containing:
       """
       <div class="map">
-        <iframe src="{{ url }}"></iframe>
+        <iframe src="#{{ url }}"></iframe>
       </div>
       """
     Given [front_matter]:
@@ -41,4 +41,4 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Edge Cases
       """
     *    🌐 There should be no logs
     Then 🌐 There should be no errors
-    *    🌐 The selector iframe should match "<iframe src=\"test\"></iframe>"
+    *    🌐 The selector iframe should match "<iframe src=\"#test\"></iframe>"

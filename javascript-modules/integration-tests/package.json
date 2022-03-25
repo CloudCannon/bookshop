@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "ava -v && echo \"* * * *\n* * * * Run `yarn run itest` to run the integration tests\n* * * *\"",
-    "itest": "node prep.js && cucumber-js --parallel 8 --tags \"not @skip\"",
+    "itest": "node prep.js && cucumber-js --parallel 5 --tags \"not @skip\"",
     "itest:skipped": "node prep.js && cucumber-js --parallel 4 --tags \"@skip\""
   },
   "author": "@bglw",

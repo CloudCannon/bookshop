@@ -120,9 +120,12 @@ export class Engine {
         };
     }
 
-    async render(target, name, props, globals, cloudcannonInfo, meta) {
-        while (!window.renderHugo) await sleep(10);
-        await sleep(2000);
+    async render(target, name, props, globals, cloudcannonInfo, meta, logger) {
+        while (!window.renderHugo) {
+            logger?.log?.(`Waiting for the Hugo WASM to be available...`);
+            await sleep(100);
+        };
+        logger?.log?.(`Moving cloudcannonInfo across the WASM boundary`);
         window.loadHugoBookshopData(JSON.stringify(cloudcannonInfo));
 
         let source = this.getComponent(name);
@@ -132,8 +135,10 @@ export class Engine {
             console.warn(`[hugo-engine] No component found for ${name}`);
             return "";
         }
+        logger?.log?.(`Going to render ${name}`);
         // TODO: this template already exists on the other side of the wasm bounary
         source = translateTextTemplate(source, {});
+        logger?.log?.(`Rewritten the template for ${name}`);
         if (!globals || typeof globals !== "object") globals = {};
         props = { ...globals, ...props };
 
@@ -141,8 +146,10 @@ export class Engine {
         if (props["."]) props = props["."];
         const output = window.renderHugo(source, JSON.stringify(props));
         if (/BKSHERR/.test(output)) {
+            logger?.log?.(`Failed to render ${output}`);
             console.error(output);
         } else {
+            logger?.log?.(`Rendered ${name}`);
             target.innerHTML = output;
         }
     }

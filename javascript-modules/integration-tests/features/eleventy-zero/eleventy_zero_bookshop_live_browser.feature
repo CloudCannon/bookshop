@@ -18,15 +18,7 @@ Feature: Eleventy Bookshop CloudCannon Live Editing
       """
 
   Scenario: Bookshop Live browser update
-    Given a component-lib/components/single/single.bookshop.toml file containing:
-      """
-      [component]
-      structures = [ "content_blocks" ]
-
-      [props]
-      title = "Hello World"
-      """
-    And a component-lib/components/single/single.eleventy.liquid file containing:
+    Given a component-lib/components/single/single.eleventy.liquid file containing:
       """
       <h1>{{ title }}</h1>
       """
