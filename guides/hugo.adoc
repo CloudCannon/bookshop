@@ -160,16 +160,16 @@ This takes the form of the `bookshop_bindings` partial:
 
 
   {{ partial "bookshop_bindings" `.Params.content_blocks` }}
-  {{ partial "bookshop_partial" (slice "page" .Params.content_blocks) }}
+  {{ partial "bookshop" (slice "page" .Params.content_blocks) }}
 ```
 
 The `bookshop_bindings` partial should be given a string representation of the data passed to the bookshop tag. This allows Bookshop to connect that component with the correct front-matter values when visual editing. This tag is only needed in your site layouts — a Bookshop component using another Bookshop component does not need explicit `bookshop_bindings`.
 
 ---
 
-If your layout is rendering a loop of components, that loop will need to exist within a Bookshop component or partial so that new components can be rendered when visual editing. This tends to take the form of a `page.hugo.html` partial in the `shared/hugo` folder of your Bookshop module:
+If your layout is rendering a loop of components, that loop will need to exist within a Bookshop component or partial so that new components can be rendered when visual editing. This tends to take the form of a `page` component in your Bookshop module:
 
-.*bookshop/shared/hugo/page.hugo.html*
+.*bookshop/components/page/page.hugo.html*
 ```html
 {{ range . }}
   {{ partial "bookshop" . }}
@@ -181,7 +181,7 @@ Used in your layout:
 .*baseof.html*
 ```html
 {{ partial "bookshop_bindings" `.Params.content_blocks` }}
-{{ partial "bookshop_partial" (slice "page" .Params.content_blocks) }}
+{{ partial "bookshop" (slice "page" .Params.content_blocks) }}
 ```
 
 === Configuring Live Editing and Structures
