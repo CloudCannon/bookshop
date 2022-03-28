@@ -5,6 +5,7 @@ import fastGlob from 'fast-glob';
 import chalk from 'chalk';
 import pluralize from 'pluralize';
 import normalizePath from "normalize-path";
+import slugify from "slugify";
 
 import TOML from '@ltd/j-toml';
 import YAML from 'yaml';
@@ -73,6 +74,15 @@ const niceLabel = (key) => {
         .replace(/\/([a-z0-9])/ig, (_, c) => ' / ' + c.toUpperCase());
 }
 
+const componentSlug = (componentKey) => {
+    return componentKey.split('/').map(k => slugify(k.replace(/-/g, '_'), {
+        replacement: '_',
+        remove: /[^a-z0-9_]/,
+        lower: true,
+        strict: true,
+    })).join('_');
+}
+
 const generateDeepStructures = ({ blueprint, currentBlueprintKey, inputs }) => {
     if (blueprint && Array.isArray(blueprint)) {
         if (typeof blueprint[0] === "object" && !Array.isArray(blueprint[0])) {
@@ -114,7 +124,30 @@ const generateDeepStructures = ({ blueprint, currentBlueprintKey, inputs }) => {
     return blueprint;
 }
 
-const interlinkDeepStructures = ({ currentComponentName, blueprint, currentBlueprintKey, inputs, componentStructureMap }) => {
+// For this structure, and all of its inputs that have structures, run interlinkStructureValue
+const interlinkStructure = ({ structure, componentStructureMap }) => {
+    structure._inputs = structure._inputs || {};
+
+    structure.value = interlinkStructureValue({
+        currentComponentName: structure.value._bookshop_name,
+        blueprint: structure.value,
+        currentBlueprintKey: null,
+        inputs: structure._inputs,
+        componentStructureMap
+    });
+
+    for (const input of Object.values(structure._inputs)) {
+        for (const substructure of (input?.options?.structures?.values || [])) {
+            interlinkStructure({
+                structure: substructure,
+                componentStructureMap,
+            });
+        }
+    }
+}
+
+// Find any Bookshop shorthand for nesting components, and create the necessary input configurations.
+const interlinkStructureValue = ({ currentComponentName, blueprint, currentBlueprintKey, inputs, componentStructureMap }) => {
     if (!blueprint) return blueprint;
 
     const initInputKey = (type) => {
@@ -139,9 +172,9 @@ const interlinkDeepStructures = ({ currentComponentName, blueprint, currentBluep
             process.exit(1);
         }
         initInputKey("object");
-        inputs[currentBlueprintKey].options.structures = {
-            values: [componentStructureMap[componentKey]]
-        };
+        inputs[currentBlueprintKey].options.structures = `_structures._bookshop_single_component_${componentSlug(componentKey)}`;
+        // Flag that the structure we just referenced will need to be created globally from the referenced component
+        componentStructureMap[componentKey].outputComponentStructure = true;
         return {};
     }
 
@@ -177,24 +210,26 @@ const interlinkDeepStructures = ({ currentComponentName, blueprint, currentBluep
                 process.exit(1);
             }
             initInputKey("array");
-            inputs[currentBlueprintKey].options.structures = {
-                values: [componentStructureMap[componentKey]]
-            };
+            inputs[currentBlueprintKey].options.structures = `_structures._bookshop_single_component_${componentSlug(componentKey)}`;
+            // Flag that the structure we just referenced will need to be created globally from the referenced component
+            componentStructureMap[componentKey].outputComponentStructure = true;
             return [];
         }
 
-        return blueprint.map((b, i) => interlinkDeepStructures({
+        // Handle arrays of objects by recursion — no scoping on these so it takes the same inputs config 
+        return blueprint.map((b, i) => interlinkStructureValue({
             currentComponentName,
-            blueprint,
+            blueprint: b,
             currentBlueprintKey: i,
             inputs,
             componentStructureMap
         }));
     }
 
+    // Handle nested of objects by recursion — no scoping on these so it takes the same inputs config 
     if (typeof blueprint === "object") {
         for (let key of Object.keys(blueprint)) {
-            blueprint[key] = interlinkDeepStructures({
+            blueprint[key] = interlinkStructureValue({
                 currentComponentName,
                 blueprint: blueprint[key],
                 currentBlueprintKey: key,
@@ -231,6 +266,7 @@ export const buildStructures = async (options = {}) => {
 
     componentFiles = Array.from(new Set(componentFiles.sort()));
 
+    console.log(chalk.magenta(`Creating structures for all components...`));
     const componentStructureMap = {};
     const structures = componentFiles.map(componentFile => {
         let contents;
@@ -275,14 +311,20 @@ export const buildStructures = async (options = {}) => {
         return structure;
     });
 
+    console.log(chalk.magenta(`Hydrating structures for nested components...`));
     for (const structure of structures) {
-        structure.value = interlinkDeepStructures({
-            currentComponentName: structure.value._bookshop_name,
-            blueprint: structure.value,
-            currentBlueprintKey: null,
-            inputs: structure._inputs,
-            componentStructureMap
-        });
+        interlinkStructure({ structure, componentStructureMap });
+    }
+
+    // To reduce info.json noise, we only output single structures for components that were referenced in shorthand.
+    for (const [componentKey, component] of Object.entries(componentStructureMap)) {
+        if (component["outputComponentStructure"]) {
+            delete component["outputComponentStructure"];
+            structures.push({
+                ...component,
+                structures: [`_bookshop_single_component_${componentSlug(componentKey)}`]
+            });
+        }
     }
 
     return { bookshopRoots, structures };

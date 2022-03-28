@@ -424,6 +424,7 @@ __metadata:
     normalize-path: ^3.0.0
     nyc: ^15.1.0
     pluralize: ^8.0.0
+    slugify: ^1.6.5
     yaml: ^2.0.0-11
   bin:
     bookshop-generate: main.js

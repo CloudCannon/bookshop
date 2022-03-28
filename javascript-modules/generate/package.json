@@ -36,6 +36,7 @@
     "fast-glob": "^3.2.7",
     "normalize-path": "^3.0.0",
     "pluralize": "^8.0.0",
+    "slugify": "^1.6.5",
     "yaml": "^2.0.0-11"
   },
   "engines": {
