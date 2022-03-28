@@ -75,6 +75,10 @@ const run = async () => {
     versionStrings(packages.versionStrings, version);
     console.log(`* * Versions set`);
 
+    packages.version = version;
+    fs.writeFileSync(path.join(__dirname, '../bookshop-packages.json'), JSON.stringify(packages, null, 2));
+    console.log(`* * bookshop-packages.json updated`);
+
     console.log(`* Vendoring`);
     env.PUBLISH_BOOKSHOP_CDN = true;
     vendorGems(packages.rubygems, version);
@@ -88,10 +92,6 @@ const run = async () => {
     console.log(`* Running integration tests (may take a while)`);
     await steps.integrationTest();
     console.log(`* * Integration tests passed`);
-
-    packages.version = version;
-    fs.writeFileSync(path.join(__dirname, '../bookshop-packages.json'), JSON.stringify(packages, null, 2));
-    console.log(`* * bookshop-packages.json updated`);
 
     console.log(`* Updating changelog`);
     await steps.changelog();
@@ -142,8 +142,7 @@ const steps = {
         if (testFailures.length) {
             console.error(`* * Unit tests failed for the following packages:`);
             console.error(`* * ⇛ ${testFailures.map(r => r.pkg).join('\n* * ⇛ ')}`);
-            console.log(box(`Cancelling publish, package versions have been changed
-                             but bookshop-packages.json has not.
+            console.log(box(`Cancelling publish, package versions have been changed.
                              
                              Discard unstaged changes and re-run
                              whatever command you used to publish.`));
@@ -165,8 +164,7 @@ const steps = {
         if (testResult.err) {
             console.error(`* * Integration tests failed!`);
             console.error(`* * Failing command: "cd javascript-modules/integration-tests && yarn run itest"`);
-            console.log(box(`Cancelling publish, package versions have been changed
-                             but bookshop-packages.json has not.
+            console.log(box(`Cancelling publish, package versions have been changed.
                              
                              Discard unstaged changes and re-run
                              whatever command you used to publish.`));
