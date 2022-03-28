@@ -154,8 +154,8 @@ export class Engine {
         logger?.log?.(`Rewritten the template for ${name}`);
         if (!globals || typeof globals !== "object") globals = {};
         props = this.injectInfo({ ...globals, include: props });
-        logger?.log?.(`Rendered ${name}`);
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
+        logger?.log?.(`Rendered ${name}`);
     }
 
     async eval(str, props = [{}]) {
