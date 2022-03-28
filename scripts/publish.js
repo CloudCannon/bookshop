@@ -43,6 +43,9 @@ const run = async () => {
         case 'git':
             steps.updateGit(packages.version);
             process.exit(0);
+        case 'changelog':
+            await steps.changelog(packages.version);
+            process.exit(0);
         case 'test':
             console.log(`* Vendoring`);
             vendorGems(packages.rubygems, version);
