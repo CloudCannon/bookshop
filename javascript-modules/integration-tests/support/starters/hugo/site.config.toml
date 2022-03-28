@@ -4,7 +4,7 @@ title = "Hugo Bookshop Cucumber"
 copyright = "🎉"
 
 [module]
-replacements = "bookshop.test/components -> ../../component-lib,github.com/cloudcannon/bookshop/hugo/v2 -> ../../../../../../hugo/v2/"
+replacements = "bookshop.test/components -> ../../component-lib,github.com/cloudcannon/bookshop/hugo/v3 -> ../../../../../../hugo/v3/"
 
 [[module.imports]]
 path = 'bookshop.test/components'
