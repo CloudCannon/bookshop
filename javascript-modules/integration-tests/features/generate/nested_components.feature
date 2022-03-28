@@ -78,7 +78,7 @@ Feature: Bookshop Nested Components
 
       | _structures.blocks.values.0.label       | "Nested / Card" |
       | _structures.blocks.values.0.value.color | "#034AD8"       |
-      | _structures.blocks.values.0.value.tag   | {}              |
+      | _structures.blocks.values.0.value.tag   | null            |
 
       | _structures.blocks.values.0._inputs.color.type             | "color"                                              |
       | _structures.blocks.values.0._inputs.tag.type               | "object"                                             |
@@ -193,7 +193,7 @@ Feature: Bookshop Nested Components
 
       | _structures.blocks.values.0.label       | "Nested / Card" |
       | _structures.blocks.values.0.value.color | "#034AD8"       |
-      | _structures.blocks.values.0.value.tag   | {}              |
+      | _structures.blocks.values.0.value.tag   | null            |
 
       | _structures.blocks.values.0._inputs.color.type             | "color"         |
       | _structures.blocks.values.0._inputs.tag.type               | "object"        |
@@ -292,7 +292,7 @@ Feature: Bookshop Nested Components
     Then stderr should be empty
     And stdout should contain "Added 3 structures from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path                                                 | value        |
+      | path                                      | value        |
       | _structures.blocks.values.0.label         | "Nested / Card" |
       | _structures.blocks.values.0.value.color   | "#034AD8"       |
       | _structures.blocks.values.0.value.innards | []              |
@@ -302,14 +302,14 @@ Feature: Bookshop Nested Components
       | _structures.blocks.values.0._inputs.innards.type                                                       | "array"                                      |
       | _structures.blocks.values.0._inputs.innards.options.structures.values.0.label                          | "Innard"                                     |
       | _structures.blocks.values.0._inputs.innards.options.structures.values.0.value.title                    | "Hello World"                                |
-      | _structures.blocks.values.0._inputs.innards.options.structures.values.0.value.tag                      | {}                                           |
+      | _structures.blocks.values.0._inputs.innards.options.structures.values.0.value.tag                      | null                                         |
       | _structures.blocks.values.0._inputs.innards.options.structures.values.0._inputs.tag.type               | "object"                                     |
       | _structures.blocks.values.0._inputs.innards.options.structures.values.0._inputs.tag.options.structures | "_structures._bookshop_single_component_tag" |
 
       | _structures._bookshop_single_component_tag.values.0.label                           | "Little Tag"                                 |
       | _structures._bookshop_single_component_tag.values.0.value.size                      | "Medium"                                     |
       | _structures._bookshop_single_component_tag.values.0.value.more                      | []                                           |
-      | _structures._bookshop_single_component_tag.values.0.value.self                      | {}                                           |
+      | _structures._bookshop_single_component_tag.values.0.value.self                      | null                                         |
       | _structures._bookshop_single_component_tag.values.0._inputs.size.options.values     | ["Small", "Medium", "Large"]                 |
       | _structures._bookshop_single_component_tag.values.0._inputs.more.type               | "array"                                      |
       | _structures._bookshop_single_component_tag.values.0._inputs.more.options.structures | "_structures.subcomponents"                  |

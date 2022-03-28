@@ -161,7 +161,7 @@ const interlinkStructureValue = ({ currentComponentName, blueprint, currentBluep
         const structureKey = blueprint.replace(/^bookshop:structure:/, '');
         initInputKey("object");
         inputs[currentBlueprintKey].options.structures = `_structures.${structureKey}`;
-        return {};
+        return null;
     }
 
     // Object structure, referencing a single component directly
@@ -175,7 +175,7 @@ const interlinkStructureValue = ({ currentComponentName, blueprint, currentBluep
         inputs[currentBlueprintKey].options.structures = `_structures._bookshop_single_component_${componentSlug(componentKey)}`;
         // Flag that the structure we just referenced will need to be created globally from the referenced component
         componentStructureMap[componentKey].outputComponentStructure = true;
-        return {};
+        return null;
     }
 
     if (Array.isArray(blueprint)) {
