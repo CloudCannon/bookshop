@@ -109,7 +109,6 @@ export const hydrateComponents = (components, engines, exclude = []) => {
     });
     Object.entries(structures).forEach(([structureKey, components]) => {
         components.forEach(component => {
-            console.log("= = = = = = = = = =");
             component.props = findAndReplaceNested(component.props, structures);
             component.props = findAndReplaceNested(component.props, structures);
             component.props = findAndReplaceNested(component.props, structures, true); // At the third recursion, use empty objects
