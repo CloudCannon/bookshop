@@ -120,9 +120,15 @@ const run = async () => {
     }
 
     if (/-|[a-z]/.test(version)) {
+        Object.entries(packages.custom).forEach(([directory]) => {
+            if (/\.\./.test(directory)) return;
+            const target = path.join(__dirname, '../', directory);
+            execSync(`git add ${target}`, { stdio: "inherit", env });
+        });
+
         console.log(`* This looks like a prerelease.`);
         console.log(`* Git tags will be needed for Hugo, but other version changed shouldn't be published.`);
-        console.log(`* Discard all changes now, except for bookshop_bindings.html, and then continue to push the tags.`);
+        console.log(`* Discard all changes now, except for the staged version files, and then continue to push the tags.`);
         console.log(`* Commit & push changes to git?`);
         const yn = await question(`Discarded changes? y / n: `);
         if (yn === 'y') steps.updateGit(version);
