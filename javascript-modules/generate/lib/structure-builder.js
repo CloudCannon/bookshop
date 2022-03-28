@@ -73,7 +73,7 @@ const niceLabel = (key) => {
         .replace(/\/([a-z0-9])/ig, (_, c) => ' / ' + c.toUpperCase());
 }
 
-const generateDeepStructures = (blueprint, currentBlueprintKey, inputs) => {
+const generateDeepStructures = ({ blueprint, currentBlueprintKey, inputs }) => {
     if (blueprint && Array.isArray(blueprint)) {
         if (typeof blueprint[0] === "object" && !Array.isArray(blueprint[0])) {
             // This is an array of objects.
@@ -90,7 +90,7 @@ const generateDeepStructures = (blueprint, currentBlueprintKey, inputs) => {
             const structure = {
                 label: niceLabel(pluralize.singular(currentBlueprintKey)),
                 icon: "add_box",
-                value: generateDeepStructures(blueprint[0], currentBlueprintKey, inputs),
+                value: generateDeepStructures({ blueprint: blueprint[0], currentBlueprintKey, inputs }),
             };
 
             inputs[currentBlueprintKey].type = "array";
@@ -107,7 +107,100 @@ const generateDeepStructures = (blueprint, currentBlueprintKey, inputs) => {
 
     for (let [key, value] of Object.entries(blueprint)) {
         if (typeof value === "object") {
-            blueprint[key] = generateDeepStructures(blueprint[key], key, inputs);
+            blueprint[key] = generateDeepStructures({ blueprint: blueprint[key], currentBlueprintKey: key, inputs });
+        }
+    }
+
+    return blueprint;
+}
+
+const interlinkDeepStructures = ({ currentComponentName, blueprint, currentBlueprintKey, inputs, componentStructureMap }) => {
+    if (!blueprint) return blueprint;
+
+    const initInputKey = (type) => {
+        inputs[currentBlueprintKey] = inputs[currentBlueprintKey] || {};
+        inputs[currentBlueprintKey].options = inputs[currentBlueprintKey].options || {};
+        inputs[currentBlueprintKey].type = type;
+    }
+
+    // Object structure, referencing a set of structures by _structures key
+    if (typeof blueprint === "string" && /^bookshop:structure:./.test(blueprint)) {
+        const structureKey = blueprint.replace(/^bookshop:structure:/, '');
+        initInputKey("object");
+        inputs[currentBlueprintKey].options.structures = `_structures.${structureKey}`;
+        return {};
+    }
+
+    // Object structure, referencing a single component directly
+    if (typeof blueprint === "string" && /^bookshop:./.test(blueprint)) {
+        const componentKey = blueprint.replace(/^bookshop:/, '');
+        if (!componentStructureMap[componentKey]) {
+            console.error(chalk.red(`Component ${chalk.cyan(currentComponentName)} referenced ${chalk.cyan(blueprint)}, but the component ${chalk.cyan(componentKey)} does not exist.`));
+            process.exit(1);
+        }
+        initInputKey("object");
+        inputs[currentBlueprintKey].options.structures = {
+            values: [componentStructureMap[componentKey]]
+        };
+        return {};
+    }
+
+    if (Array.isArray(blueprint)) {
+        // Array structure, referencing a set of structures by _structures key
+        if (blueprint.some(s => typeof s === "string" && /^bookshop:structure:./.test(s))) {
+            if (blueprint.length > 1) {
+                console.error(chalk.red(`Couldn't parse ${chalk.cyan(`${currentBlueprintKey}: ${JSON.stringify(blueprint)}`)}.`));
+                console.error(chalk.red(`Bookshop shorthand arrays can only contain a single element.`));
+                process.exit(1);
+            }
+
+            const structureKey = blueprint[0].replace(/^bookshop:structure:/, '');
+            initInputKey("array");
+            inputs[currentBlueprintKey].options.structures = `_structures.${structureKey}`;
+            return [];
+        }
+
+        // Array structure, referencing a single component directly
+        if (blueprint.some(s => typeof s === "string" && /^bookshop:./.test(s))) {
+            if (blueprint.length > 1) {
+                console.error(chalk.red(`Couldn't parse ${chalk.cyan(`${currentBlueprintKey}: ${JSON.stringify(blueprint)}`)}.`));
+                console.error(chalk.red(`Bookshop shorthand arrays can only contain a single element.`));
+                console.error(chalk.magenta(`If you want to have multiple elements available under this key:`));
+                console.error(chalk.magenta(` — Give each component another key in structures (like ${chalk.cyan(`subcomponents`)})`));
+                console.error(chalk.magenta(` — Use the ${chalk.cyan(`["bookshop:structure:subcomponents"]`)} shorthand`));
+                process.exit(1);
+            }
+
+            const componentKey = blueprint[0].replace(/^bookshop:/, '');
+            if (!componentStructureMap[componentKey]) {
+                console.error(chalk.red(`Component ${chalk.cyan(currentComponentName)} referenced ${chalk.cyan(blueprint)}, but the component ${chalk.cyan(componentKey)} does not exist.`));
+                process.exit(1);
+            }
+            initInputKey("array");
+            inputs[currentBlueprintKey].options.structures = {
+                values: [componentStructureMap[componentKey]]
+            };
+            return [];
+        }
+
+        return blueprint.map((b, i) => interlinkDeepStructures({
+            currentComponentName,
+            blueprint,
+            currentBlueprintKey: i,
+            inputs,
+            componentStructureMap
+        }));
+    }
+
+    if (typeof blueprint === "object") {
+        for (let key of Object.keys(blueprint)) {
+            blueprint[key] = interlinkDeepStructures({
+                currentComponentName,
+                blueprint: blueprint[key],
+                currentBlueprintKey: key,
+                inputs,
+                componentStructureMap
+            });
         }
     }
 
@@ -138,6 +231,7 @@ export const buildStructures = async (options = {}) => {
 
     componentFiles = Array.from(new Set(componentFiles.sort()));
 
+    const componentStructureMap = {};
     const structures = componentFiles.map(componentFile => {
         let contents;
         try {
@@ -165,7 +259,11 @@ export const buildStructures = async (options = {}) => {
         const structure = {
             value: {
                 _bookshop_name: getComponentKey(componentFile),
-                ...(generateDeepStructures(contents.blueprint || {}, "blueprint", cascadeFields._inputs)),
+                ...(generateDeepStructures({
+                    blueprint: contents.blueprint || {},
+                    currentBlueprintKey: "blueprint",
+                    inputs: cascadeFields._inputs
+                })),
             },
             label: niceLabel(getComponentKey(componentFile)), // Used as a fallback when no label is supplied inside [spec]
             structures: [],
@@ -173,8 +271,19 @@ export const buildStructures = async (options = {}) => {
             ...(cascadeFields),
         }
 
+        componentStructureMap[structure.value._bookshop_name] = structure;
         return structure;
     });
+
+    for (const structure of structures) {
+        structure.value = interlinkDeepStructures({
+            currentComponentName: structure.value._bookshop_name,
+            blueprint: structure.value,
+            currentBlueprintKey: null,
+            inputs: structure._inputs,
+            componentStructureMap
+        });
+    }
 
     return { bookshopRoots, structures };
 }

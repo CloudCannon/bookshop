@@ -6,7 +6,7 @@ const assert = require("assert").strict;
 
 /* * * * * * * * * *
  *                 *
- * STRING  HELPERS *
+ *     HELPERS     *
  *                 *
  * * * * * * * * * */
 
@@ -32,6 +32,13 @@ const subVariables = (input, varObject) => {
     input = input.replace(r, value);
   }
   return input;
+}
+
+const dig = (obj, path) => {
+  if (typeof path === 'string') path = path.replace(/\[(\d+)]/g, '.$1').split('.');
+  obj = obj[path.shift()];
+  if (obj && path.length) return dig(obj, path);
+  return obj;
 }
 
 /* * * * * * * * * * *
@@ -146,6 +153,27 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain each row:$/i, function (d
     const contains = contents.test(fileContents);
     if (negation) assert.ok(!contains, `${file} does not match ${contents}`);
     else assert.ok(contains, `${file} matches ${contents}`);
+  });
+});
+
+Then(/^(debug )?I should see "([^"]+)" containing the values:/i, function (debug, file, table) {
+  assert.ok(this.fileExists(file), `${file} exists`);
+  let fileContents = this.fileContents(file);
+  if (debug) this.debugStep(fileContents);
+
+  let parsedFileContents = JSON.parse(fileContents);
+
+  table.hashes().forEach(row => {
+    let JSONpath = subVariables(row.path, this.storage);
+    let JSONvalue = subVariables(row.value, this.storage);
+    if (JSONvalue === "undefined") {
+      JSONvalue = undefined;
+    } else {
+      JSONvalue = JSON.parse(JSONvalue);
+    }
+
+    let foundValue = dig(parsedFileContents, JSONpath);
+    assert.deepStrictEqual(foundValue, JSONvalue);
   });
 });
 
