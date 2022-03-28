@@ -10,7 +10,7 @@
     }
   },
   "versionStrings": {
-    "hugo/v2/core/bookshop_bindings.html": {
+    "hugo/v3/core/bookshop_bindings.html": {
       "regex": "version: \"[^\"]+\"",
       "replacement": "version: \"NEW_VERSION\""
     },
