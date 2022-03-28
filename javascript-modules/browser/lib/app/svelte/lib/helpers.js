@@ -39,6 +39,8 @@ export const hydrateComponents = (components, engines, exclude = []) => {
         },
         frameworks: engines.map(engine => engine.key)
     }
+
+    const structures = {};
     Object.entries(components).forEach(([path, component]) => {
         const filetype = path.split('.').reverse()[0];
         let parsedComponent;
@@ -85,25 +87,77 @@ export const hydrateComponents = (components, engines, exclude = []) => {
         const componentKey = getBookshopKey(path);
         const mergedProps = applyPreview(parsedComponent?.blueprint || {}, parsedComponent?.preview || {});
 
-        let componentYaml = "# No props";
-        if (mergedProps && Object.keys(mergedProps).length) {
-            componentYaml = yaml.dump(mergedProps, {
-                noRefs: true
+        for (const structure of (parsedComponent?.spec?.structures || [])) {
+            structures[structure] = structures[structure] || [];
+            structures[structure].push({
+                props: JSON.parse(JSON.stringify(mergedProps)),
             });
         }
+        structures[`component:${componentKey}`] = [{
+            props: JSON.parse(JSON.stringify(mergedProps)),
+        }]
 
         const matchedFrameworks = engines.filter(engine => engine.hasComponent(componentKey)).map(engine => engine.key);
         if (matchedFrameworks.length) {
             hydrated[componentKey] = {
                 identity: parsedComponent.spec,
                 props: mergedProps,
-                yaml: componentYaml,
+                yaml: "# No props",
                 frameworks: matchedFrameworks
             }
         }
     });
+    Object.entries(structures).forEach(([structureKey, components]) => {
+        components.forEach(component => {
+            console.log("= = = = = = = = = =");
+            component.props = findAndReplaceNested(component.props, structures);
+            component.props = findAndReplaceNested(component.props, structures);
+            component.props = findAndReplaceNested(component.props, structures, true); // At the third recursion, use empty objects
+        });
+    });
+    Object.entries(hydrated).forEach(([componentKey, component]) => {
+        component.props = findAndReplaceNested(component.props, structures)
+
+        if (component.props && Object.keys(component.props).length) {
+            component.yaml = yaml.dump(component.props, {
+                noRefs: true
+            });
+        }
+
+    });
     return hydrated;
 }
+
+const findAndReplaceNested = (obj, structures, limitRecursion) => {
+    if (!obj) return obj;
+    if (Array.isArray(obj)) {
+        if (typeof obj[0] === "string" && /^bookshop:structure:./.test(obj[0])) {
+            const structureKey = obj[0].replace(/^bookshop:structure:/, '');
+            return [randFrom(structures[structureKey], limitRecursion)];
+        }
+        if (typeof obj[0] === "string" && /^bookshop:./.test(obj[0])) {
+            const structureKey = `component:${obj[0].replace(/^bookshop:/, '')}`;
+            return [randFrom(structures[structureKey], limitRecursion)];
+        }
+        return obj.map(o => findAndReplaceNested(o, structures, limitRecursion));
+    }
+    if (typeof obj === "object") {
+        Object.entries(obj).forEach(([key, val]) => {
+            if (typeof val === "string" && /^bookshop:structure:./.test(val)) {
+                const structureKey = val.replace(/^bookshop:structure:/, '');
+                obj[key] = randFrom(structures[structureKey], limitRecursion);
+            } else if (typeof val === "string" && /^bookshop:./.test(val)) {
+                const structureKey = `component:${val.replace(/^bookshop:/, '')}`;
+                obj[key] = randFrom(structures[structureKey], limitRecursion);
+            } else {
+                obj[key] = findAndReplaceNested(obj[key], structures, limitRecursion);
+            }
+        });
+    }
+    return obj;
+}
+
+const randFrom = (arr, limitRecursion) => limitRecursion ? {} : JSON.parse(JSON.stringify(arr[Math.floor(Math.random() * arr.length)]?.props || {}));
 
 export const loadYaml = (yamlProps) => {
     let props = {}, err = false;
