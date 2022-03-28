@@ -156,7 +156,7 @@ const findAndReplaceNested = (obj, structures, limitRecursion) => {
     return obj;
 }
 
-const randFrom = (arr, limitRecursion) => limitRecursion ? {} : JSON.parse(JSON.stringify(arr[Math.floor(Math.random() * arr.length)]?.props || {}));
+const randFrom = (arr, limitRecursion) => (limitRecursion || !arr) ? {} : JSON.parse(JSON.stringify(arr[Math.floor(Math.random() * arr.length)]?.props || {}));
 
 export const loadYaml = (yamlProps) => {
     let props = {}, err = false;
