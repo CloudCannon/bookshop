@@ -11,7 +11,7 @@
   },
   "versionStrings": {
     "hugo/v2/core/bookshop_bindings.html": {
-      "regex": "version: \"[^\"]\"",
+      "regex": "version: \"[^\"]+\"",
       "replacement": "version: \"NEW_VERSION\""
     },
     "README.adoc": {
