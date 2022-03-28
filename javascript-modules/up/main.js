@@ -119,11 +119,11 @@ async function run() {
             fs.writeFileSync(u.newFile || u.file, u.contents);
         }
 
-        console.log(chalk.greenBright(`✅ ${u.newFile || u.file}`));
+        console.log(chalk.greenBright(suppressCwd(`✅ ${u.newFile || u.file}`)));
 
         if (u.commands && u.commands.length) {
             u.commands.forEach(command => {
-                console.log(chalk.greenBright(`$: ${command} in ${u.dir}`));
+                console.log(chalk.greenBright(`$: ${command} in ${suppressCwd(u.dir)}`));
                 try {
                     execSync(command, {
                         cwd: u.dir,
