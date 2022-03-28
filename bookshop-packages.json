@@ -14,6 +14,10 @@
       "regex": "version: \"[^\"]+\"",
       "replacement": "version: \"NEW_VERSION\""
     },
+    "generator-plugins/jekyll/jekyll-bookshop/lib/jekyll-bookshop/tags/bookshop-common-tag.rb": {
+      "regex": "version = \"[^\"]+\"",
+      "replacement": "version = \"NEW_VERSION\""
+    },
     "README.adoc": {
       "regex": ":version: .+",
       "replacement": ":version: NEW_VERSION"
