@@ -1,0 +1,25 @@
+{{/*
+    Renders a single Bookshop partial, 
+    wrapping in in a live editing context tag.
+
+    Expects a slice:
+    [
+        <string>, # Partial name
+        <_>       # Partial props
+    ]
+*/}}
+
+{{- $partial_name := index . 0 -}}
+{{- $partial_props := index . 1 -}}
+{{- $partial_path := partial "_bookshop/helpers/partial_key" $partial_name -}}
+
+{{- if templates.Exists ( printf "partials/%s" $partial_path ) -}}
+
+{{ (printf "<!--bookshop-live name(%s)-->" $partial_name) | safeHTML }}
+{{ partial $partial_path $partial_props }}
+{{ "<!--bookshop-live end-->" | safeHTML }}
+
+{{- else -}}
+    {{- $file_loc := slicestr $partial_path 9 -}}
+    {{- partial "_bookshop/errors/err" (printf "Partial \"%s\" does not exist.\n     Create this partial by placing a file in your bookshop at %s" $partial_name $file_loc) -}}
+{{- end -}}

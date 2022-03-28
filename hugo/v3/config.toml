@@ -1,0 +1,28 @@
+[module]
+[module.hugoVersion]
+extended = true
+min = "0.86.1"
+
+[[module.mounts]]
+source = "core"
+target = "layouts/partials/_bookshop"
+
+[[module.mounts]]
+source = "core/bookshop.html"
+target = "layouts/partials/bookshop.html"
+
+[[module.mounts]]
+source = "core/bookshop_partial.html"
+target = "layouts/partials/bookshop_partial.html"
+
+[[module.mounts]]
+source = "core/bookshop_scss.html"
+target = "layouts/partials/bookshop_scss.html"
+
+[[module.mounts]]
+source = "core/bookshop_bindings.html"
+target = "layouts/partials/bookshop_bindings.html"
+
+[[module.mounts]]
+source = "core/bookshop_component_browser.html"
+target = "layouts/partials/bookshop_component_browser.html"
