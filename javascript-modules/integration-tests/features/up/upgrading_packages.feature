@@ -106,8 +106,22 @@ Feature: Bookshop Package Upgrades
 
       require github.com/cloudcannon/bookshop/hugo/v2 v2.6.0 // indirect
       """
+    And a site/config.toml file containing:
+      """
+      [[module.imports]]
+      path = 'github.com/cloudcannon/bookshop/hugo/v2'
+      """
+    And a site/config/_default/module.yaml file containing:
+      """
+      [[module.imports]]
+      path = 'github.com/cloudcannon/bookshop/hugo/v4'
+      """
     When I run "npm start -- --dry-run --version 9.9.9" in the . directory
     Then stderr should be empty
+    And stdout should contain "github.com/cloudcannon/bookshop/hugo/v2 → v9"
+    And stdout should contain "github.com/cloudcannon/bookshop/hugo/v4 → v9"
     And stdout should contain "github.com/cloudcannon/bookshop/hugo/v2 v2.6.0 → v9.9.9"
+    And stdout should contain "Running hugo mod clean"
     And stdout should contain "Running hugo mod tidy"
     And stdout should contain "Running hugo mod get github.com/cloudcannon/bookshop/hugo/v9@v9.9.9"
+    And stdout should contain "Running hugo mod tidy"
