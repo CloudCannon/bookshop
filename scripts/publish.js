@@ -95,7 +95,6 @@ const run = async () => {
 
     console.log(`* Updating changelog`);
     await steps.changelog();
-    console.log(`* * Updated changelog, pleace check the staged changes before you continue.`);
 
     console.log(`* Publishing packages`);
     console.log(`* * Please supply an OTP code for npm (after checking changelog)`);
@@ -117,9 +116,18 @@ const run = async () => {
         process.exit(1);
     }
 
-    console.log(`* Commit & push changes to git?`);
-    const yn = await question(`y / n: `);
-    if (yn === 'y') steps.updateGit(version);
+    if (/-|[a-z]/.test(version)) {
+        console.log(`* This looks like a prerelease.`);
+        console.log(`* Git tags will be needed for Hugo, but other version changed shouldn't be published.`);
+        console.log(`* Discard all changes now, except for bookshop_bindings.html, and then continue to push the tags.`);
+        console.log(`* Commit & push changes to git?`);
+        const yn = await question(`Discarded changes? y / n: `);
+        if (yn === 'y') steps.updateGit(version);
+    } else {
+        console.log(`* Commit & push changes to git?`);
+        const yn = await question(`y / n: `);
+        if (yn === 'y') steps.updateGit(version);
+    }
 
     console.log(`\n` + box(`All packages published:
                      ⇛ ${publishSuccesses.join('\n⇛ ')}`));
@@ -172,7 +180,14 @@ const steps = {
         }
     },
     changelog: async () => {
-        console.log(execSync(`npx conventional-changelog -i CHANGELOG.md -s --pkg javascript-modules/browser/package.json -p angular`, { env }).toString());
+        console.log(`* Build a changelog?`);
+        const yn = await question(`y / n: `);
+        if (yn === 'y') {
+            console.log(execSync(`npx conventional-changelog -i CHANGELOG.md -s --pkg javascript-modules/browser/package.json -p angular`, { env }).toString());
+            console.log(`* * Updated changelog, pleace check the staged changes before you continue.`);
+        } else {
+            console.log(`* * Skipping changelog.`);
+        }
     },
     updateGit: async (version) => {
         console.log(`* * Updating git`);
