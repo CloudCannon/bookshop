@@ -111,3 +111,9 @@ Feature: Hugo Bookshop CloudCannon Live Editing Site Data
     *    🌐 The selector h1 should contain "https://bookshop.build/"
     *    🌐 The selector h2 should contain "🎉"
     *    🌐 The selector h3 should contain "Hugo Bookshop Cucumber"
+
+  @skip # NYI
+  Scenario: Bookshop live renders collections
+
+  @skip # NYI
+  Scenario: Bookshop live renders a warning when using content
