@@ -102,9 +102,10 @@ export class Engine {
         return false;
     }
 
+    // TODO: memoize parts of this that are expensive
     injectInfo(props) {
         return {
-            ...(this.info.collections || {}),
+            collections: this.precomputed_collections,
             ...(this.info.data || {}),
             ...props,
         };
@@ -116,6 +117,26 @@ export class Engine {
 
     async storeInfo(info = {}) {
         this.info = info;
+
+        const collections = this.info.collections || {};
+        collections["all"] = [];
+        for (const [key, val] of Object.entries(collections)) {
+            collections[key] = val.map(item => {
+                return {
+                    inputPath: item.path, // Maybe not relative to the right location
+                    outputPath: item.path, // Not correct
+                    fileSlug: item.url.replace(/(\/|\.[^\/]+)$/, '').replace(/^.+([^\/]+)$/, '').toLowerCase(), // Not correct
+                    url: item.url,
+                    date: item.date ? new Date(item.date) : new Date(),
+                    templateContent: "Content is not available when live editing",
+                    data: item
+                }
+            });
+
+            collections["all"] = [...collections["all"], ...collections[key]];
+        }
+
+        this.precomputed_collections = collections;
     }
 
     async render(target, name, props, globals, logger) {

@@ -96,3 +96,65 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Site Data
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "/documentation/page/"
+
+  Scenario: Bookshop live renders collections
+    Given a site/_cats/cheeka.md file containing:
+      """
+      ---
+      tags: cat
+      name: Cheeka
+      status: cute
+      ---
+      """
+    Given a site/_cats/crumpet.md file containing:
+      """
+      ---
+      tags: cat
+      name: Crumpet
+      status: adorable
+      ---
+      """
+    Given a component-lib/components/block/block.eleventy.liquid file containing:
+      """
+      <h1>{% if show %}{% for cat in collections.cat %}{% bookshop "cat" bind: cat %}{% endfor %}{% endif %}</h1>
+      """
+    Given a component-lib/components/cat/cat.eleventy.liquid file containing:
+      """
+      <li>{{ data.name }} ({{ data.status }})</li>
+      """
+    * 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      show: true
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector li:nth-of-type(1) should contain "Cheeka (cute)"
+    *    🌐 The selector li:nth-of-type(2) should contain "Crumpet (adorable)"
+
+  Scenario: Bookshop live renders a warning when using content
+    Given a site/_cats/cheeka.md file containing:
+      """
+      ---
+      tags: cat
+      name: Cheeka
+      status: cute
+      ---
+      # Meow
+      """
+    Given a component-lib/components/block/block.eleventy.liquid file containing:
+      """
+      <h1>{% if show %}{% for cat in collections.cat %}{% bookshop "cat" bind: cat %}{% endfor %}{% endif %}</h1>
+      """
+    Given a component-lib/components/cat/cat.eleventy.liquid file containing:
+      """
+      <li>{{ data.name }} ({{ templateContent }})</li>
+      """
+    * 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      show: true
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector li:nth-of-type(1) should contain "Cheeka (Content is not available when live editing)"

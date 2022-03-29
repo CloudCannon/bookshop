@@ -121,6 +121,11 @@ export class Engine {
     }
 
     injectInfo(props) {
+        for (const collection of Object.values(this.info.collections || {})) {
+            for (const item of (collection || [])) {
+                item.content = "Content is not available when live editing";
+            }
+        }
         return {
             site: {
                 ...(this.info.collections || {}),
