@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CHANGES=$(git diff --name-only) 
+CHANGES=$(git diff --cached --name-only) 
 CHANGED_GUIDE=$(echo $CHANGES | grep -c "guides/")
 
 if [ $CHANGED_GUIDE != "0" ]; then

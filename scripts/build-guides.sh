@@ -3,7 +3,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR/../guides
 
 if [ -z $1 ]; then
-    MODIFIED=$(git diff --name-only --exit-code .)
+    MODIFIED=$(git diff HEAD --name-only --exit-code .)
     MODIFIED_COUNT=$(echo $MODIFIED | sed 's/ / \n/g' | grep -c '^')
 
     echo "$MODIFIED_COUNT file(s) modified:"
