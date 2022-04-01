@@ -3,6 +3,9 @@ const path = require("path");
 const fs = require("fs");
 const normalizePath = require("normalize-path");
 const { version } = require("../package.json");
+const { configure } = require('safe-stable-stringify');
+
+const stringify = configure({ deterministic: false });
 
 const { Tokenizer } = LiquidJS;
 
@@ -17,10 +20,10 @@ const getIncludeKey = (name) => {
 
 // TODO: Use forloop.name once 11ty uses liquidjs >=9.28.0
 const contextHunt = (ctx, hash, index) => {
-    let h = JSON.stringify(hash);
+    let h = stringify(hash);
     for (let [k, v] of Object.entries(ctx.getAll())) {
         if (!Array.isArray(v)) continue;
-        if (JSON.stringify(v[index]) === h) {
+        if (stringify(v[index]) === h) {
             return k;
         }
     }

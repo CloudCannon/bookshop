@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@bookshop/helpers": "2.6.1",
-    "normalize-path": "^3.0.0"
+    "normalize-path": "^3.0.0",
+    "safe-stable-stringify": "^2.3.1"
   },
   "engines": {
     "node": ">=14.16"

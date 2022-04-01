@@ -147,13 +147,16 @@ export class Engine {
             console.warn(`[eleventy-engine] No component found for ${name}`);
             return "";
         }
-        logger?.log?.(`Going to render ${name}`);
+        logger?.log?.(`Going to render ${name}, with source:`);
+        logger?.log?.(source);
         source = translateLiquid(source);
-        logger?.log?.(`Rewritten the template for ${name}`);
+        logger?.log?.(`Rewritten the template for ${name} to:`);
+        logger?.log?.(source);
         if (!globals || typeof globals !== "object") globals = {};
         props = this.injectInfo({ ...globals, ...props });
-        logger?.log?.(`Rendered ${name}`);
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
+        logger?.log?.(`Rendered ${name} as:`);
+        logger?.log?.(target.innerHTML);
     }
 
     async eval(str, props = {}) {

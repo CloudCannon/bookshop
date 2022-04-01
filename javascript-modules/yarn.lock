@@ -392,6 +392,7 @@ __metadata:
     ava: ^3.15.0
     normalize-path: ^3.0.0
     nyc: ^15.1.0
+    safe-stable-stringify: ^2.3.1
   languageName: unknown
   linkType: soft
 
@@ -7624,7 +7625,7 @@ resolve@~1.1.7:
   languageName: node
   linkType: hard
 
-"safe-stable-stringify@npm:^2.3.0":
+"safe-stable-stringify@npm:^2.3.0, safe-stable-stringify@npm:^2.3.1":
   version: 2.3.1
   resolution: "safe-stable-stringify@npm:2.3.1"
   checksum: a0a0bad0294c3e2a9d1bf3cf2b1096dfb83c162d09a5e4891e488cce082120bd69161d2a92aae7fc48255290f17700decae9c89a07fe139794e61b5c8b411377
