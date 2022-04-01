@@ -1,18 +1,19 @@
-@hugo
-Feature: Hugo Bookshop Component Browser Granular Steps
+@jekyll
+Feature: Jekyll Bookshop Component Browser Granular Steps
 
   Background:
     Given the file tree:
       """
       package.json from starters/generate/package.json # <-- this .json line hurts my syntax highlighting
       component-lib/
-        go.mod from starters/hugo/components.go.mod
-        config.toml from starters/hugo/components.config.toml
         bookshop/
-          bookshop.config.js from starters/hugo/bookshop.config.js
+          bookshop.config.js from starters/jekyll/bookshop.config.js
       site/
-        go.mod from starters/hugo/site.go.mod
-        config.toml from starters/hugo/site.config.toml
+        _config.yml from starters/jekyll/_config.yml
+        Gemfile from starters/jekyll/Gemfile.cloudcannon
+        Gemfile.lock from starters/jekyll/Gemfile.cloudcannon.lock
+        _layouts/
+          default.html from starters/jekyll/default.html
       """
     * a component-lib/components/single/single.bookshop.toml file containing:
       """
@@ -26,41 +27,33 @@ Feature: Hugo Bookshop Component Browser Granular Steps
       [blueprint]
       title = "Hello There, World"
       """
-    * a component-lib/components/single/single.hugo.html file containing:
+    * a component-lib/components/single/single.jekyll.html file containing:
       """
-      <h1>{{ .title }}</h1>
+      <h1>{{ include.title }}</h1>
       """
-    * a site/layouts/index.html file containing:
-      """
-      <html>
-      <body>
-      {{ partial "bookshop_component_browser" }}
-      </body>
-      </html>
-      """
-    * a site/content/_index.md file containing:
+    * a site/index.html file containing:
       """
       ---
       ---
+      {% bookshop_component_browser %}
       """
 
   Scenario: Bookshop adds component browser markup
-    When I run "hugo" in the site directory
+    When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
-    *    stdout should contain "Total in"
-    *    site/public/index.html should contain each row: 
+    *    stdout should contain "done in"
+    *    site/_site/index.html should contain each row: 
       | text |
       | <div data-bookshop-browser=""></div> |
       | <script src="http://localhost:30775/bookshop.js"></script> |
 
   Scenario: Bookshop Generate hydrates component browser
-    Given I run "hugo" in the site directory
-    *     I run "cloudcannon-hugo --baseurl /" in the site directory
+    Given I run "bundle exec jekyll build --trace" in the site directory
     When I run "npm start" in the . directory
     Then stderr should be empty
-    *    stdout should contain "Modifying output site at ./site/public"
+    *    stdout should contain "Modifying output site at ./site/_site"
     *    stdout should contain "Built component browser into 1 page"
-    *    site/public/index.html should contain each row: 
+    *    site/_site/index.html should contain each row: 
       | text |
       | <script src="/_bookshop/bookshop-browser.min.js?cb=  |
 

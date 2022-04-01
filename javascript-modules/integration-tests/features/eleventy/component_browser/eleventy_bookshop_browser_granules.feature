@@ -1,18 +1,20 @@
-@hugo
-Feature: Hugo Bookshop Component Browser Granular Steps
+@eleventy
+Feature: Eleventy Bookshop Component Browser Granular Steps
 
   Background:
     Given the file tree:
       """
       package.json from starters/generate/package.json # <-- this .json line hurts my syntax highlighting
       component-lib/
-        go.mod from starters/hugo/components.go.mod
-        config.toml from starters/hugo/components.config.toml
         bookshop/
-          bookshop.config.js from starters/hugo/bookshop.config.js
+          bookshop.config.js from starters/eleventy/bookshop.config.js
       site/
-        go.mod from starters/hugo/site.go.mod
-        config.toml from starters/hugo/site.config.toml
+        .eleventy.js from starters/eleventy/.eleventy.cloudcannon.js
+        .eleventyignore from starters/eleventy/.eleventyignore
+        package.json from starters/eleventy/package.json # <-- this .json line hurts my syntax highlighting
+        _includes/
+          layouts/
+            default.liquid from starters/eleventy/default.liquid
       """
     * a component-lib/components/single/single.bookshop.toml file containing:
       """
@@ -26,41 +28,33 @@ Feature: Hugo Bookshop Component Browser Granular Steps
       [blueprint]
       title = "Hello There, World"
       """
-    * a component-lib/components/single/single.hugo.html file containing:
+    * a component-lib/components/single/single.eleventy.liquid file containing:
       """
-      <h1>{{ .title }}</h1>
+      <h1>{{ title }}</h1>
       """
-    * a site/layouts/index.html file containing:
-      """
-      <html>
-      <body>
-      {{ partial "bookshop_component_browser" }}
-      </body>
-      </html>
-      """
-    * a site/content/_index.md file containing:
+    * a site/index.html file containing:
       """
       ---
       ---
+      {% bookshop_component_browser %}
       """
 
   Scenario: Bookshop adds component browser markup
-    When I run "hugo" in the site directory
+    When I run "npm start" in the site directory
     Then stderr should be empty
-    *    stdout should contain "Total in"
-    *    site/public/index.html should contain each row: 
+    *    stdout should not be empty
+    *    site/_site/index.html should contain each row: 
       | text |
       | <div data-bookshop-browser=""></div> |
       | <script src="http://localhost:30775/bookshop.js"></script> |
 
   Scenario: Bookshop Generate hydrates component browser
-    Given I run "hugo" in the site directory
-    *     I run "cloudcannon-hugo --baseurl /" in the site directory
+    Given I run "npm start" in the site directory
     When I run "npm start" in the . directory
     Then stderr should be empty
-    *    stdout should contain "Modifying output site at ./site/public"
+    *    stdout should contain "Modifying output site at ./site/_site"
     *    stdout should contain "Built component browser into 1 page"
-    *    site/public/index.html should contain each row: 
+    *    site/_site/index.html should contain each row: 
       | text |
       | <script src="/_bookshop/bookshop-browser.min.js?cb=  |
 

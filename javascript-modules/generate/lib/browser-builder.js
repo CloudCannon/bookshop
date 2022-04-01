@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { runner } from '@bookshop/browser';
 
 export const buildBrowserScript = async (siteRoot, bookshopDirs) => {
-  const scriptLocation = path.join(siteRoot, '_bookshop/bookshop-browser.js');
+  const scriptLocation = path.join(siteRoot, '_bookshop/bookshop-browser.min.js');
 
   await runner({
     bookshop: bookshopDirs,

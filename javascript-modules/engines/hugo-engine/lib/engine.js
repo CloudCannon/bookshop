@@ -74,7 +74,7 @@ export class Engine {
 
     async initializeLocalHugo() {
         const go = new Go();
-        const wasmOrigin = this.origin.replace(/\/[^\.\/]+\.js/, hugoWasm.replace(/^\./, ''));
+        const wasmOrigin = this.origin.replace(/\/[^\.\/]+\.(min\.)?js/, hugoWasm.replace(/^\./, ''));
         const response = await fetch(wasmOrigin);
         const buffer = await response.arrayBuffer();
         const result = await WebAssembly.instantiate(buffer, go.importObject);
