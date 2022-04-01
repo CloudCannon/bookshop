@@ -16,7 +16,7 @@ const rewriteTag = function (token, src, liveMarkup) {
 
     if (liveMarkup && token.name && (token.name === 'assign' || token.name === 'local')) {
         let [, identifier, value] = token.args.match(/^[\r\n\s]*([^=]+?)[\r\n\s]*=[\r\n\s]*([\s\S]+?)[\r\n\s]*$/);
-        raw = `${raw}<!--bookshop-live context(${identifier}: ${value})-->`
+        raw = `${raw}<!--bookshop-live context(${identifier}: (${value}))-->`
     }
 
     // Rewrite bookshop_include tag to standard includes — within bookshop they're first class

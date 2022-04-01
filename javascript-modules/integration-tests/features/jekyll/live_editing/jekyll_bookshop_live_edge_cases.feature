@@ -42,6 +42,47 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Edge Cases
     *    🌐 There should be no logs
     *    🌐 The selector div should contain "md - - md"
 
+  Scenario: Bookshop live renders filters with attributes
+    Given a component-lib/components/where/where.jekyll.html file containing:
+      """
+      <div>
+      {% assign featured = include.featured_items | where: "featured", true %}
+      {% for item in featured %}
+      <p>{{ item.name }}</p>
+      {% endfor %}
+      </div>
+      """
+    Given [front_matter]:
+      """
+      layout: default
+      featured_items:
+        - name: "Item One"
+          featured: true
+        - name: "Item Two"
+          featured: false
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% bookshop where featured_items=page.featured_items %}
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      featured_items:
+        - name: "Item One"
+          featured: true
+        - name: "Item Two"
+          featured: false
+        - name: "Item Three"
+          featured: true
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector p:nth-of-type(1) should contain "Item One"
+    *    🌐 The selector p:nth-of-type(2) should contain "Item Three"
 
   Scenario: Bookshop live collection loop
     Given a site/_config.yml file containing:

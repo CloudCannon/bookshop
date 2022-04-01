@@ -108,7 +108,8 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
     let currentNode = iterator.iterateNext();
 
     while (currentNode) {
-        logger?.log?.(`Parsing a comment...`);
+        logger?.log?.(`Parsing the comment:`);
+        logger?.log?.(currentNode.textContent);
         const liveTag = parseComment(currentNode);
 
         // Keep track of any metadata that the renderer wants

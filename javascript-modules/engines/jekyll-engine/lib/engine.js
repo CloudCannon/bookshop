@@ -165,6 +165,11 @@ export class Engine {
 
     async eval(str, props = [{}]) {
         try {
+            // Template values might have been parenthesised for parsing, 
+            // so we remove outer parentheses.
+            if (/^\([\s\S]+\)$/.test(str)) {
+                str = str.replace(/^\(|\)$/g, '');
+            }
             const ctx = new Context();
             if (Array.isArray(props)) {
                 props.forEach(p => ctx.push(p));
