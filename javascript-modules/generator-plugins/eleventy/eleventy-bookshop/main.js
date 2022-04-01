@@ -8,7 +8,7 @@ const browserTagHandler = (liquidEngine) => {
         render: async function (ctx, hash) {
             console.error(`The {% bookshop_browser ${this.host} %} tag has been replaced in Bookshop 3.0`);
             console.error(`Replace this tag with {% bookshop_component_browser %}`);
-            console.error(`Note: The port argument is no longer needed`);
+            console.error(`Note: The port argument is no longer needed, nor are any environment checks`);
             process.exit(1);
         }
     };

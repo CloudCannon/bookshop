@@ -170,6 +170,7 @@ export class Engine {
             if (/^\([\s\S]+\)$/.test(str)) {
                 str = str.replace(/^\(|\)$/g, '');
             }
+            str = str.replace(/\n/g, ''); // TODO: Are there any cases where this breaks the eval?
             const ctx = new Context();
             if (Array.isArray(props)) {
                 props.forEach(p => ctx.push(p));
@@ -183,7 +184,7 @@ export class Engine {
             }
             return index ? result?.[index] : result;
         } catch (e) {
-            console.warn(`Error evaluating \`${str}\` in the Jekyll engine`, e);
+            console.warn(`Error evaluating \`${str}\` in the Jekyll engine`, e.toString());
             return '';
         }
     }
