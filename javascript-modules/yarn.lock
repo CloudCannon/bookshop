@@ -547,7 +547,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/up@workspace:up":
+"@bookshop/up@2.6.1, @bookshop/up@workspace:up":
   version: 0.0.0-use.local
   resolution: "@bookshop/up@workspace:up"
   dependencies:
@@ -4621,6 +4621,7 @@ fsevents@~2.3.2:
     "@bookshop/generate": 2.6.1
     "@bookshop/init": 2.6.1
     "@bookshop/sass": 2.6.1
+    "@bookshop/up": 2.6.1
     "@cucumber/cucumber": ^7.3.1
     ava: ^3.15.0
     cloudcannon-hugo: 0.13.2
