@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"strings"
 
 	"hugo-renderer/deps"
 	"hugo-renderer/tpl/internal"
@@ -76,6 +77,12 @@ func RetrieveBookshopPartial(bookshop_key string) (*template.Template, bool) {
 	return nil, false
 }
 
+func bookshopKey(full_key string) string {
+	split := strings.Split(full_key, "/")
+	base := split[len(split)-1]
+	return fmt.Sprintf("components/%s/%s.hugo.html", full_key, base)
+}
+
 // UnwrapBookshopPartial takes the dict or slice that the {{ partial "bookshop" ... }}
 // was given, and pulls out the component / partial name that should be rendered.
 // TODO(bookshop): Ideally our templating support gets better,
@@ -83,24 +90,24 @@ func RetrieveBookshopPartial(bookshop_key string) (*template.Template, bool) {
 func UnwrapBookshopComponent(context interface{}) (string, interface{}) {
 	if componentData, ok := context.(map[string]interface{}); ok {
 		if component, ok := componentData["_bookshop_name"]; ok {
-			key := fmt.Sprintf("components/%s/%s.hugo.html", component.(string), component.(string))
+			key := bookshopKey(component.(string))
 			return key, context
 		}
 		return "err_no_bookshop_name_key", context
 	}
 	if componentData, ok := context.([]interface{}); ok {
 		if component, ok := componentData[0].(string); ok {
-			key := fmt.Sprintf("components/%s/%s.hugo.html", component, component)
+			key := bookshopKey(component)
 			return key, componentData[1]
 		}
 		return "err_slice_zero_not_string", context
 	}
 	if componentData, ok := context.([]string); ok {
-		key := fmt.Sprintf("components/%s/%s.hugo.html", componentData[0], componentData[0])
+		key := bookshopKey(componentData[0])
 		return key, componentData[1]
 	}
 	if componentName, ok := context.(string); ok {
-		key := fmt.Sprintf("components/%s/%s.hugo.html", componentName, componentName)
+		key := bookshopKey(componentName)
 		return key, nil
 	}
 	return "err_not_map_slice_or_string", context

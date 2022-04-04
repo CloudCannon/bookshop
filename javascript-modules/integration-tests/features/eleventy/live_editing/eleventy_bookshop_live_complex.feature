@@ -286,3 +286,25 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Selective Re-rendering
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Hello :)"
+
+  Scenario: Bookshop live renders a nested component path
+    Given a component-lib/components/outer/outer.eleventy.liquid file containing:
+      """
+      <div> {% bookshop "generic/button" %} </div>
+      """
+    Given a component-lib/components/generic/button/button.eleventy.liquid file containing:
+      """
+      <button>Button!</button>
+      """
+    Given [front_matter]: "layout: layouts/default.liquid"
+    And a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% bookshop "outer" %}
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector button should contain "Button!"
