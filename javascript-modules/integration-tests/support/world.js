@@ -52,7 +52,7 @@ After(async function () {
   if (this.browser) {
     Promise.race([this.browser.close(), timeout]);
   }
-  if (!process.env["DEBUG"]) fs.rmdirSync(this.tmp_dir, { recursive: true });
+  if (!process.env["DEBUG"]) fs.rmSync(this.tmp_dir, { recursive: true });
 });
 
 class CustomWorld {

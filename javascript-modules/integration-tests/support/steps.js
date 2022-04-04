@@ -18,12 +18,16 @@ const escapeRegExp = (str) => {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+const strToPathRegExp = (str) => {
+  return new RegExp(escapeRegExp(str).replace(/\//g, "(\\\\|\\\/)"));
+}
+
 const strToLenientRegExp = (str) => {
-  return new RegExp(escapeRegExp(str).replace(/\s/g, "\\s*"));
+  return new RegExp(escapeRegExp(str).replace(/\n/g, "[\\n\\r]+").replace(/\s/g, "\\s*"));
 }
 
 const strToStrictRegExp = (str) => {
-  return new RegExp(escapeRegExp(str));
+  return new RegExp(escapeRegExp(str).replace(/\n/g, "[\\n\\r]+"));
 }
 
 const subVariables = (input, varObject) => {
@@ -206,7 +210,9 @@ Then(/^(debug )?(stdout|stderr) should (not )?be empty$/i, function (debug, stre
 
 Then(/^(debug )?(stdout|stderr) should (not )?contain "(.+)"$/i, function (debug, stream, negation, contents) {
   if (debug) this.debugStep(this[stream]);
-  const contains = this[stream].includes(unescape(contents));
+  const outputRegexp = strToPathRegExp(unescape(contents));
+  const contains = outputRegexp.test(this[stream]);
+
   if (negation) assert.ok(!contains, `${stream} does not contain ${unescape(contents)}`);
   else assert.ok(contains, `${stream} contains ${unescape(contents)}`);
 });
