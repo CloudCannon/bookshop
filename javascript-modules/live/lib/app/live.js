@@ -20,11 +20,20 @@ export const getLive = (engines) => class BookshopLive {
         this.verbose = false;
 
         this.logFn = this.logger();
+        this.loadedFn = options?.loadedFn;
 
         const remoteGlobals = options?.remoteGlobals?.length || 0;
         this.awaitingDataFetches = remoteGlobals + 1;
         options?.remoteGlobals?.forEach(this.fetchGlobalData.bind(this));
         this.fetchInfo();
+    }
+
+    completeRender() {
+        if (typeof this.loadedFn === 'function') {
+            this.loadedFn();
+            this.loadedFn = null;
+        }
+        this.renderCount += 1;
     }
 
     logger(depth = 0) {
@@ -188,7 +197,7 @@ export const getLive = (engines) => class BookshopLive {
             core.graftTrees(startNode, endNode, output, this.logFn.nested());
             this.logFn.log(`Completed grafting ${name}'s update to the DOM tree`);
         }
-        this.renderCount += 1;
+        this.completeRender();
         this.logFn.log(`Finished rendering`);
     }
 }

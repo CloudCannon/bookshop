@@ -9,13 +9,28 @@ const getLiveEditingConnector = () => {
 (function(){
     const bookshopLiveSetup = (CloudCannon) => {
       CloudCannon.enableEvents();
+      CloudCannon?.setLoading?.("Loading Bookshop Live Editing");
+      let triggeredLoad = false;
+      const whenLoaded = () => {
+        triggeredLoad = true;
+        CloudCannon?.setLoading?.(false);
+      }
+      setTimeout(() => {
+        if (!triggeredLoad) {
+          CloudCannon?.setLoading?.("Error Loading Bookshop Live Editing");
+          setTimeout(() => {
+            if (!triggeredLoad) { whenLoaded() }
+          }, 2000);
+        }
+      }, 12000);
   
       const head = document.querySelector('head');
       const script = document.createElement('script');
       script.src = \`/_cloudcannon/bookshop-live.js\`;
       script.onload = function() {
         window.bookshopLive = new window.BookshopLive({
-          remoteGlobals: []
+          remoteGlobals: [],
+          loadedFn: whenLoaded,
         });
         const updateBookshopLive = async () => {
           const frontMatter = await CloudCannon.value({

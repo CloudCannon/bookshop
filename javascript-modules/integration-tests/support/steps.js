@@ -262,11 +262,12 @@ const loadPage = async (url, world) => {
 const readyCloudCannon = async (data, world) => {
   if (!world.page) throw Error("No page open");
   const script = `window.CC = class CloudCannon {
-    constructor(options) { this.isMocked = true; this.data = options.data; document.dispatchEvent(this.event('cloudcannon:load')); }
+    constructor(options) { this.isMocked = true; this.loadingMessages = []; this.data = options.data; document.dispatchEvent(this.event('cloudcannon:load')); }
     newData(data) { this.data = data; document.dispatchEvent(this.event('cloudcannon:update')); }
     event(name) { return new CustomEvent(name, { detail: { CloudCannon: this } });}
     enableEvents() {}
     refreshInterface() {}
+    setLoading(str) { this.loadingMessages.push(str); }
     async value() { return this.data; }
   };
   window.CloudCannon = new window.CC({ data: ${data} })`;
