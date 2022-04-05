@@ -17,6 +17,10 @@ const getComponentName = (path) => {
   return path.replace(/\//g, "-");
 }
 
+const getComponentLabel = (path) => {
+  return path.split('/').map(s => s[0].toUpperCase() + s.substr(1)).join(' ');
+}
+
 const getComponentFileName = (path) => {
   return path.split("/").reverse()[0];
 }
@@ -103,7 +107,7 @@ const initComponent = async (options) => {
     const resp = await inquirer.prompt([{
       type: 'list',
       name: 'format',
-      message: 'What configuration format would you like to use?',
+      message: 'What configuration format would you like to use for components?',
       choices: ['YAML (Recommended)', 'TOML', 'JS', 'JSON'],
       filter(val) {
         return val.split(' ')[0].toLowerCase().replace(/yaml/, 'yml');
@@ -117,18 +121,19 @@ const initComponent = async (options) => {
   mkdirSync(componentDirPath, { recursive: true });
 
   const componentName = getComponentName(options.component);
+  const componentLabel = getComponentLabel(options.component);
   const componentFileName = getComponentFileName(options.component);
 
   for (const framework of frameworks) {
     const template = templates[framework];
     if (!template) {
-      const allowed = Object.keys(templates).filter(f => !/scss|bookshop/.test(f));
+      const allowed = ['hugo', 'eleventy', 'jekyll'];
       console.error(chalk.red(`Unrecognized framework ${chalk.cyan(framework)}, expected one of: ${chalk.cyan(allowed.join(', '))}`));
       process.exit(1);
     }
     renderFile(
       template,
-      { componentName },
+      { componentName, componentLabel },
       join(componentDirPath, `${componentFileName}.${template.extension}`)
     );
   }
@@ -142,41 +147,151 @@ const initComponent = async (options) => {
   const bookshopTemplate = templates[`bookshop_${targetFormat}`];
   renderFile(
     bookshopTemplate,
-    { componentName },
+    { componentName, componentLabel },
     join(componentDirPath, `${componentFileName}.${bookshopTemplate.extension}`)
   );
 }
 
+const initBookshop = async (options) => {
+  console.log(chalk.magenta(`Creating a Bookshop project at ${options.new}`));
+
+  mkdirSync(options.new, { recursive: true });
+  mkdirSync(join(options.new, 'bookshop'), { recursive: true });
+  mkdirSync(join(options.new, 'components'), { recursive: true });
+  mkdirSync(join(options.new, 'shared', options.framework[0]), { recursive: true });
+  mkdirSync(join(options.new, 'shared', 'styles'), { recursive: true });
+
+  renderFile(
+    templates["bookshop_config"],
+    { ssg: options.framework[0] },
+    join(options.new, `bookshop`, `bookshop.config.js`)
+  );
+
+  const pageComponent = `${options.framework[0]}_page`;
+  renderFile(
+    templates[pageComponent],
+    {},
+    join(options.new, `shared`, options.framework[0], `page.${templates[pageComponent].extension}`)
+  );
+
+  renderFile(
+    templates["global_style"],
+    {},
+    join(options.new, `shared`, `styles`, `global.scss`)
+  );
+
+  if (options.framework[0] === "hugo") {
+    renderFile(
+      templates["hugo_config"],
+      {},
+      join(options.new, `config.toml`)
+    );
+  }
+
+  options.component = "sample";
+  await initComponent(options);
+}
+
 async function run() {
-  program.option("-c, --component <component>", "The name of a component to create");
+  program.option("-n, --new <project name>", "Create a new Bookshop in the given directory");
+  program.option("-c, --component <component>", "Create a new component with the given name");
   program.option("-f, --framework <frameworks...>", "Optional: Space separated list of frameworks to use. Will be aut-detected if not supplied");
   program.addOption(new Option('--format <filetype>', 'Convert Bookshop files to another format').choices(['yml', 'toml', 'json', 'js']));
   program.option("-d, --dot", "Look for Bookshops inside . directories");
   program.parse(process.argv);
   const options = program.opts();
 
-  if (!options.component) {
-    console.log(chalk.magenta("What is the name of your new component?"));
-    console.log(chalk.magenta(`You can use a path here, i.e. ${chalk.cyan(`blocks/hero/large`)}`));
-    const resp = await inquirer.prompt([{
-      type: 'input',
-      name: 'component',
-      message: 'Component name:',
-      validate: c => {
-        if (/[^a-z0-9-_\/]/.test(c)) {
-          return `Component name must only contain alphanumeric, hyphen, underscore, and forward-slash`;
-        } else {
-          return true;
-        }
-      }
-    }]);
-    options.component = resp.component;
+  if (options.component && options.new) {
+    console.error(chalk.red("--component and --new cannot be passed together"));
+    process.exit(1);
   }
 
-  if (options.component) {
-    await initComponent(options);
-    console.log(chalk.bold.green(`\nAll done.`));
-    return;
+  let action;
+  if (options.component) action = 'component';
+  if (options.new) action = 'new';
+  if (!options.component && !options.new) {
+    const resp = await inquirer.prompt([{
+      type: 'list',
+      name: 'action',
+      message: 'What do you want to create?',
+      choices: ['A new Bookshop project', 'A new component'],
+    }]);
+    switch (resp.action) {
+      case "A new Bookshop project":
+        action = 'new';
+        break;
+      case "A new component":
+        action = 'component';
+        break
+      default:
+        process.exit(1);
+    }
+  }
+
+  if (action === 'component') {
+    if (!options.component) {
+      console.log(chalk.magenta("What is the name of your new component?"));
+      console.log(chalk.magenta(`You can use a path here, i.e. ${chalk.cyan(`blocks/hero/large`)}`));
+      const resp = await inquirer.prompt([{
+        type: 'input',
+        name: 'component',
+        message: 'Component name:',
+        validate: c => {
+          if (/[^a-z0-9-_\/]/.test(c)) {
+            return `Component name must only contain alphanumeric, hyphen, underscore, and forward-slash`;
+          } else {
+            return true;
+          }
+        }
+      }]);
+      options.component = resp.component;
+    }
+
+    if (options.component) {
+      await initComponent(options);
+      console.log(chalk.bold.green(`\nAll done.`));
+      return;
+    }
+  } else if (action === 'new') {
+    if (!options.new) {
+      console.log(chalk.magenta("What directory would you like to create your Bookshop in?"));
+      console.log(chalk.magenta("This will be relative to to the directory you're running this command in"));
+      const resp = await inquirer.prompt([{
+        type: 'input',
+        name: 'newdir',
+        message: 'Directory name:',
+        validate: c => {
+          if (/[^a-z0-9-_\/]/.test(c)) {
+            return `Directory name must only contain alphanumeric, hyphen, underscore, and forward-slash`;
+          } else {
+            return true;
+          }
+        }
+      }]);
+      options.new = resp.newdir;
+    }
+
+    if (!options.framework || !options.framework.length) {
+      const resp = await inquirer.prompt([{
+        type: 'list',
+        name: 'ssg',
+        message: 'What framework do you want to create a new Bookshop project for?',
+        choices: ['Hugo', 'Eleventy', 'Jekyll'],
+        filter(val) { return val.toLowerCase(); },
+      }]);
+      options.framework = [resp.ssg];
+    }
+
+    if (options.framework.length > 1) {
+      console.error(chalk.red("Only one framework can be supplied for creating a new Bookshop"));
+      process.exit(1);
+    }
+
+    if (options.new && options.framework) {
+      await initBookshop(options);
+      console.log(chalk.bold.green(`\nAll done.`));
+      return;
+    }
   }
 }
 

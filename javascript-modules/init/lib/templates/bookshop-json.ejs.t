@@ -3,12 +3,14 @@
     "structures": [
       "content_blocks"
     ],
-    "label": "",
+    "label": "<%= componentLabel %>",
     "description": "",
     "icon": "",
     "tags": []
   },
-  "blueprint": {},
+  "blueprint": {
+    "text": "Hello World!"
+  },
   "preview": {},
   "_inputs": {}
 }

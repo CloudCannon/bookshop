@@ -4,14 +4,16 @@ module.exports = () => {
     structures: [
       "content_blocks"
     ],
-    label: "",
+    label: "<%= componentLabel %>",
     description: "",
     icon: "",
     tags: []
   };
 
   // <%= blueprintComment %>
-  const blueprint = {};
+  const blueprint = {
+    text = "Hello World!"
+  };
   
   // <%= previewComment %>
   const preview = {};

@@ -2,13 +2,14 @@
 spec:
   structures:
     - content_blocks
-  label:
+  label: "<%= componentLabel %>"
   description:
   icon:
   tags: []
 
 # <%= blueprintComment %>
 blueprint:
+  text: "Hello World!"
 
 # <%= previewComment %>
 preview:

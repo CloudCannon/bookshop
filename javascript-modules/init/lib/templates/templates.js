@@ -20,6 +20,21 @@ export const eleventy = {
 	extension: 'eleventy.liquid'
 };
 
+export const jekyll_page = {
+	render: ejs.compile(readFileSync(join(__dirname, "page-jekyll.ejs.t"), 'utf8')),
+	extension: 'jekyll.html'
+};
+
+export const hugo_page = {
+	render: ejs.compile(readFileSync(join(__dirname, "page-hugo.ejs.t"), 'utf8')),
+	extension: 'hugo.html'
+};
+
+export const eleventy_page = {
+	render: ejs.compile(readFileSync(join(__dirname, "page-eleventy.ejs.t"), 'utf8')),
+	extension: 'eleventy.liquid'
+};
+
 export const svelte = {
 	render: ejs.compile(readFileSync(join(__dirname, "svelte.ejs.t"), 'utf8')),
 	extension: 'svelte'
@@ -47,4 +62,16 @@ export const bookshop_js = {
 export const bookshop_json = {
 	render: ejs.compile(readFileSync(join(__dirname, "bookshop-json.ejs.t"), 'utf8')),
 	extension: 'bookshop.json'
+};
+
+export const bookshop_config = {
+	render: ejs.compile(readFileSync(join(__dirname, "bookshop-config.ejs.t"), 'utf8')),
+};
+
+export const hugo_config = {
+	render: ejs.compile(readFileSync(join(__dirname, "hugo-config.ejs.t"), 'utf8')),
+};
+
+export const global_style = {
+	render: ejs.compile(readFileSync(join(__dirname, "global-style.ejs.t"), 'utf8')),
 };
