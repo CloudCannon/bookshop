@@ -16,7 +16,7 @@ https://github.com/cloudcannon/bookshop/releases/[image:https://img.shields.io/s
 image:https://img.shields.io/github/release-date/cloudcannon/bookshop?color=informational[GitHub Release Date]
 
 [.lead]
-Bookshop is a component development workflow for static websites. Bookshop currently supports Jekyll, Eleventy, and Hugo with support for React, Vue, and Svelte coming in the near future.
+Bookshop is a component development workflow for static websites. Bookshop currently supports Jekyll, Eleventy, and Hugo with support for Next, Nuxt, and Svelte coming in the near future.
 
 image::bookshop-hero.png[Iconography representing some components that might reside in a component library. There are lines connecting some of the components to wireframed areas of two example website pages.]
 
@@ -27,20 +27,10 @@ Bookshop defines a convention for building self-contained components in the temp
 A good rundown of our motivations and the problems we are looking to solve can be found in our link:https://cloudcannon.com/blog/introducing-bookshop/[launch post on CloudCannon].
 
 == Quick start
-To jump right into using Bookshop on a site, check out the link:https://github.com/CloudCannon/jekyll-bookshop-starter[Jekyll Bookshop Starter] or link:https://github.com/CloudCannon/eleventy-bookshop-starter[Eleventy Bookshop Starter]. Then read through the guides below to get a feel for how everything plugs together.
+To get started, head over to the guide for the SSG you would like to work with.
 
-== Guides
+* link:guides/jekyll.adoc[Jekyll Bookshop Reference Guide]
 
-link:guides/conventions.adoc[Conventions Guide]:: Learn the Bookshop conventions, from how to write Bookshop TOML files to the component file structure.
+* link:guides/eleventy.adoc[Eleventy Bookshop Reference Guide]
 
-link:guides/jekyll.adoc[Jekyll Guide]:: How to integrate your Bookshop project into a Jekyll website.
-
-link:guides/eleventy.adoc[Eleventy Guide]:: How to integrate your Bookshop projects into an Eleventy website.
-
-link:guides/hugo.adoc[Hugo Guide]:: How to integrate your Bookshop projects into a Hugo website.
-
-link:guides/browser.adoc[Browser Guide]:: How to setup and use the Bookshop component browser locally and on a hosted URL.
-
-link:guides/live-editing.adoc[Live Editing Guide]:: Information on how the experimental live editing works, and how to configure it.
-
-link:guides/visual-data-bindings.adoc[Visual Data Bindings Guide]:: Information on the Visual Data Bindings that Bookshop generates automatically.
+* link:guides/hugo.adoc[Hugo Bookshop Reference Guide]
