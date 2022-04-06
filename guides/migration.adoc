@@ -182,6 +182,8 @@ Any `{% bookshop_live %}` tag in your templates can be entirely removed, this is
 
 Any usage of the `{% bookshop_browser %}` tag should be replaced with the `{% bookshop_component_browser %}` tag. The new tag no longer requires a port argument, and will connect to the default port of `npx @bookshop/browser`.
 
+Additionally, if you currently have any logic around the component browser tag for local / production builds, this can be removed. If the tag exists on a page, the Bookshop Generate command will automatically turn it into a hosted component browser.
+
 '''
 
 Any Bookshop commands in your CloudCannon `prebuild` script can be removed — all live editing and component browser setup is now performed automatically by the Bookshop Generate command. 
@@ -212,6 +214,8 @@ Any `{% bookshop_live %}` tag in your templates can be entirely removed, this is
 '''
 
 Any usage of the `{% bookshop_browser %}` tag should be replaced with the `{% bookshop_component_browser %}` tag. The new tag no longer requires a port argument, and will connect to the default port of `npx @bookshop/browser`.
+
+Additionally, if you currently have any logic around the component browser tag for local / production builds, this can be removed. If the tag exists on a page, the Bookshop Generate command will automatically turn it into a hosted component browser.
 
 '''
 
