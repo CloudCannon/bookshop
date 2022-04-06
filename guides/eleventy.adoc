@@ -61,7 +61,7 @@ TIP: Short on time? You can use our link:https://github.com/CloudCannon/{ssgl}-b
 
 This guide will walk you through getting Bookshop connected to an existing {ssg} site. If you don't have a site already, 
 ifdef::hugo[]
-running link:https://gohugo.io/getting-started/quick-start/#step-2-create-a-new-site[`hugo new site`] is a good start.
+running link:https://gohugo.io/getting-started/quick-start/#step-2-create-a-new-site[`hugo new site mysite`] is a good start.
 endif::hugo[]
 ifdef::jekyll[]
 running link:https://jekyllrb.com/docs/[`jekyll new mysite`] is a good start.
@@ -69,7 +69,7 @@ endif::jekyll[]
 ifdef::eleventy[]
 reading link:https://www.11ty.dev/docs/getting-started/[Eleventy's Getting Started] is a good start.
 endif::eleventy[]
-Alternatively, grab one of our preconfigured link:https://cloudcannon.com/community/themes/[{ssg} templates].
+Alternatively, grab one of CloudCannon's preconfigured link:https://cloudcannon.com/community/themes/[{ssg} templates].
 
 ////
 //
@@ -191,7 +191,7 @@ path = 'github.com/cloudcannon/bookshop/hugo/v3'
 
 Adjust the `../component-library` path in `replacements` if you created it with a different name, or in a different place.
 
-TIP: This path is relative to the Hugo `themes` directory (whether or not it exists), hence why it is `../component-library` rather than `component-library` in this instance.
+TIP: This path is relative to the Hugo `themes` directory (whether or not it exists), hence `../component-library` actually points to a component library in your Hugo source directory.
 
 With that configuration in place, running `hugo serve` should download the required module and host your site. Nothing will appear different yet, but we now have access to use components.
 
@@ -217,7 +217,7 @@ plugins:
   - jekyll-bookshop
 
 bookshop_locations:
-  - ../component-library
+  - component-library
 ```
 
 TIP: Make sure that `bookshop_locations` points to the component library you just created, relative to your Jekyll source.
@@ -267,11 +267,13 @@ module.exports = function (eleventyConfig) {
 };
 ```
 
+TIP: Make sure that `bookshop_locations` points to the component library you just created, relative to your Eleventy source.
+
 endif::eleventy[]
 
 Lastly, we'll need to install a few npm packages for Bookshop. These aren't used as part of your production build, but they provide the developer tooling that enables structured data and live editing. 
 
-These packages should be installed at the root of the repository that contains your site. If this folder doesn't have a `package.json` file yet, run `npm init` to create one.
+These packages should be installed at the root of the repository that contains your site. If this folder doesn't have a `package.json` file yet, run `npm init -y` to create one.
 
 To get setup, run the following command to install the needed Bookshop packages:
 [source,bash,subs="attributes"]
@@ -433,7 +435,7 @@ Bookshop provides a range of partials which we will cover. The most important of
 To start, add the following snippet to one of your layouts:
 
 .*index.html*
-[source,liquid,subs="attributes"]
+[source,go,subs="attributes"]
 ----
 ...
 
@@ -460,7 +462,7 @@ sample:
 Then you can replace the partial we just wrote with the following: 
 
 .*index.html*
-[source,liquid,subs="attributes"]
+[source,go,subs="attributes"]
 ----
 ...
 
@@ -482,7 +484,7 @@ sample:
 Which lets us pass the object directly to the `bookshop` partial: 
 
 .*index.html*
-[source,liquid,subs="attributes"]
+[source,go,subs="attributes"]
 ----
 ...
 
@@ -522,7 +524,7 @@ component-library/
 
 ifdef::hugo[]
 This can then be included using the `bookshop_partial` partial:
-```liquid
+```go
 {{ partial "bookshop_partial" (slice "helper" (dict "lorem" "ipsum")) }}
 ```
 
@@ -563,7 +565,7 @@ You can render the array of components using the page helper like so:
 
 ifdef::hugo[]
 
-```liquid
+```go
 {{ partial "bookshop_partial" (slice "page" .Params.content_blocks) }}
 ```
 
@@ -745,7 +747,7 @@ Components can, of course, reference other components:
 
 .*components/hero/hero.{ssgext}*
 ifdef::hugo[]
-[source,liquid]
+[source,go]
 ----
 <h1>{{ .title }}</h1>
 {{ partial "bookshop" (slice "button" (dict "link_url" .url "link_text" "Click me")) }}
@@ -1254,7 +1256,7 @@ ifdef::hugo[]
 To install the component browser on a page of your site, use the `bookshop_component_browser` partial in that page's layout.
 
 .*components.html*
-```liquid
+```go
 {{ partial "bookshop_component_browser" }}
 ```
 
@@ -1333,7 +1335,7 @@ With Hugo, there is one extra step to get live editing working. For any componen
 For most setups, your site layouts will only contain the `page` helper, so this snippet will be all you need:
 
 .*<layout>.html*
-[source,liquid]
+[source,go]
 ----
 {{ partial "bookshop_bindings" `.Params.content_blocks` }}
 {{ partial "bookshop_partial" (slice "page" .Params.content_blocks) }}
@@ -1342,7 +1344,7 @@ For most setups, your site layouts will only contain the `page` helper, so this 
 If you're using other components in your layouts, add the `bookshop_bindings` partial to them. This partial needs to be passed a string representation of the data being passed to the component that follows it. For example:
 
 .*<layout>.html*
-[source,liquid]
+[source,go]
 ----
 {{ partial "bookshop_bindings" `(dict title .Params.title)` }}
 {{ partial "bookshop" (slice "hero" (dict title .Params.title)) }}
@@ -1386,7 +1388,7 @@ For example:
 
 
 ifdef::hugo[]
-```liquid
+```go
 <!-- This component will **not** get a binding -->
 {{ partial "bookshop" (slice "item" (dict "data_binding" false "props" props)) }}
 
@@ -1431,7 +1433,7 @@ ifdef::hugo[]
 
 Data will not be available through `.Site.Data`, but will be available through `site.Data`. Accessing site pages when live editing is not yet supported in Hugo.
 
-IMPORTANT: For data to be accessible, you will need to set `data_config: true` in your `cloudcannon.config.*` file.
+IMPORTANT: For data to be accessible, you will need to set `data_config: true` in your CloudCannon Global Configuration file.
 
 endif::hugo[]
 ifdef::jekyll[]
@@ -1440,7 +1442,7 @@ Accessing `site.data` should then work as expected inside a component in the vis
 
 Accessing `site.<collection>` should also work out of the box. All front matter from a collection should be accessible, but some collection fields such as `page.content` and `page.excerpt` will not be available when live editing.
 
-IMPORTANT: For data to be accessible, you will need to set `data_config: true` in your `cloudcannon.config.*` file.
+IMPORTANT: For data to be accessible, you will need to set `data_config: true` in your CloudCannon Global Configuration file.
 
 NOTE: Support is only provided for data files in your source. Any data provided by a plugin will not be available.
 
@@ -1451,7 +1453,7 @@ Accessing your site data should then work as expected inside a component in the 
 
 Accessing `collections.*` should also work out of the box. All front matter from a collection should be accessible, but some collection fields such as `templateContent` will not be available when live editing.
 
-IMPORTANT: For data to be accessible, you will need to expose each data set using `data_config` in your `cloudcannon.config.*` file.
+IMPORTANT: For data to be accessible, you will need to expose each data set using `data_config` in your CloudCannon Global Configuration file.
 
 NOTE: Support is only provided for data files in your source. Any data provided by a plugin will not be available.
 
@@ -1480,7 +1482,7 @@ title: "Hello World"
 ---
 ```
 .*index.html*
-```liquid
+```go
 <!-- 
   This component can make the connection between "text" and ".Params.title",
   and will work as expected in the visual editor.
@@ -1491,7 +1493,7 @@ title: "Hello World"
 {{ my_title := .Params.title }}
 
 <!-- 
-  This component doesn't have the context to map text back to its origin,
+  This component does not have the context to map text back to its origin,
   and will error in the visual editor.
   (Assignments _inside_ Bookshop components will work correctly)
 -->
@@ -1598,6 +1600,8 @@ Bookshop's Eleventy live editing is built on top of the liquidjs package. As suc
 |===
 |Eleventy Feature |Notes 
 
+|Filters: `url`
+|✅
 |Accessing `site.data` and `site.<collection>`
 |ℹ️ Iterating through collections and data files should be possible when live editing Bookshop components.
 |===
@@ -1821,7 +1825,7 @@ For example:
 
 
 ifdef::hugo[]
-```html
+```go
 <!-- This component will re-render in the visual editor -->
 {{ partial "bookshop" (slice "navigation" (dict "props" props)) }}
 
@@ -1830,7 +1834,7 @@ ifdef::hugo[]
 ```
 endif::hugo[]
 ifdef::jekyll[]
-```html
+```liquid
 <!-- This component will re-render in the visual editor -->
 {% bookshop navigation props=props %}
 
@@ -1839,7 +1843,7 @@ ifdef::jekyll[]
 ```
 endif::jekyll[]
 ifdef::eleventy[]
-```html
+```liquid
 <!-- This component will re-render in the visual editor -->
 {% bookshop 'navigation' props: props %}
 
