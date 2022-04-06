@@ -2,8 +2,8 @@
 
 Bookshop guides have moved! Bookshop 3.0 provides all-in-one guides for each SSG:
 
-link:guides/jekyll.adoc[Jekyll Guide]:: The complete guide for using Bookshop with Jekyll
+link:jekyll.adoc[Jekyll Guide]:: The complete guide for using Bookshop with Jekyll
 
-link:guides/eleventy.adoc[Eleventy Guide]:: The complete guide for using Bookshop with Eleventy
+link:eleventy.adoc[Eleventy Guide]:: The complete guide for using Bookshop with Eleventy
 
-link:guides/hugo.adoc[Hugo Guide]:: The complete guide for using Bookshop with Hugo
+link:hugo.adoc[Hugo Guide]:: The complete guide for using Bookshop with Hugo
