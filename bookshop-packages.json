@@ -21,6 +21,18 @@
     "README.adoc": {
       "regex": ":version: .+",
       "replacement": ":version: NEW_VERSION"
+    },
+    "guides/hugo.adoc": {
+      "regex": ":version: .+",
+      "replacement": ":version: NEW_VERSION"
+    },
+    "guides/eleventy.adoc": {
+      "regex": ":version: .+",
+      "replacement": ":version: NEW_VERSION"
+    },
+    "guides/jekyll.adoc": {
+      "regex": ":version: .+",
+      "replacement": ":version: NEW_VERSION"
     }
   },
   "rubygems": {
