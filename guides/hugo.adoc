@@ -1206,6 +1206,14 @@ TIP: Run `npx "@bookshop/browser" --help` to see the available options.
 
 After running this command, a component browser will be viewable on http://localhost:30775
 
+////
+//
+//
+// END Using the Bookshop Component Browser
+//
+//
+////
+
 === Integrating the Component Browser With Your Site
 
 The Bookshop generator frameworks provide helpers for embedding the Bookshop browser on your website. This references the component browser started in the previous command, and embeds a live copy onto your website.
@@ -1256,9 +1264,25 @@ ifdef::eleventy[]
 `{% bookshop_component_browser 1234 %}`
 endif::eleventy[]
 
+////
+//
+//
+// END Integrating the Component Browser With Your Site
+//
+//
+////
+
 === Hosting a Component Library
 
 Any page that contains the `bookshop_component_browser` snippet will get picked up by `npx @bookshop/generate` and turned into a hosted component browser, no extra configuration is needed.
+
+////
+//
+//
+// END Hosting a Component Library
+//
+//
+////
 
 == Connecting Bookshop to CloudCannon
 
@@ -1406,6 +1430,14 @@ NOTE: Support is only provided for data files in your source. Any data provided 
 
 endif::eleventy[]
 
+////
+//
+//
+// END Live Editing Site Data and Collections
+//
+//
+////
+
 === Passing Data to Bookshop Components
 
 In order to work when live editing, Bookshop needs a clear path between a Bookshop component and the data it draws from. In general, you should avoid adding logic around your Bookshop components in your site layouts, and instead move that logic into a Bookshop component or helper.
@@ -1490,6 +1522,14 @@ title: "Hello World"
 
 The same is true for site data and collections. Access these directly from inside your component, rather than passing them to the component from your layout.
 endif::eleventy[]
+
+////
+//
+//
+// END Passing Data to Bookshop Components
+//
+//
+////
 
 === {ssg} Live Editing Support
 
@@ -1786,3 +1826,11 @@ If you have a specific component that you never want to live render, you can set
 NOTE: Since the blueprint only affects the creation on new components, you will need to add the `_live_render` flag to any existing component data in your front matter.
 
 IMPORTANT: This flag will only apply if the component is rendered directly from a site layout. If this component is within another component, it will still update live (as the parent re-rendering will encapsulate it).
+
+////
+//
+//
+// END {ssg} Live Editing Support
+//
+//
+////
