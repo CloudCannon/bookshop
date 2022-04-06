@@ -1,5 +1,4 @@
 const pluginBookshop = require("@bookshop/eleventy-bookshop");
-const pluginCloudCannonBookshop = require("@bookshop/cloudcannon-eleventy-bookshop");
 
 module.exports = function (eleventyConfig) {
 	eleventyConfig.setUseGitIgnore(false);
@@ -14,6 +13,4 @@ module.exports = function (eleventyConfig) {
 			pages: 'pages'
 		}
 	};
-
-	eleventyConfig.addPlugin(pluginCloudCannonBookshop);
 };

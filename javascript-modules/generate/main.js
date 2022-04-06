@@ -2,15 +2,15 @@
 import path from 'path';
 import fs from 'fs';
 import { Command } from "commander";
+import chalk from 'chalk';
 import fastGlob from 'fast-glob';
-import TOML from '@ltd/j-toml';
-import normalizePath from "normalize-path";
-import Structures from "@bookshop/cloudcannon-structures";
-import Narrator from "@bookshop/toml-narrator";
+
 import { hydrateLiveForSite } from "./lib/live-connector.js";
 import { buildLiveScript } from "./lib/live-builder.js";
 import { hydrateComponentBrowserForSite } from "./lib/browser-connector.js";
 import { buildBrowserScript } from "./lib/browser-builder.js";
+import { buildStructures } from "./lib/structure-builder.js";
+import { hydrateStructures } from "./lib/structure-connector.js";
 
 const cwd = process.cwd();
 const program = new Command();
@@ -20,16 +20,6 @@ const plur = (num, str, pluralStr) => {
     return `${num} ${pluralized}`;
 }
 
-const addComponentTo = (obj, component) => {
-    const { structures, ...fields } = component;
-    structures?.forEach(structure => {
-        obj[structure] = obj[structure] || {};
-        obj[structure]["id_key"] = "_bookshop_name"
-        obj[structure]["values"] = obj[structure]["values"] || [];
-        obj[structure]["values"].push(fields);
-    });
-}
-
 async function run() {
     program.option("-d, --dot", "Look for Bookshops inside . directories");
     program.option("--skip-live", "Don't build live editing JS or add live editing scripts to HTML");
@@ -37,64 +27,46 @@ async function run() {
     program.parse(process.argv);
     const options = program.opts();
 
-    console.log(`📚 Looking for Bookshop component libraries...`);
+    console.log(`📚 Generating Bookshop integrations`);
 
-    const bookshopConfigFiles = await fastGlob(`./**/bookshop.config.js`, {
-        cwd,
-        dot: !!options.dot
-    });
+    console.log(chalk.bold(`\nLooking for Bookshop component libraries...`));
+    const { bookshopRoots, structures } = await buildStructures(options);
 
-    const tomlFiles = [];
-    const bookshopRoots = [];
-
-    for (const bookshopConfig of bookshopConfigFiles) {
-        const prevLength = tomlFiles.length;
-        const bookshopRoot = path.dirname(path.dirname(bookshopConfig));
-        bookshopRoots.push(bookshopRoot);
-        console.log(`📚 —— Loading Bookshop from ./${bookshopRoot}`);
-        const bookshopPath = normalizePath(`${bookshopRoot}/**/*.bookshop.toml`);
-        tomlFiles.push(...await fastGlob(bookshopPath, {
-            cwd
-        }));
-        console.log(`📚 ———— Loaded ${tomlFiles.length - prevLength} components`);
+    if (!bookshopRoots.length) {
+        console.error(chalk.bold.red(`\nCould not find any Bookshops in ${cwd}`));
+        console.error(chalk.bold.yellow(`\n — Is it in a dot folder? Try passing the ${chalk.cyan(`--dot`)} flag`));
+        console.error(chalk.bold.yellow(`\n — Does it have a config file? To be discovered, it needs a ${chalk.cyan(`bookshop/bookshop.config.js`)} file`));
+        process.exit(1);
     }
+    console.log(`Loaded ${plur(bookshopRoots.length, "Bookshop")}`);
 
-    const files = Array.from(new Set(tomlFiles.sort())).map(file => { return { path: file } });
-    let structureCount = 0;
-
-    files?.forEach(file => {
-        let contents = fs.readFileSync(file.path, "utf8");
-        contents = Narrator.RewriteTOML(contents);
-        file.contents = TOML.parse(contents, 1.0, '\n', false);
-        file.components = Structures.TransformComponent(file.path, file.contents);
-        structureCount += file.components.length;
-    });
-
-    console.log(`📚 Looking for output sites...`);
+    console.log(chalk.bold(`\nLooking for output sites...`));
 
     const infoJsonFiles = await fastGlob(`./**/_cloudcannon/info.json`, {
         cwd,
         dot: !!options.dot
     });
 
+    if (!infoJsonFiles.length) {
+        console.error(chalk.bold.red(`\nCould not find any output sites in ${cwd}`));
+        console.error(chalk.bold.yellow(`\nAre you running this on CloudCannon?`));
+        console.error(chalk.bold.yellow(`\nTo be discovered, it needs a ${chalk.cyan(`_cloudcannon/info.json`)} file`));
+        console.error(chalk.bold.yellow(`\nThis file should have been generated automatically for you`));
+        console.error(chalk.bold.yellow(`\nSee https://cloudcannon.com/documentation/articles/integrating-your-site/ for help, or contact support`));
+        process.exit(1);
+    }
+    console.log(`Found ${plur(infoJsonFiles.length, "site")}`);
+
     for (const infoJsonFile of infoJsonFiles) {
         const siteRoot = path.dirname(path.dirname(infoJsonFile));
-        console.log(`📚 —— Modifying built site at ./${siteRoot}`);
+        console.log(chalk.bold.magenta(`\nModifying output site at ./${siteRoot}`));
         const contents = fs.readFileSync(infoJsonFile, "utf8");
-        const info_json = JSON.parse(contents);
-        info_json["_structures"] = info_json["_structures"] || {};
+        const infoJson = JSON.parse(contents);
 
-        files?.forEach(file => {
-            file.components?.forEach(component => {
-                addComponentTo(info_json["_structures"], component);
-                if (typeof info_json["_array_structures"] === 'object') {
-                    addComponentTo(info_json["_array_structures"], component);
-                }
-            });
-        });
+        hydrateStructures(infoJson, structures, options);
 
-        fs.writeFileSync(infoJsonFile, JSON.stringify(info_json, null, 2));
-        console.log(`📚 ———— Added components as CloudCannon Structures`);
+        fs.writeFileSync(infoJsonFile, JSON.stringify(infoJson, null, 2));
+        console.log(chalk.green(`Added components as CloudCannon Structures`));
 
         if (!options.skipLive) {
             const liveEditingNeeded = await hydrateLiveForSite(siteRoot, options);
@@ -102,7 +74,7 @@ async function run() {
                 await buildLiveScript(siteRoot, bookshopRoots);
             }
         } else {
-            console.log(`📚 ———— Skipping live editing generation`);
+            console.log(chalk.gray(`Skipping live editing generation`));
         }
 
         if (!options.skipComponents) {
@@ -111,11 +83,11 @@ async function run() {
                 await buildBrowserScript(siteRoot, bookshopRoots);
             }
         } else {
-            console.log(`📚 ———— Skipping component browser generation`);
+            console.log(chalk.gray(`Skipping component browser generation`));
         }
     }
 
-    console.log(`\n📚🏁 Finished. Added ${plur(structureCount, "structure")} from ${plur(bookshopConfigFiles.length, "Bookshop")} to ${plur(infoJsonFiles.length, "site")}.`);
+    console.log(chalk.green.bold(`\n📚🏁 Finished. Added ${plur(structures.length, "structure")} from ${plur(bookshopRoots.length, "Bookshop")} to ${plur(infoJsonFiles.length, "site")}.`));
 }
 
 run();

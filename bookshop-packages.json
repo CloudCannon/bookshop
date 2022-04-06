@@ -9,25 +9,44 @@
       ]
     }
   },
-  "rubygems": {
-    "generator-plugins/jekyll/cloudcannon-jekyll-bookshop": {
-      "vendor_from_npm": [
-        "javascript-modules/cloudcannon-structures",
-        "javascript-modules/toml-narrator"
-      ]
+  "versionStrings": {
+    "hugo/v3/core/bookshop_bindings.html": {
+      "regex": "version: \"[^\"]+\"",
+      "replacement": "version: \"NEW_VERSION\""
     },
+    "generator-plugins/jekyll/jekyll-bookshop/lib/jekyll-bookshop/tags/bookshop-common-tag.rb": {
+      "regex": "version = \"[^\"]+\"",
+      "replacement": "version = \"NEW_VERSION\""
+    },
+    "README.adoc": {
+      "regex": ":version: .+",
+      "replacement": ":version: NEW_VERSION"
+    },
+    "guides/hugo.adoc": {
+      "regex": ":version: .+",
+      "replacement": ":version: NEW_VERSION"
+    },
+    "guides/eleventy.adoc": {
+      "regex": ":version: .+",
+      "replacement": ":version: NEW_VERSION"
+    },
+    "guides/jekyll.adoc": {
+      "regex": ":version: .+",
+      "replacement": ":version: NEW_VERSION"
+    }
+  },
+  "rubygems": {
+    "generator-plugins/jekyll/cloudcannon-jekyll-bookshop": {},
     "generator-plugins/jekyll/jekyll-bookshop": {}
   },
   "npm": {
     "javascript-modules/bookshop-sass": {},
     "javascript-modules/browser": {},
     "javascript-modules/builder": {},
-    "javascript-modules/cloudcannon-structures": {},
     "javascript-modules/engines/jekyll-engine": {},
     "javascript-modules/engines/eleventy-engine": {},
     "javascript-modules/engines/svelte-engine": {},
     "javascript-modules/engines/hugo-engine": {},
-    "javascript-modules/gen": {},
     "javascript-modules/generate": {},
     "javascript-modules/generator-plugins/eleventy/cloudcannon-eleventy-bookshop": {},
     "javascript-modules/generator-plugins/eleventy/eleventy-bookshop": {},
@@ -35,6 +54,6 @@
     "javascript-modules/init": {},
     "javascript-modules/live": {},
     "javascript-modules/styles": {},
-    "javascript-modules/toml-narrator": {}
+    "javascript-modules/up": {}
   }
 }

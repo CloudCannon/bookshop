@@ -6,7 +6,7 @@ const assert = require("assert").strict;
 
 /* * * * * * * * * *
  *                 *
- * STRING  HELPERS *
+ *     HELPERS     *
  *                 *
  * * * * * * * * * */
 
@@ -18,12 +18,16 @@ const escapeRegExp = (str) => {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+const strToPathRegExp = (str) => {
+  return new RegExp(escapeRegExp(str).replace(/\//g, "(\\\\|\\\/)"));
+}
+
 const strToLenientRegExp = (str) => {
-  return new RegExp(escapeRegExp(str).replace(/\s/g, "\\s*"));
+  return new RegExp(escapeRegExp(str).replace(/\n/g, "[\\n\\r]+").replace(/\s/g, "\\s*"));
 }
 
 const strToStrictRegExp = (str) => {
-  return new RegExp(escapeRegExp(str));
+  return new RegExp(escapeRegExp(str).replace(/\n/g, "[\\n\\r]+"));
 }
 
 const subVariables = (input, varObject) => {
@@ -32,6 +36,13 @@ const subVariables = (input, varObject) => {
     input = input.replace(r, value);
   }
   return input;
+}
+
+const dig = (obj, path) => {
+  if (typeof path === 'string') path = path.replace(/\[(\d+)]/g, '.$1').split('.');
+  obj = obj[path.shift()];
+  if (obj && path.length) return dig(obj, path);
+  return obj;
 }
 
 /* * * * * * * * * * *
@@ -71,10 +82,13 @@ Then(/^(\S+) should (not )?exist$/i, function (file, negation) {
 Then(/^(debug )?(\S+) should (not |leniently )?contain the text "(.+)"$/i, function (debug, file, modifier, contents) {
   assert.ok(this.fileExists(file), `${file} exists`);
   const fileContents = this.fileContents(file);
-  if (debug) this.debugStep(fileContents);
 
   let negation = modifier === 'not ';
+  contents = subVariables(contents, this.storage);
   contents = unescape(contents);
+  if (debug) {
+    this.debugStep(`${fileContents}\n - - VS:\n${contents}`);
+  }
   if (modifier === 'leniently ') {
     contents = strToLenientRegExp(contents);
     fileContents = fileContents.replace(/\n/g, ' ');
@@ -85,6 +99,41 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain the text "(.+)"$/i, funct
   const contains = contents.test(fileContents);
   if (negation) assert.ok(!contains, `${file} does not match ${contents}`);
   else assert.ok(contains, `${file} matches ${contents}`);
+});
+
+Then(/^(debug )?(\S+) should (not |leniently )?contain the text:$/i, function (debug, file, modifier, contents) {
+  assert.ok(this.fileExists(file), `${file} exists`);
+  const fileContents = this.fileContents(file);
+
+  let negation = modifier === 'not ';
+  contents = subVariables(contents, this.storage);
+  contents = unescape(contents);
+  if (debug) {
+    this.debugStep(`${fileContents}\n - - VS:\n${contents}`);
+  }
+  if (modifier === 'leniently ') {
+    contents = strToLenientRegExp(contents);
+    fileContents = fileContents.replace(/\n/g, ' ');
+  } else {
+    contents = strToStrictRegExp(contents);
+  }
+
+  const contains = contents.test(fileContents);
+  if (negation) assert.ok(!contains, `${file} does not match ${contents}`);
+  else assert.ok(contains, `${file} matches ${contents}`);
+});
+
+Then(/^(debug )?(\S+) should contain exactly:$/i, function (debug, file, contents) {
+  assert.ok(this.fileExists(file), `${file} exists`);
+  const fileContents = this.fileContents(file);
+
+  contents = subVariables(contents, this.storage);
+  contents = unescape(contents);
+  if (debug) {
+    this.debugStep(`${fileContents}\n - - VS:\n${contents}`);
+  }
+
+  assert.equal(fileContents, contents);
 });
 
 Then(/^(debug )?(\S+) should (not |leniently )?contain each row:$/i, function (debug, file, modifier, table) {
@@ -98,7 +147,8 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain each row:$/i, function (d
   }
 
   table.hashes().forEach(row => {
-    let contents = unescape(row.text);
+    let contents = subVariables(row.text, this.storage);
+    contents = unescape(contents);
     if (modifier === 'leniently ') {
       contents = strToLenientRegExp(contents);
     } else {
@@ -107,6 +157,27 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain each row:$/i, function (d
     const contains = contents.test(fileContents);
     if (negation) assert.ok(!contains, `${file} does not match ${contents}`);
     else assert.ok(contains, `${file} matches ${contents}`);
+  });
+});
+
+Then(/^(debug )?I should see "([^"]+)" containing the values:/i, function (debug, file, table) {
+  assert.ok(this.fileExists(file), `${file} exists`);
+  let fileContents = this.fileContents(file);
+  if (debug) this.debugStep(fileContents);
+
+  let parsedFileContents = JSON.parse(fileContents);
+
+  table.hashes().forEach(row => {
+    let JSONpath = subVariables(row.path, this.storage);
+    let JSONvalue = subVariables(row.value, this.storage);
+    if (JSONvalue === "undefined") {
+      JSONvalue = undefined;
+    } else {
+      JSONvalue = JSON.parse(JSONvalue);
+    }
+
+    let foundValue = dig(parsedFileContents, JSONpath);
+    assert.deepStrictEqual(foundValue, JSONvalue);
   });
 });
 
@@ -120,10 +191,10 @@ Given(/^I serve the (\S+) directory$/i, { timeout: 60 * 1000 }, function (dir) {
   this.serveDir(dir); // We'll need to kill this later
 });
 
-When(/^I run "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (command, dir) {
+When(/^I (try )?run "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (allow_fail, command, dir) {
   command = this.replacePort(command);
   await this.runCommand(unescape(command), dir);
-  assert.strictEqual(this.commandError, "");
+  if (!allow_fail) assert.strictEqual(this.commandError, "");
 });
 
 When(/^I daemonize "(.+)" in the (\S+) directory$/i, { timeout: 60 * 1000 }, async function (command, dir) {
@@ -139,7 +210,9 @@ Then(/^(debug )?(stdout|stderr) should (not )?be empty$/i, function (debug, stre
 
 Then(/^(debug )?(stdout|stderr) should (not )?contain "(.+)"$/i, function (debug, stream, negation, contents) {
   if (debug) this.debugStep(this[stream]);
-  const contains = this[stream].includes(unescape(contents));
+  const outputRegexp = strToPathRegExp(unescape(contents));
+  const contains = outputRegexp.test(this[stream]);
+
   if (negation) assert.ok(!contains, `${stream} does not contain ${unescape(contents)}`);
   else assert.ok(contains, `${stream} contains ${unescape(contents)}`);
 });
@@ -173,6 +246,10 @@ const p_retry = async (fn, wait, attempts) => {
 
 const loadPage = async (url, world) => {
   await ensurePage(world);
+  world.page
+    .on('console', message => world.trackPuppeteerLog(`${message.type().toUpperCase()}: ${message.text()}`))
+    .on('pageerror', ({ message }) => world.trackPuppeteerError(message))
+    .on('requestfailed', request => world.trackPuppeteerError(`${request.failure().errorText} ${request.url()}`));
   await p_retry(
     () => world.page.goto(world.replacePort(url), {
       waitUntil: 'networkidle0',
@@ -180,23 +257,28 @@ const loadPage = async (url, world) => {
     500, // ms between attempts
     20 // attempts
   );
-  world.page
-    .on('console', message => world.trackPuppeteerLog(`${message.type().toUpperCase()}: ${message.text()}`))
-    .on('pageerror', ({ message }) => world.trackPuppeteerError(message))
-    .on('requestfailed', request => world.trackPuppeteerError(`${request.failure().errorText} ${request.url()}`));
 }
 
 const readyCloudCannon = async (data, world) => {
   if (!world.page) throw Error("No page open");
   const script = `window.CC = class CloudCannon {
-    constructor(options) { this.isMocked = true; this.data = options.data; document.dispatchEvent(this.event('cloudcannon:load')); }
+    constructor(options) { this.isMocked = true; this.loadingMessages = []; this.data = options.data; document.dispatchEvent(this.event('cloudcannon:load')); }
     newData(data) { this.data = data; document.dispatchEvent(this.event('cloudcannon:update')); }
     event(name) { return new CustomEvent(name, { detail: { CloudCannon: this } });}
     enableEvents() {}
     refreshInterface() {}
+    setLoading(str) { this.loadingMessages.push(str); }
     async value() { return this.data; }
   };
   window.CloudCannon = new window.CC({ data: ${data} })`;
+  await world.page.addScriptTag({ content: script });
+  await p_sleep(50);
+}
+
+// This flag is used in some tests to determine whether to load a remote file
+const readyEmptyCloudCannon = async (world) => {
+  if (!world.page) throw Error("No page open");
+  const script = `window.CloudCannon = { isMocked : true };`;
   await world.page.addScriptTag({ content: script });
   await p_sleep(50);
 }
@@ -243,7 +325,8 @@ When(/^🌐 "(.+)" evaluates$/i, { timeout: 5 * 1000 }, async function (statemen
   try {
     await this.page.waitForFunction(statement, { timeout: 4 * 1000 });
   } catch (e) {
-    this.trackPuppeteerError(`${statement} didn't evaluate within 4s`);
+    this.trackPuppeteerError(`${statement} failed:\n${e.toString()}`);
+    assert.deepEqual(this.puppeteerErrors(), []);
   }
 });
 
@@ -275,15 +358,23 @@ Then(/^🌐 There should be a click listener on (\S+)$/i, { timeout: 60 * 1000 }
   assert.equal(clicked, true, `Clicking the element did fire the expected handler. Expected window["${selector}:clicked"] to be true.`);
 });
 
-Then(/^🌐 The selector (\S+) should contain ['"](.+)['"]$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
+Then(/^🌐(debug)? The selector (\S+) should contain ['"](.+)['"]$/i, { timeout: 60 * 1000 }, async function (debug, selector, contents) {
   if (!this.page) throw Error("No page open");
+  if (debug) {
+    const data = await this.page.evaluate(() => document.querySelector('body').outerHTML);
+    this.debugStep(data);
+  }
   const innerText = await this.page.$eval(selector, (node) => node.innerText);
   const contains = innerText.includes(unescape(contents));
   assert.equal(innerText, contains ? innerText : `innerText containing \`${contents}\``);
 });
 
-Then(/^🌐 The selector (\S+) should match ['"](.+)['"]$/i, { timeout: 60 * 1000 }, async function (selector, contents) {
+Then(/^🌐(debug)? The selector (\S+) should match ['"](.+)['"]$/i, { timeout: 60 * 1000 }, async function (debug, selector, contents) {
   if (!this.page) throw Error("No page open");
+  if (debug) {
+    const data = await this.page.evaluate(() => document.querySelector('body').outerHTML);
+    this.debugStep(data);
+  }
   const outerHTML = await this.page.$eval(selector, (node) => node.outerHTML);
   const contains = outerHTML.includes(unescape(contents));
   assert.equal(outerHTML, contains ? outerHTML : `outerHTML containing \`${contents}\``);
@@ -294,7 +385,8 @@ Then(/^🌐 "(.+)" should evaluate$/i, { timeout: 5 * 1000 }, async function (st
   try {
     await this.page.waitForFunction(statement, { timeout: 4 * 1000 });
   } catch (e) {
-    throw Error(`${statement} didn't evaluate within 4s`)
+    this.trackPuppeteerError(`${statement} failed:\n${e.toString()}`);
+    assert.deepEqual(this.puppeteerErrors(), []);
   }
 });
 
@@ -348,6 +440,8 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 
 
   // @bookshop/generate
   await this.runCommand(`npm start`, `.`);
+  assert.strictEqual(this.stderr, "");
+  assert.strictEqual(this.commandError, "");
 
   // Open the site in a browser
   switch (ssg) {
@@ -368,6 +462,8 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 
       this.trackPuppeteerError(e.toString());
       this.trackPuppeteerError(`Bookshop didn't do an initial render within 4s`);
     }
+  } else {
+    await readyEmptyCloudCannon(this);
   }
 
   assert.deepEqual(this.puppeteerErrors(), []);

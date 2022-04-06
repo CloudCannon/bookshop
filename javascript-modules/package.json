@@ -5,12 +5,10 @@
         "bookshop-sass",
         "browser",
         "builder",
-        "cloudcannon-structures",
         "engines/jekyll-engine",
         "engines/eleventy-engine",
         "engines/svelte-engine",
         "engines/hugo-engine",
-        "gen",
         "generate",
         "generator-plugins/eleventy/cloudcannon-eleventy-bookshop",
         "generator-plugins/eleventy/eleventy-bookshop",
@@ -19,11 +17,8 @@
         "integration-tests",
         "live",
         "styles",
-        "toml-narrator"
+        "up"
     ],
-    "scripts": {
-        "postinstall": "node ./cloudcannon-structures/vendor-hoisted-pluralize.js"
-    },
     "engines": {
         "npm": "please-use-yarn"
     }

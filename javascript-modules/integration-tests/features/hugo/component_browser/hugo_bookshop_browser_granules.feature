@@ -1,4 +1,4 @@
-@hugo @bespoke
+@hugo
 Feature: Hugo Bookshop Component Browser Granular Steps
 
   Background:
@@ -16,14 +16,14 @@ Feature: Hugo Bookshop Component Browser Granular Steps
       """
     * a component-lib/components/single/single.bookshop.toml file containing:
       """
-      [component]
+      [spec]
       structures = [ "content_blocks" ]
       label = "Single"
       description = "Single component"
       icon = "nature_people"
       tags = ["Basic"]
 
-      [props]
+      [blueprint]
       title = "Hello There, World"
       """
     * a component-lib/components/single/single.hugo.html file containing:
@@ -50,15 +50,19 @@ Feature: Hugo Bookshop Component Browser Granular Steps
     *    stdout should contain "Total in"
     *    site/public/index.html should contain each row: 
       | text |
-      | <script class="cms-no-rewrite" src="/_bookshop/bookshop-browser.js?cb=  |
+      | <div data-bookshop-browser=""></div> |
+      | <script src="http://localhost:30775/bookshop.js"></script> |
 
   Scenario: Bookshop Generate hydrates component browser
     Given I run "hugo" in the site directory
     *     I run "cloudcannon-hugo --baseurl /" in the site directory
     When I run "npm start" in the . directory
     Then stderr should be empty
-    *    stdout should contain "Modifying built site at ./site/public"
+    *    stdout should contain "Modifying output site at ./site/public"
     *    stdout should contain "Built component browser into 1 page"
+    *    site/public/index.html should contain each row: 
+      | text |
+      | <script src="/_bookshop/bookshop-browser.min.js?cb=  |
 
   @web
   Scenario: Bookshop component browser initialises
@@ -71,8 +75,10 @@ Feature: Hugo Bookshop Component Browser Granular Steps
   @web
   Scenario: Bookshop component browser renders a component
     When 🌐 I load my site
+    And 🌐 "typeof window.BookshopBrowser !== 'undefined'" evaluates
     And 🌐 "window.bookshopBrowser?.hasRendered === true" evaluates
     And 🌐 I trigger a mousedown on li:nth-of-type(2)>button
+    And 🌐 "window.bookshopComponentHasRendered === true" evaluates
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Hello There, World"

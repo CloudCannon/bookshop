@@ -22,52 +22,43 @@ Feature: Hugo Bookshop CloudCannon Integration
       ---
       """
 
-  @skip # NYI
-  Scenario: Bookshop Live tag
-    Given a site/layouts/index.html file containing:
-      """
-      {{ partial "bookshop_live" "_cloudcannon/bookshop-live.js" }}
-      """
-    When I run "hugo" in the site directory
-    Then stderr should be empty
-    And stdout should contain "Total in"
-    And site/public/index.html should contain each row: 
-      | text |
-      | script.src = `/_cloudcannon/bookshop-live.js`; |
-
-  @skip # NYI
-  Scenario: Site data extracted for live editing
-
-  @skip # NYI
   Scenario: Bookshop Live schema comments
-    Given a component-lib/components/a/a.hugo.html file containing:
+    Given a component-lib/components/page/page.hugo.html file containing:
       """
-      <p>a-{{ .text }}</p>
+      {{ range .content_blocks }}
+      <p>{{ ._bookshop_name }}</p>
+      {{ partial "bookshop" (slice "single" (dict "_bookshop_name" "inner")) }}
+      {{ end }}
       """
-    And a component-lib/components/b/b.hugo.html file containing:
+    Given a component-lib/components/single/single.hugo.html file containing:
       """
-      <p>b-{{ .title }}</p>
+      <span>{{ ._bookshop_name }}</span>
       """
     And a site/content/_index.md file containing:
       """
       ---
       content_blocks:
-        - _bookshop_name: a
-          text: 'component-one'
-        - _bookshop_name: b
-          title: 'component-two'
+        - _bookshop_name: fake
       ---
       """
     And a site/layouts/index.html file containing:
       """
-      {{ partial "bookshop" .Params.content_blocks }}
+      {{ partial "bookshop_bindings" `.Params` }}
+      {{ partial "bookshop" (slice "page" .Params) }}
       """
     When I run "hugo" in the site directory
     Then stderr should be empty
     And stdout should contain "Total in"
-    And site/public/index.html should contain each row: 
-      | text |
-      | <p>a-component-one</p> |
-      | <p>b-component-two</p> |
-      | <!--bookshop-live name(a) params(? ? ?) context() -->  |
-      | <!--bookshop-live name(b) params(? ? ?) context() -->  |
+    And site/public/index.html should contain the text: 
+      """
+      <!--bookshop-live meta(version: "[version]" baseurl: "https://bookshop.build/" copyright: "🎉" title: "Hugo Bookshop Cucumber")-->
+      <!--bookshop-live name(__bookshop__subsequent) params(.: .Params)-->
+      <!--bookshop-live name(page)-->
+      
+      <p>fake</p>
+      <!--bookshop-live name(single)-->
+      <span>inner</span>
+      <!--bookshop-live end-->
+
+      <!--bookshop-live end-->
+      """

@@ -1,6 +1,7 @@
 import path from 'path';
 import url from 'url';
 import normalizePath from 'normalize-path';
+import resolve from 'resolve';
 
 const importEngineConfig = async ([engine, data]) => {
     const __engine = await import(`${engine}/build`);
@@ -23,8 +24,19 @@ const bundledEngine = (resolveDir) => {
         delete data.__engine;
         const engineKey = `Engine${engineIndex}`;
         data.plugins = data.plugins || [];
+
+        let engineImportPath = engine;
+        if (process.platform !== "win32") {
+            // TODO: It looks like resolve is mangling this path on Windows
+            // This is a pretty obscure fix and is more likely to affect CI,
+            // so opting Windows out of this for now.
+            try {
+                // Try to force loading the engine from cwd if we can resolve it
+                engineImportPath = resolve.sync(engine, { basedir: process.cwd() });
+            } catch (e) { }
+        }
         return `
-        import {Engine as ${engineKey}} from '${engine}';
+        import {Engine as ${engineKey}} from '${engineImportPath}';
         import ${engineKey}Files from "__bookshop_glob__${joinExtensions(__engine.extensions)}";
 
         const ${engineKey}Plugins = [];
@@ -64,7 +76,7 @@ export default (options) => ({
             };
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-config' }, async (args) => {
-            const {default: config} = await import(url.pathToFileURL(path.join(args.pluginData.resolveDir, args.path)));
+            const { default: config } = await import(url.pathToFileURL(path.join(args.pluginData.resolveDir, args.path)));
             let engines = Object.entries(config?.engines) || [];
             if (options?.onlyEngines?.length) {
                 engines = engines.filter(([engine]) => options.onlyEngines.includes(engine));

@@ -22,35 +22,14 @@ Feature: Jekyll Bookshop Component Browser
       ---
       published: false
       ---
-      {% bookshop_browser :8465 %}
-      {% bookshop_browser 99 %}
-      {% bookshop_browser localhost:1414 %}
-      {% bookshop_browser example.com/bookshop.js %}
-      {% bookshop_browser https://example.com/bookshop.js %}
-      {% bookshop_browser /_folder/bookshop-browser.js %}
+      {% bookshop_component_browser %}
+      {% bookshop_component_browser 99 %}
       """
     When I run "bundle exec jekyll build --trace --unpublished" in the site directory
     Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
+    And stdout should contain "done in"
     And site/_site/components.html should contain each row: 
       | text |
-      | <div data-bookshop-browser></div>                             |
-      | <script src=\"http://localhost:8465/bookshop.js\"></script>   |
+      | <div data-bookshop-browser=""></div>                             |
+      | <script src=\"http://localhost:30775/bookshop.js\"></script>   |
       | <script src=\"http://localhost:99/bookshop.js\"></script>     |
-      | <script src=\"http://localhost:1414/bookshop.js\"></script>   |
-      | <script src=\"//example.com/bookshop.js\"></script>           |
-      | <script src=\"https://example.com/bookshop.js\"></script>     |
-      | <script src=\"/_folder/bookshop-browser.js\"></script>        |
-
-  Scenario: Bookshop extracted site data
-    Given a site/components.html file containing:
-      """
-      ---
-      ---
-      {% bookshop_browser :8465 %}
-      """
-    And a site/_data/test.yml file containing "title: Zuchinni"
-    When I run "bundle exec jekyll build --trace" in the site directory
-    Then stderr should be empty
-    And stdout should contain "Bookshop site data generated"
-    And site/_site/components.html should contain the text "Zuchinni"

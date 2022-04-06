@@ -10,7 +10,7 @@ export default (options) => ({
             };
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-components' }, async (args) => {
-            const fileContents = `import components from '__bookshop_glob__(.bookshop.toml)';export default components;`;
+            const fileContents = `import components from '__bookshop_glob__(.bookshop.*)';export default components;`;
             return { contents: fileContents };
         });
     },

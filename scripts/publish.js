@@ -43,6 +43,9 @@ const run = async () => {
         case 'git':
             steps.updateGit(packages.version);
             process.exit(0);
+        case 'changelog':
+            await steps.changelog(packages.version);
+            process.exit(0);
         case 'test':
             console.log(`* Vendoring`);
             vendorGems(packages.rubygems, version);
@@ -72,7 +75,12 @@ const run = async () => {
     console.log(`* Setting versions`);
     versionNpm(Object.keys(packages.npm), version);
     versionGems(Object.keys(packages.rubygems), version);
+    versionStrings(packages.versionStrings, version);
     console.log(`* * Versions set`);
+
+    packages.version = version;
+    fs.writeFileSync(path.join(__dirname, '../bookshop-packages.json'), JSON.stringify(packages, null, 2));
+    console.log(`* * bookshop-packages.json updated`);
 
     console.log(`* Vendoring`);
     env.PUBLISH_BOOKSHOP_CDN = true;
@@ -88,13 +96,8 @@ const run = async () => {
     await steps.integrationTest();
     console.log(`* * Integration tests passed`);
 
-    packages.version = version;
-    fs.writeFileSync(path.join(__dirname, '../bookshop-packages.json'), JSON.stringify(packages, null, 2));
-    console.log(`* * bookshop-packages.json updated`);
-
     console.log(`* Updating changelog`);
     await steps.changelog();
-    console.log(`* * Updated changelog, pleace check the staged changes before you continue.`);
 
     console.log(`* Publishing packages`);
     console.log(`* * Please supply an OTP code for npm (after checking changelog)`);
@@ -116,9 +119,24 @@ const run = async () => {
         process.exit(1);
     }
 
-    console.log(`* Commit & push changes to git?`);
-    const yn = await question(`y / n: `);
-    if (yn === 'y') steps.updateGit(version);
+    if (/-|[a-z]/.test(version)) {
+        Object.entries(packages.custom).forEach(([directory]) => {
+            if (/\.\./.test(directory)) return;
+            const target = path.join(__dirname, '../', directory);
+            execSync(`git add ${target}`, { stdio: "inherit", env });
+        });
+
+        console.log(`* This looks like a prerelease.`);
+        console.log(`* Git tags will be needed for Hugo, but other version changed shouldn't be published.`);
+        console.log(`* Discard all changes now, except for the staged version files, and then continue to push the tags.`);
+        console.log(`* Commit & push changes to git?`);
+        const yn = await question(`Discarded changes? y / n: `);
+        if (yn === 'y') steps.updateGit(version);
+    } else {
+        console.log(`* Commit & push changes to git?`);
+        const yn = await question(`y / n: `);
+        if (yn === 'y') steps.updateGit(version);
+    }
 
     console.log(`\n` + box(`All packages published:
                      ⇛ ${publishSuccesses.join('\n⇛ ')}`));
@@ -141,8 +159,7 @@ const steps = {
         if (testFailures.length) {
             console.error(`* * Unit tests failed for the following packages:`);
             console.error(`* * ⇛ ${testFailures.map(r => r.pkg).join('\n* * ⇛ ')}`);
-            console.log(box(`Cancelling publish, package versions have been changed
-                             but bookshop-packages.json has not.
+            console.log(box(`Cancelling publish, package versions have been changed.
                              
                              Discard unstaged changes and re-run
                              whatever command you used to publish.`));
@@ -164,8 +181,7 @@ const steps = {
         if (testResult.err) {
             console.error(`* * Integration tests failed!`);
             console.error(`* * Failing command: "cd javascript-modules/integration-tests && yarn run itest"`);
-            console.log(box(`Cancelling publish, package versions have been changed
-                             but bookshop-packages.json has not.
+            console.log(box(`Cancelling publish, package versions have been changed.
                              
                              Discard unstaged changes and re-run
                              whatever command you used to publish.`));
@@ -173,7 +189,14 @@ const steps = {
         }
     },
     changelog: async () => {
-        console.log(execSync(`npx conventional-changelog -i CHANGELOG.md -s --pkg javascript-modules/browser/package.json -p angular`, { env }).toString());
+        console.log(`* Build a changelog?`);
+        const yn = await question(`y / n: `);
+        if (yn === 'y') {
+            console.log(execSync(`npx conventional-changelog -i CHANGELOG.md -s --pkg javascript-modules/browser/package.json -p angular`, { env }).toString());
+            console.log(`* * Updated changelog, pleace check the staged changes before you continue.`);
+        } else {
+            console.log(`* * Skipping changelog.`);
+        }
     },
     updateGit: async (version) => {
         console.log(`* * Updating git`);
@@ -191,6 +214,10 @@ const steps = {
 const testNPM = async (pkgs) => {
     const tests = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
+            if (/cloudcannon-eleventy-bookshop/.test(pkg)) {
+                process.stdout.write('⏭️ ');
+                return resolve({ pkg, err: null });
+            }
             try {
                 execSync(`cd ${pkg} && yarn test`, { stdio: "ignore", env });
                 resolve({ pkg, err: null });
@@ -207,6 +234,10 @@ const testNPM = async (pkgs) => {
 const testGems = async (pkgs) => {
     const tests = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
+            if (/cloudcannon-jekyll-bookshop/.test(pkg)) {
+                process.stdout.write('⏭️ ');
+                return resolve({ pkg, err: null });
+            }
             try {
                 execSync(`cd ${pkg} && bundle exec rake test`, { stdio: "ignore", env });
                 resolve({ pkg, err: null });
@@ -297,6 +328,16 @@ const versionGems = (gems, version) => {
         fs.writeFileSync(packageVersionFile, versionFileContents);
     });
 };
+
+const versionStrings = (files, version) => {
+    Object.entries(files).forEach(([file, { regex, replacement }]) => {
+        let fileContents = fs.readFileSync(path.join(__dirname, '../', file), 'utf8');
+        let r = new RegExp(regex, 'g');
+        let new_text = replacement.replace(/NEW_VERSION/g, version);
+        fileContents = fileContents.replace(r, new_text);
+        fs.writeFileSync(file, fileContents);
+    })
+}
 
 const nextVersion = (ver) => {
     return ver.replace(/\d+$/, (m) => parseInt(m) + 1);

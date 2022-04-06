@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import { createRequire } from 'module';
 import { filterBookshops, loadConfig } from './lib/bookshopHelper.js';
 import bookshopComponentPlugin from './lib/plugins/bookshopComponentPlugin.js';
 import bookshopConfigPlugin from './lib/plugins/bookshopConfigPlugin.js';
@@ -7,6 +8,9 @@ import bookshopFilePlugin from './lib/plugins/bookshopFilePlugin.js';
 import bookshopGlobPlugin from './lib/plugins/bookshopGlobPlugin.js'
 import bookshopStylesPlugin from '@bookshop/styles';
 import esbuild from 'esbuild';
+
+const require = createRequire(import.meta.url);
+const { version } = require('./package.json');
 
 export default async (options) => {
     options = {
@@ -18,9 +22,14 @@ export default async (options) => {
         watch: false,
         plugins: [],
         loader: {},
+        define: {},
         ...(options.esbuild || {})
     }
     esbuildOptions.loader[".bookshop.toml"] = "text";
+    esbuildOptions.loader[".bookshop.yml"] = "text";
+    esbuildOptions.loader[".bookshop.json"] = "text";
+
+    esbuildOptions.define["BOOKSHOP_VERSION"] = JSON.stringify(version);
 
     options.bookshopDirs = filterBookshops(options.bookshopDirs);
     options.bookshopConfig = await loadConfig(options.bookshopDirs[0]);

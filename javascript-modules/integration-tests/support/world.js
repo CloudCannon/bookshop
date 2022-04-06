@@ -10,6 +10,7 @@ const kill = require('tree-kill');
 const getPort = import('get-port');
 const serve_handler = require('serve-handler');
 const http = require('http');
+const { version } = require("../../../bookshop-packages.json");
 
 
 // The 3x,xxx port block seems the most free on macOS
@@ -51,7 +52,7 @@ After(async function () {
   if (this.browser) {
     Promise.race([this.browser.close(), timeout]);
   }
-  if (!process.env["DEBUG"]) fs.rmdirSync(this.tmp_dir, { recursive: true });
+  if (!process.env["DEBUG"]) fs.rmSync(this.tmp_dir, { recursive: true });
 });
 
 class CustomWorld {
@@ -63,7 +64,7 @@ class CustomWorld {
     this.commandError = null;
     this.stdout = null;
     this.stderr = null;
-    this.storage = {}; // Generic storage that steps can use
+    this.storage = { version }; // Generic storage that steps can use
     this.puppeteer = puppeteer; // The puppeteer instance that our steps can use
     this.browser = null; // An active puppeteer browser
     this.page = null; // An active puppeteer page
@@ -110,8 +111,18 @@ class CustomWorld {
     this.page_errors.push(e);
   }
 
+  // If errors exist, returns the errors (and also the logs, to help with debugging)
   puppeteerErrors() {
-    return this.page_errors;
+    if (this.page_errors.length) {
+      return [
+        "LOGS:",
+        ...this.page_logs,
+        "ERRORS:",
+        ...this.page_errors,
+      ];
+    } else {
+      return this.page_errors;
+    }
   }
 
   trackPuppeteerLog(e) {

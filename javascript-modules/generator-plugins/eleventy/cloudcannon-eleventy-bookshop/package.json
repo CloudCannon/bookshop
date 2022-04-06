@@ -2,10 +2,10 @@
   "name": "@bookshop/cloudcannon-eleventy-bookshop",
   "packageManager": "yarn@3.0.0",
   "version": "2.6.1",
-  "description": "Eleventy plugin for generating CloudCannon Array Structures from Bookshop components",
+  "description": "REMOVED: See the https://github.com/cloudcannon/bookshop migration guides",
   "main": "main.js",
   "scripts": {
-    "test": "nyc ava -v"
+    "test": "echo \"ok\""
   },
   "files": [
     "main.js"
@@ -14,18 +14,6 @@
   "license": "MIT",
   "publishConfig": {
     "access": "public"
-  },
-  "devDependencies": {
-    "ava": "^3.15.0",
-    "nyc": "^15.1.0"
-  },
-  "dependencies": {
-    "@bookshop/cloudcannon-structures": "2.6.1",
-    "@bookshop/helpers": "2.6.1",
-    "@bookshop/toml-narrator": "2.6.1",
-    "@ltd/j-toml": "^1.17.0",
-    "fast-glob": "^3.2.7",
-    "normalize-path": "^3.0.0"
   },
   "engines": {
     "node": ">=14.16"

@@ -1,52 +1,246 @@
-= Eleventy Bookshop
+:eleventy: ssg
+:ssg: Eleventy
+:ssgl: eleventy
+:ssgext: eleventy.liquid
+:toc:
+:toclevels: 3
+:toc-placement!:
+:version: 2.6.1
+
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
-:important-caption: :heavy_exclamation_mark:
+:important-caption: :star2:
 :caution-caption: :fire:
 :warning-caption: :warning:
-endif::[]
-:toc:
-:toc-placement!:
+endif::env-github[]
+
+= {ssg} Bookshop Reference Guide
 
 toc::[]
 
-== Quick start
-To jump right into using Bookshop on an Eleventy site, check out the link:https://github.com/CloudCannon/eleventy-bookshop-starter[Eleventy Bookshop Starter] 
+== Concepts
 
-TIP: Bookshop supports both Eleventy 0.x and 1.x. No changes to the configuration are required when updating to 1.0
+Bookshop defines conventions for writing static components for {ssg}. Using these conventions, Bookshop provides an ergonomic way to build pages out of your components, build and browse these components locally, and generate rich live editing experiences in CloudCannon.
 
-NOTE: Currently, Bookshop only supports liquid templating on Eleventy sites.
+For an example of what this looks like in a real-world example, see our link:https://vimeo.com/689852104[Editing MegaKit with Bookshop] video.
 
-== Bookshop Configuration
+////
+//
+//
+// END Concepts
+//
+//
+////
 
-Reference the Eleventy engine in your Bookshop configuration file. Bookshop expects this package to be installed in your working directory, usually your site, _not_ in your Bookshop project.
-.*bookshop.config.js*
-```javascript
+== Prerequisites
+
+* Bookshop requires Node >= 14 installed on your machine.
+ifdef::hugo[]
+* This guide expects that you already have link:https://gohugo.io/getting-started/installing/[Hugo] installed on your machine.
+* Since Hugo Bookshop utilizes the Hugo module system, the link:https://go.dev/doc/install[Go Programming Language] needs to be installed on your machine.
+endif::hugo[]
+ifdef::eleventy[]
+* Currently, Bookshop only supports liquid templating on Eleventy sites. Open an issue if you would like to see another templating flavor supported!
+endif::eleventy[]
+ifdef::jekyll[]
+* This guide expects that you already have Ruby and link:https://jekyllrb.com/docs/installation/[Jekyll] installed on your machine.
+endif::jekyll[]
+
+////
+//
+//
+// END Prerequisites
+//
+//
+////
+
+== Starting Point
+
+TIP: Short on time? You can use our link:https://github.com/CloudCannon/{ssgl}-bookshop-starter/[{ssg} Bookshop Starter Template] and jump straight into editing it in CloudCannon. Come back here when you want to build it out further, or create your own from scratch.
+
+This guide will walk you through getting Bookshop connected to an existing {ssg} site. If you don't have a site already, 
+ifdef::hugo[]
+running link:https://gohugo.io/getting-started/quick-start/#step-2-create-a-new-site[`hugo new site mysite`] is a good start.
+endif::hugo[]
+ifdef::jekyll[]
+running link:https://jekyllrb.com/docs/[`jekyll new mysite`] is a good start.
+endif::jekyll[]
+ifdef::eleventy[]
+reading link:https://www.11ty.dev/docs/getting-started/[Eleventy's Getting Started] is a good start.
+endif::eleventy[]
+Alternatively, grab one of CloudCannon's preconfigured link:https://cloudcannon.com/community/themes/[{ssg} templates].
+
+////
+//
+//
+// END Starting Point
+//
+//
+////
+
+== Creating your Bookshop
+
+The first step is to create the directory structure for your Bookshop. To create this structure, you can run the following command in the root of your repository:
+
+`npx @bookshop/init --new component-library --framework {ssgl}`
+
+This command should provide you with the following directory structure:
+
+[source,text,subs="attributes"]
+----
+component-library/
+ifdef::hugo[]
+├─ config.toml
+endif::hugo[]
+├─ bookshop/
+│  └─ bookshop.config.js
+├─ components/
+│  └─ sample/
+│     ├─ sample.bookshop.yml
+│     ├─ sample.scss
+│     └─ sample.{ssgext}
+└─ shared/
+   ├─ {ssgl}
+   │  └─ page.{ssgext}
+   └─ styles/
+      └─ global.scss
+----
+
+Here's a quick run-through of what has been generated:
+
+ifdef::hugo[]
+config.toml:: This file registers your component library as a Hugo Module. This will allow us to use it as a dependency for your site.
+endif::hugo[]
+bookshop/bookshop.config.js:: This houses the configuration for your Bookshop project, in this case instructing Bookshop to use the `@bookshop/{ssgl}-engine` package for any live component rendering.
+components/:: This is where you will write your component files, a sample component has been added for you.
+shared/{ssgl}/:: Any non-component files that you want to be able to use when live editing can be placed here. A page helper has been created, which helps render arrays of components.
+shared/styles/:: Any SCSS files in this directory will be imported alphabetically before component SCSS files. These are used on both the site, and the component browser.
+
+'''
+
+Creating these files yourself?
+++++
+<details><summary>Bookshop File Reference</summary>
+++++
+
+ifdef::hugo[]
+.*component-library/config.toml*
+[source,toml,subs="attributes"]
+----
+[module]
+hugoVersion.extended = true
+hugoVersion.min = "0.86.1"
+
+[[module.mounts]]
+source = "."
+target = "layouts/partials/bookshop"
+
+[[module.mounts]]
+source = "."
+target = "assets/bookshop"
+----
+endif::hugo[]
+
+.*component-library/bookshop/bookshop.config.js*
+[source,javascript,subs="attributes"]
+----
 module.exports = {
     engines: {
-        "@bookshop/eleventy-engine": {}
+        "@bookshop/{ssgl}-engine": {}
     }
 }
+----
+
+We'll cover creating components and shared files in <<Authoring New Components>>.
+
+++++
+</details>
+++++
+
+////
+//
+//
+// END Creating your Bookshop
+//
+//
+////
+
+== Connecting Your Bookshop to {ssg}
+
+ifdef::hugo[]
+
+Bookshop is distributed as a Hugo Module, so the first step is to make sure that your Hugo site is set up for the Hugo Module system. If there isn't a `go.mod` file in your site root, run `hugo mod init site.local` to initialize this.
+
+With your site ready, we need to pull in the primary dependency of `bookshop/hugo`, as well as the component library we just created.
+
+The following should be placed in your Hugo site config (usually `config.toml` in your root folder).
+
+.*site/config.toml*
+[source,toml,subs="attributes"]
+----
+[module]
+replacements = "components.local -> ../component-library"
+
+[[module.imports]]
+path = 'components.local'
+
+[[module.imports]]
+path = 'github.com/cloudcannon/bookshop/hugo/v3'
+----
+
+Adjust the `../component-library` path in `replacements` if you created it with a different name, or in a different place.
+
+TIP: This path is relative to the Hugo `themes` directory (whether or not it exists), hence `../component-library` actually points to a component library in your Hugo source directory.
+
+With that configuration in place, running `hugo serve` should download the required module and host your site. Nothing will appear different yet, but we now have access to use components.
+
+endif::hugo[]
+
+ifdef::jekyll[]
+
+To use Bookshop with Jekyll, the primary dependency is the `jekyll-bookshop` gem.
+
+.*Gemfile*
+[source,ruby,subs="attributes"]
+----
+group :jekyll_plugins do
+  gem "jekyll-bookshop", "{version}"
+end
+----
+
+After adding this to your Gemfile and running `bundle install`, specify the path to your Bookshop project in your Jekyll configuration: 
+
+.*_config.yml*
+```yaml
+plugins:
+  - jekyll-bookshop
+
+bookshop_locations:
+  - component-library
 ```
 
-.*command*
-```bash
-cd site/
-npm i -D @bookshop/eleventy-engine
-# or
-yarn add -D @bookshop/eleventy-engine
-```
+TIP: Make sure that `bookshop_locations` points to the component library you just created, relative to your Jekyll source.
 
-== Eleventy Configuration
+TIP: If you specify multiple paths, the component libraries will be merged.
+
+TIP: Paths that don't exist will be skipped. If you specify local and production paths, the one that exists will be used.
+
+With that configuration in place, running `bundle exec jekyll serve` should should succeed. Nothing will appear different yet, but we now have access to use components.
+
+endif::jekyll[]
+
+ifdef::eleventy[]
 
 To use Bookshop with Eleventy, the primary dependency is the `@bookshop/eleventy-bookshop` npm package.
 
 .*command*
 ```bash
-npm i @bookshop/eleventy-bookshop
-# or
-yarn add @bookshop/eleventy-bookshop
+# npm
+npm i --save-exact @bookshop/eleventy-bookshop
+
+# or yarn
+yarn add --exact @bookshop/eleventy-bookshop
 ```
 
 Within your Eleventy config, specify the path to your Bookshop project. 
@@ -55,6 +249,8 @@ TIP: If you specify multiple paths, the components will be merged.
 
 TIP: Paths that don't exist will be skipped. If you specify local and production paths, the one that exists will be used.
 
+IMPORTANT: The pathPrefix provided must match the pathPrefix configured in your `.eleventy.js`. If you aren't using the `url` filter anywhere, this option can be omitted.
+
 .*.eleventy.js*
 ```javascript
 const pluginBookshop = require("@bookshop/eleventy-bookshop");
@@ -62,87 +258,400 @@ const pluginBookshop = require("@bookshop/eleventy-bookshop");
 module.exports = function (eleventyConfig) {
   // ...
 
-	eleventyConfig.addPlugin(pluginBookshop({
-		bookshopLocations: ["component-library"]
-	}));
+  eleventyConfig.addPlugin(pluginBookshop({
+    bookshopLocations: ["component-library"],
+    pathPrefix: '',
+  }));
 
   // ...
 };
 ```
 
-== Writing components
+TIP: Make sure that `bookshop_locations` points to the component library you just created, relative to your Eleventy source.
 
-Let's look at an example `button.eleventy.liquid` file.
-```
-components/
-└─ button/
-   └─ button.eleventy.liquid
-```
-These files are namespaced for the static site generator when the filetype is ambiguous, which is why the file is `button.eleventy.liquid` and not `button.liquid`. Beyond the naming convention, these files are what you would expect when working with Liquid & Eleventy. Our `button.eleventy.liquid` file might look like:
-```hbs
-<a class="c-button" href="{{ link_url }}">{{ text }}</a>
-```
-This looks like a normal Eleventy include because... it is. While Bookshop provides developer tooling, the job of eleventy-bookshop is to tell Eleventy where to find component files. Loading and parsing these files goes through the normal Eleventy include flow.
+endif::eleventy[]
 
-TIP: The `@bookshop/init` package helps create component structures for you. Running `npx @bookshop/init --component button` would create the button structure needed for Eleventy.
+Lastly, we'll need to install a few npm packages for Bookshop. These aren't used as part of your production build, but they provide the developer tooling that enables structured data and live editing. 
 
-== Using components
+These packages should be installed at the root of the repository that contains your site. If this folder doesn't have a `package.json` file yet, run `npm init -y` to create one.
 
-To use components directly in a template, use the `{% bookshop %}` tag like you would an include.
+To get setup, run the following command to install the needed Bookshop packages:
+[source,bash,subs="attributes"]
+----
+# npm
+npm i --save-exact @bookshop/generate @bookshop/browser @bookshop/{ssgl}-engine
+
+# or yarn
+yarn add --exact @bookshop/generate @bookshop/browser @bookshop/{ssgl}-engine
+----
+
+IMPORTANT: Bookshop uses a fixed versioning scheme, where all packages are released for every version. It is recommended that you keep the npm packages and your plugins at the same version. To help with this, you can run `npx @bookshop/up@latest` from your repository root to update all Bookshop packages in sync.
+
+////
+//
+//
+// END Connecting Your Bookshop
+//
+//
+////
+
+== Using Components in {ssg}
+
+If you ran the `@bookshop/init` command earlier, you should see that you now have a file at `components/sample/sample.{ssgext}`. Let's have a go using that component somewhere on our site.
+
+TIP: Bookshop supports multiple SSG targets, which is why we denote this as `.{ssgext}`.
+
+// JEKYLL
+ifdef::jekyll[]
+
+Bookshop provides the `bookshop` tag to include components, which functions the same as using a normal Jekyll include.
+
+To start, add the following snippet to one of your layouts:
 
 .*index.html*
 ```liquid
 ...
-<div class="hero">
-  {% bookshop "hero" title: title image: image %}
-  {% bookshop "button" label: cta_text link_url: cta_url %}
-</div>
+
+{% bookshop sample text="Hello from the sample component" %}
+
 ...
 ```
 
-Inside a loop, a variable can be used to render the component from a given key:
+If you now load your Jekyll site in a browser, you should see the sample component rendered on the page. There won't be any styles yet, we'll cover that soon. First though, there are a few neater ways you can use the `bookshop` tag:
+
+=== Alternate syntax
+
+Passing a set of parameters to a component can be cumbersome, and these will often point to front matter objects. Consider the following example:
 
 .*index.html*
 ```liquid
 ---
-components:
-  - _bookshop_name: hero
-    title: "Hello World"
-    image: /image.png
-  - _bookshop_name: button
-    cta_text: "Get Started"
-    link_url: /
+component:
+  title: "Hello World"
+  image: /image.png
 ---
-<div class="hero">
-  {% for props in components %}
-    {% bookshop {{props._bookshop_name}} bind: props %}
-  {% endfor %}
-</div>
+{% bookshop hero title=page.component.title image=page.component.image %}
 ```
 
-TIP: _Bookshop tags can use the `bind:` parameter, which works like the spread operator in Javascript. Here, all keys within the object `props` are unwrapped and passed to the component directly. If you're used to a framework like Svelte, this is the equivalent of `<Component {...props} />`_
+Having to pass through `title` and `image` individually isn't very maintainable, so instead you can use:
 
-TIP: _The structures generated by Bookshop for CloudCannon include the `_bookshop_name` field for you, so this can be used to render components dynamically_
+.*index.html*
+```liquid
+---
+component:
+  title: "Hello World"
+  image: /image.png
+---
+{% bookshop hero bind=page.component %}
+```
 
-== Using Bookshop Includes
+The `bind` parameter is provided by Bookshop. This works like the spread operator in Javascript, by passing all the keys of the object to the component as props.
 
-Bookshop includes can be placed in the `shared/eleventy` directory. i.e:
-```text
+TIP: If you're used to a framework like Svelte, this is the equivalent of `<Component {...props} />`
+
+Bookshop tags also support interpolating liquid, so if you have your component name in a variable you can use:
+
+.*index.html*
+```liquid
+---
+component:
+  _bookshop_name: hero
+  title: "Hello World"
+  image: /image.png
+---
+{% bookshop {{page.component._bookshop_name}} bind=page.component %}
+```
+
+endif::jekyll[]
+// /JEKYLL
+// ELEVENTY
+ifdef::eleventy[]
+
+Bookshop provides the `bookshop` tag to include components, which functions the same as using a normal Eleventy include.
+
+To start, add the following snippet to one of your layouts:
+
+.*index.html*
+```liquid
+...
+
+{% bookshop "sample" text: "Hello from the sample component" %}
+
+...
+```
+
+If you now load your Eleventy site in a browser, you should see the sample component rendered on the page. There won't be any styles yet, we'll cover that soon. First though, there are a few neater ways you can use the `bookshop` tag:
+
+=== Alternate syntax
+
+Passing a set of parameters to a component can be cumbersome, and these will often point to front matter objects. Consider the following example:
+
+.*index.html*
+```liquid
+---
+component:
+  title: "Hello World"
+  image: /image.png
+---
+{% bookshop "hero" title: component.title image: component.image %}
+```
+
+Having to pass through `title` and `image` individually isn't very maintainable, so instead you can use:
+
+.*index.html*
+```liquid
+---
+component:
+  title: "Hello World"
+  image: /image.png
+---
+{% bookshop "hero" bind: component %}
+```
+
+The `bind` parameter is provided by Bookshop. This works like the spread operator in Javascript, by passing all the keys of the object to the component as props.
+
+TIP: If you're used to a framework like Svelte, this is the equivalent of `<Component {...props} />`
+
+Bookshop tags also support interpolating liquid, so if you have your component name in a variable you can use:
+
+.*index.html*
+```liquid
+---
+component:
+  _bookshop_name: hero
+  title: "Hello World"
+  image: /image.png
+---
+{% bookshop "{{page.component._bookshop_name}}" bind: component %}
+```
+
+endif::eleventy[]
+// /ELEVENTY
+// HUGO
+ifdef::hugo[]
+
+Bookshop provides a range of partials which we will cover. The most important of these is the default `bookshop` partial that we will use to access our components. 
+
+To start, add the following snippet to one of your layouts:
+
+.*index.html*
+[source,go,subs="attributes"]
+----
+...
+
+{{ partial "bookshop" (slice "sample" (dict "text" "Hello from the sample component")) }}
+
+...
+----
+
+This partial expects a slice where the first element is the Bookshop name of a component, and the second element contains the arguments to that component.
+
+If you now load your Hugo site in a browser, you should see the sample component rendered on the page. There won't be any styles yet, we'll cover that soon. First though, there are a few neater ways you can use the `bookshop` partial:
+
+=== Alternate syntax
+
+Writing a Hugo `dict` by hand can be cumbersome, and these will often point to front matter objects. If you have the front matter:
+
+.*index.md*
+[source,yaml,subs="attributes"]
+----
+sample:
+  text: Hello World
+----
+
+Then you can replace the partial we just wrote with the following: 
+
+.*index.html*
+[source,go,subs="attributes"]
+----
+...
+
+{{ partial "bookshop" (slice "sample" .Params.sample) }}
+
+...
+----
+
+To go one step further, you can add the key `_bookshop_name` to this object:
+
+.*index.md*
+[source,yaml,subs="attributes"]
+----
+sample:
+  _bookshop_name: sample
+  text: Hello World
+----
+
+Which lets us pass the object directly to the `bookshop` partial: 
+
+.*index.html*
+[source,go,subs="attributes"]
+----
+...
+
+{{ partial "bookshop" .Params.sample }}
+
+...
+----
+
+endif::hugo[]
+// /HUGO
+
+TIP: The Bookshop name of a component is the path to its directory. +
+So the name for `components/sample/sample.hugo.html` is `sample`, +
+and the name for `components/generic/button/button.hugo.html` would be `generic/button`.
+
+TIP: The structures generated by Bookshop for CloudCannon include the `_bookshop_name` field for you, so this can be used to render components dynamically. We'll cover this a bit later on in <<Connecting Bookshop to CloudCannon>>.
+
+////
+//
+//
+// END Using Components
+//
+//
+////
+
+=== Using Shared Bookshop Helpers in {ssg}
+
+Shared Bookshop helpers can be placed in the `shared/{ssgl}` directory. i.e:
+[source,text,subs="attributes"]
+----
 component-library/
 ├─ components/
 └─ shared/
-  └─ eleventy/
-    └─ helper.eleventy.liquid
+  └─ {ssgl}/
+    └─ helper.{ssgext}
+----
+
+ifdef::hugo[]
+This can then be included using the `bookshop_partial` partial:
+```go
+{{ partial "bookshop_partial" (slice "helper" (dict "lorem" "ipsum")) }}
 ```
 
+The arguments are the same as the `bookshop` partial. This is otherwise a standard Hugo partial, with the extra feature that it can be used anywhere within your Hugo site _or_ your components.
+endif::hugo[]
+ifdef::jekyll[]
 This can then be included using the `bookshop_include` tag:
 ```liquid
-  {% bookshop_include "helper" lorem: "ipsum" %}
+{% bookshop_include helper lorem="ipsum" %}
 ```
 
-This is otherwise a standard Eleventy include, with the extra feature that it can be used anywhere within your Eleventy site _or_ your components.
+The format is the same as the `bookshop` tag. This is otherwise a standard Jekyll include, with the extra feature that it can be used anywhere within your Jekyll site _or_ your components.
+endif::jekyll[]
+ifdef::eleventy[]
+This can then be included using the `bookshop_include` tag:
+```liquid
+{% bookshop_include "helper" lorem: "ipsum" %}
+```
 
-== Using styles
+The format is the same as the `bookshop` tag. This is otherwise a standard Eleventy include, with the extra feature that it can be used anywhere within your Eleventy site _or_ your components.
+endif::eleventy[]
+
+NOTE: While developing locally, components will have access to the rest of your site. This isn't true when live editing, which is why these helper files exist.
+
+You will notice that `@bookshop/init` created a `page.{ssgext}` file for you. Given the following front matter:
+
+```yaml
+content_blocks:
+  - _bookshop_name: hero
+    title: Hello World
+    image: /image.png
+  - _bookshop_name: cta
+    heading: Join our newsletter
+    location: /signup
+```
+
+You can render the array of components using the page helper like so:
+
+ifdef::hugo[]
+
+```go
+{{ partial "bookshop_partial" (slice "page" .Params.content_blocks) }}
+```
+
+endif::hugo[]
+ifdef::jekyll[]
+
+```liquid
+{% bookshop_include page content_blocks=page.content_blocks %}
+```
+
+endif::jekyll[]
+ifdef::eleventy[]
+
+```liquid
+{% bookshop_include "page" content_blocks: content_blocks %}
+```
+
+endif::eleventy[]
+
+This will loop through the given array, and render each component according to its `_bookshop_name` key.
+
+Give this a try now — replace the sample component you added with the `page` helper, and add the following to your front matter:
+
+```yaml
+content_blocks:
+  - _bookshop_name: sample
+    text: A sample example
+  - _bookshop_name: sample
+    text: A second sample example
+```
+
+IMPORTANT: It is essential to render arrays of components using the page helper. Live editing only works within Bookshop components and helpers, so using this method means that rearranging and adding new components will work in the Visual Editor.
+
+////
+//
+//
+// END Using Shared Bookshop Helpers
+//
+//
+////
+
+== Importing Bookshop Styles
+
+Bookshop provides some helpers for including the component and global styles that you defined in your component library. 
+
+NOTE: Locating styles inside your Bookshop is optional — you can always define them with the rest of your site — but authoring your styles in your component library will provide a better experience when we cover using the local component browser.
+
+`@bookshop/init` created a `sample.scss` file for you at `components/sample/sample.scss`. This file will currently be empty, but you should add a style here to test that the Bookshop SCSS integration is working for you. Something like:
+
+```css
+.c-sample {
+  background-color: blanchedalmond;
+}
+```
+
+ifdef::hugo[]
+
+To include all of your Bookshop styles in Hugo, you can use the `bookshop_scss` partial in your `baseof.html` layout. This partial returns a slice of all SCSS files, which can then be included into your existing Hugo resource pipeline:
+
+.*baseof.html*
+```liquid
+{{ $bookshop_scss_files := partial "bookshop_scss" . }}
+{{ $scss := $bookshop_scss_files | resources.Concat "css/bookshop.css" | resources.ToCSS | resources.Minify |
+    resources.Fingerprint }}
+<link rel="stylesheet" href="{{ $scss.Permalink }}">
+```
+
+endif::hugo[]
+ifdef::jekyll[]
+
+To import styles in Jekyll, Bookshop provides the tag `{% bookshop_scss %}` to be used in your main SCSS file. For example:
+
+.*assets/main.scss*
+```liquid
+---
+# Front matter dashes for Jekyll to process the file
+---
+
+{% bookshop_scss %} // Import all bookshop styles
+
+```
+
+This bundles all Bookshop SCSS files into the Jekyll Sass pipeline.
+
+endif::jekyll[]
+ifdef::eleventy[]
 
 To use Bookshop styles on your website, you can run the `bookshop-sass` command provided by `@bookshop/sass`.
 
@@ -167,36 +676,1192 @@ This compiles all styles from the Bookshop (including running any Postcss plugin
 
 Reference `npx @bookshop/sass --help` to see the available options.
 
-== Component Library
+endif::eleventy[]
 
-Setting up the component library is fairly framework agnostic, so following the steps in the link:browser.adoc[Component Browser Guide] should see you on your way.
+IMPORTANT: Bookshop SCSS files are loaded in order of all shared files, followed by all component files, alphabetically.
 
-== Live Editing
+////
+//
+//
+// END Importing Bookshop Styles
+//
+//
+////
 
-Bookshop experimentally supports automatic live previews when editing on CloudCannon. +
-In Eleventy, this can be added with the `@bookshop/cloudcannon-eleventy-bookshop` npm package.
+== Authoring New Components
 
-```bash
-npm i @bookshop/cloudcannon-eleventy-bookshop
-# or
-yarn add @bookshop/cloudcannon-eleventy-bookshop
+TIP: To create new components, you can simply run `npx @bookshop/init --component <name>` in an existing Bookshop
+
+Components live within the `components/` directory, each inside a folder bearing their name. A component is defined with a `<name>.bookshop.<format>` file. This file serves as the schema for the component, defining which properties it may be supplied.
+
+Components may also be nested within folders, which are then referenced as part of the component name. For example, the following structure would define the components `hero`, `button/large` and `button/small`:
+
+[source,text,subs="attributes"]
+----
+components/
+├─ hero/
+|  |  hero.bookshop.yml
+|  └─ hero.{ssgext}
+└─ button/
+   ├─ large/
+   |  |  large.bookshop.yml
+   │  └─ large.{ssgext}
+   └─ small/
+      |  small.bookshop.yml
+      └─ small.{ssgext}
+----
+
+////
+//
+//
+// END Authoring New Components
+//
+//
+////
+
+=== Authoring Component Template Files
+
+Beyond the naming convention, Bookshop template files are what you would expect when working with {ssg}. A basic button component might look like the following:
+
+.*components/button/button.{ssgext}*
+ifdef::hugo[]
+[source,liquid]
+----
+<a class="c-button" href="{{ .link_url }}">{{ .link_text }}</a>
+----
+endif::hugo[]
+ifdef::jekyll[]
+[source,liquid]
+----
+<a class="c-button" href="{{ include.link_url }}">{{ include.link_text }}</a>
+----
+endif::jekyll[]
+ifdef::eleventy[]
+[source,liquid]
+----
+<a class="c-button" href="{{ link_url }}">{{ link_text }}</a>
+----
+endif::eleventy[]
+
+Components can, of course, reference other components:
+
+.*components/hero/hero.{ssgext}*
+ifdef::hugo[]
+[source,go]
+----
+<h1>{{ .title }}</h1>
+{{ partial "bookshop" (slice "button" (dict "link_url" .url "link_text" "Click me")) }}
+----
+endif::hugo[]
+ifdef::jekyll[]
+[source,liquid]
+----
+<h1>{{ include.title }}</h1>
+{% bookshop button link_url=include.link_url link_text="Click me" %}
+----
+endif::jekyll[]
+ifdef::eleventy[]
+[source,liquid]
+----
+<h1>{{ title }}</h1>
+{% bookshop "button" link_url: link_url link_text: "Click me" %}
+----
+endif::eleventy[]
+
+////
+//
+//
+// END Authoring Component Template Files
+//
+//
+////
+
+=== Authoring Component Styles
+
+A `<component>.scss` file can be written alongside your other component files. Beyond the location and the automatic import, there is nothing special about the contents of this file.
+
+////
+//
+//
+// END Authoring Component Styles
+//
+//
+////
+
+=== Authoring Component Bookshop Files
+
+The Bookshop file for each component is the most important piece of the Bookshop ecosystem. This file drives the Structured Data in CloudCannon, the local component browser, and Bookshop's live editing. +
+The `sample.bookshop.yml` file that our init command generated contains the following:
+
+++++
+<details><summary>sample.bookshop.yml</summary>
+++++
+
+
+```yaml
+# Metadata about this component, to be used in the CMS
+spec:
+  structures:
+    - content_blocks
+  label: Sample
+  description:
+  icon:
+  tags:
+
+# Defines the structure of this component, as well as the default values
+blueprint:
+  text: "Hello World!"
+
+# Overrides any fields in the blueprint when viewing this component in the component browser
+preview:
+
+# Any extra CloudCannon inputs configuration to apply to the blueprint
+_inputs: {}
 ```
 
-.*.eleventy.js*
+++++
+</details>
+++++
+
+Let's walk through an example file section by section to understand what's going on.
+
+////
+//
+//
+// END Authoring Component Bookshop Files
+//
+//
+////
+
+==== Component Spec
+
+```yaml
+spec:
+  structures:
+    - content_blocks
+  label: Example
+  description: An example Bookshop component
+  icon: book
+  tags:
+    - example
+```
+
+This section is used when creating the link:https://cloudcannon.com/documentation/articles/defining-what-adds-to-an-array-with-array-structures/?ssg={ssg}#structures[Structure] for your component. The `structures` array defines which structure keys to register this component with. In other words, with the above snippet, this component will be one of the options within an array named `content_blocks`, or another input configured to use `_structures.content_blocks`.
+
+The other keys are used when the component is displayed in CloudCannon or in the Bookshop Component Browser. `icon` should be the name of a suitable link:https://strict-hanger.cloudvent.net/[material icon] to use as the thumbnail for your component.
+
+////
+//
+//
+// END Component Spec
+//
+//
+////
+
+==== Component Blueprint
+
+```yaml
+blueprint:
+  text: Hello World!
+```
+
+The blueprint is the primary section defining your component. This will be used as the intitial state for your component when it is added to a page, and should thus include all properties used in your template.
+
+////
+//
+//
+// END Component Blueprint
+//
+//
+////
+
+==== Component Preview
+
+```yaml
+preview:
+  text: Vestibulum id ligula porta felis euismod semper.
+```
+
+Your blueprint represents the initial state of your component, but in the component browser you might want to see a preview of your component filled out with example data.
+
+The preview object will be merged with your blueprint before a component is rendered in the component browser. This is a deep merge, so given the following specification:
+
+```yaml
+blueprint:
+  title: "Hello World"
+  cta:
+    button_text: ""
+    button_url: "#"
+
+preview:
+  cta:
+    button_text: "Click me"
+```
+
+Your component preview data will be:
+
+```yaml
+title: "Hello World"
+cta:
+  button_text: "Click me"
+  button_url: "#"
+```
+
+NOTE: In a future Bookshop release, component thumbnails will be automatically generated. This will also use the preview object.
+
+////
+//
+//
+// END Component Preview
+//
+//
+////
+
+==== Inputs Configuration
+
+```yaml
+_inputs: 
+  text:
+    type: "html"
+    comment: "This comment will appear in the CMS"
+```
+
+The `_inputs` section of your Bookshop file can be used to configure the keys in your blueprint. This object is passed through unaltered to CloudCannon, so see the link:https://cloudcannon.com/documentation/articles/how-to-choose-what-input-is-used-in-the-data-editor/?ssg={ssg}[CloudCannon Inputs Documentation] to read more.
+
+This configuration is scoped to the individual component, so you can configure the same key differently across components — even if the components are nested within one another.
+
+////
+//
+//
+// END Inputs Configuration
+//
+//
+////
+
+==== Blueprint Arrays
+
+Arrays of objects in your blueprint will be transformed into CloudCannon Structures automatically, and initialized as empty arrays. Using the following Blueprint:
+
+```yaml
+blueprint:
+  text: Sample Text
+  items:
+    - item_content: Hello World
+```
+
+A new component added to the page will take the form:
+
+```yaml
+text: Sample Text
+items: []
+```
+
+Editors will then be able to add and remove objects to the `items` array.
+
+////
+//
+//
+// END Blueprint Arrays
+//
+//
+////
+
+==== Nesting Components
+
+Your blueprint can reference other components and structures to create rich page builder experiences:
+
+```yaml
+blueprint:
+  title: Hello World
+  button: bookshop:button
+```
+
+In this example, the `button` key will become an Object Structure containing the values specified in your `button` component blueprint. If you desired an array of buttons, you could use the following:
+
+```yaml
+blueprint:
+  title: Hello World
+  buttons: [bookshop:button]  # equivalent
+  buttons:
+    - bookshop:button         # equivalent
+```
+
+If you're creating a layout component, you likely want to support a set of components. For this, you can reference the keys we defined in `spec.structures` as such:
+
+```yaml
+blueprint:
+  title: My Section
+
+  # Make header a single component that can be selected from the content_blocks set
+  header: bookshop:structure:content_blocks
+
+  # Make inner_components an array that can contain components marked content_blocks
+  inner_components: [bookshop:structure:content_blocks]
+```
+
+IMPORTANT: Object Structures in CloudCannon will be initialized empty, so testing for the existence of this component in your template is recommended.
+
+////
+//
+//
+// END Nesting Components
+//
+//
+////
+
+==== Supported File Formats
+
+TIP: When you run `npx @bookshop/init --component <name>` you will be prompted to pick which configuration format you want to create the component with.
+
+In the examples above, we have been writing the Bookshop configuration files using YAML. This is the recommended format, but you can also choose another if you prefer. Here is a real-world example of a component written in each supported format:
+
+++++
+<details><summary>hero.bookshop.yml</summary>
+++++
+
+
+```yaml
+# Metadata about this component, to be used in the CMS
+spec:
+  structures:
+    - content_blocks
+    - page_sections
+  label: Hero
+  description: A large hero component suitable for opening a landing page
+  icon: crop_landscape
+  tags:
+    - Above the Fold
+    - Multimedia
+
+# Defines the structure of this component, as well as the default values
+blueprint:
+  title: ""
+  title_level: h1
+  hero_image: ""
+  hero_image_alt: ""
+  subcomponents: [bookshop:structure:content_blocks]
+
+# Overrides any fields in the blueprint when viewing this component in the component browser
+preview:
+  title: Bookshop Makes Component Driven Development Easy
+  hero_image: https://placekitten.com/600/400
+
+# Any extra CloudCannon inputs configuration to apply to the blueprint
+_inputs:
+  title_level:
+    type: select
+    options:
+      values:
+        - h1
+        - h2
+        - h3
+        - h4
+```
+
+++++
+</details>
+++++
+
+++++
+<details><summary>hero.bookshop.toml</summary>
+++++
+
+
+```toml
+# Metadata about this component, to be used in the CMS
+[spec]
+structures = [ "content_blocks", "page_sections" ]
+label = "Hero"
+description = "A large hero component suitable for opening a landing page"
+icon = "crop_landscape"
+tags = [ "Above the Fold", "Multimedia" ]
+
+# Defines the structure of this component, as well as the default values
+[blueprint]
+title = ""
+title_level = "h1"
+hero_image = ""
+hero_image_alt = ""
+subcomponents = [ "bookshop:structure:content_blocks" ]
+
+# Overrides any fields in the blueprint when viewing this component in the component browser
+[preview]
+title = "Bookshop Makes Component Driven Development Easy"
+hero_image = "https://placekitten.com/600/400"
+
+# Any extra CloudCannon inputs configuration to apply to the blueprint
+[_inputs]
+title_level.type = "select"
+title_level.options.values = [ "h1", "h2", "h3", "h4" ]
+```
+
+++++
+</details>
+++++
+
+
+++++
+<details><summary>hero.bookshop.js</summary>
+++++
+
+
 ```javascript
-const pluginBookshop = require("@bookshop/eleventy-bookshop");
-const pluginCloudCannonBookshop = require("@bookshop/cloudcannon-eleventy-bookshop");
+module.exports = () => {
+  const spec = {
+    structures: [
+      "content_blocks",
+      "page_sections",
+    ],
+    label: "Hero",
+    description: "A large hero component suitable for opening a landing page",
+    icon: "crop_landscape",
+    tags: [
+      "Above the Fold",
+      "Multimedia",
+    ]
+  };
 
-module.exports = function (eleventyConfig) {
-  // ...
+  const blueprint = {
+    title: "",
+    title_level: "h1",
+    hero_image: "",
+    hero_image_alt: "",
+    subcomponents: [ "bookshop:structure:content_blocks" ],
+  };
 
-	eleventyConfig.addPlugin(pluginBookshop({
-		bookshopLocations: ["component-library"]
-	}));
-	eleventyConfig.addPlugin(pluginCloudCannonBookshop);
+  const preview = {
+    title: "Bookshop Makes Component Driven Development Easy",
+    hero_image: "https://placekitten.com/600/400",
+  };
 
-  // ...
-};
+  const _inputs = {
+    title_level: {
+      type: "select",
+      options: {
+        values: [
+          "h1",
+          "h2",
+          "h3",
+          "h4",
+        ]
+      }
+    }
+  };
+
+  return {
+    spec,
+    blueprint,
+    preview,
+    _inputs,
+  }
+}
 ```
 
-With that dependency installed, follow the instructions in the link:live-editing.adoc[Live Editing Guide]
+++++
+</details>
+++++
+
+
+++++
+<details><summary>hero.bookshop.json</summary>
+++++
+
+
+```json
+{
+  "spec": {
+    "structures": [
+      "content_blocks",
+      "page_sections"
+    ],
+    "label": "Hero",
+    "description": "A large hero component suitable for opening a landing page",
+    "icon": "crop_landscape",
+    "tags": [
+      "Above the Fold",
+      "Multimedia"
+    ]
+  },
+  "blueprint": {
+    "title": "",
+    "title_level": "h1",
+    "hero_image": "",
+    "hero_image_alt": "",
+    "subcomponents": [ "bookshop:structure:content_blocks" ]
+  },
+  "preview": {
+    "title": "Bookshop Makes Component Driven Development Easy",
+    "hero_image": "https://placekitten.com/600/400"
+  },
+  "_inputs": {
+    "title_level": {
+      "type": "select",
+      "options": {
+        "values": [
+          "h1",
+          "h2",
+          "h3",
+          "h4"
+        ]
+      }
+    }
+  }
+}
+```
+
+++++
+</details>
+++++
+
+TIP: Can't decide? You can always run `npx @bookshop/up --format <format>` to automatically convert all of your files if you change your mind.
+
+////
+//
+//
+// END Supported File Formats
+//
+//
+////
+
+== Using the Bookshop Component Browser
+The Bookshop component browser allows you to browse and experiment with your components. When running in development the component browser also provides hot reloading of component templating and styles. An example browser showing the components in our Eleventy starter template can be seen here: https://winged-cat.cloudvent.net/components/
+
+In your local development environment, run: +
+`npx @bookshop/browser`
+
+By default, this will discover any Bookshop directories in or under the current working directory, and will host a component library on port 30775.
+
+After running this command, a component browser will be viewable on http://localhost:30775
+
+TIP: Run `npx @bookshop/browser --help` to see the available options.
+
+////
+//
+//
+// END Using the Bookshop Component Browser
+//
+//
+////
+
+=== Integrating the Component Browser With Your Site
+
+Bookshop {ssg} provides a helper for embedding the Bookshop browser in your website. This references the component browser started in the previous command, and embeds a live copy into your website.
+
+This allows you to:
+
+* Rely on your site layouts and styles in your component
+* Host a component browser on a page of your built site
+
+ifdef::hugo[]
+To install the component browser on a page of your site, use the `bookshop_component_browser` partial in that page's layout.
+
+.*components.html*
+```go
+{{ partial "bookshop_component_browser" }}
+```
+
+endif::hugo[]
+ifdef::jekyll[]
+To install the component browser on a page of your site, use the `bookshop_component_browser` tag in that page's layout.
+
+.*components.html*
+```liquid
+{% bookshop_component_browser %}
+```
+
+endif::jekyll[]
+ifdef::eleventy[]
+To install the component browser on a page of your site, use the `bookshop_component_browser` tag in that page's layout.
+
+.*components.html*
+```liquid
+{% bookshop_component_browser %}
+```
+
+endif::eleventy[]
+
+If you're running {ssg} locally, open another terminal and run `npx @bookshop/browser` in your Bookshop, or a parent directory. You should now be able to visit the page that you installed the component browser on, and see your components in a playground environment.
+
+TIP: If you're running the browser command on a custom port, you can pass that port as an argument with
+ifdef::hugo[]
+`{{ partial "bookshop_component_browser" 1234 }}`
+endif::hugo[]
+ifdef::jekyll[]
+`{% bookshop_component_browser 1234 %}`
+endif::jekyll[]
+ifdef::eleventy[]
+`{% bookshop_component_browser 1234 %}`
+endif::eleventy[]
+
+////
+//
+//
+// END Integrating the Component Browser With Your Site
+//
+//
+////
+
+=== Hosting a Component Library
+
+Any page that contains the `bookshop_component_browser` snippet will get picked up by `npx @bookshop/generate` (See <<Connecting Bookshop to CloudCannon>>) and turned into a hosted component browser, no extra configuration is needed.
+
+////
+//
+//
+// END Hosting a Component Library
+//
+//
+////
+
+== Connecting Bookshop to CloudCannon
+
+NOTE: This guide assumes that your site is already set up with CloudCannon. If this isn't the case, hop over to the link:https://cloudcannon.com/documentation/articles/connecting-your-first-site/?ssg={ssg}[CloudCannon Documentation] and get setup with a successful build first.
+
+Now that you understand how everything works locally, we can integrate Bookshop with CloudCannon. Bookshop does most of the heavy lifting for you, so we'll get to see the benefits pretty quickly. +
+The main thing you need to do is create a link:https://cloudcannon.com/documentation/articles/extending-your-build-process-with-hooks/?ssg={ssg}[postbuild script] that runs Bookshop's generate script. This should be placed inside a folder named `.cloudcannon` at the root of your repository.
+
+.*.cloudcannon/postbuild*
+[source,bash,subs="attributes"]
+----
+npm i
+npx @bookshop/generate
+----
+
+This command will automatically discover your component library, and find the output site from your build. It will then generate CloudCannon Structures for your components, as well as connect live editing to any pages on your site that contain Bookshop components.
+
+ifdef::hugo[]
+With Hugo, there is one extra step to get live editing working. For any components or helpers in your Hugo layouts, you will need to use the `bookshop_bindings` partial to connect it to the page's front matter. 
+
+For most setups, your site layouts will only contain the `page` helper, so this snippet will be all you need:
+
+.*<layout>.html*
+[source,go]
+----
+{{ partial "bookshop_bindings" `.Params.content_blocks` }}
+{{ partial "bookshop_partial" (slice "page" .Params.content_blocks) }}
+----
+
+If you're using other components in your layouts, add the `bookshop_bindings` partial to them. This partial needs to be passed a string representation of the data being passed to the component that follows it. For example:
+
+.*<layout>.html*
+[source,go]
+----
+{{ partial "bookshop_bindings" `(dict title .Params.title)` }}
+{{ partial "bookshop" (slice "hero" (dict title .Params.title)) }}
+----
+endif::hugo[]
+
+With that in place, live editing should work in CloudCannon. If you have the following front matter on a page:
+
+```yaml
+---
+content_blocks:
+---
+```
+
+And the `page` helper listed above in your layout, then in the CloudCannon sidebar you should be able to add our sample component and see it render live on the page.
+
+TIP: If something isn't working, browse through our link:https://github.com/CloudCannon/{ssgl}-bookshop-starter/[{ssg} Bookshop Starter Template] to see how everything is configured.
+
+////
+//
+//
+// END Connecting Bookshop to CloudCannon
+//
+//
+////
+
+=== Data Bindings
+
+Once you have components rendered on the page, Bookshop will create link:https://cloudcannon.com/documentation/articles/what-are-visual-data-bindings/?ssg={ssg}[Visual Data Bindings] automatically. If a component is passed data from the page front matter, you will be able to interact with that component directly on the page. 
+
+By default, Bookshop will add bindings for any components on the page, but will not add bindings for shared helper files. This prevents Bookshop rendering data bindings around our shared `page` helper, so that the components within are immediately accessible.
+
+This behavior can be customised by including a flag in the component's data. Bookshop will look for any of the following keys:
+
+* data_binding
+* dataBinding
+* _data_binding
+* _dataBinding
+
+For example:
+
+
+ifdef::hugo[]
+```go
+<!-- This component will **not** get a binding -->
+{{ partial "bookshop" (slice "item" (dict "data_binding" false "props" props)) }}
+
+<!-- This partial **will** get a binding -->
+{{ partial "bookshop_partial" (slice "page" (dict "data_binding" true "props" props)) }}
+```
+endif::hugo[]
+ifdef::jekyll[]
+```liquid
+<!-- This component will **not** get a binding -->
+{% bookshop item data_binding=false props=props %}
+
+<!-- This include **will** get a binding -->
+{% bookshop_include page data_binding=true props=props %}
+```
+endif::jekyll[]
+ifdef::eleventy[]
+```liquid
+<!-- This component will **not** get a binding -->
+{% bookshop 'item' data_binding: false props: props %}
+
+<!-- This include **will** get a binding -->
+{% bookshop_include 'page' data_binding: true props: props %}
+```
+endif::eleventy[]
+
+NOTE: This flag only applies to the component directly and doesn't cascade down. Any subcomponents will follow the standard rules, or can also specify their own Data Binding flag.
+
+////
+//
+//
+// END Data Bindings
+//
+//
+////
+
+=== Live Editing Site Data and Collections
+
+The `npx @bookshop/generate` command connects Bookshop to a subset of your site's data when live editing.
+
+ifdef::hugo[]
+
+Data will not be available through `.Site.Data`, but will be available through `site.Data`. Accessing site pages when live editing is not yet supported in Hugo.
+
+IMPORTANT: For data to be accessible, you will need to set `data_config: true` in your CloudCannon Global Configuration file.
+
+endif::hugo[]
+ifdef::jekyll[]
+
+Accessing `site.data` should then work as expected inside a component in the visual editor.
+
+Accessing `site.<collection>` should also work out of the box. All front matter from a collection should be accessible, but some collection fields such as `page.content` and `page.excerpt` will not be available when live editing.
+
+IMPORTANT: For data to be accessible, you will need to set `data_config: true` in your CloudCannon Global Configuration file.
+
+NOTE: Support is only provided for data files in your source. Any data provided by a plugin will not be available.
+
+endif::jekyll[]
+ifdef::eleventy[]
+
+Accessing your site data should then work as expected inside a component in the visual editor.
+
+Accessing `collections.*` should also work out of the box. All front matter from a collection should be accessible, but some collection fields such as `templateContent` will not be available when live editing.
+
+IMPORTANT: For data to be accessible, you will need to expose each data set using `data_config` in your CloudCannon Global Configuration file.
+
+NOTE: Support is only provided for data files in your source. Any data provided by a plugin will not be available.
+
+endif::eleventy[]
+
+////
+//
+//
+// END Live Editing Site Data and Collections
+//
+//
+////
+
+=== Passing Data to Bookshop Components
+
+In order to live edit Bookshop components, Bookshop needs a clear path between a component and the data it draws from. In general, you should avoid adding logic around your Bookshop components in your site layouts, and instead move that logic into a Bookshop component or helper.
+
+An example:
+
+
+ifdef::hugo[]
+.*index.md*
+```yaml
+---
+title: "Hello World"
+---
+```
+.*index.html*
+```go
+<!-- 
+  This component can make the connection between "text" and ".Params.title",
+  and will work as expected in the visual editor.
+-->
+{{ partial "bookshop_bindings" `(dict text .Params.title)` }}
+{{ partial "bookshop" (slice "hero" (dict "text" .Params.title)) }}
+
+{{ my_title := .Params.title }}
+
+<!-- 
+  This component does not have the context to map text back to its origin,
+  and will error in the visual editor.
+  (Assignments _inside_ Bookshop components will work correctly)
+-->
+{{ partial "bookshop_bindings" `(dict text $my_title)` }}
+{{ partial "bookshop" (slice "hero" (dict "text" $my_title)) }}
+```
+
+The same is true for site data. Access this directly from inside your component, rather than passing it to the component from your layout.
+endif::hugo[]
+ifdef::jekyll[]
+.*index.html*
+```liquid
+---
+title: "Hello World"
+---
+<!-- 
+  This component can make the connection between "text" and the front matter,
+  and will work as expected in the visual editor.
+-->
+{% bookshop hero text=page.title %}
+
+{% assign my_title = title %}
+
+<!-- 
+  This component doesn't have the context to map text back to its origin,
+  and will error in the visual editor.
+  (Assignments _inside_ Bookshop components will work correctly)
+-->
+{% bookshop hero text=my_title %}
+```
+
+The same is true for site data and collections. Access these directly from inside your component, rather than passing them to the component from your layout.
+endif::jekyll[]
+ifdef::eleventy[]
+.*index.html*
+```liquid
+---
+title: "Hello World"
+---
+<!-- 
+  This component can make the connection between "text" and the front matter,
+  and will work as expected in the visual editor.
+-->
+{% bookshop 'hero' text: title %}
+
+{% assign my_title = title %}
+
+<!-- 
+  This component doesn't have the context to map text back to its origin,
+  and will error in the visual editor.
+  (Assignments _inside_ Bookshop components will work correctly)
+-->
+{% bookshop 'hero' text: my_title %}
+```
+
+The same is true for site data and collections. Access these directly from inside your component, rather than passing them to the component from your layout.
+endif::eleventy[]
+
+////
+//
+//
+// END Passing Data to Bookshop Components
+//
+//
+////
+
+=== {ssg} Live Editing Support
+
+ifdef::jekyll[]
+Bookshop's Jekyll live editing is built on top of the liquidjs package. As such, not all Jekyll features are supported within Bookshop components. Generally, functions that interact with Jekyll or the site as a whole are unavailable. The following features have been re-implemented for live editing in Jekyll:
+
+++++
+<details><summary>Bookshop Jekyll Support Matrix</summary>
+++++
+
+[cols="1,1"]
+|===
+|Jekyll Feature |Notes 
+
+|Filters: `slugify`, `jsonify`, `relative_url`
+|✅
+
+|Filter: `markdownify`
+|ℹ️ Uses a different markdown engine, so output isn't guaranteed to match Jekyll 1:1
+
+|Accessing `site.data` and `site.<collection>`
+|ℹ️ Iterating through collections and data files should be possible when live editing Bookshop components.
+|===
+
+++++
+</details>
+++++
+
+endif::jekyll[]
+
+ifdef::Eleventy[]
+Bookshop's Eleventy live editing is built on top of the liquidjs package. As such, not all Eleventy features are supported within Bookshop components. Generally, functions that interact with Eleventy or the site as a whole are unavailable. The following features have been re-implemented for live editing in Eleventy:
+
+++++
+<details><summary>Bookshop Eleventy Support Matrix</summary>
+++++
+
+[cols="1,1"]
+|===
+|Eleventy Feature |Notes 
+
+|Filters: `url`
+|✅
+|Accessing `site.data` and `site.<collection>`
+|ℹ️ Iterating through collections and data files should be possible when live editing Bookshop components.
+|===
+
+++++
+</details>
+++++
+
+endif::Eleventy[]
+
+ifdef::hugo[]
+Bookshop's Hugo live editing is built on top of the core Go text/template package. As such, not all Hugo features are supported within Bookshop components. Generally, functions that interact with Hugo or the site as a whole are unavailable. The following tables describe the features and functions currently supported in live-edited Bookshop components.
+
+NOTE: Work is underway to expand support for many of the functions below. Open a GitHub issue if there is a specific function you need for your workflow. 
+
+++++
+<details><summary>Bookshop Hugo Support Matrix</summary>
+++++
+
+[cols="1,1"]
+|===
+|Hugo Feature |Supported in Bookshop 
+
+|link:https://gohugo.io/templates/partials/#returning-a-value-from-a-partial[Partial return values]
+|❌
+
+|link:https://gohugo.io/functions/scratch/[.Scratch and newScratch]
+|❌
+|===
+
+[cols="1,1"]
+|===
+|Template Function |Supported in Bookshop 
+
+|templates.*
+|❌
+|os.*
+|❌
+|urls.*
+|❌
+|lang / i18n
+|❌
+|hugo
+|❌
+|apply
+|❌
+|anchorize
+|❌
+|absURL / absLangURL
+|❌
+|humanize
+|❌
+|now
+|❌
+|Image Filters
+|❌
+|partialCached
+|❌
+|getenv
+|❌
+|fileExists / readDir / readFile
+|❌
+|ref / relref
+|❌
+|relURL / relLangURL
+|❌
+|site.BaseURL / site.Title / site.Copyright 
+|✅
+|Other site.* functions
+|❌
+|highlight
+|ℹ️ Will pass through the input string unchanged (i.e. it won't work, but it won't error)
+|markdownify
+|ℹ️ Uses a different markdown implementation. Output isn't guaranteed to match Hugo 1:1
+|strings.*
+|✅
+|reflect.*
+|✅
+|plainify
+|✅
+|emojify
+|✅
+|htmlEscape/htmlUnescape
+|✅
+|merge
+|✅
+|symdiff
+|✅
+|complement
+|✅
+|append
+|✅
+|group
+|✅
+|hmac
+|✅
+|transform.Unmarshal
+|✅
+|errorf and warnf
+|✅
+|float
+|✅
+|cond
+|✅
+|ge/gt/le/lt/ne
+|✅
+|after
+|✅
+|base64
+|✅
+|chomp
+|✅
+|countrunes
+|✅
+|countwords
+|✅
+|default
+|✅
+|delimit
+|✅
+|dict
+|✅
+|echoParam
+|✅
+|eq
+|✅
+|findRE
+|✅
+|first
+|✅
+|hasPrefix
+|✅
+|in
+|✅
+|index
+|✅
+|int
+|✅
+|intersect
+|✅
+|isset
+|✅
+|jsonify
+|✅
+|last
+|✅
+|len
+|✅
+|lower
+|✅
+|Math
+|✅
+|md5
+|✅
+|path.*
+|✅
+|pluralize
+|✅
+|print
+|✅
+|printf
+|✅
+|println
+|✅
+|querify
+|✅
+|range
+|✅
+|replace
+|✅
+|replaceRE
+|✅
+
+|===
+
+[cols="1,1"]
+|===
+|Page Function |Supported in Bookshop 
+
+|.AddDate
+|❌
+|.Format
+|❌
+|.Get
+|❌
+|.GetPage
+|❌
+|.HasMenuCurrent
+|❌
+|.IsMenuCurrent
+|❌
+|.Param
+|❌
+|.Render
+|❌
+|.RenderString
+|❌
+|.Scratch
+|❌
+|.Unix
+|❌
+
+|===
+
+++++
+</details>
+++++
+
+endif::hugo[]
+
+=== Disabling Live Editing
+
+Some components won't be compatible with live editing, in this case you can disable live editing with on a flag in the component's data. Bookshop will look for any of the following keys:
+
+* live_render
+* liveRender
+* _live_render
+* _liveRender
+
+For example:
+
+
+ifdef::hugo[]
+```go
+<!-- This component will re-render in the visual editor -->
+{{ partial "bookshop" (slice "navigation" (dict "props" props)) }}
+
+<!-- This component will **not** re-render in the visual editor -->
+{{ partial "bookshop" (slice "navigation" (dict "live_render" false "props" props)) }}
+```
+endif::hugo[]
+ifdef::jekyll[]
+```liquid
+<!-- This component will re-render in the visual editor -->
+{% bookshop navigation props=props %}
+
+<!-- This component will **not** re-render in the visual editor -->
+{% bookshop navigation live_render=false props=props %}
+```
+endif::jekyll[]
+ifdef::eleventy[]
+```liquid
+<!-- This component will re-render in the visual editor -->
+{% bookshop 'navigation' props: props %}
+
+<!-- This component will **not** re-render in the visual editor -->
+{% bookshop 'navigation' live_render: false props: props %}
+```
+endif::eleventy[]
+
+If you have a specific component that you never want to live edit, you can set `_live_render` in the component's blueprint.
+
+NOTE: Since the blueprint only affects the creation of new components, you will need to add the `_live_render` flag to any existing component data in your front matter.
+
+IMPORTANT: This flag will only apply if the component is rendered directly from a site layout. If this component is within another component, it will still update live (as the parent re-rendering will encapsulate it).
+
+////
+//
+//
+// END {ssg} Live Editing Support
+//
+//
+////

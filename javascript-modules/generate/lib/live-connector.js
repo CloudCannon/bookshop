@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import fastGlob from 'fast-glob';
+import chalk from 'chalk';
 
 const getLiveEditingConnector = () => {
   return `
@@ -8,13 +9,28 @@ const getLiveEditingConnector = () => {
 (function(){
     const bookshopLiveSetup = (CloudCannon) => {
       CloudCannon.enableEvents();
+      CloudCannon?.setLoading?.("Loading Bookshop Live Editing");
+      let triggeredLoad = false;
+      const whenLoaded = () => {
+        triggeredLoad = true;
+        CloudCannon?.setLoading?.(false);
+      }
+      setTimeout(() => {
+        if (!triggeredLoad) {
+          CloudCannon?.setLoading?.("Error Loading Bookshop Live Editing");
+          setTimeout(() => {
+            if (!triggeredLoad) { whenLoaded() }
+          }, 2000);
+        }
+      }, 12000);
   
       const head = document.querySelector('head');
       const script = document.createElement('script');
       script.src = \`/_cloudcannon/bookshop-live.js\`;
       script.onload = function() {
         window.bookshopLive = new window.BookshopLive({
-          remoteGlobals: []
+          remoteGlobals: [],
+          loadedFn: whenLoaded,
         });
         const updateBookshopLive = async () => {
           const frontMatter = await CloudCannon.value({
@@ -60,14 +76,14 @@ export const hydrateLiveForSite = async (siteRoot, options) => {
   }
 
   if (!connected) {
-    console.log(`📚 ———— No live editing connected as no pages contained Bookshop components`);
+    console.log(chalk.gray(`No live editing connected as no pages contained Bookshop components`));
     return false;
   }
 
-  console.log(`📚 ———— Added live editing to ${connected} page${connected === 1 ? '' : 's'} containing Bookshop components`);
+  console.log(chalk.green(`Added live editing to ${connected} page${connected === 1 ? '' : 's'} containing Bookshop components`));
   const skipped = siteHTMLFiles.length - connected;
   if (skipped) {
-    console.log(`📚 ———— Skipped ${skipped} page${skipped === 1 ? '' : 's'} that didn't contain Bookshop components.`);
+    console.log(chalk.gray(`Skipped ${skipped} page${skipped === 1 ? '' : 's'} that didn't contain Bookshop components.`));
   }
   return true;
 }

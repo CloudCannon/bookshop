@@ -403,3 +403,33 @@ Feature: Hugo Bookshop CloudCannon Live Editing Selective Re-rendering
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Hello :)"
+
+  Scenario: Bookshop live renders a nested component path
+    Given a component-lib/components/outer/outer.hugo.html file containing:
+      """
+      <div> {{ partial "bookshop" "generic/button" }} </div>
+      """
+    Given a component-lib/components/generic/button/button.hugo.html file containing:
+      """
+      <button>Button!</button>
+      """
+    Given [front_matter]: "empty: true"
+    And a site/content/_index.md file containing:
+      """
+      ---
+      ---
+      """
+    And a site/layouts/index.html file containing:
+      """
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" "" }}
+      {{ partial "bookshop" "outer" }}
+      </body>
+      </html>
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector button should contain "Button!"
+

@@ -1,6 +1,6 @@
-[component]
+[spec]
 label = "Card"
 icon = "nature_people"
 
-[props]
+[blueprint]
 text = "This is some text"

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "ava -v && echo \"* * * *\n* * * * Run `yarn run itest` to run the integration tests\n* * * *\"",
-    "itest": "node prep.js && cucumber-js --parallel 8 --tags \"not @skip\"",
+    "itest": "node prep.js && cucumber-js --parallel 5 --tags \"not @skip\"",
     "itest:skipped": "node prep.js && cucumber-js --parallel 4 --tags \"@skip\""
   },
   "author": "@bglw",
@@ -16,8 +16,9 @@
     "@bookshop/generate": "2.6.1",
     "@bookshop/init": "2.6.1",
     "@bookshop/sass": "2.6.1",
-    "cloudcannon-hugo": "0.12.5",
-    "eleventy-plugin-cloudcannon": "^0.0.17",
+    "@bookshop/up": "2.6.1",
+    "cloudcannon-hugo": "0.13.2",
+    "eleventy-plugin-cloudcannon": "^1.0",
     "get-port": "^6.0.0",
     "js-yaml": "^4.1.0",
     "puppeteer": "^13.0.1",

@@ -31,11 +31,12 @@ export class Engine {
     }
 
     async initializeHugo() {
+        const useLocalHugo = window.CloudCannon?.isMocked || /localhost|127\.0\.0\.1/i.test(window.location.host);
         // When this script is run locally, the hugo wasm is loaded as binary rather than output as a file.
         if (hugoWasm?.constructor === Uint8Array) {
             await this.initializeInlineHugo();
         } else {
-            if (window.CloudCannon?.isMocked) {
+            if (useLocalHugo) {
                 await this.initializeLocalHugo();
             } else {
                 await this.initializeRemoteHugo();
@@ -73,7 +74,7 @@ export class Engine {
 
     async initializeLocalHugo() {
         const go = new Go();
-        const wasmOrigin = this.origin.replace(/\/[^\.\/]+\.js$/, hugoWasm.replace(/^\./, ''));
+        const wasmOrigin = this.origin.replace(/\/[^\.\/]+\.(min\.)?js/, hugoWasm.replace(/^\./, ''));
         const response = await fetch(wasmOrigin);
         const buffer = await response.arrayBuffer();
         const result = await WebAssembly.instantiate(buffer, go.importObject);
@@ -119,8 +120,25 @@ export class Engine {
         };
     }
 
-    async render(target, name, props, globals) {
-        while (!window.renderHugo) await sleep(10);
+    async storeMeta(meta = {}) {
+        while (!window.loadHugoBookshopMeta) {
+            await sleep(100);
+        };
+        window.loadHugoBookshopMeta(JSON.stringify(meta));
+    }
+
+    async storeInfo(info = {}) {
+        while (!window.loadHugoBookshopData) {
+            await sleep(100);
+        };
+        window.loadHugoBookshopData(JSON.stringify(info));
+    }
+
+    async render(target, name, props, globals, logger) {
+        while (!window.renderHugo) {
+            logger?.log?.(`Waiting for the Hugo WASM to be available...`);
+            await sleep(100);
+        };
 
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
@@ -129,8 +147,12 @@ export class Engine {
             console.warn(`[hugo-engine] No component found for ${name}`);
             return "";
         }
+        logger?.log?.(`Going to render ${name}, with source:`);
+        logger?.log?.(source);
         // TODO: this template already exists on the other side of the wasm bounary
         source = translateTextTemplate(source, {});
+        logger?.log?.(`Rewritten the template for ${name} to:`);
+        logger?.log?.(source);
         if (!globals || typeof globals !== "object") globals = {};
         props = { ...globals, ...props };
 
@@ -138,9 +160,12 @@ export class Engine {
         if (props["."]) props = props["."];
         const output = window.renderHugo(source, JSON.stringify(props));
         if (/BKSHERR/.test(output)) {
+            logger?.log?.(`Failed to render ${output}`);
             console.error(output);
         } else {
             target.innerHTML = output;
+            logger?.log?.(`Rendered ${name} as:`);
+            logger?.log?.(target.innerHTML);
         }
     }
 

@@ -56,10 +56,13 @@ test("add live markup to withs", t => {
 
 test("add live markup to loops", t => {
     const input = `{{ range .items }}<p>{{ . }}</p>{{ end }}`;
-    const expected = [`{{ $bookshop__live__iterator := 0 }}`,
+    const expected = [`{{ $bookshop__live__iterator__keys := (slice) }}`,
+        `{{ range $i, $e := (.items) }}{{ $bookshop__live__iterator__keys = $bookshop__live__iterator__keys | append $i }}{{ end }}`,
+        `{{ $bookshop__live__iterator := 0 }}`,
         `{{ range .items }}`,
         `{{ \`<!--bookshop-live stack-->\` | safeHTML }}`,
-        `{{ (printf \`<!--bookshop-live context(.: (index (.items) %d))-->\` $bookshop__live__iterator) | safeHTML }}`,
+        `{{ $bookshop__live__iterator__key := (index ($bookshop__live__iterator__keys) $bookshop__live__iterator) }}`,
+        `{{ (printf \`<!--bookshop-live context(.: (index (.items) %v))-->\` (jsonify $bookshop__live__iterator__key)) | safeHTML }}`,
         `{{ $bookshop__live__iterator = (add $bookshop__live__iterator 1) }}`,
         `<p>{{ . }}</p>`,
         `{{ \`<!--bookshop-live unstack-->\` | safeHTML }}`,
@@ -104,7 +107,7 @@ test("add live markup to complex end structures", t => {
 
 {{ end }}`;
     const expected = `
-{{ $bookshop__live__iterator := 0 }}{{ range .items }}{{ \`<!--bookshop-live stack-->\` | safeHTML }}{{ (printf \`<!--bookshop-live context(.: (index (.items) %d))-->\` $bookshop__live__iterator) | safeHTML }}{{ $bookshop__live__iterator = (add $bookshop__live__iterator 1) }}
+{{ $bookshop__live__iterator__keys := (slice) }}{{ range $i, $e := (.items) }}{{ $bookshop__live__iterator__keys = $bookshop__live__iterator__keys | append $i }}{{ end }}{{ $bookshop__live__iterator := 0 }}{{ range .items }}{{ \`<!--bookshop-live stack-->\` | safeHTML }}{{ $bookshop__live__iterator__key := (index ($bookshop__live__iterator__keys) $bookshop__live__iterator) }}{{ (printf \`<!--bookshop-live context(.: (index (.items) %v))-->\` (jsonify $bookshop__live__iterator__key)) | safeHTML }}{{ $bookshop__live__iterator = (add $bookshop__live__iterator 1) }}
 
     {{with .text}}{{ \`<!--bookshop-live stack-->\` | safeHTML }}{{ \`<!--bookshop-live context(.: (.text))-->\` | safeHTML }}
     <p>{{ . }}</p>

@@ -15,10 +15,6 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Granular Steps
         _includes/
           layouts/
             default.liquid from starters/eleventy/default.liquid
-        cloudcannon/
-          info.11tydata.js from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.11tydata.js
-          info.njk from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.njk
-          inject-cloudcannon.config.js from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/inject-cloudcannon.config.js
       """
     * a component-lib/components/single/single.eleventy.liquid file containing:
       """
@@ -50,7 +46,7 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Granular Steps
     Given I run "npm start" in the site directory
     When I run "npm start" in the . directory
     Then stderr should be empty
-    *    stdout should contain "Modifying built site at ./site/_site"
+    *    stdout should contain "Modifying output site at ./site/_site"
     *    stdout should contain "Added live editing to 1 page containing Bookshop components"
 
   @web

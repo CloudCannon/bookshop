@@ -1,0 +1,56 @@
+{{/*
+    Renders a Bookshop component
+
+    Expects a slice:
+    [
+        <string>, # Component name
+        <_>       # Component props
+    ]
+
+    Or a struct:
+    {
+        _bookshop_name: <string>, # Component name
+        ...,                      # Component props
+    }
+
+    Or a <string>: # Component name
+*/}}
+
+{{- $component_name := false -}}
+{{- $component_props := false -}}
+
+{{- if reflect.IsSlice . -}}
+    {{- if eq (len .) 2 -}}
+        {{- if eq (printf "%T" (index . 0)) "string" -}}
+            {{- $component_name = index . 0 -}}
+            {{- $component_props = index . 1 -}}
+        {{- else -}}
+            {{- $err := printf "Expected the first argument to be a string of the component name. Received %+v" (index . 0) -}}
+            {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+        {{- end -}}
+    {{- else -}}
+        {{- $err := printf "Expected a slice of length 2, was given %d" (len .) -}}
+        {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+    {{- end -}}
+{{- else if reflect.IsMap . -}}
+    {{- if isset . "_bookshop_name" -}}
+        {{- $component_name = ._bookshop_name -}}
+        {{- $component_props = . -}}
+    {{- else -}}
+        {{- $err := printf "Expected the provided map to contain a _bookshop_name key. Was given %+v" . -}}
+        {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+    {{- end -}}
+{{- else if eq (printf "%T" .) "string" -}}
+    {{- $component_name = . -}}
+    {{- $component_props = true -}}
+{{- else if . -}}
+    {{- $err := printf "Expected a map, slice, or string. Was given the %T: %+v" . . -}}
+    {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+{{- else -}}
+    {{- $err := printf "Expected a map, slice, or string. Was provided with no arguments" -}}
+    {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+{{- end -}}
+
+{{- if and $component_name $component_props -}}
+    {{- partial "_bookshop/helpers/component" (slice $component_name $component_props) -}}
+{{- end -}}

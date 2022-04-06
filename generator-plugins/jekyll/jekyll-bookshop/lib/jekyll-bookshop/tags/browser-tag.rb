@@ -7,43 +7,11 @@ module JekyllBookshop
       @host = markup.strip
     end
 
-    def self.transformHostString(host)
-      case
-        when host =~ %r!^:\d+$!
-          "http://localhost#{host}/bookshop.js"
-        when host =~ %r!^\d+$!
-          "http://localhost:#{host}/bookshop.js"
-        when host =~ %r!^localhost:\d+$!
-          "http://#{host}/bookshop.js"
-        when host =~ %r!^/|https?://!
-          host
-        else
-          "//#{host}"
-      end
-    end
-
     def render(context)
-      return unless @host
-
-      host = BrowserTag.transformHostString(@host)
-
-      site = context.registers[:site]
-      page = context.registers[:page]
-
-      site.data["_bookshop_data_pages"] ||= []
-      unless site.data["_bookshop_data_pages"].include?(page["url"])
-        site.data["_bookshop_data_pages"].push(page["url"])
-      end
-
-      "<div data-bookshop-browser></div>
-<script>window.bookshop_browser_site_data = null;</script>
-<script src=\"#{host}\"></script>
-<script>
-  window.bookshopBrowser = new window.BookshopBrowser({
-    globals: [window.bookshop_browser_site_data]
-  }); 
-  window.bookshopBrowser.render();
-</script>"
+      STDERR.puts "The {% bookshop_browser #{@host} %} tag has been replaced in Bookshop 3.0"
+      STDERR.puts "Replace this tag with {% bookshop_component_browser %}"
+      STDERR.puts "Note: The port argument is no longer needed, nor are any environment checks"
+      exit 1
     end
   end
 end

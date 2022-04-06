@@ -1,0 +1,230 @@
+:toc:
+:toclevels: 3
+:toc-placement!:
+
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :new:
+:important-caption: :star2:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::env-github[]
+
+= Bookshop 3.0 Migration Guide
+
+toc::[]
+
+== Overview
+
+Bookshop 3.0 changes the way configuration files work, and includes some templating changes depending on your SSG.
+
+The documentation on GitHub has been updated to match all of the changes, so you can reference the link:jekyll.adoc[Jekyll], link:eleventy.adoc[Eleventy], or link:hugo.adoc[Hugo] guides to see the full documentation.
+
+== Upgrading
+
+Bookshop now includes an upgrade script that automates most of this process for you. In a parent directory of your site and your component library, run:
+
+```bash
+npx @bookshop/up@latest
+```
+
+This will find any Bookshop directories and upgrade them to the 3.0 syntax, and will also find any sites with Bookshop dependencies and upgrade those to match.
+
+== Configuration File Changes
+
+The big ticket release of Bookshop 3.0 is the introduction of new component configuration files. The first change is that these files are no longer restricted to TOML, you can now choose between YAML, TOML, JSON and JavaScript. For the new format, we recomment using YAML for readability.
+
+The `@bookshop/up` upgrade script will ask you which format you would like to use going forward, so there's no need to manually convert these yourself.
+
+TIP: You can re-run `npx @bookshop/up --format <format>` at a later date to change your mind.
+
+The upgrade script will also convert the contents of your component config files to the new 3.0 syntax. The new files have four default top-level objects:
+
+* `component` has been renamed to `spec`
+** The contents are otherwise unchanged
+* `props` has been renamed to `blueprint`
+** `blueprint` now represents the default values of your component
+* `preview` has been introduced
+** This is now where the component browser specific values are defined
+* `_inputs` has been added
+** This passes through to CloudCannon, and allows you to configure your inputs more than was previously possible
+
+=== Blueprint
+
+The `blueprint`` of 3.0 is different than the `props` of 2.0, in that the values are now explicit defaults.
+
+For a 2.0 config file:
+```toml
+[props]
+title.default = "Hello World"
+```
+
+The corresponding 3.0 config file would be:
+```yaml
+blueprint:
+  title: Hello World
+```
+
+=== Preview
+
+In a 2.0 file without a default value:
+```toml
+[props]
+title = "Hello World"
+```
+
+The corresponding 3.0 config file would be:
+```yaml
+blueprint:
+  title: ""
+
+preview:
+  title: Hello World
+```
+
+The new `preview` object will be deep merged with the `blueprint` to render a component in the component browser
+
+=== Inputs
+
+The Bookshop DSL has now been replaced with writing CloudCannon's newer `_inputs` configuration manually. 
+
+In a 2.0 file with select data:
+```toml
+[props]
+color.select = ["red", "blanchedalmond"]
+```
+
+The corresponding 3.0 config file would be:
+```yaml
+blueprint:
+  color: red
+
+_inputs:
+  color:
+    type: select
+    options:
+      values:
+        - red
+        - blanchedalmond
+```
+
+In a 2.0 file with a comment:
+```toml
+[props]
+title = "Hello World" #: CMS Comment
+```
+
+The corresponding 3.0 config file would be:
+```yaml
+blueprint:
+  title: Hello World
+
+_inputs:
+  title:
+    comment: CMS Comment
+```
+
+While more verbose, this opens up a lot more configurability to your components. For example, you can now create number sliders:
+
+```yaml
+blueprint:
+  size: 3
+
+_inputs:
+  size:
+    type: range
+    options:
+      step: 1
+      max: 20
+      min: 0
+```
+
+As well as anything else using link:https://cloudcannon.com/documentation/articles/how-to-choose-what-input-is-used-in-the-data-editor/[CloudCannon Input Configuration].
+
+=== New Features
+
+See the link:https://github.com/CloudCannon/bookshop/releases[release notes] for all feature releases included in Bookshop 3.0.
+
+NOTE: A new feature for configuration files is the ability to reference other Bookshop components and structures:
+
+```yaml
+blueprint:
+  button: bookshop:button
+  inner_components: bookshop:structure:content_blocks
+```
+
+== Hugo Specific Changes
+
+The `npx @bookshop/up@latest` will update your node modules, go modules, and component config files. No other migration changes are needed for Hugo. 
+
+NOTE: Hugo components can now access `site.Data` in the live editing environment
+
+== Eleventy Specific Changes
+
+The `npx @bookshop/up@latest` will update your node modules and component config files. Additionally, the following changes need to be made:
+
+`@bookshop/cloudcannon-eleventy-bookshop` is now obsolete. You should remove this from your dependencies, and remove the `pluginCloudCannonBookshop` from your `.eleventy.js` file.
+
+'''
+
+CloudCannon integration is now provided by the Bookshop Generate command. Create a new `.cloudcannon/postbuild` at the root of your repository containing:
+```bash
+npm i
+npx @bookshop/generate
+```
+See **Connecting Bookshop to CloudCannon** in the link:eleventy.adoc[Eleventy Guide] for more information.
+
+'''
+
+Any `{% bookshop_live %}` tag in your templates can be entirely removed, this is now configured automatically in the Bookshop Generate command.
+
+'''
+
+Any usage of the `{% bookshop_browser %}` tag should be replaced with the `{% bookshop_component_browser %}` tag. The new tag no longer requires a port argument, and will connect to the default port of `npx @bookshop/browser`.
+
+Additionally, if you currently have any logic around the component browser tag for local / production builds, this can be removed. If the tag exists on a page, the Bookshop Generate command will automatically turn it into a hosted component browser.
+
+'''
+
+Any Bookshop commands in your CloudCannon `prebuild` script can be removed — all live editing and component browser setup is now performed automatically by the Bookshop Generate command. 
+
+'''
+
+NOTE: Eleventy components can now access site data and collections in the live editing environment
+
+== Jekyll Specific Changes
+
+The `npx @bookshop/up@latest` will update your node modules, Gemfiles, and component config files. Additionally, the following changes need to be made:
+
+`cloudcannon-jekyll-bookshop` is now obsolete, you should remove this from your Gemfile and _config.yml if present.
+
+'''
+
+CloudCannon integration is now provided by the Bookshop Generate command. Create a new `.cloudcannon/postbuild` at the root of your repository containing:
+```bash
+npm i
+npx @bookshop/generate
+```
+See **Connecting Bookshop to CloudCannon** in the link:jekyll.adoc[Jekyll Guide] for more information.
+
+'''
+
+Any `{% bookshop_live %}` tag in your templates can be entirely removed, this is now configured automatically in the Bookshop Generate command.
+
+'''
+
+Any usage of the `{% bookshop_browser %}` tag should be replaced with the `{% bookshop_component_browser %}` tag. The new tag no longer requires a port argument, and will connect to the default port of `npx @bookshop/browser`.
+
+Additionally, if you currently have any logic around the component browser tag for local / production builds, this can be removed. If the tag exists on a page, the Bookshop Generate command will automatically turn it into a hosted component browser.
+
+'''
+
+Any Bookshop commands in your CloudCannon `prebuild` script can be removed — all live editing and component browser setup is now performed automatically by the Bookshop Generate command. 
+
+'''
+
+=== Jekyll Breaking Changes
+
+* Site data is still available when live editing, but no longer by default. To enable this, you will need to set `data_config: true` in your CloudCannon Global Configuration file.
+* When accessing pages and posts via site.<collection> in the visual editor, `page.content` and `page.excerpt` are no longer available. All front matter from these pages will still be available to your template.
+* Site data and collections will not longer be available in the Bookshop Component Browser.

@@ -6,4 +6,3 @@ include:
 
 plugins:
   - jekyll-bookshop
-  - cloudcannon-jekyll-bookshop

@@ -15,6 +15,11 @@ const nodeIsBefore = (a, b) => {
     return a && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
 }
 
+let bookshop_version = null;
+if (typeof BOOKSHOP_VERSION !== "undefined") {
+    bookshop_version = BOOKSHOP_VERSION;
+}
+
 /**
  * Try find an existing absolute path to the given identifier,
  * and note down the sum absolute path of the new name if we can
@@ -89,11 +94,12 @@ export const replaceHTMLRegion = (startNode, endNode, outputElement) => {
  * Takes in a DOM tree containing Bookshop live comments
  * Calls a given callback whenever a component end tag is hit
  */
-const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, templateBlockHandler = () => { }, isRetry) => {
+const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, templateBlockHandler = () => { }, isRetry, logger) => {
     const stack = [{ scope: {} }];           // The stack of data scopes
     const pathStack = parentPathStack || [{}];     // The paths from the root to any assigned variables
     let stashedNodes = [];    // bookshop_bindings tags that we should keep track of for the next component
     let stashedParams = [];    // Params from the bookshop_bindings tag that we should include in the next component tag
+    let meta = {};    // Metadata set in the teplate
 
     const combinedScope = () => [liveInstance.data, ...stack.map(s => s.scope)];
     const currentScope = () => stack[stack.length - 1];
@@ -102,11 +108,37 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
     let currentNode = iterator.iterateNext();
 
     while (currentNode) {
+        logger?.log?.(`Parsing the comment:`);
+        logger?.log?.(currentNode.textContent);
         const liveTag = parseComment(currentNode);
 
+        // Keep track of any metadata that the renderer wants
+        for (const [name, identifier] of parseParams(liveTag?.meta)) {
+            meta[name] = identifier;
+            logger?.log?.(`Registered metadata ${name} as ${identifier}`);
+
+            if (name === "version" && bookshop_version) {
+                const expected_version = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
+                if (expected_version !== bookshop_version) {
+                    console.error([
+                        `Your Bookshop SSG plugin is running version ${expected_version}, but @bookshop/live is running version ${bookshop_version}.`,
+                        `Bookshop follows semantic versioning with regard to your site and components,`,
+                        `but this does not extend to Bookshop packages being compatible with each other across any version jump.`,
+                        `\nRun %cnpx @bookshop/up@latest%c in your root directory to upgrade all Bookshop dependencies.`
+                    ].join('\n'),
+                        `color: #FF4C29; font-family: monospace; font-weight: bold;`,
+                        `color: unset; font-family: unset; font-weight: unset;`
+                    );
+                }
+            }
+
+            await liveInstance.storeMeta(meta);
+        }
+
         for (const [name, identifier] of parseParams(liveTag?.context)) {
-            currentScope().scope[name] = await liveInstance.eval(identifier, combinedScope());
-            const normalizedIdentifier = liveInstance.normalize(identifier);
+            logger?.log?.(`Parsing context ${name}: ${identifier}`);
+            currentScope().scope[name] = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
+            const normalizedIdentifier = liveInstance.normalize(identifier, logger?.nested?.());
             if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
                 Object.values(normalizedIdentifier).forEach(value => {
                     return storeResolvedPath(name, value, pathStack)
@@ -119,15 +151,16 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
         // Hunt through the stack and try to reassign an existing variable.
         // This is currently only done in Hugo templates
         for (const [name, identifier] of parseParams(liveTag?.reassign)) {
+            logger?.log?.(`Reassigning ${name} to ${identifier}`);
             for (let i = stack.length - 1; i >= 0; i -= 1) {
                 if (stack[i].scope[name] !== undefined) {
-                    stack[i].scope[name] = await liveInstance.eval(identifier, combinedScope());
+                    stack[i].scope[name] = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
                     break;
                 }
             }
             for (let i = pathStack.length - 1; i >= 0; i -= 1) {
                 if (pathStack[i][name] !== undefined) {
-                    const normalizedIdentifier = liveInstance.normalize(identifier);
+                    const normalizedIdentifier = liveInstance.normalize(identifier, logger?.nested?.());
                     if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
                         Object.values(normalizedIdentifier).forEach(value => {
                             return storeResolvedPath(name, value, [pathStack[i]])
@@ -141,10 +174,12 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
         }
 
         if (liveTag?.end) {
+            logger?.log?.(`Reached the end of a block, handing off to the handler function`);
             currentScope().endNode = currentNode;
-            await templateBlockHandler(stack.pop());
+            await templateBlockHandler(stack.pop(), logger?.nested?.());
             pathStack.pop();
         } else if (liveTag.stack) {
+            logger?.log?.(`Stacking a new context`);
             let scope = {};
             pathStack.push({});
             stack.push({
@@ -152,31 +187,34 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
                 scope,
             });
         } else if (liveTag.unstack) {
+            logger?.log?.(`Unstacking a context`);
             stack.pop()
             pathStack.pop();
         } else if (liveTag && liveTag?.name === "__bookshop__subsequent") { // Entering a bookshop_bindings rule
+            logger?.log?.(`Stashing parameters for the next bookshop tag`);
             stashedNodes.push(currentNode);
             stashedParams = [...stashedParams, ...parseParams(liveTag?.params)];
         } else if (liveTag?.name) { // Entering a new component
+            logger?.log?.(`Rendering a new component ${liveTag.name}`);
             let scope = {};
             const params = [...stashedParams, ...parseParams(liveTag?.params)];
             pathStack.push({});
             for (const [name, identifier] of params) {
                 // Currently 'bind' is used in Jekyll/11ty and '.' is used in Hugo
                 if (name === 'bind') {
-                    const bindVals = await liveInstance.eval(identifier, combinedScope());
+                    const bindVals = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
                     if (bindVals && typeof bindVals === 'object') {
                         scope = { ...scope, ...bindVals };
                         Object.keys(bindVals).forEach(key => storeResolvedPath(key, `${identifier}.${key}`, pathStack));
                     }
                 } else if (name === ".") {
-                    const bindVals = await liveInstance.eval(identifier, combinedScope());
+                    const bindVals = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
                     if (bindVals && typeof bindVals === 'object' && !Array.isArray(bindVals)) {
                         scope = { ...scope, ...bindVals };
                     } else {
                         scope[name] = bindVals;
                     }
-                    const normalizedIdentifier = liveInstance.normalize(identifier);
+                    const normalizedIdentifier = liveInstance.normalize(identifier, logger?.nested?.());
                     if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
                         Object.entries(normalizedIdentifier).forEach(([key, value]) => {
                             return storeResolvedPath(key, value, pathStack);
@@ -185,7 +223,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
                         storeResolvedPath(name, normalizedIdentifier, pathStack);
                     }
                 } else {
-                    scope[name] = await liveInstance.eval(identifier, combinedScope());
+                    scope[name] = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
                     storeResolvedPath(name, identifier, pathStack);
                 }
             };
@@ -205,9 +243,11 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
         try {
             currentNode = iterator.iterateNext();
         } catch (e) {
+            logger?.log?.(`Failed to iterate to the next node.`);
             if (!isRetry) {
                 // DOM changed under us, start again.
-                return await evaluateTemplate(liveInstance, documentNode, parentPathStack, templateBlockHandler, true);
+                logger?.log?.(`Trying to start again...`);
+                return await evaluateTemplate(liveInstance, documentNode, parentPathStack, templateBlockHandler, true, logger);
             }
         }
     }
@@ -218,40 +258,53 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
  * Returns an array of all components rendered in virtual-DOM nodes,
  * with the start & end real-DOM nodes to anchor each component on
  */
-export const renderComponentUpdates = async (liveInstance, documentNode) => {
+export const renderComponentUpdates = async (liveInstance, documentNode, logger) => {
     const vDom = document.implementation.createHTMLDocument();
     const updates = [];     // Rendered elements and their DOM locations
 
-    const templateBlockHandler = async ({ startNode, endNode, name, scope, pathStack, depth, stashedNodes }) => {
+    const templateBlockHandler = async ({ startNode, endNode, name, scope, pathStack, depth, stashedNodes }, logger) => {
         // We only need to render the outermost component
-        if (depth) return;
+        logger?.log?.(`Received a template block to render for ${name}`);
+        if (depth) {
+            logger?.log?.(`Skipping render for nested component ${name}`);
+            return;
+        };
 
         const liveRenderFlag = scope?.live_render
             ?? scope?.liveRender
             ?? scope?._live_render
             ?? scope?._liveRender
             ?? true;
-        if (!liveRenderFlag) return;
+        if (!liveRenderFlag) {
+            logger?.log?.(`Skipping render for ${name} due to false liverender flag`);
+            return;
+        };
 
         const output = vDom.createElement('div');
         await liveInstance.renderElement(
             name,
             scope,
-            output
+            output,
+            logger?.nested?.(),
         )
+        logger?.log?.(`Rendered ${name} block into an update`);
         updates.push({ startNode, endNode, output, pathStack, scope, name, stashedNodes });
     }
 
-    await evaluateTemplate(liveInstance, documentNode, null, templateBlockHandler);
+    logger?.log?.(`Evaluating templates found in a document`);
+    await evaluateTemplate(liveInstance, documentNode, null, templateBlockHandler, false, logger?.nested?.());
 
+    logger?.log?.(`Completed evaluating the document`);
     return updates;
 }
 
-const findDataBinding = (identifier, liveInstance, pathStack) => {
-    const normalizedIdentifier = liveInstance.normalize(identifier);
+const findDataBinding = (identifier, liveInstance, pathStack, logger) => {
+    logger?.log?.(`Finding the data binding for ${identifier}`);
+    const normalizedIdentifier = liveInstance.normalize(identifier, logger?.nested?.());
     if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
         for (const innerIdentifier of Object.values(normalizedIdentifier)) {
-            let dataBinding = findDataBinding(innerIdentifier, liveInstance, pathStack);
+            logger?.log?.(`'twas an object — finding the data binding for ${innerIdentifier}'`);
+            let dataBinding = findDataBinding(innerIdentifier, liveInstance, pathStack, logger?.nested?.());
             if (dataBinding) return dataBinding;
         }
         return null;
@@ -259,6 +312,7 @@ const findDataBinding = (identifier, liveInstance, pathStack) => {
 
     let path = (findInStack(normalizedIdentifier, pathStack) ?? normalizedIdentifier);
     let pathResolves = dig(liveInstance.data, path);
+    logger?.log?.(`Found the path ${path}, which ${pathResolves ? `does resolve` : `does not resolve`}`);
     if (pathResolves) {
         // TODO: This special page case feels too SSG-coupled
         let dataBinding = path.replace(/^page(\.|$)/, '');
@@ -274,7 +328,8 @@ const findDataBinding = (identifier, liveInstance, pathStack) => {
  * Updates all components found within to have data bindings
  * pointing to the front matter path passed to that component (if possible)
  */
-export const hydrateDataBindings = async (liveInstance, documentNode, pathsInScope, preComment, postComment, stashedNodes) => {
+export const hydrateDataBindings = async (liveInstance, documentNode, pathsInScope, preComment, postComment, stashedNodes, logger) => {
+    logger?.log?.(`Hydrating data bindings`);
     const vDom = documentNode.ownerDocument;
     const components = [];     // Rendered components and their path stack
 
@@ -282,17 +337,20 @@ export const hydrateDataBindings = async (liveInstance, documentNode, pathsInSco
     // which have the context we need for giving it data bindings. So we sneak them in
     documentNode.prepend(preComment);
     for (let node of stashedNodes.reverse()) {
+        logger?.log?.(`Adding a stashed node to the top of our document node`);
         documentNode.prepend(node);
     }
     documentNode.append(postComment);
     // v v v This is here for the tests, see jsdom #3269: https://github.com/jsdom/jsdom/issues/3269
     vDom.body.appendChild(documentNode);
 
-    const templateBlockHandler = async (component) => {
+    const templateBlockHandler = async (component, logger) => {
+        logger?.log?.(`Storing an update for ${component.name}`);
         components.push(component);
     }
 
-    await evaluateTemplate(liveInstance, documentNode, [{}], templateBlockHandler);
+    logger?.log?.(`Evaluating template...`);
+    await evaluateTemplate(liveInstance, documentNode, [{}], templateBlockHandler, false, logger?.nested?.());
 
     for (let { startNode, endNode, params, pathStack, scope, name } of components) {
         // By default, don't add bindings for bookshop shared includes
@@ -309,18 +367,24 @@ export const hydrateDataBindings = async (liveInstance, documentNode, pathsInSco
         if (dataBindingFlag) { // If we should be adding a data binding _for this component_
             let dataBinding = null;
             for (const [, identifier] of params) {
-                dataBinding = findDataBinding(identifier, liveInstance, pathStack);
+                dataBinding = findDataBinding(identifier, liveInstance, pathStack, logger?.nested?.());
                 if (dataBinding) break;
             }
             if (dataBinding) {
+                logger?.log?.(`Found the data binding ${dataBinding} for ${name}`);
                 // Add the data binding to all top-level elements of the component,
                 // since we can't wrap the component in any elements
                 let node = startNode.nextElementSibling;
                 while (node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0) {
+                    logger?.log?.(`Setting data-cms-bind on an element`);
                     node.dataset.cmsBind = `#${dataBinding}`;
                     node = node.nextElementSibling;
                 }
+            } else {
+                logger?.log?.(`Couldn't find a data binding for ${name}`);
             }
+        } else {
+            logger?.log?.(`${name} opted out of getting a data binding`);
         }
     }
 
@@ -340,7 +404,7 @@ export const hydrateDataBindings = async (liveInstance, documentNode, pathsInSco
  * - Adding or removing elements will re-render from the parent DOM node
  * - Most other changes should only update a text node
  */
-export const graftTrees = (DOMStart, DOMEnd, vDOMObject) => {
+export const graftTrees = (DOMStart, DOMEnd, vDOMObject, logger) => {
     // Collapse each NodeList into an array so that moving elements doesn't truncate a list
     let existingNodes = [], incomingNodes = [...vDOMObject.childNodes];
 
@@ -351,11 +415,13 @@ export const graftTrees = (DOMStart, DOMEnd, vDOMObject) => {
     }
 
     if (existingNodes.length !== incomingNodes.length) {
+        logger?.log?.(`Trees are different lengths, replacing the entire region en-masse`);
         // Root-level children have been added or removed, re-render the whole block
         replaceHTMLRegion(DOMStart, DOMEnd, vDOMObject);
         return;
     }
 
+    logger?.log?.(`Updating the tree...`);
     for (let i = 0; i < existingNodes.length; i++) {
         diffAndUpdateNode(existingNodes[i], incomingNodes[i]);
     }

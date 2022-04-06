@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import fastGlob from 'fast-glob';
+import chalk from 'chalk';
 
 export const hydrateComponentBrowserForSite = async (siteRoot, options) => {
   const siteHTMLFiles = await fastGlob(`**/*.html`, {
@@ -12,19 +13,25 @@ export const hydrateComponentBrowserForSite = async (siteRoot, options) => {
   for (const file of siteHTMLFiles) {
     const filePath = path.join(siteRoot, file);
     let contents = fs.readFileSync(filePath, "utf8");
-    const contains_bookshop_browser = /_bookshop\/bookshop-browser\.js/.test(contents);
+    const contains_bookshop_browser = /data-bookshop-browser/.test(contents);
     if (!contains_bookshop_browser) {
       continue;
     }
+
+    contents = contents.replace(
+      /src=("|')http:\/\/localhost:\d+\/bookshop.js("|')/g,
+      `src="/_bookshop/bookshop-browser.min.js?cb=${Date.now()}"`
+    );
+    fs.writeFileSync(filePath, contents);
 
     connected += 1;
   }
 
   if (!connected) {
-    console.log(`📚 ———— No live editing connected as no pages contained Bookshop component browsers`);
+    console.log(chalk.gray(`No component browser generated as no pages contained Bookshop component browsers`));
     return false;
   }
 
-  console.log(`📚 ———— Built component browser into ${connected} page${connected === 1 ? '' : 's'}`);
+  console.log(chalk.green(`Built component browser into ${connected} page${connected === 1 ? '' : 's'}`));
   return true;
 }

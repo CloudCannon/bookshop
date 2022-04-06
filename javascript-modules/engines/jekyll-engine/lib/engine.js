@@ -13,6 +13,7 @@ import loop_context from './plugins/loop_context.js';
 import markdownify from './plugins/markdownify.js';
 import emulateJekyll from './plugins/emulate-jekyll.js';
 import local from './plugins/local.js';
+import relativeUrlFilterBuilder from './plugins/relative_url.js';
 
 
 export class Engine {
@@ -28,6 +29,10 @@ export class Engine {
         this.files = options.files;
         this.plugins = options.plugins || [];
         this.plugins.push(jsonify, slugify, unbind, emulateJekyll, local, liquidHighlight, loop_context, markdownify);
+
+        this.meta = {};
+        this.info = {};
+        this.plugins.push(relativeUrlFilterBuilder(this.meta));
 
         this.initializeLiquid();
         this.applyLiquidPlugins();
@@ -115,7 +120,33 @@ export class Engine {
         };
     }
 
-    async render(target, name, props, globals) {
+    injectInfo(props) {
+        for (const collection of Object.values(this.info.collections || {})) {
+            for (const item of (collection || [])) {
+                item.content = "Content is not available when live editing";
+            }
+        }
+        return {
+            site: {
+                ...(this.info.collections || {}),
+                data: (this.info.data || {}),
+                baseurl: this.meta.baseurl || "",
+                title: this.meta.title || "",
+            },
+            ...props,
+        };
+    }
+
+    async storeMeta(meta = {}) {
+        this.meta.baseurl = meta.baseurl ? await this.eval(meta.baseurl) : undefined;
+        this.meta.title = meta.title ? await this.eval(meta.title) : undefined;
+    }
+
+    async storeInfo(info = {}) {
+        this.info = info;
+    }
+
+    async render(target, name, props, globals, logger) {
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
         if (!source) source = this.getShared(name);
@@ -123,14 +154,26 @@ export class Engine {
             console.warn(`[jekyll-engine] No component found for ${name}`);
             return "";
         }
+        logger?.log?.(`Going to render ${name}, with source:`);
+        logger?.log?.(source);
         source = translateLiquid(source, {});
+        logger?.log?.(`Rewritten the template for ${name} to:`);
+        logger?.log?.(source);
         if (!globals || typeof globals !== "object") globals = {};
-        props = { ...globals, include: props };
+        props = this.injectInfo({ ...globals, include: props });
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
+        logger?.log?.(`Rendered ${name} as:`);
+        logger?.log?.(target.innerHTML);
     }
 
     async eval(str, props = [{}]) {
         try {
+            // Template values might have been parenthesised for parsing, 
+            // so we remove outer parentheses.
+            if (/^\([\s\S]+\)$/.test(str)) {
+                str = str.replace(/^\(|\)$/g, '');
+            }
+            str = str.replace(/\n/g, ''); // TODO: Are there any cases where this breaks the eval?
             const ctx = new Context();
             if (Array.isArray(props)) {
                 props.forEach(p => ctx.push(p));
@@ -144,7 +187,7 @@ export class Engine {
             }
             return index ? result?.[index] : result;
         } catch (e) {
-            console.warn(`Error evaluating \`${str}\` in the Jekyll engine`, e);
+            console.warn(`Error evaluating \`${str}\` in the Jekyll engine`, e.toString());
             return '';
         }
     }

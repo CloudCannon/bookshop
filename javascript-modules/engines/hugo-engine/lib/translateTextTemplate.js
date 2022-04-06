@@ -59,9 +59,12 @@ const rewriteTag = function (token, src, endTags, liveMarkup) {
     } else if (liveMarkup && TOKENS.LOOP.test(raw)) {
         let [, iterator] = raw.match(TOKENS.LOOP);
         const r = required_wrapper_hugo_func(iterator);
-        outputToken.text = [`{{ $bookshop__live__iterator := 0 }}`,
+        outputToken.text = [`{{ $bookshop__live__iterator__keys := (slice) }}`,
+            `{{ range $i, $e := (${tidy(iterator)}) }}{{ $bookshop__live__iterator__keys = $bookshop__live__iterator__keys | append $i }}{{ end }}`,
+            `{{ $bookshop__live__iterator := 0 }}`,
             `${outputToken.text}`,
-            `{{${r[0]} (printf \`<!--bookshop-live context(.: (index (${tidy(iterator)}) %d))-->\` $bookshop__live__iterator)${r[1]} | safeHTML }}`,
+            `{{ $bookshop__live__iterator__key := (index ($bookshop__live__iterator__keys) $bookshop__live__iterator) }}`,
+            `{{${r[0]} (printf \`<!--bookshop-live context(.: (index (${tidy(iterator)}) %v))-->\` (jsonify $bookshop__live__iterator__key))${r[1]} | safeHTML }}`,
             `{{ $bookshop__live__iterator = (add $bookshop__live__iterator 1) }}`
         ].join('')
     } else if (liveMarkup && TOKENS.ASSIGN.test(raw)) {

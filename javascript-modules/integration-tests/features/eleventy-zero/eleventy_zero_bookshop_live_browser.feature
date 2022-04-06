@@ -15,22 +15,10 @@ Feature: Eleventy Bookshop CloudCannon Live Editing
         _includes/
           layouts/
             default.liquid from starters/eleventy/default.liquid
-        cloudcannon/
-          info.11tydata.js from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.11tydata.js
-          info.njk from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/info.njk
-          inject-cloudcannon.config.js from ../../node_modules/eleventy-plugin-cloudcannon/cloudcannon/inject-cloudcannon.config.js
       """
 
   Scenario: Bookshop Live browser update
-    Given a component-lib/components/single/single.bookshop.toml file containing:
-      """
-      [component]
-      structures = [ "content_blocks" ]
-
-      [props]
-      title = "Hello World"
-      """
-    And a component-lib/components/single/single.eleventy.liquid file containing:
+    Given a component-lib/components/single/single.eleventy.liquid file containing:
       """
       <h1>{{ title }}</h1>
       """
@@ -56,7 +44,7 @@ Feature: Eleventy Bookshop CloudCannon Live Editing
     # Running Bookshop Generate
     When I run "npm start" in the . directory
     Then stderr should be empty
-    Then stdout should contain "Modifying built site at ./site/_site"
+    Then stdout should contain "Modifying output site at ./site/_site"
     Then stdout should contain "Added live editing to 1 page containing Bookshop components"
     # Testing CloudCannon initialising
     When I serve the site/_site directory

@@ -16,33 +16,28 @@ Feature: Eleventy Bookshop CloudCannon Integration
         package.json from starters/eleventy/package.json # <-- this .json line hurts my syntax highlighting
       """
 
-  Scenario: Bookshop Live tag
-    Given a site/components.html file containing:
-      """
-      ---
-      ---
-      {% bookshop_live _cloudcannon/bookshop-live.js %}
-      """
-    When I run "npm start" in the site directory
-    Then stderr should be empty
-    And site/_site/components/index.html should contain each row: 
-      | text |
-      | script.src = `/_cloudcannon/bookshop-live.js`;               |
-      | document.addEventListener('cloudcannon:load', function (e) { |
-
-  @skip # TODO: Eleventy does not yet support pulling data into bookshop
-  Scenario: Site data extracted for live editing
-    Given a site/_data/test.yml file containing "title: Zuchinni"
-    When I run "npm start" in the site directory
-    Then stderr should be empty
-    And site/_site/_cloudcannon/bookshop-site-data.json should contain the text "Zuchinni"
-
   Scenario: Bookshop Live schema comments
+    Given a site/.eleventy.js file containing:
+      """
+      const pluginBookshop = require("@bookshop/eleventy-bookshop");
+
+      module.exports = function (eleventyConfig) {
+        eleventyConfig.addPlugin(pluginBookshop({
+          bookshopLocations: ["../component-lib"],
+          pathPrefix: "/documentation/"
+        }));
+
+        return {
+          pathPrefix: "/documentation/"
+        }
+      };
+      """
     Given a component-lib/components/page/page.eleventy.liquid file containing:
       """
       {% for block in content_blocks %}
-        {% assign b = block %}
-        <p>{{ b._bookshop_name }}</p>
+      {% assign b = block %}
+      <p>{{ b._bookshop_name }}</p>
+      {% bookshop "single" _bookshop_name: "inner" %}
       {% endfor %}
       """
     Given a component-lib/components/single/single.eleventy.liquid file containing:
@@ -57,15 +52,21 @@ Feature: Eleventy Bookshop CloudCannon Integration
       ---
       {% bookshop "page" content_blocks: content_blocks %}
       {% for block in content_blocks %}
-        {% bookshop "single" bind: block %}
+      {% bookshop "single" bind: block %}
       {% endfor %}
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
     And stdout should not be empty
-    And site/_site/index.html should contain each row: 
-      | text |
-      | <p>fake</p> |
-      | <!--bookshop-live name(page) params(content_blocks: content_blocks) context() -->  |
-      | <span>fake</span> |
-      | <!--bookshop-live name(single) params(bind: block) context(block: content_blocks[0]) -->  |
+    And site/_site/index.html should contain the text: 
+      """
+      <!--bookshop-live meta(version: "[version]" pathPrefix: "/documentation/") -->
+      <!--bookshop-live name(page) params(content_blocks: content_blocks) context() -->
+
+      <p>fake</p>
+      <!--bookshop-live name(single) params(_bookshop_name: "inner") context(block: content_blocks[0]) --><span>inner</span><!--bookshop-live end-->
+      <!--bookshop-live end-->
+      
+      <!--bookshop-live meta(version: "[version]" pathPrefix: "/documentation/") -->
+      <!--bookshop-live name(single) params(bind: block) context(block: content_blocks[0]) --><span>fake</span><!--bookshop-live end-->
+      """

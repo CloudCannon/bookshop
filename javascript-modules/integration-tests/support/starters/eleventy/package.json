@@ -6,7 +6,6 @@
     "start": "node ../../../../node_modules/@11ty/eleventy/cmd.js --quiet"
   },
   "devDependencies": {
-    "@bookshop/cloudcannon-eleventy-bookshop": "file:../../../../../javascript-modules/generator-plugins/eleventy/cloudcannon-eleventy-bookshop",
     "@bookshop/eleventy-bookshop": "file:../../../../../javascript-modules/generator-plugins/eleventy/eleventy-bookshop"
   }
 }

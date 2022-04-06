@@ -24,6 +24,3 @@ Feature: Hugo Bookshop Component Browser
 
   @skip # NYI
   Scenario: Bookshop Browser tags
-
-  @skip # NYI
-  Scenario: Bookshop extracted site data

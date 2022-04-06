@@ -2,6 +2,10 @@ const LiquidJS = require("liquidjs");
 const path = require("path");
 const fs = require("fs");
 const normalizePath = require("normalize-path");
+const { version } = require("../package.json");
+const { configure } = require('safe-stable-stringify');
+
+const stringify = configure({ deterministic: false });
 
 const { Tokenizer } = LiquidJS;
 
@@ -16,17 +20,17 @@ const getIncludeKey = (name) => {
 
 // TODO: Use forloop.name once 11ty uses liquidjs >=9.28.0
 const contextHunt = (ctx, hash, index) => {
-    let h = JSON.stringify(hash);
+    let h = stringify(hash);
     for (let [k, v] of Object.entries(ctx.getAll())) {
         if (!Array.isArray(v)) continue;
-        if (JSON.stringify(v[index]) === h) {
+        if (stringify(v[index]) === h) {
             return k;
         }
     }
     return "UNKNOWN";
 }
 
-module.exports = (tagType, locations, baseLocation) => (liquidEngine) => {
+module.exports = (tagType, locations, baseLocation, bookshopConfig) => (liquidEngine) => {
     return {
         parse: function (tagToken, remainingTokens) {
             const [, component, args] = tagToken.args.match(/^['"]?([^\s'"]+)['"]?(?:[\r\n\s]+([\s\S]*))?$/);
@@ -84,7 +88,9 @@ module.exports = (tagType, locations, baseLocation) => (liquidEngine) => {
                 process.exit(1);
             }
 
-            let componentScope = {};
+            let componentScope = {
+                __bookshop__nested: true
+            };
             // Support the bookshop bind property
             const tokenizer = new Tokenizer(this.args, {})
             for (const hash of tokenizer.readHashes()) {
@@ -99,7 +105,12 @@ module.exports = (tagType, locations, baseLocation) => (liquidEngine) => {
             const output = await liquidEngine.parseAndRender(convertedBookshopTag, ctx.getAll());
 
             ctx.pop();
-            return `${preComment}${output}${postComment}`;
+
+            let metaComment = "";
+            if (!ctx.getAll()["__bookshop__nested"]) {
+                metaComment = `<!--bookshop-live meta(version: "${version}" ${bookshopConfig.pathPrefix ? `pathPrefix: "${bookshopConfig.pathPrefix}"` : ''}) -->\n`;
+            }
+            return `${metaComment}${preComment}${output}${postComment}`;
         }
     };
 }

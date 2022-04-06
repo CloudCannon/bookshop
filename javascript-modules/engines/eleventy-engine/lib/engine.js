@@ -7,6 +7,7 @@ import translateLiquid from './translateLiquid.js';
 import unbind from './plugins/unbind.js';
 import slug from './plugins/slug-plugin.js';
 import loopContext from './plugins/loop_context.js';
+import urlFilterBuilder from './plugins/url.js';
 
 export class Engine {
     constructor(options) {
@@ -21,6 +22,10 @@ export class Engine {
         this.files = options.files;
         this.plugins = options.plugins || [];
         this.plugins.push(unbind, slug, loopContext);
+
+        this.meta = {};
+        this.info = {};
+        this.plugins.push(urlFilterBuilder(this.meta));
 
         this.initializeLiquid();
         this.applyLiquidPlugins();
@@ -97,7 +102,44 @@ export class Engine {
         return false;
     }
 
-    async render(target, name, props, globals) {
+    // TODO: memoize parts of this that are expensive
+    injectInfo(props) {
+        return {
+            collections: this.precomputed_collections,
+            ...(this.info.data || {}),
+            ...props,
+        };
+    }
+
+    async storeMeta(meta = {}) {
+        this.meta.pathPrefix = meta.pathPrefix ? await this.eval(meta.pathPrefix) : undefined;
+    }
+
+    async storeInfo(info = {}) {
+        this.info = info;
+
+        const collections = this.info.collections || {};
+        collections["all"] = [];
+        for (const [key, val] of Object.entries(collections)) {
+            collections[key] = val.map(item => {
+                return {
+                    inputPath: item.path, // Maybe not relative to the right location
+                    outputPath: item.path, // Not correct
+                    fileSlug: item.url.replace(/(\/|\.[^\/]+)$/, '').replace(/^.+([^\/]+)$/, '').toLowerCase(), // Not correct
+                    url: item.url,
+                    date: item.date ? new Date(item.date) : new Date(),
+                    templateContent: "Content is not available when live editing",
+                    data: item
+                }
+            });
+
+            collections["all"] = [...collections["all"], ...collections[key]];
+        }
+
+        this.precomputed_collections = collections;
+    }
+
+    async render(target, name, props, globals, logger) {
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
         if (!source) source = this.getShared(name);
@@ -105,14 +147,26 @@ export class Engine {
             console.warn(`[eleventy-engine] No component found for ${name}`);
             return "";
         }
+        logger?.log?.(`Going to render ${name}, with source:`);
+        logger?.log?.(source);
         source = translateLiquid(source);
+        logger?.log?.(`Rewritten the template for ${name} to:`);
+        logger?.log?.(source);
         if (!globals || typeof globals !== "object") globals = {};
-        props = { ...globals, ...props };
+        props = this.injectInfo({ ...globals, ...props });
         target.innerHTML = await this.liquid.parseAndRender(source || "", props);
+        logger?.log?.(`Rendered ${name} as:`);
+        logger?.log?.(target.innerHTML);
     }
 
     async eval(str, props = {}) {
         try {
+            // Template values might have been parenthesised for parsing, 
+            // so we remove outer parentheses.
+            if (/^\([\s\S]+\)$/.test(str)) {
+                str = str.replace(/^\(|\)$/g, '');
+            }
+            str = str.replace(/\n/g, ''); // TODO: Are there any cases where this breaks the eval?
             const ctx = new Context();
             if (Array.isArray(props)) {
                 props.forEach(p => ctx.push(p));
