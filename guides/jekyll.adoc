@@ -23,7 +23,7 @@ toc::[]
 
 Bookshop defines conventions for writing static components for {ssg}. Using these conventions, Bookshop provides an ergonomic way to build pages out of your components, build and browse these components locally, and generate rich live editing experiences in CloudCannon.
 
-For an example of what this looks like in a real-world example, see our link:https://vimeo.com/689852104[Hugo Bookshop MegaKit] template.
+For an example of what this looks like in a real-world example, see our link:https://vimeo.com/689852104[Editing MegaKit with Bookshop] video.
 
 ////
 //
