@@ -26,8 +26,8 @@ const applyPreview = (blueprint, preview) => {
         }
     }
 
-    Object.assign(blueprint || {}, preview)
-    return blueprint
+    Object.assign(blueprint || {}, preview);
+    return blueprint;
 }
 
 export const hydrateComponents = (components, engines, exclude = []) => {
@@ -85,7 +85,10 @@ export const hydrateComponents = (components, engines, exclude = []) => {
         }
 
         const componentKey = getBookshopKey(path);
-        const mergedProps = applyPreview(parsedComponent?.blueprint || {}, parsedComponent?.preview || {});
+        const mergedProps = {
+            _bookshop_name: componentKey,
+            ...applyPreview(parsedComponent?.blueprint || {}, parsedComponent?.preview || {})
+        };
 
         for (const structure of (parsedComponent?.spec?.structures || [])) {
             structures[structure] = structures[structure] || [];
