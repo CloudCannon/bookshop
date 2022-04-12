@@ -1,3 +1,16 @@
+## [3.0.1](https://github.com/CloudCannon/bookshop/compare/v3.0.0...v3.0.1) (2022-04-12)
+
+
+### Bug Fixes
+
+* add `_bookshop_name` keys to structures in the component browser ([513cb32](https://github.com/CloudCannon/bookshop/commit/513cb327546036393fc4d04909e4e7456ae1601f))
+
+* override nested components with preview in the component browser ([7b3ab9b](https://github.com/CloudCannon/bookshop/commit/7b3ab9b9bef509bd6ad1688fbd4897feea4d6f96))
+
+* support adding multiple nested components in the component browser ([0ad843e](https://github.com/CloudCannon/bookshop/commit/0ad843e2c63c7d905e9497a00aa85c5095fe9165))
+
+
+
 # [3.0.0](https://github.com/CloudCannon/bookshop/compare/v2.6.1...v3.0.0) (2022-04-07)
 
 ### Features
