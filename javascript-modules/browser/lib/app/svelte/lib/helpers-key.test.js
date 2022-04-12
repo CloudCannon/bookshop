@@ -131,4 +131,35 @@ test("preview data overrides component array references", t => {
     });
 });
 
+test("preview data can reference nested components", t => {
+    const components = {
+        "components/button/button.bookshop.json": JSON.stringify({
+            blueprint: {
+                text: "Hello World"
+            }
+        }),
+        "components/hero/hero.bookshop.json": JSON.stringify({
+            blueprint: {
+                title: "Hello World",
+                buttons: ["bookshop:button"]
+            },
+            preview: {
+                buttons: ["bookshop:button", "bookshop:button"]
+            }
+        })
+    };
+    const hydrated = hydrateComponents(components, engineMock);
+    t.deepEqual(hydrated.hero.props, {
+        _bookshop_name: "hero",
+        title: "Hello World",
+        buttons: [{
+            _bookshop_name: "button",
+            text: "Hello World"
+        }, {
+            _bookshop_name: "button",
+            text: "Hello World"
+        }]
+    });
+});
+
 // TODO: Re-unit test the browser for 3.0 conventions.

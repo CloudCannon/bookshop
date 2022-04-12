@@ -137,23 +137,26 @@ export const hydrateComponents = (components, engines, exclude = []) => {
 const findAndReplaceNested = (obj, structures, limitRecursion) => {
     if (!obj) return obj;
     if (Array.isArray(obj)) {
-        if (typeof obj[0] === "string" && /^bookshop:structure:./.test(obj[0])) {
-            const structureKey = obj[0].replace(/^bookshop:structure:/, '');
-            return [randFrom(structures[structureKey], limitRecursion)];
+        for (let i = 0; i < obj.length; i++) {
+            if (typeof obj[i] === "string" && /^bookshop:structure:./.test(obj[i])) {
+                const structureKey = obj[i].replace(/^bookshop:structure:|!$/g, '');
+                obj[i] = randFrom(structures[structureKey], limitRecursion);
+            } else if (typeof obj[i] === "string" && /^bookshop:./.test(obj[i])) {
+                const structureKey = `component:${obj[i].replace(/^bookshop:|!$/g, '')}`;
+                obj[i] = randFrom(structures[structureKey], limitRecursion);
+            } else {
+                obj[i] = findAndReplaceNested(obj[i], structures, limitRecursion);
+            }
         }
-        if (typeof obj[0] === "string" && /^bookshop:./.test(obj[0])) {
-            const structureKey = `component:${obj[0].replace(/^bookshop:/, '')}`;
-            return [randFrom(structures[structureKey], limitRecursion)];
-        }
-        return obj.map(o => findAndReplaceNested(o, structures, limitRecursion));
+        return obj;
     }
     if (typeof obj === "object") {
         Object.entries(obj).forEach(([key, val]) => {
             if (typeof val === "string" && /^bookshop:structure:./.test(val)) {
-                const structureKey = val.replace(/^bookshop:structure:/, '');
+                const structureKey = val.replace(/^bookshop:structure:|!$/g, '');
                 obj[key] = randFrom(structures[structureKey], limitRecursion);
             } else if (typeof val === "string" && /^bookshop:./.test(val)) {
-                const structureKey = `component:${val.replace(/^bookshop:/, '')}`;
+                const structureKey = `component:${val.replace(/^bookshop:|!$/g, '')}`;
                 obj[key] = randFrom(structures[structureKey], limitRecursion);
             } else {
                 obj[key] = findAndReplaceNested(obj[key], structures, limitRecursion);
