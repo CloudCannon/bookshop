@@ -22,7 +22,11 @@ const applyPreview = (blueprint, preview) => {
             }
         }
         if (typeof preview[key] === "object") {
-            Object.assign(preview[key], applyPreview(blueprint[key], preview[key]))
+            if (typeof blueprint[key] === "object") {
+                Object.assign(preview[key], applyPreview(blueprint[key], preview[key]));
+            } else {
+                blueprint[key] = preview[key];
+            }
         }
     }
 
