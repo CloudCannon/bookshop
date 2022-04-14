@@ -303,6 +303,8 @@ If you ran the `@bookshop/init` command earlier, you should see that you now hav
 
 TIP: Bookshop supports multiple SSG targets, which is why we denote this as `.{ssgext}`.
 
+TIP: We'll cover creating these components soon — if you want to add a new component now, you can run `npx @bookshop/init --component <name>` in your Bookshop directory to scaffold it out automatically.
+
 // JEKYLL
 ifdef::jekyll[]
 
