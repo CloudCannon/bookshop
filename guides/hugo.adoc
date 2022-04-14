@@ -1001,6 +1001,65 @@ blueprint:
   inner_components: [bookshop:structure:content_blocks]
 ```
 
+To give a concrete example, say we have the following `hero.bookshop.yml` file:
+
+```yaml
+spec:
+  structures: [content_blocks]
+
+blueprint:
+  hero_text: Hello World
+  cta_button: bookshop:button
+  column_components: [bookshop:structure:content_blocks]
+```
+
+Then our `hero.{ssgext}` file to render this might look like the following:
+
+ifdef::hugo[]
+[source,go]
+----
+<div class="hero">
+  <h1>{{ .hero_text }}</h1>
+  {{ with .cta_button }}
+    {{ partial "bookshop" . }}
+  {{ end }}
+  <div class="column">
+    {{ range .column_components }}
+      {{ partial "bookshop" . }}
+    {{ end }}
+  </div>
+</div>
+----
+endif::hugo[]
+ifdef::jekyll[]
+[source,liquid]
+----
+<div class="hero">
+  <h1>{{ include.hero_text }}</h1>
+  {% if include.cta_button %}
+    {% bookshop button bind=include.cta_button %}
+  {% endif %}
+  {% for component in include.column_components %}
+    {% bookshop {{ component._bookshop_name }} bind=component %}
+  {% endfor %}
+</div>
+----
+endif::jekyll[]
+ifdef::eleventy[]
+[source,liquid]
+----
+<div class="hero">
+  <h1>{{ hero_text }}</h1>
+  {% if cta_button %}
+    {% bookshop "button" bind: cta_button %}
+  {% endif %}
+  {% for component in column_components %}
+    {% bookshop "{{ component._bookshop_name }}" bind: component %}
+  {% endfor %}
+</div>
+----
+endif::eleventy[]
+
 IMPORTANT: Object Structures in CloudCannon will be initialized empty, so testing for the existence of this component in your template is recommended.
 
 ////
