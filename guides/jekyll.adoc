@@ -329,19 +329,19 @@ Passing a set of parameters to a component can be cumbersome, and these will oft
 ```liquid
 ---
 component:
-  title: "Hello World"
+  hero_text: "Hello World"
   image: /image.png
 ---
-{% bookshop hero title=page.component.title image=page.component.image %}
+{% bookshop hero hero_text=page.component.hero_text image=page.component.image %}
 ```
 
-Having to pass through `title` and `image` individually isn't very maintainable, so instead you can use:
+Having to pass through `hero_text` and `image` individually isn't very maintainable, so instead you can use:
 
 .*index.html*
 ```liquid
 ---
 component:
-  title: "Hello World"
+  hero_text: "Hello World"
   image: /image.png
 ---
 {% bookshop hero bind=page.component %}
@@ -358,7 +358,7 @@ Bookshop tags also support interpolating liquid, so if you have your component n
 ---
 component:
   _bookshop_name: hero
-  title: "Hello World"
+  hero_text: "Hello World"
   image: /image.png
 ---
 {% bookshop {{page.component._bookshop_name}} bind=page.component %}
@@ -392,19 +392,19 @@ Passing a set of parameters to a component can be cumbersome, and these will oft
 ```liquid
 ---
 component:
-  title: "Hello World"
+  hero_text: "Hello World"
   image: /image.png
 ---
-{% bookshop "hero" title: component.title image: component.image %}
+{% bookshop "hero" hero_text: component.hero_text image: component.image %}
 ```
 
-Having to pass through `title` and `image` individually isn't very maintainable, so instead you can use:
+Having to pass through `hero_text` and `image` individually isn't very maintainable, so instead you can use:
 
 .*index.html*
 ```liquid
 ---
 component:
-  title: "Hello World"
+  hero_text: "Hello World"
   image: /image.png
 ---
 {% bookshop "hero" bind: component %}
@@ -421,7 +421,7 @@ Bookshop tags also support interpolating liquid, so if you have your component n
 ---
 component:
   _bookshop_name: hero
-  title: "Hello World"
+  hero_text: "Hello World"
   image: /image.png
 ---
 {% bookshop "{{page.component._bookshop_name}}" bind: component %}
@@ -556,7 +556,7 @@ You will notice that `@bookshop/init` created a `page.{ssgext}` file for you. Gi
 ```yaml
 content_blocks:
   - _bookshop_name: hero
-    title: Hello World
+    hero_text: Hello World
     image: /image.png
   - _bookshop_name: cta
     heading: Join our newsletter
@@ -751,21 +751,21 @@ Components can, of course, reference other components:
 ifdef::hugo[]
 [source,go]
 ----
-<h1>{{ .title }}</h1>
+<h1>{{ .hero_text }}</h1>
 {{ partial "bookshop" (slice "button" (dict "link_url" .url "link_text" "Click me")) }}
 ----
 endif::hugo[]
 ifdef::jekyll[]
 [source,liquid]
 ----
-<h1>{{ include.title }}</h1>
+<h1>{{ include.hero_text }}</h1>
 {% bookshop button link_url=include.link_url link_text="Click me" %}
 ----
 endif::jekyll[]
 ifdef::eleventy[]
 [source,liquid]
 ----
-<h1>{{ title }}</h1>
+<h1>{{ hero_text }}</h1>
 {% bookshop "button" link_url: link_url link_text: "Click me" %}
 ----
 endif::eleventy[]
@@ -890,7 +890,7 @@ The preview object will be merged with your blueprint before a component is rend
 
 ```yaml
 blueprint:
-  title: "Hello World"
+  hero_text: "Hello World"
   cta:
     button_text: ""
     button_url: "#"
@@ -903,7 +903,7 @@ preview:
 Your component preview data will be:
 
 ```yaml
-title: "Hello World"
+hero_text: "Hello World"
 cta:
   button_text: "Click me"
   button_url: "#"
@@ -974,7 +974,7 @@ Your blueprint can reference other components and structures to create rich page
 
 ```yaml
 blueprint:
-  title: Hello World
+  hero_text: Hello World
   button: bookshop:button
 ```
 
@@ -982,7 +982,7 @@ In this example, the `button` key will become an Object Structure containing the
 
 ```yaml
 blueprint:
-  title: Hello World
+  hero_text: Hello World
   buttons: [bookshop:button]  # equivalent
   buttons:
     - bookshop:button         # equivalent
@@ -992,7 +992,7 @@ If you're creating a layout component, you likely want to support a set of compo
 
 ```yaml
 blueprint:
-  title: My Section
+  section_label: My Section
 
   # Make header a single component that can be selected from the content_blocks set
   header: bookshop:structure:content_blocks
@@ -1096,20 +1096,20 @@ spec:
 
 # Defines the structure of this component, as well as the default values
 blueprint:
-  title: ""
-  title_level: h1
+  hero_text: ""
+  hero_level: h1
   hero_image: ""
   hero_image_alt: ""
   subcomponents: [bookshop:structure:content_blocks]
 
 # Overrides any fields in the blueprint when viewing this component in the component browser
 preview:
-  title: Bookshop Makes Component Driven Development Easy
+  hero_text: Bookshop Makes Component Driven Development Easy
   hero_image: https://placekitten.com/600/400
 
 # Any extra CloudCannon inputs configuration to apply to the blueprint
 _inputs:
-  title_level:
+  hero_level:
     type: select
     options:
       values:
@@ -1139,21 +1139,21 @@ tags = [ "Above the Fold", "Multimedia" ]
 
 # Defines the structure of this component, as well as the default values
 [blueprint]
-title = ""
-title_level = "h1"
+hero_text = ""
+hero_level = "h1"
 hero_image = ""
 hero_image_alt = ""
 subcomponents = [ "bookshop:structure:content_blocks" ]
 
 # Overrides any fields in the blueprint when viewing this component in the component browser
 [preview]
-title = "Bookshop Makes Component Driven Development Easy"
+hero_text = "Bookshop Makes Component Driven Development Easy"
 hero_image = "https://placekitten.com/600/400"
 
 # Any extra CloudCannon inputs configuration to apply to the blueprint
 [_inputs]
-title_level.type = "select"
-title_level.options.values = [ "h1", "h2", "h3", "h4" ]
+hero_level.type = "select"
+hero_level.options.values = [ "h1", "h2", "h3", "h4" ]
 ```
 
 ++++
@@ -1183,20 +1183,20 @@ module.exports = () => {
   };
 
   const blueprint = {
-    title: "",
-    title_level: "h1",
+    hero_text: "",
+    hero_level: "h1",
     hero_image: "",
     hero_image_alt: "",
     subcomponents: [ "bookshop:structure:content_blocks" ],
   };
 
   const preview = {
-    title: "Bookshop Makes Component Driven Development Easy",
+    hero_text: "Bookshop Makes Component Driven Development Easy",
     hero_image: "https://placekitten.com/600/400",
   };
 
   const _inputs = {
-    title_level: {
+    hero_level: {
       type: "select",
       options: {
         values: [
@@ -1244,18 +1244,18 @@ module.exports = () => {
     ]
   },
   "blueprint": {
-    "title": "",
-    "title_level": "h1",
+    "hero_text": "",
+    "hero_level": "h1",
     "hero_image": "",
     "hero_image_alt": "",
     "subcomponents": [ "bookshop:structure:content_blocks" ]
   },
   "preview": {
-    "title": "Bookshop Makes Component Driven Development Easy",
+    "hero_text": "Bookshop Makes Component Driven Development Easy",
     "hero_image": "https://placekitten.com/600/400"
   },
   "_inputs": {
-    "title_level": {
+    "hero_level": {
       "type": "select",
       "options": {
         "values": [
@@ -1407,8 +1407,8 @@ If you're using other components in your layouts, add the `bookshop_bindings` pa
 .*<layout>.html*
 [source,go]
 ----
-{{ partial "bookshop_bindings" `(dict title .Params.title)` }}
-{{ partial "bookshop" (slice "hero" (dict title .Params.title)) }}
+{{ partial "bookshop_bindings" `(dict hero_text .Params.hero_text)` }}
+{{ partial "bookshop" (slice "hero" (dict hero_text .Params.hero_text)) }}
 ----
 endif::hugo[]
 
@@ -1539,19 +1539,19 @@ ifdef::hugo[]
 .*index.md*
 ```yaml
 ---
-title: "Hello World"
+hero_text: "Hello World"
 ---
 ```
 .*index.html*
 ```go
 <!-- 
-  This component can make the connection between "text" and ".Params.title",
+  This component can make the connection between "text" and ".Params.hero_text",
   and will work as expected in the visual editor.
 -->
-{{ partial "bookshop_bindings" `(dict text .Params.title)` }}
-{{ partial "bookshop" (slice "hero" (dict "text" .Params.title)) }}
+{{ partial "bookshop_bindings" `(dict text .Params.hero_text)` }}
+{{ partial "bookshop" (slice "hero" (dict "text" .Params.hero_text)) }}
 
-{{ my_title := .Params.title }}
+{{ my_title := .Params.hero_text }}
 
 <!-- 
   This component does not have the context to map text back to its origin,
@@ -1568,15 +1568,15 @@ ifdef::jekyll[]
 .*index.html*
 ```liquid
 ---
-title: "Hello World"
+hero_text: "Hello World"
 ---
 <!-- 
   This component can make the connection between "text" and the front matter,
   and will work as expected in the visual editor.
 -->
-{% bookshop hero text=page.title %}
+{% bookshop hero text=page.hero_text %}
 
-{% assign my_title = title %}
+{% assign my_title = hero_text %}
 
 <!-- 
   This component doesn't have the context to map text back to its origin,
@@ -1592,15 +1592,15 @@ ifdef::eleventy[]
 .*index.html*
 ```liquid
 ---
-title: "Hello World"
+hero_text: "Hello World"
 ---
 <!-- 
   This component can make the connection between "text" and the front matter,
   and will work as expected in the visual editor.
 -->
-{% bookshop 'hero' text: title %}
+{% bookshop 'hero' text: hero_text %}
 
-{% assign my_title = title %}
+{% assign my_title = hero_text %}
 
 <!-- 
   This component doesn't have the context to map text back to its origin,
