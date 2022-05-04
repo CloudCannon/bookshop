@@ -107,10 +107,19 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
   Scenario: Bookshop sets a flag when live editing
     Given a component-lib/components/single/single.hugo.html file containing:
       """
-      {{ if isset . "env_bookshop_live" }}
+      {{ if site.Params.env_bookshop_live }}
         <h1>LIVE! {{ .title }}</h1>
       {{ else }}
         <h1>DEAD? {{ .title }}</h1>
+      {{ end }}
+      {{ partial "bookshop" (slice "nested" (dict "title" .title)) }}
+      """
+    Given a component-lib/components/nested/nested.hugo.html file containing:
+      """
+      {{ if site.Params.env_bookshop_live }}
+        <h2>LIVE! {{ .title }}</h2>
+      {{ else }}
+        <h2>DEAD? {{ .title }}</h2>
       {{ end }}
       """
     Given 🌐 I have loaded my site in CloudCannon
@@ -122,3 +131,4 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "LIVE! 🫑"
+    *    🌐 The selector h2 should contain "LIVE! 🫑"

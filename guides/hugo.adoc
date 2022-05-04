@@ -1890,7 +1890,7 @@ You can render special content in the live editing environment by checking the B
 
 ifdef::hugo[]
 ```go
-{{ if isset . "env_bookshop_live" }}
+{{ if site.Params.env_bookshop_live }}
   <p>I am being edited live!</p>
   <h1>Fallback {{ .my_page }} title</h1>
 {{ else }}

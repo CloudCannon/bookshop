@@ -101,6 +101,15 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Granular Steps
       {% else %}
         <h1>DEAD? {{ title }}</h1>
       {% endif %}
+      {% bookshop "nested" title: title %}
+      """
+    Given a component-lib/components/nested/nested.eleventy.liquid file containing:
+      """
+      {% if env_bookshop_live %}
+        <h2>LIVE! {{ title }}</h2>
+      {% else %}
+        <h2>DEAD? {{ title }}</h2>
+      {% endif %}
       """
     Given 🌐 I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new yaml:
@@ -111,3 +120,4 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Granular Steps
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "LIVE! 🫑"
+    *    🌐 The selector h2 should contain "LIVE! 🫑"

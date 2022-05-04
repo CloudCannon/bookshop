@@ -57,3 +57,11 @@ func (ns *Namespace) BaseURL() (interface{}, error) {
 
 	return meta["baseurl"], nil
 }
+
+// Pending mock out of the params function
+func (ns *Namespace) Params() (map[string]interface{}, error) {
+	params := make(map[string]interface{})
+	params["env_bookshop_live"] = true
+
+	return params, nil
+}
