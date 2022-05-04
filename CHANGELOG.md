@@ -1,3 +1,14 @@
+# [3.1.0](https://github.com/CloudCannon/bookshop/compare/v3.0.1...v3.1.0) (2022-05-04)
+
+
+### Features
+
+* components can determine whether they are being live edited ([c9b9b45](https://github.com/CloudCannon/bookshop/commit/c9b9b45d638943fcf57a81952afcc7237837632f))
+  * [Hugo docs](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo.adoc#rendering-different-content-when-live-editing)
+  * [Eleventy docs](https://github.com/CloudCannon/bookshop/blob/main/guides/eleventy.adoc#rendering-different-content-when-live-editing)
+  * [Jekyll docs](https://github.com/CloudCannon/bookshop/blob/main/guides/jekyll.adoc#rendering-different-content-when-live-editing)
+
+
 ## [3.0.1](https://github.com/CloudCannon/bookshop/compare/v3.0.0...v3.0.1) (2022-04-12)
 
 
