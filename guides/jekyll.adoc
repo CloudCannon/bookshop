@@ -1644,6 +1644,9 @@ Bookshop's Jekyll live editing is built on top of the liquidjs package. As such,
 
 |Accessing `site.data` and `site.<collection>`
 |ℹ️ Iterating through collections and data files should be possible when live editing Bookshop components.
+
+|Jekyll plugins
+|❌ — See <<Rendering Different Content When Live Editing>>
 |===
 
 ++++
@@ -1665,8 +1668,12 @@ Bookshop's Eleventy live editing is built on top of the liquidjs package. As suc
 
 |Filters: `url`
 |✅
+
 |Accessing `site.data` and `site.<collection>`
 |ℹ️ Iterating through collections and data files should be possible when live editing Bookshop components.
+
+|Eleventy plugins
+|❌ — See <<Rendering Different Content When Live Editing>> 
 |===
 
 ++++
@@ -1694,6 +1701,8 @@ NOTE: Work is underway to expand support for many of the functions below. Open a
 |link:https://gohugo.io/functions/scratch/[.Scratch and newScratch]
 |❌
 |===
+
+For unsupported functions, see <<Rendering Different Content When Live Editing>>
 
 [cols="1,1"]
 |===
@@ -1875,9 +1884,51 @@ NOTE: Work is underway to expand support for many of the functions below. Open a
 
 endif::hugo[]
 
+=== Rendering Different Content When Live Editing
+
+You can render special content in the live editing environment by checking the Bookshop Live Editor flag. This can be useful to show extra information to your editors, or to use a feature that isn't supported while live editing.
+
+ifdef::hugo[]
+```go
+{{ if isset . "env_bookshop_live" }}
+  <p>I am being edited live!</p>
+  <h1>Fallback {{ .my_page }} title</h1>
+{{ else }}
+  <p>Standard build output</p>
+  <h1>{{ with site.GetPage .my_page }}{{ .Title }}{{ end }}</h1>
+{{ end }}
+```
+endif::hugo[]
+ifdef::eleventy[]
+```liquid
+{% if env_bookshop_live %}
+  <p>I am being edited live!</p>
+  <h1>Fallback Title</h1>
+{% else %}
+  <p>Standard build output</p>
+  <h1>{% my_plugin %}</h1>
+{% endif %}
+```
+endif::eleventy[]
+ifdef::jekyll[]
+```liquid
+{% if env_bookshop_live %}
+  <p>I am being edited live!</p>
+  <h1>Fallback Title</h1>
+{% else %}
+  <p>Standard build output</p>
+  <h1>{% my_plugin %}</h1>
+{% endif %}
+```
+endif::jekyll[]
+
 === Disabling Live Editing
 
-Some components won't be compatible with live editing, in this case you can disable live editing with on a flag in the component's data. Bookshop will look for any of the following keys:
+Some components won't be compatible with live editing, in this case you can disable live editing with on a flag in the component's data. This is intended for components such as navigation and footer blocks that aren't connected to live editing. In most scenarios, you should use the templating flags in <<Rendering Different Content When Live Editing>>.
+
+IMPORTANT: This setting will only apply if the component is rendered directly from a site layout. If this component is within another component, it will still update live (as the parent re-rendering will encapsulate it).
+
+Bookshop will look for any of the following keys on a **top-level** component:
 
 * live_render
 * liveRender
@@ -1918,8 +1969,6 @@ endif::eleventy[]
 If you have a specific component that you never want to live edit, you can set `_live_render` in the component's blueprint.
 
 NOTE: Since the blueprint only affects the creation of new components, you will need to add the `_live_render` flag to any existing component data in your front matter.
-
-IMPORTANT: This flag will only apply if the component is rendered directly from a site layout. If this component is within another component, it will still update live (as the parent re-rendering will encapsulate it).
 
 ////
 //

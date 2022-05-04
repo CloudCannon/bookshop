@@ -134,6 +134,7 @@ export class Engine {
                 title: this.meta.title || "",
             },
             ...props,
+            env_bookshop_live: true,
         };
     }
 

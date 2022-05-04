@@ -102,3 +102,23 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Hello There"
+
+  @web
+  Scenario: Bookshop sets a flag when live editing
+    Given a component-lib/components/single/single.hugo.html file containing:
+      """
+      {{ if isset . "env_bookshop_live" }}
+        <h1>LIVE! {{ .title }}</h1>
+      {{ else }}
+        <h1>DEAD? {{ .title }}</h1>
+      {{ end }}
+      """
+    Given 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      block:
+        title: "🫑"
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "LIVE! 🫑"

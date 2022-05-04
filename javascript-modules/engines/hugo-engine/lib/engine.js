@@ -154,7 +154,10 @@ export class Engine {
         logger?.log?.(`Rewritten the template for ${name} to:`);
         logger?.log?.(source);
         if (!globals || typeof globals !== "object") globals = {};
-        props = { ...globals, ...props };
+        props = {
+            ...globals, ...props,
+            env_bookshop_live: true
+        };
 
         // If we have assigned a root scope we need to pass that in as the context
         if (props["."]) props = props["."];

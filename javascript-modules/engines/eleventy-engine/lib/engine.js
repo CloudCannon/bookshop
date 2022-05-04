@@ -108,6 +108,7 @@ export class Engine {
             collections: this.precomputed_collections,
             ...(this.info.data || {}),
             ...props,
+            env_bookshop_live: true,
         };
     }
 
