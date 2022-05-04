@@ -1,3 +1,13 @@
+## [3.1.1](https://github.com/CloudCannon/bookshop/compare/v3.1.0...v3.1.1) (2022-05-04)
+
+
+### Bug Fixes
+
+* move the Hugo live environment flag to site.Params ([0d6b0c8](https://github.com/CloudCannon/bookshop/commit/0d6b0c8b7c9eadc38ab88611b45e52077979c7be))
+  * Flag has been moved to `site.Params.env_bookshop_live`: [Hugo docs](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo.adoc#rendering-different-content-when-live-editing)
+
+
+
 # [3.1.0](https://github.com/CloudCannon/bookshop/compare/v3.0.1...v3.1.0) (2022-05-04)
 
 
