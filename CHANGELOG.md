@@ -1,3 +1,12 @@
+## [3.1.2](https://github.com/CloudCannon/bookshop/compare/v3.1.1...v3.1.2) (2022-05-10)
+
+
+### Bug Fixes
+
+* set input configuration on generated structures within blueprints ([ed0d6b3](https://github.com/CloudCannon/bookshop/commit/ed0d6b339585cb9c505bfbe9451b544e89a12067))
+  * Previously, an array of objects within a component would not use a field configured in the `_inputs` block of the component. Any `_` cascade fields are now set on all generated sub-structures in a component.
+
+
 ## [3.1.1](https://github.com/CloudCannon/bookshop/compare/v3.1.0...v3.1.1) (2022-05-04)
 
 
