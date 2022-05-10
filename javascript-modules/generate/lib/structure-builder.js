@@ -83,7 +83,7 @@ const componentSlug = (componentKey) => {
     })).join('_');
 }
 
-const generateDeepStructures = ({ blueprint, currentBlueprintKey, inputs }) => {
+const generateDeepStructures = ({ blueprint, currentBlueprintKey, inputs, cascadeFields }) => {
     if (blueprint && Array.isArray(blueprint)) {
         if (typeof blueprint[0] === "object" && !Array.isArray(blueprint[0])) {
             // This is an array of objects.
@@ -100,7 +100,8 @@ const generateDeepStructures = ({ blueprint, currentBlueprintKey, inputs }) => {
             const structure = {
                 label: niceLabel(pluralize.singular(currentBlueprintKey)),
                 icon: "add_box",
-                value: generateDeepStructures({ blueprint: blueprint[0], currentBlueprintKey, inputs }),
+                value: generateDeepStructures({ blueprint: blueprint[0], currentBlueprintKey, inputs, cascadeFields }),
+                ...cascadeFields,
             };
 
             inputs[currentBlueprintKey].type = "array";
@@ -117,7 +118,7 @@ const generateDeepStructures = ({ blueprint, currentBlueprintKey, inputs }) => {
 
     for (let [key, value] of Object.entries(blueprint)) {
         if (typeof value === "object") {
-            blueprint[key] = generateDeepStructures({ blueprint: blueprint[key], currentBlueprintKey: key, inputs });
+            blueprint[key] = generateDeepStructures({ blueprint: blueprint[key], currentBlueprintKey: key, inputs, cascadeFields });
         }
     }
 
@@ -291,6 +292,7 @@ export const buildStructures = async (options = {}) => {
 
         const cascadeFields = Object.fromEntries(Object.entries(contents).filter(cascadeEntries));
         cascadeFields._inputs = cascadeFields._inputs || {};
+        const cascadeFieldsCopy = JSON.parse(JSON.stringify(cascadeFields));
 
         const structure = {
             value: {
@@ -298,7 +300,8 @@ export const buildStructures = async (options = {}) => {
                 ...(generateDeepStructures({
                     blueprint: contents.blueprint || {},
                     currentBlueprintKey: "blueprint",
-                    inputs: cascadeFields._inputs
+                    inputs: cascadeFields._inputs,
+                    cascadeFields: cascadeFieldsCopy
                 })),
             },
             label: niceLabel(getComponentKey(componentFile)), // Used as a fallback when no label is supplied inside [spec]

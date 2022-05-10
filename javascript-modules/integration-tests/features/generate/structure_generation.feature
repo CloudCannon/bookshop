@@ -159,6 +159,33 @@ Feature: Bookshop Structure Generation
       | _structures.blocks.values.0.value.my_links.0.text | "My link" |
       | _structures.blocks.values.0._inputs.my_links.options | undefined |
 
+  Scenario: Object array structures get a copy of any configured settings
+    Given a component-lib/components/card/card.bookshop.toml file containing:
+      """
+      [spec]
+      structures = ["blocks"]
+
+      [blueprint]
+      title = "Hello World"
+      [[blueprint.nested.my_links]]
+      text = "My link"
+
+      [_inputs]
+      text.comment = "Text comment"
+
+      [_misc]
+      something_else = true
+      """
+    When I run "npm start" in the . directory
+    Then stderr should be empty
+    And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
+    Then I should see "site/public/_cloudcannon/info.json" containing the values:
+      | path | value |
+      | _structures.blocks.values.0._inputs.text.comment | "Text comment" |
+      | _structures.blocks.values.0._misc.something_else | true |
+      | _structures.blocks.values.0._inputs.my_links.options.structures.values.0._inputs.text.comment | "Text comment" |
+      | _structures.blocks.values.0._inputs.my_links.options.structures.values.0._misc.something_else | true |
+
   Scenario: JSON config is supported
     Given a component-lib/components/a/b/c/d/e/e.bookshop.json file containing:
       """
