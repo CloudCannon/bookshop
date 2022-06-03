@@ -166,9 +166,8 @@ Feature: Bookshop Initialized Components
           - bookshop:generic/button!
       """
     When I try run "npm start" in the . directory
-    Then stderr should contain "Component test referenced generic/tag and generic/button in the same array"
-    Then stderr should contain "Component arrays cannot mix components without referencing a structure"
-    Then stderr should contain "To achieve this, add tag and button to a structure, and use ... TODO"
+    Then stderr should contain "Component test contains an array that starts with bookshop:generic/tag!, but the following items do not match"
+    Then stderr should contain "Any subsequent array entries must be of the form bookshop:generic/tag!"
 
   Scenario: Errors on mixed structures
     Given a component-lib/components/test/test.bookshop.yml file containing:
@@ -179,5 +178,37 @@ Feature: Bookshop Initialized Components
           - bookshop:structure:subcomponents!(generic/tag)
       """
     When I try run "npm start" in the . directory
-    Then stderr should contain "Component test referenced blocks and subcomponents structures in a single array"
-    Then stderr should contain "Components in an array must all exist in the same structure key"
+    Then stderr should contain "Component test contains an array that starts with bookshop:structure:blocks!(test), but the following items do not match"
+    Then stderr should contain "Any subsequent array entries must be of the form bookshop:structure:blocks!(<component_name>)"
+
+  Scenario: Errors on mixed components and structures
+    Given a component-lib/components/test/test.bookshop.yml file containing:
+      """
+      blueprint:
+        inner:
+          - bookshop:structure:blocks!(test)
+          - bookshop:generic/button!
+      """
+    When I try run "npm start" in the . directory
+    Then stderr should contain "Component test contains an array that starts with bookshop:structure:blocks!(test), but the following items do not match"
+    Then stderr should contain "Any subsequent array entries must be of the form bookshop:structure:blocks!(<component_name>)"
+
+  Scenario: Errors on a single component with a parameter
+    Given a component-lib/components/test/test.bookshop.yml file containing:
+      """
+      blueprint:
+        tag: bookshop:generic/tag!(huh)
+      """
+    When I try run "npm start" in the . directory
+    Then stderr should contain "Component test referenced bookshop:generic/tag!(huh)"
+    Then stderr should contain "Single component shorthands cannot have parameters, did you mean to use the bookshop:structure: shorthand?"
+
+  Scenario: Errors on a structure without a parameter
+    Given a component-lib/components/test/test.bookshop.yml file containing:
+      """
+      blueprint:
+        tag: bookshop:structure:blocks!
+      """
+    When I try run "npm start" in the . directory
+    Then stderr should contain "Component test referenced bookshop:structure:blocks! but did not provide a component name as a parameter"
+    Then stderr should contain "Expected bookshop:structure:blocks or bookshop:structure:blocks!(<component_name>)"
