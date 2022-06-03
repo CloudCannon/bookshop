@@ -32,12 +32,12 @@ Feature: Bookshop Thumbnail Convention
     When I run "hugo" in the site directory
     And I run "cloudcannon-hugo --baseurl /" in the site directory
 
-  Scenario: Generated structures connect the thumbnail and icon
-    Given a component-lib/components/nested/card/card.thumb.png file containing:
+  Scenario: Generated structures connect the preview and icon
+    Given a component-lib/components/nested/card/card.preview.png file containing:
       """
       I am a thumbnail
       """
-    Given a component-lib/components/nested/card/card.icon.png file containing:
+    Given a component-lib/components/nested/card/card.icon.anything file containing:
       """
       I am an icon
       """
@@ -52,12 +52,13 @@ Feature: Bookshop Thumbnail Convention
       """
     When I run "npm start" in the . directory
     Then stderr should be empty
+    # Then stdout should be empty
     And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
-    Then "site/public/_cloudcannon/bookshop_thumbs/nested/card.thumb.png" should contain the text "I am a thumbnail"
-    Then "site/public/_cloudcannon/bookshop_thumbs/nested/card.icon.png" should contain the text "I am an icon"
+    Then site/public/_cloudcannon/bookshop_thumbs/nested/card/card.preview.png should contain the text "I am a thumbnail"
+    Then site/public/_cloudcannon/bookshop_thumbs/nested/card/card.icon.anything should contain the text "I am an icon"
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path                                      | value                                                 |
-      | _structures.blocks.values.0.label         | "Nested / Card"                                       |
-      | _structures.blocks.values.0.preview_image | "/_cloudcannon/bookshop_thumbs/nested/card.thumb.png" |
-      | _structures.blocks.values.0.image         | "/_cloudcannon/bookshop_thumbs/nested/card.icon.png"  |
-      | _structures.blocks.values.0.value.title   | "Hello World"                                         |
+      | path                                      | value                                                        |
+      | _structures.blocks.values.0.label         | "Nested / Card"                                              |
+      | _structures.blocks.values.0.preview_image | "/_cloudcannon/bookshop_thumbs/nested/card/card.preview.png" |
+      | _structures.blocks.values.0.image         | "/_cloudcannon/bookshop_thumbs/nested/card/card.icon.anything"    |
+      | _structures.blocks.values.0.value.title   | "Hello World"                                                |

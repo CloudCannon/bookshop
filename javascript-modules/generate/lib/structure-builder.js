@@ -56,8 +56,12 @@ const cascadeEntries = ([key,]) => {
     return /^_/.test(key);
 }
 
+const getComponentBase = (componentPath) => {
+    return componentPath.replace(/^.*components\//, '').split(".")[0];
+}
+
 const getComponentKey = (componentPath) => {
-    let base = componentPath.replace(/^.*components\//, '').split(".")[0];
+    let base = getComponentBase(componentPath);
     let parts = base.split("/");
     const l = parts.length;
     if (l >= 2 && parts[l - 1] === parts[l - 2]) {
@@ -246,6 +250,7 @@ const interlinkStructureValue = ({ currentComponentName, blueprint, currentBluep
 export const buildStructures = async (options = {}) => {
     const bookshopRoots = [];
     let componentFiles = [];
+    let relocations = [];
 
     const bookshopConfigFiles = await fastGlob(`./**/bookshop.config.js`, {
         cwd,
@@ -269,7 +274,7 @@ export const buildStructures = async (options = {}) => {
 
     console.log(chalk.magenta(`Creating structures for all components...`));
     const componentStructureMap = {};
-    const structures = componentFiles.map(componentFile => {
+    const structures = await Promise.all(componentFiles.map(componentFile => (async function (componentFile) {
         let contents;
         try {
             contents = loadFile(componentFile);
@@ -310,9 +315,22 @@ export const buildStructures = async (options = {}) => {
             ...(cascadeFields),
         }
 
+        const componentImages = await fastGlob(componentFile.replace(/bookshop\.\w+$/, "@(preview|icon).*"), {
+            cwd
+        });
+        for (const image of componentImages) {
+            const outputImage = image.replace(/^.*components\//, '/_cloudcannon/bookshop_thumbs/');
+            if (/preview\..+$/.test(image)) {
+                structure.preview_image = outputImage;
+            } else if (/icon\..+$/.test(image)) {
+                structure.image = outputImage;
+            }
+            relocations.push({ from: image, to: outputImage });
+        }
+
         componentStructureMap[structure.value._bookshop_name] = structure;
         return structure;
-    });
+    })(componentFile)));
 
     console.log(chalk.magenta(`Hydrating structures for nested components...`));
     for (const structure of structures) {
@@ -330,5 +348,5 @@ export const buildStructures = async (options = {}) => {
         }
     }
 
-    return { bookshopRoots, structures };
+    return { bookshopRoots, structures, relocations };
 }
