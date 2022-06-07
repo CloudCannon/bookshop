@@ -1302,6 +1302,12 @@ components/
 
 See the link:https://cloudcannon.com/documentation/articles/array-structures-reference/?ssg={ssg}[CloudCannon Structures Reference] for extra keys that you can set in your component spec to control the display of these images.
 
+ifdef::hugo[]
+WARNING: Make sure that the `config.toml` file in your Bookshop has `includeFiles = ["**/*.hugo.html"]` alongside the `layouts` mount. +
+If this isn't present, run `npx @bookshop/up@latest` in your component library to migrate this file. +
+Without this configuration, your Hugo build will error when it enounters an image file in this directory.
+endif::hugo[]
+
 == Using the Bookshop Component Browser
 The Bookshop component browser allows you to browse and experiment with your components. When running in development the component browser also provides hot reloading of component templating and styles. An example browser showing the components in our Eleventy starter template can be seen here: https://winged-cat.cloudvent.net/components/
 
