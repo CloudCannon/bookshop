@@ -47,11 +47,13 @@ const renderFile = (template, props, filename) => {
   }
 }
 
-const initComponent = async (options) => {
-  const bookshopConfigFiles = await fastGlob(`./**/bookshop.config.js`, {
-    cwd,
-    dot: !!options.dot
-  });
+const initComponent = async (options, bookshopConfigFiles) => {
+  if (!bookshopConfigFiles) {
+    bookshopConfigFiles = await fastGlob(`./**/bookshop.config.js`, {
+      cwd,
+      dot: !!options.dot
+    });
+  }
 
   if (!bookshopConfigFiles.length) {
     console.error(chalk.red(`Couldn't locate a ${chalk.cyan(`bookshop.config.js`)} file to anchor the component with`));
@@ -206,9 +208,20 @@ async function run() {
     process.exit(1);
   }
 
+  const bookshopConfigFiles = await fastGlob(`./**/bookshop.config.js`, {
+    cwd,
+    dot: !!options.dot
+  });
+
   let action;
   if (options.component) action = 'component';
   if (options.new) action = 'new';
+
+  if (!options.component && !options.new && bookshopConfigFiles.length) {
+    options.component = true;
+    action = 'component';
+  }
+
   if (!options.component && !options.new) {
     const resp = await inquirer.prompt([{
       type: 'list',
@@ -248,7 +261,7 @@ async function run() {
     }
 
     if (options.component) {
-      await initComponent(options);
+      await initComponent(options, bookshopConfigFiles);
       console.log(chalk.bold.green(`\nAll done.`));
       return;
     }

@@ -30,7 +30,7 @@ async function run() {
     console.log(`📚 Generating Bookshop integrations`);
 
     console.log(chalk.bold(`\nLooking for Bookshop component libraries...`));
-    const { bookshopRoots, structures } = await buildStructures(options);
+    const { bookshopRoots, structures, relocations } = await buildStructures(options);
 
     if (!bookshopRoots.length) {
         console.error(chalk.bold.red(`\nCould not find any Bookshops in ${cwd}`));
@@ -64,6 +64,13 @@ async function run() {
         const infoJson = JSON.parse(contents);
 
         hydrateStructures(infoJson, structures, options);
+
+        for (const relocation of relocations) {
+            const outputFile = path.join(siteRoot, relocation.to);
+            fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+            fs.copyFileSync(path.join(process.cwd(), relocation.from), outputFile);
+        }
+        console.log(chalk.green(`Connected ${relocations.length} component thumbnail(s)`));
 
         fs.writeFileSync(infoJsonFile, JSON.stringify(infoJson, null, 2));
         console.log(chalk.green(`Added components as CloudCannon Structures`));

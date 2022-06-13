@@ -12,6 +12,7 @@ import { upgradeNode } from "./lib/upgrade_node.js";
 import { upgradeGo } from "./lib/upgrade_go.js";
 import { upgradeGem } from "./lib/upgrade_gem.js";
 import { upgradeSyntax } from "./lib/upgrade_syntax.js";
+import { upgradeBookshopModule } from "./lib/misc/upgrade_bookshop_module.js";
 
 const require = createRequire(import.meta.url);
 const { version } = require("./package.json");
@@ -27,6 +28,7 @@ async function run() {
     program.option("--yes", "Proceed with operations");
     program.option("--dry-run", "Print operations but do not perform them");
     program.addOption(new Option('--format <filetype>', 'Convert Bookshop files to another format').choices(['yml', 'toml', 'json', 'js']));
+    program.option("--skip-migrations", "Only bump versions, do not run migrations");
     program.option("--version <version>", "Version to upgrade to if not latest");
     program.option("--debug", "Output debug information");
     program.parse(process.argv);
@@ -45,6 +47,7 @@ async function run() {
     // Assemble it this way so that the change summary lists formats first
     upgrades = [
         ...await upgradeSyntax(options),
+        ...await upgradeBookshopModule(options),
         ...upgrades,
     ]
     upgrades.forEach(u => {
