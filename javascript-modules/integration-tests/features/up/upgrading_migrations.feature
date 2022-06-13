@@ -19,7 +19,7 @@ Feature: Bookshop Misc Migrations
     When I run "npm start -- --yes --version 9.9.9 --skip-migrations" in the . directory
     Then stderr should be empty
     And stdout should contain "Skipping Bookshop Hugo module migrations."
-    And stdout should not contain "Changing the contents of ./component-lib/config.toml"
+    And stdout should not contain "config.toml"
     And component-lib/config.toml should contain exactly: 
       """
       [[module.mounts]]
@@ -43,7 +43,7 @@ Feature: Bookshop Misc Migrations
       """
     When I run "npm start -- --yes --version 9.9.9" in the . directory
     Then stderr should be empty
-    And stdout should contain "Changing the contents of ./component-lib/config.toml"
+    And stdout should contain "config.toml"
     And component-lib/config.toml should contain exactly: 
       """
 
