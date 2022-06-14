@@ -90,14 +90,14 @@ Feature: Bookshop Initialized Components
     Then stderr should be empty
     And stdout should contain "Added 4 structures from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path                                                        | value             |
-      | _structures.blocks.values.0.label                           | "Nested / Card"   |
-      | _structures.blocks.values.0.value.one_tag.0._bookshop_name  | "generic/tag"     |
-      | _structures.blocks.values.0.value.one_tag.0.text            | "My tag text"     |
-      | _structures.blocks.values.0.value.one_tag.0.size            | "Medium"          |
-      | _structures.blocks.values.0.value.two_tags.1._bookshop_name | "generic/tag"     |
-      | _structures.blocks.values.0.value.two_tags.1.label          | "My button label" |
-      | _structures.blocks.values.0.value.two_tags.1.href           | "#"               |
+      | path                                                        | value           |
+      | _structures.blocks.values.0.label                           | "Nested / Card" |
+      | _structures.blocks.values.0.value.one_tag.0._bookshop_name  | "generic/tag"   |
+      | _structures.blocks.values.0.value.one_tag.0.text            | "My tag text"   |
+      | _structures.blocks.values.0.value.one_tag.0.size            | "Medium"        |
+      | _structures.blocks.values.0.value.two_tags.1._bookshop_name | "generic/tag"   |
+      | _structures.blocks.values.0.value.two_tags.1.text           | "My tag text"   |
+      | _structures.blocks.values.0.value.two_tags.1.size           | "Medium"        |
 
   Scenario: Structure components can be initialized
     Given a component-lib/components/nested/card/card.bookshop.yml file containing:
@@ -141,8 +141,8 @@ Feature: Bookshop Initialized Components
       | _structures.blocks.values.0.value.blocks.0.text           | "My tag text"        |
       | _structures.blocks.values.0.value.blocks.0.size           | "Medium"             |
       | _structures.blocks.values.0.value.blocks.1._bookshop_name | "interactive/button" |
-      | _structures.blocks.values.0.value.blocks.1.text           | "My tag text"        |
-      | _structures.blocks.values.0.value.blocks.1.size           | "Medium"             |
+      | _structures.blocks.values.0.value.blocks.1.label          | "My button label"    |
+      | _structures.blocks.values.0.value.blocks.1.href           | "#"                  |
 
   Scenario: Nested components can be initialized
     Given a component-lib/components/nested/block/block.bookshop.yml file containing:
@@ -167,8 +167,8 @@ Feature: Bookshop Initialized Components
     Then stderr should be empty
     And stdout should contain "Added 6 structures from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path                                                       | value           |
-      | _structures.blocks.values.0.value.inner.tag._bookshop_name | "generic/tag"   |
+      | path                                                       | value         |
+      | _structures.blocks.values.0.value.inner.tag._bookshop_name | "generic/tag" |
 
   Scenario: Errors referencing nonexistent component in a structure
     Given a component-lib/components/test/test.bookshop.yml file containing:
