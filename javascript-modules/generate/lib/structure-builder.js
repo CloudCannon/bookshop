@@ -162,14 +162,18 @@ const interlinkStructureValue = ({ currentComponentName, blueprint, currentBluep
     }
 
     const shorthand = parseShorthand(blueprint, currentComponentName);
+    console.log("- - - - - - - - - - - -");
+    console.log(currentBlueprintKey, blueprint, currentComponentName);
+    console.log(shorthand);
+    console.log("- - - - - - - - - - - -");
     if (shorthand) {
         if (shorthand.structure) {
             initInputKey("object");
             inputs[currentBlueprintKey].options.structures = `_structures.${shorthand.key}`;
             if (shorthand.initialize || shorthand.param) {
-                // - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - *
-                // TODO: Initialize structure (or mark it for later initialization)
-                // - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - *
+                return {
+                    __BOOKSHOP_GEN_STRUCTURE__: shorthand
+                }
             } else {
                 return null;
             }
@@ -179,64 +183,65 @@ const interlinkStructureValue = ({ currentComponentName, blueprint, currentBluep
                 process.exit(1);
             }
             initInputKey("object");
-            inputs[currentBlueprintKey].options.structures = `_structures._bookshop_single_component_${componentSlug(shorthand.key)}`;
+            const key = `_bookshop_single_component_${componentSlug(shorthand.key)}`;
+            inputs[currentBlueprintKey].options.structures = `_structures.${key}`;
             // Flag that the structure we just referenced will need to be created globally from the referenced component
             componentStructureMap[shorthand.key].outputComponentStructure = true;
             if (shorthand.initialize) {
-                // - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - *
-                // TODO: Initialize structure (or mark it for later initialization)
-                // - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - *
+                return {
+                    __BOOKSHOP_GEN_STRUCTURE__: { ...shorthand, key }
+                }
             } else {
                 return null;
             }
         }
-    }
 
-    if (Array.isArray(blueprint) && blueprint.length) {
-        let shorthand_arr = blueprint.map(b => parseShorthand(b, currentComponentName));
-        if (shorthand_arr.some(s => s)) {
-            if (!shorthand_arr.every(s => (!s || s.structure !== shorthand.structure || s.key !== shorthand.key))) {
-                console.error(chalk.red(`Component ${chalk.cyan(currentComponentName)} contains an array that starts with ${chalk.cyan(blueprint[0])}, but the following items do not match`));
-                if (shorthand.structure) {
-                    console.error(chalk.red(`Any subsequent array entries must be of the form bookshop:structure:${shorthand.key}!(<component_name>)`));
-                } else {
-                    console.error(chalk.red(`Any subsequent array entries must be of the form bookshop:${shorthand.key}!`));
-                }
-                process.exit(1);
-            }
-            const output = shorthand_arr.map(shorthand => {
-                if (!(shorthand.initialize || (shorthand.structure && shorthand.param))) return null;
-                if (shorthand.structure) {
-                    initInputKey("array");
-                    inputs[currentBlueprintKey].options.structures = `_structures.${shorthand.key}`;
-                } else {
-                    if (!componentStructureMap[shorthand.key]) {
-                        console.error(chalk.red(`Component ${chalk.cyan(currentComponentName)} referenced ${chalk.cyan(blueprint)}, but the component ${chalk.cyan(shorthand.key)} does not exist.`));
-                        process.exit(1);
+        if (Array.isArray(blueprint) && blueprint.length) {
+            let shorthand_arr = blueprint.map(b => parseShorthand(b, currentComponentName));
+            if (shorthand_arr.some(s => s)) {
+                if (!shorthand_arr.every(s => (!s || s.structure !== shorthand.structure || s.key !== shorthand.key))) {
+                    console.error(chalk.red(`Component ${chalk.cyan(currentComponentName)} contains an array that starts with ${chalk.cyan(blueprint[0])}, but the following items do not match`));
+                    if (shorthand.structure) {
+                        console.error(chalk.red(`Any subsequent array entries must be of the form bookshop:structure:${shorthand.key}!(<component_name>)`));
+                    } else {
+                        console.error(chalk.red(`Any subsequent array entries must be of the form bookshop:${shorthand.key}!`));
                     }
-                    initInputKey("array");
-                    inputs[currentBlueprintKey].options.structures = `_structures._bookshop_single_component_${componentSlug(shorthand.key)}`;
-                    // Flag that the structure we just referenced will need to be created globally from the referenced component
-                    componentStructureMap[shorthand.key].outputComponentStructure = true;
+                    process.exit(1);
                 }
+                const output = shorthand_arr.map(shorthand => {
+                    if (!(shorthand.initialize || (shorthand.structure && shorthand.param))) return null;
+                    let key = shorthand.key;
+                    if (shorthand.structure) {
+                        initInputKey("array");
+                        inputs[currentBlueprintKey].options.structures = `_structures.${shorthand.key}`;
+                    } else {
+                        if (!componentStructureMap[shorthand.key]) {
+                            console.error(chalk.red(`Component ${chalk.cyan(currentComponentName)} referenced ${chalk.cyan(blueprint)}, but the component ${chalk.cyan(shorthand.key)} does not exist.`));
+                            process.exit(1);
+                        }
+                        initInputKey("array");
+                        key = `_bookshop_single_component_${componentSlug(shorthand.key)}`;
+                        inputs[currentBlueprintKey].options.structures = `_structures.${key}`;
+                        // Flag that the structure we just referenced will need to be created globally from the referenced component
+                        componentStructureMap[shorthand.key].outputComponentStructure = true;
+                    }
 
-                // - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - *
-                // TODO: Initialize structure (or mark it for later initialization)
-                // - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - *
+                    return {
+                        __BOOKSHOP_GEN_STRUCTURE__: { ...shorthand, key }
+                    }
+                }).filter(s => s);
+                return output;
+            }
 
-                return null;
-            }).filter(s => s);
-            return output;
+            // Handle arrays of objects by recursion — no scoping on these so it takes the same inputs config 
+            return blueprint.map((b, i) => interlinkStructureValue({
+                currentComponentName,
+                blueprint: b,
+                currentBlueprintKey: i,
+                inputs,
+                componentStructureMap
+            }));
         }
-
-        // Handle arrays of objects by recursion — no scoping on these so it takes the same inputs config 
-        return blueprint.map((b, i) => interlinkStructureValue({
-            currentComponentName,
-            blueprint: b,
-            currentBlueprintKey: i,
-            inputs,
-            componentStructureMap
-        }));
     }
 
     // Handle nested of objects by recursion — no scoping on these so it takes the same inputs config 
@@ -256,10 +261,11 @@ const interlinkStructureValue = ({ currentComponentName, blueprint, currentBluep
 }
 
 const parseShorthand = (input, context) => {
-    if (input !== "string") return null;
+    if (typeof input !== "string") return null;
 
     const shorthand_regex = /^bookshop:(?<structure>structure:)?(?<key>.+?)(?<initialize>!)?(?:\((?<param>.+?)\))?$/;
     const shorthand = input.match(shorthand_regex)?.groups;
+    if (!shorthand) return null;
 
     if (shorthand.param && !shorthand.structure) {
         console.error(chalk.red(`Component ${chalk.cyan(context)} referenced ${chalk.cyan(blueprint)}.`));
@@ -270,6 +276,8 @@ const parseShorthand = (input, context) => {
         console.error(chalk.red(`Component ${chalk.cyan(context)} referenced ${chalk.cyan(blueprint)} but did not provide a component name as a parameter`));
         process.exit(1);
     }
+
+    return shorthand;
 }
 
 export const buildStructures = async (options = {}) => {

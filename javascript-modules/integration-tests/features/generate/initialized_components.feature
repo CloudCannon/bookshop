@@ -68,9 +68,9 @@ Feature: Bookshop Initialized Components
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
       | path                                                 | value           |
       | _structures.blocks.values.0.label                    | "Nested / Card" |
-      | _structures.blocks.values.0.value.tag._bookshop_name | generic/tag     |
-      | _structures.blocks.values.0.value.tag.text           | My tag text     |
-      | _structures.blocks.values.0.value.tag.size           | Medium          |
+      | _structures.blocks.values.0.value.tag._bookshop_name | "generic/tag"   |
+      | _structures.blocks.values.0.value.tag.text           | "My tag text"   |
+      | _structures.blocks.values.0.value.tag.size           | "Medium"        |
 
   Scenario: Single component arrays can be initialized
     Given a component-lib/components/nested/card/card.bookshop.yml file containing:
@@ -92,12 +92,12 @@ Feature: Bookshop Initialized Components
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
       | path                                                        | value           |
       | _structures.blocks.values.0.label                           | "Nested / Card" |
-      | _structures.blocks.values.0.value.one_tag.0._bookshop_name  | generic/tag     |
-      | _structures.blocks.values.0.value.one_tag.0.text            | My tag text     |
-      | _structures.blocks.values.0.value.one_tag.0.size            | Medium          |
-      | _structures.blocks.values.0.value.two_tags.1._bookshop_name | generic/tag     |
-      | _structures.blocks.values.0.value.two_tags.1.text           | My tag text     |
-      | _structures.blocks.values.0.value.two_tags.1.size           | Medium          |
+      | _structures.blocks.values.0.value.one_tag.0._bookshop_name  | "generic/tag"   |
+      | _structures.blocks.values.0.value.one_tag.0.text            | "My tag text"   |
+      | _structures.blocks.values.0.value.one_tag.0.size            | "Medium"        |
+      | _structures.blocks.values.0.value.two_tags.1._bookshop_name | "generic/tag"   |
+      | _structures.blocks.values.0.value.two_tags.1.text           | "My tag text"   |
+      | _structures.blocks.values.0.value.two_tags.1.size           | "Medium"        |
 
   Scenario: Structure components can be initialized
     Given a component-lib/components/nested/card/card.bookshop.yml file containing:
@@ -115,9 +115,9 @@ Feature: Bookshop Initialized Components
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
       | path                                                 | value           |
       | _structures.blocks.values.0.label                    | "Nested / Card" |
-      | _structures.blocks.values.0.value.tag._bookshop_name | generic/tag     |
-      | _structures.blocks.values.0.value.tag.text           | My tag text     |
-      | _structures.blocks.values.0.value.tag.size           | Medium          |
+      | _structures.blocks.values.0.value.tag._bookshop_name | "generic/tag"   |
+      | _structures.blocks.values.0.value.tag.text           | "My tag text"   |
+      | _structures.blocks.values.0.value.tag.size           | "Medium"        |
 
   Scenario: Structure component arrays can be initialized
     Given a component-lib/components/nested/card/card.bookshop.yml file containing:
@@ -127,7 +127,7 @@ Feature: Bookshop Initialized Components
           - blocks
 
       blueprint:
-        blocks: 
+        blocks:
           - "bookshop:structure:subcomponents!(generic/tag)"
           - "bookshop:structure:subcomponents!(interactive/button)"
       """
@@ -135,14 +135,14 @@ Feature: Bookshop Initialized Components
     Then stderr should be empty
     And stdout should contain "Added 3 structures from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path                                                        | value           |
-      | _structures.blocks.values.0.label                           | "Nested / Card" |
-      | _structures.blocks.values.0.value.blocks.0._bookshop_name  | generic/tag     |
-      | _structures.blocks.values.0.value.blocks.0.text            | My tag text     |
-      | _structures.blocks.values.0.value.blocks.0.size            | Medium          |
-      | _structures.blocks.values.0.value.blocks.1._bookshop_name | generic/tag     |
-      | _structures.blocks.values.0.value.blocks.1.text           | My tag text     |
-      | _structures.blocks.values.0.value.blocks.1.size           | Medium          |
+      | path                                                      | value           |
+      | _structures.blocks.values.0.label                         | "Nested / Card" |
+      | _structures.blocks.values.0.value.blocks.0._bookshop_name | "generic/tag"   |
+      | _structures.blocks.values.0.value.blocks.0.text           | "My tag text"   |
+      | _structures.blocks.values.0.value.blocks.0.size           | "Medium"        |
+      | _structures.blocks.values.0.value.blocks.1._bookshop_name | "generic/tag"   |
+      | _structures.blocks.values.0.value.blocks.1.text           | "My tag text"   |
+      | _structures.blocks.values.0.value.blocks.1.size           | "Medium"        |
 
   Scenario: Errors referencing nonexistent component in a structure
     Given a component-lib/components/test/test.bookshop.yml file containing:
