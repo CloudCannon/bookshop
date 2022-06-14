@@ -90,14 +90,14 @@ Feature: Bookshop Initialized Components
     Then stderr should be empty
     And stdout should contain "Added 4 structures from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path                                                        | value           |
-      | _structures.blocks.values.0.label                           | "Nested / Card" |
-      | _structures.blocks.values.0.value.one_tag.0._bookshop_name  | "generic/tag"   |
-      | _structures.blocks.values.0.value.one_tag.0.text            | "My tag text"   |
-      | _structures.blocks.values.0.value.one_tag.0.size            | "Medium"        |
-      | _structures.blocks.values.0.value.two_tags.1._bookshop_name | "generic/tag"   |
-      | _structures.blocks.values.0.value.two_tags.1.text           | "My tag text"   |
-      | _structures.blocks.values.0.value.two_tags.1.size           | "Medium"        |
+      | path                                                        | value             |
+      | _structures.blocks.values.0.label                           | "Nested / Card"   |
+      | _structures.blocks.values.0.value.one_tag.0._bookshop_name  | "generic/tag"     |
+      | _structures.blocks.values.0.value.one_tag.0.text            | "My tag text"     |
+      | _structures.blocks.values.0.value.one_tag.0.size            | "Medium"          |
+      | _structures.blocks.values.0.value.two_tags.1._bookshop_name | "generic/tag"     |
+      | _structures.blocks.values.0.value.two_tags.1.label          | "My button label" |
+      | _structures.blocks.values.0.value.two_tags.1.href           | "#"               |
 
   Scenario: Structure components can be initialized
     Given a component-lib/components/nested/card/card.bookshop.yml file containing:
@@ -135,14 +135,40 @@ Feature: Bookshop Initialized Components
     Then stderr should be empty
     And stdout should contain "Added 3 structures from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path                                                      | value           |
-      | _structures.blocks.values.0.label                         | "Nested / Card" |
-      | _structures.blocks.values.0.value.blocks.0._bookshop_name | "generic/tag"   |
-      | _structures.blocks.values.0.value.blocks.0.text           | "My tag text"   |
-      | _structures.blocks.values.0.value.blocks.0.size           | "Medium"        |
-      | _structures.blocks.values.0.value.blocks.1._bookshop_name | "generic/tag"   |
-      | _structures.blocks.values.0.value.blocks.1.text           | "My tag text"   |
-      | _structures.blocks.values.0.value.blocks.1.size           | "Medium"        |
+      | path                                                      | value                |
+      | _structures.blocks.values.0.label                         | "Nested / Card"      |
+      | _structures.blocks.values.0.value.blocks.0._bookshop_name | "generic/tag"        |
+      | _structures.blocks.values.0.value.blocks.0.text           | "My tag text"        |
+      | _structures.blocks.values.0.value.blocks.0.size           | "Medium"             |
+      | _structures.blocks.values.0.value.blocks.1._bookshop_name | "interactive/button" |
+      | _structures.blocks.values.0.value.blocks.1.text           | "My tag text"        |
+      | _structures.blocks.values.0.value.blocks.1.size           | "Medium"             |
+
+  Scenario: Nested components can be initialized
+    Given a component-lib/components/nested/block/block.bookshop.yml file containing:
+      """
+      spec:
+        structures:
+          - blocks
+
+      blueprint:
+        inner: bookshop:nested/card!
+      """
+    Given a component-lib/components/nested/card/card.bookshop.yml file containing:
+      """
+      spec:
+        structures:
+          - blocks
+
+      blueprint:
+        tag: bookshop:generic/tag!
+      """
+    When I run "npm start" in the . directory
+    Then stderr should be empty
+    And stdout should contain "Added 6 structures from 1 Bookshop to 1 site."
+    Then I should see "site/public/_cloudcannon/info.json" containing the values:
+      | path                                                       | value           |
+      | _structures.blocks.values.0.value.inner.tag._bookshop_name | "generic/tag"   |
 
   Scenario: Errors referencing nonexistent component in a structure
     Given a component-lib/components/test/test.bookshop.yml file containing:
@@ -155,7 +181,7 @@ Feature: Bookshop Initialized Components
         inner: bookshop:structure:blocks!(generic/tag)
       """
     When I try run "npm start" in the . directory
-    Then stderr should contain "Component test referenced bookshop:structure:blocks!(generic/tag), but the component generic/tag does not exist in the blocks structure"
+    Then stderr should contain "A blueprint referenced bookshop:structure:blocks!(generic/tag), but the component generic/tag does not exist in the blocks structure"
 
   Scenario: Errors mixing single components
     Given a component-lib/components/test/test.bookshop.yml file containing:
@@ -163,7 +189,7 @@ Feature: Bookshop Initialized Components
       blueprint:
         two_tags:
           - bookshop:generic/tag!
-          - bookshop:generic/button!
+          - bookshop:interactive/button!
       """
     When I try run "npm start" in the . directory
     Then stderr should contain "Component test contains an array that starts with bookshop:generic/tag!, but the following items do not match"

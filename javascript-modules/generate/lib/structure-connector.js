@@ -10,8 +10,21 @@ const hydrateNestedComponents = (obj, structures, limitRecursion) => {
         const shorthand = obj.__BOOKSHOP_GEN_STRUCTURE__;
         const structure = structures[shorthand.key];
         let structureValue = structure.values?.[0]?.value;
+        if (!structureValue) {
+            if (shorthand.structure) {
+                console.error(chalk.red(`A blueprint referenced ${shorthand.input}, but the ${shorthand.key} structure does not exist`));
+                process.exit(1);
+            } else {
+                console.error(chalk.red(`A blueprint referenced ${shorthand.input}, but the ${shorthand.key} component does not exist`));
+                process.exit(1);
+            }
+        }
         if (shorthand.param) {
-            structureValue = structure.values.find(v => v?.value?._bookshop_name === shorthand.param)?.value || structureValue;
+            structureValue = structure.values.find(v => v?.value?._bookshop_name === shorthand.param)?.value;
+            if (!structureValue) {
+                console.error(chalk.red(`A blueprint referenced ${shorthand.input}, but the component ${shorthand.param} does not exist in the ${shorthand.key} structure`));
+                process.exit(1);
+            }
         }
         return JSON.parse(JSON.stringify(structureValue));
     }
