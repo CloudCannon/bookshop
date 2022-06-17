@@ -116,11 +116,11 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Site Data
       """
     Given a component-lib/components/block/block.eleventy.liquid file containing:
       """
-      <h1>{% if show %}{% for cat in collections.cat %}{% bookshop "cat" bind: cat %}{% endfor %}{% endif %}</h1>
+      <h1>{% if show %}{% for cat in collections.cat %}{% bookshop "cat" bind: cat.data %}{% endfor %}{% endif %}</h1>
       """
     Given a component-lib/components/cat/cat.eleventy.liquid file containing:
       """
-      <li>{{ data.name }} ({{ data.status }})</li>
+      <li>{{ name }} ({{ status }})</li>
       """
     * 🌐 I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new yaml:

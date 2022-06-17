@@ -18,18 +18,6 @@ const getIncludeKey = (name) => {
     return `shared/eleventy/${name}.eleventy.liquid`;
 }
 
-// TODO: Use forloop.name once 11ty uses liquidjs >=9.28.0
-const contextHunt = (ctx, hash, index) => {
-    let h = stringify(hash);
-    for (let [k, v] of Object.entries(ctx.getAll())) {
-        if (!Array.isArray(v)) continue;
-        if (stringify(v[index]) === h) {
-            return k;
-        }
-    }
-    return "UNKNOWN";
-}
-
 module.exports = (tagType, locations, baseLocation, bookshopConfig) => (liquidEngine) => {
     return {
         parse: function (tagToken, remainingTokens) {
@@ -69,12 +57,9 @@ module.exports = (tagType, locations, baseLocation, bookshopConfig) => (liquidEn
                     const top_context = stack[stack.length - 1] || {};
                     let loop_context = '';
                     if (top_context["forloop"]) {
-                        const variable = Object.keys(top_context).filter(k => k !== 'forloop')[0];
-
-                        // TODO: Find the actual source. This is a guess.
-                        const index = top_context["forloop"].index0();
-                        const guessedSource = contextHunt(ctx, top_context[variable], index);
-                        loop_context = `${variable}: ${guessedSource}[${index}]`;
+                        let name = top_context["forloop"]?.name;
+                        let index = top_context["forloop"]?.index0?.();
+                        loop_context = `${name}[${index}]`.replace(/-/g, ': ');
                     }
 
                     preComment = `<!--bookshop-live name(${component}) params(${this.args}) context(${loop_context}) -->`;

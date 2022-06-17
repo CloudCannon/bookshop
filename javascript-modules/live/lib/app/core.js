@@ -24,21 +24,28 @@ if (typeof BOOKSHOP_VERSION !== "undefined") {
  * Try find an existing absolute path to the given identifier,
  * and note down the sum absolute path of the new name if we can
  */
-export const storeResolvedPath = (name, identifier, pathStack) => {
+export const storeResolvedPath = (name, identifier, pathStack, logger) => {
     if (typeof identifier !== 'string') return;
     // TODO: The `include.` replacement feels too SSG coupled.
     //                       v v v v v v v v v v v v 
     const splitIdentifier = identifier.replace(/^include\./, '').replace(/\[(\d+)]/g, '.$1').split('.');
+    logger?.log?.(`Split ${identifier} info ${JSON.stringify(splitIdentifier)}`);
     const baseIdentifier = splitIdentifier.shift();
+    logger?.log?.(`Using base identifier ${baseIdentifier}`);
     if (baseIdentifier) {
         const existingPath = findInStack(baseIdentifier, pathStack);
+        logger?.log?.(`Found the existing path ${existingPath}`);
         const prefix = existingPath ?? baseIdentifier;
+        logger?.log?.(`Using the prefix ${prefix}`);
         pathStack[pathStack.length - 1][name] = `${[prefix, ...splitIdentifier].join('.')}`;
     } else {
         const existingPath = findInStack(identifier, pathStack);
+        logger?.log?.(`Found the existing path ${existingPath}`);
         const path = existingPath ?? identifier;
+        logger?.log?.(`Using the path ${path}`);
         pathStack[pathStack.length - 1][name] = path;
     }
+    logger?.log?.(`Stored ${name}: ${pathStack[pathStack.length - 1][name]}`);
 }
 
 // TODO: This is now partially coupled with Hugo.
@@ -141,10 +148,10 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             const normalizedIdentifier = liveInstance.normalize(identifier, logger?.nested?.());
             if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
                 Object.values(normalizedIdentifier).forEach(value => {
-                    return storeResolvedPath(name, value, pathStack)
+                    return storeResolvedPath(name, value, pathStack, logger?.nested?.())
                 });
             } else {
-                storeResolvedPath(name, normalizedIdentifier, pathStack);
+                storeResolvedPath(name, normalizedIdentifier, pathStack, logger?.nested?.());
             }
         }
 
