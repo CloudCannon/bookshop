@@ -176,6 +176,7 @@ export class Engine {
             }
             str = str.replace(/\n/g, ''); // TODO: Are there any cases where this breaks the eval?
             const ctx = new Context();
+            ctx.push(this.injectInfo({}));
             if (Array.isArray(props)) {
                 props.forEach(p => ctx.push(p));
             } else {

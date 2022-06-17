@@ -84,3 +84,35 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Edge Cases
     *    🌐 There should be no logs
     *    🌐 The selector p:nth-of-type(1) should contain "Item One"
     *    🌐 The selector p:nth-of-type(2) should contain "Item Three"
+
+  # https://github.com/CloudCannon/bookshop/issues/79
+  Scenario: Bookshop live renders 11ty collection loop
+    Given a component-lib/components/tag/tag.eleventy.liquid file containing:
+      """
+      <p>{{ name }}</p>
+      """
+    Given a site/collection/file.md file containing:
+      """
+      ---
+      tags: 'collection'
+      layout: 'layouts/default.liquid'
+      name: Hey World
+      ---
+      """
+    Given [front_matter]:
+      """
+      layout: layouts/default.liquid
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% for item in collections.collection %}
+        {% bookshop "tag" bind: item.data %}
+      {% endfor %}
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector p should contain "Hey World"
