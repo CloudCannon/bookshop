@@ -1,3 +1,18 @@
+## [3.1.3](https://github.com/CloudCannon/bookshop/compare/v3.1.2...v3.1.3) (2022-06-17)
+
+
+### Bug Fixes
+
+* eleventy collection loops no longer crash ([84a64c4](https://github.com/CloudCannon/bookshop/commit/84a64c4cb74243d3030373f8f9ddac68c48dfd75))
+  * The forloop.name feature implemented in liquidjs has now made it to Eleventy, so the Bookshop workaround has been removed. This workaround was previously causing a crash when nested inside a collection loop.
+
+### Features
+
+* default @bookshop/init to new component if a bookshop dir was found ([12ad117](https://github.com/CloudCannon/bookshop/commit/12ad117d188073754c111ea85eccd1e6614d56c7))
+  * Previously, running @bookshop/init would prompt you for the decision between creating a new component or a new Bookshop every time. Now, if it find a Bookshop directory it will default to the new component decision.
+
+
+
 ## [3.1.2](https://github.com/CloudCannon/bookshop/compare/v3.1.1...v3.1.2) (2022-05-10)
 
 
