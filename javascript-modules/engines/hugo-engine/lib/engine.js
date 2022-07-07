@@ -64,7 +64,7 @@ export class Engine {
             const renderer = gunzipSync(new Uint8Array(remoteBuffer));
 
             // Check the magic word at the start of the buffer as a way to verify the CDN download worked.
-            const isWasm = ([...new Uint8Array(renderer, 0, 4)]).map(g => g.toString(16).padStart(2, '0')).join('') === "0061736d";
+            const isWasm = ([...renderer.slice(0, 4)]).map(g => g.toString(16).padStart(2, '0')).join('') === "0061736d";
             if (!isWasm) throw "Not WASM";
 
             const remoteResult = await WebAssembly.instantiate(renderer, go.importObject);
