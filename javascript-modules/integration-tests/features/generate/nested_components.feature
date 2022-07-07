@@ -341,4 +341,4 @@ Feature: Bookshop Nested Components
         inner: [bookshop:inner, bookshop:structure:something]
       """
     When I try run "npm start" in the . directory
-    Then stderr should contain "Bookshop shorthand arrays can only contain a single element"
+    Then stderr should contain "Component test contains an array that starts with bookshop:inner, but the following items do not match"
