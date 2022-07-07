@@ -82,22 +82,22 @@ const run = async () => {
     fs.writeFileSync(path.join(__dirname, '../bookshop-packages.json'), JSON.stringify(packages, null, 2));
     console.log(`* * bookshop-packages.json updated`);
 
-    // console.log(`* Vendoring`);
-    // env.PUBLISH_BOOKSHOP_CDN = true;
-    // vendorGems(packages.rubygems, version);
-    // vendorCustom(packages.custom);
-    // console.log(`* * Vendoring done`);
+    console.log(`* Vendoring`);
+    env.PUBLISH_BOOKSHOP_CDN = true;
+    vendorGems(packages.rubygems, version);
+    vendorCustom(packages.custom);
+    console.log(`* * Vendoring done`);
 
-    // console.log(`* Running unit tests`);
-    // await steps.test(packages);
-    // console.log(`* * Unit tests passed`);
+    console.log(`* Running unit tests`);
+    await steps.test(packages);
+    console.log(`* * Unit tests passed`);
 
-    // console.log(`* Running integration tests (may take a while)`);
-    // await steps.integrationTest();
-    // console.log(`* * Integration tests passed`);
+    console.log(`* Running integration tests (may take a while)`);
+    await steps.integrationTest();
+    console.log(`* * Integration tests passed`);
 
-    // console.log(`* Updating changelog`);
-    // await steps.changelog();
+    console.log(`* Updating changelog`);
+    await steps.changelog();
 
     console.log(`* Publishing packages`);
     const yn = await question(`Publish? y / n: `);
@@ -105,21 +105,21 @@ const run = async () => {
         process.exit(1);
     }
 
-    // console.log(`* * Publishing...`);
-    // const npmPublishResults = await publishNPM(Object.keys(packages.npm), version);
-    // const gemPublishResults = await publishGems(Object.keys(packages.rubygems), version);
-    // const publishFailures = [...npmPublishResults, ...gemPublishResults].filter(r => r.err).map(r => r.pkg);
-    // const publishSuccesses = [...npmPublishResults, ...gemPublishResults].filter(r => !r.err).map(r => `${pad(`[${r.version}]`, 30)} ${r.pkg}`);
+    console.log(`* * Publishing...`);
+    const npmPublishResults = await publishNPM(Object.keys(packages.npm), version);
+    const gemPublishResults = await publishGems(Object.keys(packages.rubygems), version);
+    const publishFailures = [...npmPublishResults, ...gemPublishResults].filter(r => r.err).map(r => r.pkg);
+    const publishSuccesses = [...npmPublishResults, ...gemPublishResults].filter(r => !r.err).map(r => `${pad(`[${r.version}]`, 30)} ${r.pkg}`);
 
-    // if (publishFailures.length) {
-    //     console.error(`* * Publishing failed for the following packages:`);
-    //     console.error(`* * ⇛ ${publishFailures.join('\n* * ⇛ ')}`);
-    //     console.error(`* * The following packages __have__ been published:`);
-    //     console.error(`* * ⇛ ${publishSuccesses.join('\n* * ⇛ ')}`);
-    //     console.log(`\n` + box(`Publishing hit an error. Versions have been changed.
-    //                      To re-run this publish, use \`./publish.js current\``));
-    //     process.exit(1);
-    // }
+    if (publishFailures.length) {
+        console.error(`* * Publishing failed for the following packages:`);
+        console.error(`* * ⇛ ${publishFailures.join('\n* * ⇛ ')}`);
+        console.error(`* * The following packages __have__ been published:`);
+        console.error(`* * ⇛ ${publishSuccesses.join('\n* * ⇛ ')}`);
+        console.log(`\n` + box(`Publishing hit an error. Versions have been changed.
+                         To re-run this publish, use \`./publish.js current\``));
+        process.exit(1);
+    }
 
     if (/-|[a-z]/.test(version)) {
         Object.entries(packages.custom).forEach(([directory]) => {
