@@ -82,42 +82,44 @@ const run = async () => {
     fs.writeFileSync(path.join(__dirname, '../bookshop-packages.json'), JSON.stringify(packages, null, 2));
     console.log(`* * bookshop-packages.json updated`);
 
-    console.log(`* Vendoring`);
-    env.PUBLISH_BOOKSHOP_CDN = true;
-    vendorGems(packages.rubygems, version);
-    vendorCustom(packages.custom);
-    console.log(`* * Vendoring done`);
+    // console.log(`* Vendoring`);
+    // env.PUBLISH_BOOKSHOP_CDN = true;
+    // vendorGems(packages.rubygems, version);
+    // vendorCustom(packages.custom);
+    // console.log(`* * Vendoring done`);
 
-    console.log(`* Running unit tests`);
-    await steps.test(packages);
-    console.log(`* * Unit tests passed`);
+    // console.log(`* Running unit tests`);
+    // await steps.test(packages);
+    // console.log(`* * Unit tests passed`);
 
-    console.log(`* Running integration tests (may take a while)`);
-    await steps.integrationTest();
-    console.log(`* * Integration tests passed`);
+    // console.log(`* Running integration tests (may take a while)`);
+    // await steps.integrationTest();
+    // console.log(`* * Integration tests passed`);
 
-    console.log(`* Updating changelog`);
-    await steps.changelog();
+    // console.log(`* Updating changelog`);
+    // await steps.changelog();
 
     console.log(`* Publishing packages`);
-    console.log(`* * Please supply an OTP code for npm (after checking changelog)`);
-    const otp = await question(`OTP Code: `);
-
-    console.log(`* * Publishing...`);
-    const npmPublishResults = await publishNPM(Object.keys(packages.npm), version, otp);
-    const gemPublishResults = await publishGems(Object.keys(packages.rubygems), version);
-    const publishFailures = [...npmPublishResults, ...gemPublishResults].filter(r => r.err).map(r => r.pkg);
-    const publishSuccesses = [...npmPublishResults, ...gemPublishResults].filter(r => !r.err).map(r => `${pad(`[${r.version}]`, 30)} ${r.pkg}`);
-
-    if (publishFailures.length) {
-        console.error(`* * Publishing failed for the following packages:`);
-        console.error(`* * ⇛ ${publishFailures.join('\n* * ⇛ ')}`);
-        console.error(`* * The following packages __have__ been published:`);
-        console.error(`* * ⇛ ${publishSuccesses.join('\n* * ⇛ ')}`);
-        console.log(`\n` + box(`Publishing hit an error. Versions have been changed.
-                         To re-run this publish, use \`./publish.js current\``));
+    const yn = await question(`Publish? y / n: `);
+    if (yn !== 'y') {
         process.exit(1);
     }
+
+    // console.log(`* * Publishing...`);
+    // const npmPublishResults = await publishNPM(Object.keys(packages.npm), version);
+    // const gemPublishResults = await publishGems(Object.keys(packages.rubygems), version);
+    // const publishFailures = [...npmPublishResults, ...gemPublishResults].filter(r => r.err).map(r => r.pkg);
+    // const publishSuccesses = [...npmPublishResults, ...gemPublishResults].filter(r => !r.err).map(r => `${pad(`[${r.version}]`, 30)} ${r.pkg}`);
+
+    // if (publishFailures.length) {
+    //     console.error(`* * Publishing failed for the following packages:`);
+    //     console.error(`* * ⇛ ${publishFailures.join('\n* * ⇛ ')}`);
+    //     console.error(`* * The following packages __have__ been published:`);
+    //     console.error(`* * ⇛ ${publishSuccesses.join('\n* * ⇛ ')}`);
+    //     console.log(`\n` + box(`Publishing hit an error. Versions have been changed.
+    //                      To re-run this publish, use \`./publish.js current\``));
+    //     process.exit(1);
+    // }
 
     if (/-|[a-z]/.test(version)) {
         Object.entries(packages.custom).forEach(([directory]) => {
@@ -144,11 +146,11 @@ const run = async () => {
 
 const steps = {
     ensureReady: async () => {
-        const gitStatus = execSync('git status --porcelain', { stdio: "pipe", env });
-        if (gitStatus.toString().length) {
-            console.error(box(`Git is dirty. Please commit or stash your changes first.`));
-            process.exit(1);
-        }
+        // const gitStatus = execSync('git status --porcelain', { stdio: "pipe", env });
+        // if (gitStatus.toString().length) {
+        //     console.error(box(`Git is dirty. Please commit or stash your changes first.`));
+        //     process.exit(1);
+        // }
     },
     test: async (packages) => {
         process.stdout.write(`* * `);
@@ -254,12 +256,12 @@ const testGems = async (pkgs) => {
 /**
  * Publishing functions
  */
-const publishNPM = async (pkgs, version, otp) => {
+const publishNPM = async (pkgs, version) => {
     const npmTag = getPrereleaseTag(version) ? ` --tag ${getPrereleaseTag(version)}` : ``;
     const releases = pkgs.map(async (pkg) => {
         return await new Promise((resolve, reject) => {
             try {
-                const cmd = `yarn --cwd ${pkg} publish${npmTag} --non-interactive --access public --otp ${otp}`;
+                const cmd = `yarn --cwd ${pkg} publish${npmTag} --non-interactive --access public`;
                 console.log(`\n$: ${cmd}`);
                 execSync(cmd, { stdio: "inherit", env });
                 resolve({ pkg, version, err: null });
