@@ -48,6 +48,9 @@ if [ ! -f $CDNFILENAME ]; then
 fi
 echo "Done. CDN Hugo WASM available at $CDNFILENAME"
 
+gzip -k $CDNFILENAME
+echo "Done. Compressed CDN Hugo WASM available at $CDNFILENAME.gz"
+
 cd ../../../../../bookshopcdn
 
 git add -A \
