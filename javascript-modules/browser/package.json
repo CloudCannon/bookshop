@@ -47,7 +47,7 @@
     "fast-glob": "^3.2.7",
     "js-yaml": "^4.1.0",
     "normalize-path": "^3.0.0",
-    "svelte": "^3.39.0"
+    "svelte": "^3.49.0"
   },
   "engines": {
     "node": ">=14.16"
