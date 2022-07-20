@@ -17,13 +17,20 @@
     "@bookshop/init": "3.2.1",
     "@bookshop/sass": "3.2.1",
     "@bookshop/up": "3.2.1",
-    "cloudcannon-hugo": "0.13.2",
-    "eleventy-plugin-cloudcannon": "^1.0",
+    "@cloudcannon/svelte-connector": "^1",
+    "@sveltejs/adapter-static": "latest",
+    "@sveltejs/kit": "latest",
+    "cloudcannon-hugo": "latest",
+    "eleventy-plugin-cloudcannon": "latest",
     "get-port": "^6.0.0",
+    "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
+    "markdown-it": "^12.2.0",
     "puppeteer": "^13.0.1",
     "serve-handler": "^6.1.3",
-    "tree-kill": "^1.2.2"
+    "svelte": "^3",
+    "tree-kill": "^1.2.2",
+    "vite": "^3"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^7.3.1",
