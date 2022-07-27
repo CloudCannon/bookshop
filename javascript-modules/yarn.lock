@@ -548,16 +548,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/sveltekit-bookshop@file:../generator-plugins/sveltekit/sveltekit-bookshop::locator=integration-tests%40workspace%3Aintegration-tests":
-  version: 3.2.1
-  resolution: "@bookshop/sveltekit-bookshop@file:../generator-plugins/sveltekit/sveltekit-bookshop#../generator-plugins/sveltekit/sveltekit-bookshop::hash=4e150e&locator=integration-tests%40workspace%3Aintegration-tests"
-  dependencies:
-    "@bookshop/helpers": 3.2.1
-    svelte: ^3
-  checksum: 9007473afc22cd5559c2c5f6a8dc8a9028728b992e57a472f293de175f28f5bf166ba6acb72321da36caf067cb5484d26e596341c95cf3eb9aa44e168458c7c7
-  languageName: node
-  linkType: hard
-
 "@bookshop/up@3.2.1, @bookshop/up@workspace:up":
   version: 0.0.0-use.local
   resolution: "@bookshop/up@workspace:up"
@@ -577,6 +567,27 @@ __metadata:
     bookshop-up: main.js
   languageName: unknown
   linkType: soft
+
+"@cloudcannon/reader@npm:latest":
+  version: 1.1.0
+  resolution: "@cloudcannon/reader@npm:1.1.0"
+  dependencies:
+    "@sindresorhus/slugify": ^2.1.0
+    chalk: ^5.0.1
+    cosmiconfig: ^7.0.1
+    fdir: ^5.2.0
+    gray-matter: ^4.0.3
+    js-yaml: ^4.1.0
+    meow: ^10.1.2
+    papaparse: ^5.3.2
+    picomatch: ^2.3.1
+    properties: ^1.2.1
+    toml: ^3.0.0
+  bin:
+    cloudcannon-reader: src/index.js
+  checksum: 485659f4a57aea83cd7ac4dc2b5b3a453ff20cf909e16a2937d61d4b5f51a6d8df0d0b38d1c831a6f2157860b39816b975ea0e779718432d65157ff99e96c68c
+  languageName: node
+  linkType: hard
 
 "@cloudcannon/svelte-connector@npm:^1":
   version: 1.0.1
@@ -1119,6 +1130,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sindresorhus/slugify@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@sindresorhus/slugify@npm:2.1.0"
+  dependencies:
+    "@sindresorhus/transliterate": ^1.0.0
+    escape-string-regexp: ^5.0.0
+  checksum: b2411b597ef7c74f42848a8960c614eaac7b24c8c329f9f150ba62e4a9b8ac438aaa65577ae999fdf42d2e72549eab1d3376ebe12681a7172a437a2c87bed618
+  languageName: node
+  linkType: hard
+
 "@sindresorhus/transliterate@npm:^0.1.1":
   version: 0.1.2
   resolution: "@sindresorhus/transliterate@npm:0.1.2"
@@ -1126,6 +1147,16 @@ __metadata:
     escape-string-regexp: ^2.0.0
     lodash.deburr: ^4.1.0
   checksum: f4a0fdf710adcad901bdd30dc02acbb33d464d7945fb2d6dc8130cf8e5e1151d66e2b9b20633f4c27c014ddba511a0a976d74304e4cbfacb8044d3c6f052d547
+  languageName: node
+  linkType: hard
+
+"@sindresorhus/transliterate@npm:^1.0.0":
+  version: 1.5.0
+  resolution: "@sindresorhus/transliterate@npm:1.5.0"
+  dependencies:
+    escape-string-regexp: ^5.0.0
+    lodash.deburr: ^4.1.0
+  checksum: 7a52b464215c71936368f191fdcbdc3e532964d41c1eef986d11e8f688bcf509735d765ee5068617b0f6d856779063399ddc3d6befb7c0d13d8ed640e72bf14f
   languageName: node
   linkType: hard
 
@@ -3839,6 +3870,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"escape-string-regexp@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "escape-string-regexp@npm:5.0.0"
+  checksum: 20daabe197f3cb198ec28546deebcf24b3dbb1a5a269184381b3116d12f0532e06007f4bc8da25669d6a7f8efb68db0758df4cd981f57bc5b57f521a3e12c59e
+  languageName: node
+  linkType: hard
+
 "escodegen@npm:^2.0.0":
   version: 2.0.0
   resolution: "escodegen@npm:2.0.0"
@@ -4069,6 +4107,13 @@ __metadata:
   dependencies:
     pend: ~1.2.0
   checksum: c8585fd5713f4476eb8261150900d2cb7f6ff2d87f8feb306ccc8a1122efd152f1783bdb2b8dc891395744583436bfd8081d8e63ece0ec8687eeefea394d4ff2
+  languageName: node
+  linkType: hard
+
+"fdir@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "fdir@npm:5.2.0"
+  checksum: bbea83530389d8ff79cfc59ea047b32b3c4b4338f293df855f62a25d9f476c3b9e112136595355785b7c5922e072556757bb44142e69c542269f9bd15da52e6b
   languageName: node
   linkType: hard
 
@@ -4984,8 +5029,8 @@ fsevents@~2.3.2:
     "@bookshop/generate": 3.2.1
     "@bookshop/init": 3.2.1
     "@bookshop/sass": 3.2.1
-    "@bookshop/sveltekit-bookshop": "file:../generator-plugins/sveltekit/sveltekit-bookshop"
     "@bookshop/up": 3.2.1
+    "@cloudcannon/reader": latest
     "@cloudcannon/svelte-connector": ^1
     "@cucumber/cucumber": ^7.3.1
     "@sveltejs/adapter-static": latest
@@ -6953,6 +6998,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"papaparse@npm:^5.3.2":
+  version: 5.3.2
+  resolution: "papaparse@npm:5.3.2"
+  checksum: a5950ef931a42f6759a8d3823a43dd30f375b37a0ddea6ea5448c0c5024cd226819231958c49c24fbcdeab297c63fd1d630130b3439876ea0fd17d8a267738ae
+  languageName: node
+  linkType: hard
+
 "parent-module@npm:^1.0.0":
   version: 1.0.1
   resolution: "parent-module@npm:1.0.1"
@@ -7137,7 +7189,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"picomatch@npm:^2.0.4, picomatch@npm:^2.2.1, picomatch@npm:^2.2.2, picomatch@npm:^2.2.3":
+"picomatch@npm:^2.0.4, picomatch@npm:^2.2.1, picomatch@npm:^2.2.2, picomatch@npm:^2.2.3, picomatch@npm:^2.3.1":
   version: 2.3.1
   resolution: "picomatch@npm:2.3.1"
   checksum: 050c865ce81119c4822c45d3c84f1ced46f93a0126febae20737bd05ca20589c564d6e9226977df859ed5e03dc73f02584a2b0faad36e896936238238b0446cf
@@ -7365,6 +7417,13 @@ fsevents@~2.3.2:
   dependencies:
     asap: ~2.0.3
   checksum: 475bb069130179fbd27ed2ab45f26d8862376a137a57314cf53310bdd85cc986a826fd585829be97ebc0aaf10e9d8e68be1bfe5a4a0364144b1f9eedfa940cf1
+  languageName: node
+  linkType: hard
+
+"properties@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "properties@npm:1.2.1"
+  checksum: f385f8b96910c10d761bb6358b6c4b33aff09427a0504f01463ac6c8410dc3f2a7a9d85e96dd1c1a3e88b228b0ad9d0c23a397d55c52b087b3da7bed691799a6
   languageName: node
   linkType: hard
 

@@ -49,7 +49,7 @@ const renderFile = (template, props, filename) => {
 
 const initComponent = async (options, bookshopConfigFiles) => {
   if (!bookshopConfigFiles) {
-    bookshopConfigFiles = await fastGlob(`./**/bookshop.config.js`, {
+    bookshopConfigFiles = await fastGlob(`./**/bookshop.config.{js,cjs}`, {
       cwd,
       dot: !!options.dot
     });
@@ -75,7 +75,10 @@ const initComponent = async (options, bookshopConfigFiles) => {
     bookshop = resp.location;
   }
 
-  const bookshopConfigFile = join(bookshop, 'bookshop/bookshop.config.js');
+  let bookshopConfigFile = join(bookshop, 'bookshop/bookshop.config.js');
+  if (!existsSync(join(cwd, bookshopConfigFile))) {
+    bookshopConfigFile = join(bookshop, 'bookshop/bookshop.config.cjs');
+  }
   let bookshopConfig;
   try {
     bookshopConfig = require(join(cwd, bookshopConfigFile));
@@ -166,7 +169,7 @@ const initBookshop = async (options) => {
   renderFile(
     templates["bookshop_config"],
     { ssg: options.framework[0] },
-    join(options.new, `bookshop`, `bookshop.config.js`)
+    join(options.new, `bookshop`, `bookshop.config.cjs`)
   );
 
   const pageComponent = `${options.framework[0]}_page`;
@@ -208,7 +211,7 @@ async function run() {
     process.exit(1);
   }
 
-  const bookshopConfigFiles = await fastGlob(`./**/bookshop.config.js`, {
+  const bookshopConfigFiles = await fastGlob(`./**/bookshop.config.{js,cjs}`, {
     cwd,
     dot: !!options.dot
   });
