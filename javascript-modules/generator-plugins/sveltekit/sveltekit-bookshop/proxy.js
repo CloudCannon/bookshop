@@ -1,4 +1,5 @@
 export const make_bookshop_proxy = (obj) => {
+    if (typeof obj !== "object") return obj;
     return new Proxy(obj, {
         get(target, name, receiver) {
             let val = Reflect.get(target, name, receiver);
@@ -12,6 +13,14 @@ export const make_bookshop_proxy = (obj) => {
                     value: path
                 });
                 return make_bookshop_proxy(val);
+            } else if (name === "_bookshop_name") {
+                let bookshopNameObj = new String(val);
+                Object.defineProperty(bookshopNameObj, "__bookshop_path", {
+                    enumerable: false,
+                    writable: true,
+                    value: path
+                });
+                return make_bookshop_proxy(bookshopNameObj);
             }
             return val;
         },

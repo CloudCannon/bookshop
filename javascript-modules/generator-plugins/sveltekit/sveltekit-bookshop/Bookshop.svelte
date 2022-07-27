@@ -7,11 +7,14 @@
     export let component;
     export let shared;
 
+    let proxied_fields = $$restProps;
     let components = import.meta.glob("$components/**/*.svelte", {
         eager: true,
     });
 
     let TargetComponent;
+    let dataBindPath;
+    let commentID;
     let path;
     if (component) {
         path = `components/${component}/${component}.svelte`;
@@ -28,22 +31,78 @@
         throw new Error(`Component not found for ${shared || component}`);
     }
 
-    let proxied_fields = make_bookshop_proxy($$restProps);
-
-    beforeUpdate((e) => {
-        console.log(e);
+    beforeUpdate(() => {
+        proxied_fields = {};
+        let dataBindPaths = [];
+        let skipDataBind = false;
+        for (let [k, value] of Object.entries($$restProps)) {
+            if (
+                [
+                    "dataBinding",
+                    "_dataBinding",
+                    "data_binding",
+                    "_data_binding",
+                    "editorLink",
+                    "_editorLink",
+                    "editor_link",
+                    "_editor_link",
+                ].includes(k)
+            ) {
+                skipDataBind = true;
+            }
+            if (value.__bookshop_path) {
+                dataBindPaths.push(
+                    value.__bookshop_path.replace(/\.?\w+$/, "")
+                );
+            }
+            proxied_fields[k] = make_bookshop_proxy(value);
+        }
+        if (!skipDataBind) {
+            dataBindPath =
+                dataBindPaths.sort((a, b) => {
+                    return a.split(".").length - b.split(".").length;
+                })?.[0] ?? "";
+        }
     });
 
-    afterUpdate((e) => {
-        console.log(e, "I HAVE UPDATED");
+    const getTemplateCommentIterator = () => {
+        const documentNode = document;
+        return documentNode.evaluate(
+            `//comment()[contains(.,'${commentID}')]`,
+            documentNode,
+            null,
+            XPathResult.ANY_TYPE,
+            null
+        );
+    };
+
+    afterUpdate(() => {
+        if (liveRendering && dataBindPath) {
+            const iterator = getTemplateCommentIterator();
+            const startNode = iterator.iterateNext();
+            const endNode = iterator.iterateNext();
+            if (!startNode || !endNode) return;
+
+            let node = startNode.nextElementSibling;
+            while (
+                node &&
+                (node.compareDocumentPosition(endNode) &
+                    Node.DOCUMENT_POSITION_FOLLOWING) !==
+                    0
+            ) {
+                node.dataset.cmsBind = `#${dataBindPath}`;
+                node = node.nextElementSibling;
+            }
+        }
     });
 
     let liveRendering = false;
     onMount(() => {
         liveRendering = true;
+        commentID = crypto.randomUUID();
     });
 </script>
 
-{#if liveRendering}{@html "<!--StartHello-->"}{/if}
+{#if liveRendering}{@html `<!--${commentID}-->`}{/if}
 <svelte:component this={TargetComponent} {Bookshop} {...proxied_fields} />
-{#if liveRendering}{@html "<!--EndHello-->"}{/if}
+{#if liveRendering}{@html `<!--${commentID}-->`}{/if}
