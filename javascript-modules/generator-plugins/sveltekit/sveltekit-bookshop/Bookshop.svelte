@@ -1,5 +1,4 @@
 <script>
-    import { Bookshop } from ".";
     import { onMount } from "svelte";
     import { beforeUpdate, afterUpdate } from "svelte";
     import { make_bookshop_proxy } from "./proxy.js";
@@ -20,6 +19,8 @@
         path = `components/${component}/${component}.svelte`;
     } else if (shared) {
         path = `shared/svelte/${shared}.svelte`;
+    } else if ($$restProps._bookshop_name) {
+        path = `components/${$$restProps._bookshop_name}/${$$restProps._bookshop_name}.svelte`;
     } else {
         throw new Error("No component or shared key passed to Bookshop.");
     }
@@ -99,10 +100,10 @@
     let liveRendering = false;
     onMount(() => {
         liveRendering = true;
-        commentID = crypto.randomUUID();
+        commentID = crypto.randomUUID ? crypto.randomUUID() : Math.random();
     });
 </script>
 
 {#if liveRendering}{@html `<!--${commentID}-->`}{/if}
-<svelte:component this={TargetComponent} {Bookshop} {...proxied_fields} />
+<svelte:component this={TargetComponent} {...proxied_fields} />
 {#if liveRendering}{@html `<!--${commentID}-->`}{/if}

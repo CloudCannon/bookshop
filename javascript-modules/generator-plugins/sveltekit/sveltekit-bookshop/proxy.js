@@ -3,6 +3,7 @@ export const make_bookshop_proxy = (obj) => {
     return new Proxy(obj, {
         get(target, name, receiver) {
             let val = Reflect.get(target, name, receiver);
+            if (!(name instanceof String)) return val;
             let path = name;
             if (target.__bookshop_path) path = `${target.__bookshop_path}.${path}`;
 
