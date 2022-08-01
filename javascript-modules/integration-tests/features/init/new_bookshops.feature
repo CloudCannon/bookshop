@@ -42,3 +42,14 @@ Feature: Generating Bookshop Projects
     And test/components/sample/sample.bookshop.js should contain the text "content_blocks"
     And test/shared/hugo/page.hugo.html should contain the text "range ."
     And test/shared/styles/global.scss should contain the text "body"
+
+  Scenario: Creating a new SvelteKit Bookshop
+    When I run "npm start -- --new test --framework svelte --format json" in the . directory
+    Then stderr should be empty
+    And stdout should contain "Creating a Bookshop project at test"
+    And test/bookshop/bookshop.config.cjs should contain the text "@bookshop/svelte-engine"
+    And test/components/sample/sample.svelte should contain the text "c-sample"
+    And test/components/sample/sample.scss should not exist
+    And test/components/sample/sample.bookshop.json should contain the text "content_blocks"
+    And test/shared/svelte/page.svelte should contain the text "each content_blocks as component"
+    And test/shared/styles/global.scss should not exist

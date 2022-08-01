@@ -95,7 +95,7 @@ Alternatively, grab one of CloudCannon's preconfigured link:https://cloudcannon.
 
 The first step is to create the directory structure for your Bookshop. To create this structure, you can run the following command in the root of your repository:
 
-`npx @bookshop/init --new component-library --framework {ssgl}`
+`npx @bookshop/init --new component-library --framework {ssgeng}`
 
 This command should provide you with the following directory structure:
 

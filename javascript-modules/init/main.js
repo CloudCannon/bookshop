@@ -132,7 +132,7 @@ const initComponent = async (options, bookshopConfigFiles) => {
   for (const framework of frameworks) {
     const template = templates[framework];
     if (!template) {
-      const allowed = ['hugo', 'eleventy', 'jekyll'];
+      const allowed = ['hugo', 'eleventy', 'jekyll', 'svelte'];
       console.error(chalk.red(`Unrecognized framework ${chalk.cyan(framework)}, expected one of: ${chalk.cyan(allowed.join(', '))}`));
       process.exit(1);
     }
@@ -143,11 +143,13 @@ const initComponent = async (options, bookshopConfigFiles) => {
     );
   }
 
-  renderFile(
-    templates["scss"],
-    { componentName },
-    join(componentDirPath, `${componentFileName}.scss`)
-  );
+  if (frameworks[0] !== "svelte") {
+    renderFile(
+      templates["scss"],
+      { componentName },
+      join(componentDirPath, `${componentFileName}.scss`)
+    );
+  }
 
   const bookshopTemplate = templates[`bookshop_${targetFormat}`];
   renderFile(
@@ -164,7 +166,10 @@ const initBookshop = async (options) => {
   mkdirSync(join(options.new, 'bookshop'), { recursive: true });
   mkdirSync(join(options.new, 'components'), { recursive: true });
   mkdirSync(join(options.new, 'shared', options.framework[0]), { recursive: true });
-  mkdirSync(join(options.new, 'shared', 'styles'), { recursive: true });
+
+  if (options.framework[0] !== "svelte") {
+    mkdirSync(join(options.new, 'shared', 'styles'), { recursive: true });
+  }
 
   renderFile(
     templates["bookshop_config"],
@@ -179,11 +184,13 @@ const initBookshop = async (options) => {
     join(options.new, `shared`, options.framework[0], `page.${templates[pageComponent].extension}`)
   );
 
-  renderFile(
-    templates["global_style"],
-    {},
-    join(options.new, `shared`, `styles`, `global.scss`)
-  );
+  if (options.framework[0] !== "svelte") {
+    renderFile(
+      templates["global_style"],
+      {},
+      join(options.new, `shared`, `styles`, `global.scss`)
+    );
+  }
 
   if (options.framework[0] === "hugo") {
     renderFile(
@@ -200,11 +207,11 @@ const initBookshop = async (options) => {
 async function run() {
   program.option("-n, --new <project name>", "Create a new Bookshop in the given directory");
   program.option("-c, --component <component>", "Create a new component with the given name");
-  program.option("-f, --framework <frameworks...>", "Optional: Space separated list of frameworks to use. Will be aut-detected if not supplied");
+  program.option("-f, --framework <frameworks...>", "Optional: Space separated list of frameworks to use. Will be auto-detected if not supplied");
   program.addOption(new Option('--format <filetype>', 'Convert Bookshop files to another format').choices(['yml', 'toml', 'json', 'js']));
   program.option("-d, --dot", "Look for Bookshops inside . directories");
   program.parse(process.argv);
-  const options = program.opts();
+  const options = program.opts() ?? {};
 
   if (options.component && options.new) {
     console.error(chalk.red("--component and --new cannot be passed together"));
@@ -220,7 +227,7 @@ async function run() {
   if (options.component) action = 'component';
   if (options.new) action = 'new';
 
-  if (!options.component && !options.new && bookshopConfigFiles.length) {
+  if (!options.component && !options.new && bookshopConfigFiles?.length) {
     options.component = true;
     action = 'component';
   }
@@ -292,7 +299,7 @@ async function run() {
         type: 'list',
         name: 'ssg',
         message: 'What framework do you want to create a new Bookshop project for?',
-        choices: ['Hugo', 'Eleventy', 'Jekyll'],
+        choices: ['Hugo', 'Eleventy', 'Jekyll', 'Svelte'],
         filter(val) { return val.toLowerCase(); },
       }]);
       options.framework = [resp.ssg];
