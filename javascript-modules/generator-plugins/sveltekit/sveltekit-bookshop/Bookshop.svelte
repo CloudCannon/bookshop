@@ -7,9 +7,14 @@
     export let shared;
 
     let proxied_fields = $$restProps;
-    let components = import.meta.glob("$components/**/*.svelte", {
-        eager: true,
-    });
+    let components;
+    if (typeof BOOKSHOP_COMPONENT_BROWSER === "undefined") {
+        components = import.meta.glob("$components/**/*.svelte", {
+            eager: true,
+        });
+    } else {
+        components = window.__bookshop_svelte_files ?? {};
+    }
 
     const getComponentKey = (name) => {
         const base = name.split("/").reverse()[0];
@@ -31,7 +36,13 @@
     }
     TargetComponent = Object.entries(components).filter(([k]) =>
         k.endsWith(path)
-    )?.[0]?.[1]?.default;
+    )?.[0]?.[1];
+
+    // In the component browser context we won't get it as `.default`,
+    // but through Vite we do.
+    if (typeof BOOKSHOP_COMPONENT_BROWSER === "undefined") {
+        TargetComponent = TargetComponent.default;
+    }
 
     if (!TargetComponent) {
         throw new Error(`Component not found for ${shared || component}`);

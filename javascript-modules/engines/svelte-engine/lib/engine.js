@@ -10,6 +10,11 @@ export class Engine {
         this.key = 'svelte';
         this.name = options.name;
         this.files = options.files;
+
+        // Hide our files somewhere global so that
+        // the sveltekit plugin can grab them instead of using its Vite import.
+        window.__bookshop_svelte_files = options.files;
+
         this.activeApps = [];
     }
 
@@ -53,7 +58,7 @@ export class Engine {
         }
         this.activeApps.push({
             name,
-            app: new source({target, props})
+            app: new source({ target, props })
         });
         this.clean();
     }
