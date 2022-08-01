@@ -8,6 +8,7 @@ Feature: Basic SvelteKit Bookshop
     Given the file tree:
       """
       component-lib/
+        package.json from starters/sveltekit/package.json # <-- this .json line hurts my syntax highlighting
         bookshop/
           bookshop.config.js from starters/sveltekit/bookshop.config.js_
       site/
@@ -26,6 +27,7 @@ Feature: Basic SvelteKit Bookshop
             [slug].json.js from starters/sveltekit/src/routes/[slug].json.js_
             index.svelte from starters/sveltekit/src/routes/index.svelte
       """
+    Given I run "npm i" in the component-lib directory
 
   Scenario: Tests are functional
     Given a site/content/pages/index.md file containing:
@@ -135,7 +137,7 @@ Feature: Basic SvelteKit Bookshop
     Given a component-lib/components/hero/hero.svelte file containing:
       """
       <script>
-        export let Bookshop;
+        import { Bookshop } from "@bookshop/sveltekit-bookshop";
 
         export let text;
         export let herotag;
