@@ -65,6 +65,32 @@ Feature: Basic SvelteKit Bookshop
     And stdout should contain "Wrote site to"
     And site/build/index.html should contain the text "Bookshop: Result 🫥"
 
+  Scenario: Nested components are rendered from bookshop
+    Given a component-lib/components/nested/title/title.svelte file containing:
+      """
+      <script>
+        export let text;
+      </script>
+
+      <h1>Bookshop: { text }</h1>
+      """
+    And a site/src/routes/index.svelte file containing:
+      """
+      <script>
+        import { Bookshop } from "@bookshop/sveltekit-bookshop";
+
+        export let pageDetails;
+      </script>
+
+      <div>
+        <Bookshop component="nested/title" text="Result 🫥" />
+      </div>
+      """
+    When I run "npm start" in the site directory
+    # Then stderr should be empty
+    And stdout should contain "Wrote site to"
+    And site/build/index.html should contain the text "Bookshop: Result 🫥"
+
   Scenario: Components can use the page front matter
     Given a component-lib/components/title/title.svelte file containing:
       """

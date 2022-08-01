@@ -11,12 +11,17 @@
         eager: true,
     });
 
+    const getComponentKey = (name) => {
+        const base = name.split("/").reverse()[0];
+        return `components/${name}/${base}.svelte`;
+    };
+
     let TargetComponent;
     let dataBindPath;
     let commentID;
     let path;
     if (component) {
-        path = `components/${component}/${component}.svelte`;
+        path = getComponentKey(component);
     } else if (shared) {
         path = `shared/svelte/${shared}.svelte`;
     } else if ($$restProps._bookshop_name) {

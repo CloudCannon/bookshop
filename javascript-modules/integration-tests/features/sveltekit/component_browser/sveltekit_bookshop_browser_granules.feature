@@ -54,6 +54,7 @@ Feature: SvelteKit Bookshop Component Browser Granular Steps
       <BookshopBrowser />
       """
 
+  @skip # NYI
   Scenario: Bookshop adds component browser markup
     When I run "npm start" in the site directory
     # Then stderr should be empty
@@ -63,6 +64,7 @@ Feature: SvelteKit Bookshop Component Browser Granular Steps
       | <div data-bookshop-browser=""></div>                       |
       | <script src="http://localhost:30775/bookshop.js"></script> |
 
+  @skip # NYI
   Scenario: Bookshop Generate hydrates component browser
     Given I run "npm start" in the site directory
     *     I run "cloudcannon-reader --output build" in the site directory
@@ -74,7 +76,7 @@ Feature: SvelteKit Bookshop Component Browser Granular Steps
       | text                                                |
       | <script src="/_bookshop/bookshop-browser.min.js?cb= |
 
-  @web
+  @web @skip # NYI
   Scenario: Bookshop component browser initialises
     When 🌐 I load my site
     And 🌐 "window.bookshopBrowser?.hasRendered === true" evaluates
@@ -82,7 +84,7 @@ Feature: SvelteKit Bookshop Component Browser Granular Steps
     *    🌐 There should be no logs
     *    🌐 The selector .tutorial should contain "Select a component using the"
 
-  @web
+  @web @skip # NYI
   Scenario: Bookshop component browser renders a component
     When 🌐 I load my site
     And 🌐 "typeof window.BookshopBrowser !== 'undefined'" evaluates
