@@ -1,8 +1,8 @@
-:jekyll: ssg
-:ssg: Jekyll
-:ssgl: jekyll
-:ssgeng: jekyll
-:ssgext: jekyll.html
+:sveltekit: ssg
+:ssg: SvelteKit
+:ssgl: sveltekit
+:ssgeng: svelte
+:ssgext: svelte
 :toc:
 :toclevels: 3
 :toc-placement!:
