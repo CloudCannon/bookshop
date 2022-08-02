@@ -9,7 +9,7 @@
     let proxied_fields = $$restProps;
     let components;
     if (typeof BOOKSHOP_COMPONENT_BROWSER === "undefined") {
-        components = import.meta.glob("$components/**/*.svelte", {
+        components = import.meta.glob("$bookshop/**/*.svelte", {
             eager: true,
         });
     } else {

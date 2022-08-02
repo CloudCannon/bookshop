@@ -7,7 +7,7 @@ const config = {
     resolve: {
         alias: {
             $content: resolve('./content'),
-            $components: resolve('../component-lib/')
+            $bookshop: resolve('../component-lib/')
         }
     }
 };

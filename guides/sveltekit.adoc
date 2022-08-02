@@ -308,7 +308,7 @@ npm i --save-exact @bookshop/sveltekit-bookshop
 yarn add --exact @bookshop/sveltekit-bookshop
 ```
 
-Within your Vite config, specify a `$components` alias with the path to your Bookshop project. 
+Within your Vite config, specify a `$bookshop` alias with the path to your Bookshop project. 
 
 .*vite.config.js*
 ```javascript
@@ -320,7 +320,7 @@ const config = {
     plugins: [sveltekit()],
     resolve: {
         alias: {
-            $components: resolve('./component-library/')
+            $bookshop: resolve('./component-library/')
         }
     },
     server: {
@@ -334,7 +334,7 @@ const config = {
 export default config;
 ```
 
-TIP: Make sure that `$components` points to the component library you just created, relative to your SvelteKit source.
+TIP: Make sure that `$bookshop` points to the component library you just created, relative to your SvelteKit source.
 
 TIP: `allow: ['..']` in the `server.fs` configuration allows Vite to serve the component files. This will need to be adusted to include your component library if it exists in another location.
 
