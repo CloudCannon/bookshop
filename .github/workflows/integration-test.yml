@@ -28,6 +28,14 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16.x
+      # TODO: Remove when possible (https://github.com/actions/setup-node/issues/515)
+      - name: Windows Node fix
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          $WhereNode = Get-Command node | Select-Object -ExpandProperty Definition
+          $NodeDirPath = Split-Path $WhereNode -Parent
+          cd $NodeDirPath
+          npm install npm@8.12.1
       - name: Use Ruby 2.7.x
         uses: ruby/setup-ruby@v1
         with:
