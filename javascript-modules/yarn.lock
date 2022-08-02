@@ -600,19 +600,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudcannon/svelte-connector@npm:^1":
-  version: 1.0.1
-  resolution: "@cloudcannon/svelte-connector@npm:1.0.1"
+"@cloudcannon/svelte-connector@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@cloudcannon/svelte-connector@npm:1.0.2"
   dependencies:
-    "@cloudcannon/visual-editor-connector": ^1.0.0
-  checksum: c6f082f583d95b9ec5df33c8d43305a9dfb1a62a3edd433efa1919d8b15516a09e2bd557d482a1d9d46f4c5fffb23311d903e23604c2873de299e8880139b32b
+    "@cloudcannon/visual-editor-connector": ^1.0.1
+  checksum: 7560b4a899b173bbae435a7c6e32b05cd980f55d647b59c0b5517e9283b577665f5cf5dba89b70ac4825ad27aeacca3fe946ce156af1c1d08022223f446d9cc9
   languageName: node
   linkType: hard
 
-"@cloudcannon/visual-editor-connector@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@cloudcannon/visual-editor-connector@npm:1.0.0"
-  checksum: 0a933179aac0786434757232fbaed7f73412cd5449e380a74b3d425c9bd02db977ac479c4c2ac50cf92e802e00d1d203ba72c9fe9b2e9ee3d3e73c4623b694e0
+"@cloudcannon/visual-editor-connector@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@cloudcannon/visual-editor-connector@npm:1.0.1"
+  checksum: 26826f468fb606773fbde53ab694996c06a4e5a224c641d2bf83392b6ba90994e6b721b9eec5baf521b3eff410fe1605fbaa7aec727e3a52ef8066e6e38f5706
   languageName: node
   linkType: hard
 
@@ -5042,7 +5042,7 @@ fsevents@~2.3.2:
     "@bookshop/sass": 3.2.1
     "@bookshop/up": 3.2.1
     "@cloudcannon/reader": latest
-    "@cloudcannon/svelte-connector": ^1
+    "@cloudcannon/svelte-connector": ^1.0.2
     "@cucumber/cucumber": ^7.3.1
     "@sveltejs/adapter-static": latest
     "@sveltejs/kit": latest

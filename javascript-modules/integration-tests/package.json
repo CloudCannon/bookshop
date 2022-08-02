@@ -18,7 +18,7 @@
     "@bookshop/sass": "3.2.1",
     "@bookshop/up": "3.2.1",
     "@cloudcannon/reader": "latest",
-    "@cloudcannon/svelte-connector": "^1",
+    "@cloudcannon/svelte-connector": "^1.0.2",
     "@sveltejs/adapter-static": "latest",
     "@sveltejs/kit": "latest",
     "cloudcannon-hugo": "latest",
