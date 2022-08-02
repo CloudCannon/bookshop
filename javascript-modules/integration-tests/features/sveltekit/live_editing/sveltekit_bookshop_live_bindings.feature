@@ -55,7 +55,7 @@ Feature: SvelteKit Bookshop CloudCannon Live Editing Automatic Data Bindings
             pageDetails = trackBookshopLiveData(newProps);
             // Set some flags that our tests look for — not needed in real usage.
             window.bookshopLive = window.bookshopLive || { renderCount: 0 };
-            window.bookshopLive.renderCount++;
+            setTimeout(() => { window.bookshopLive.renderCount++; }, 100);
           });
         });
       </script>
@@ -135,21 +135,5 @@ Feature: SvelteKit Bookshop CloudCannon Live Editing Automatic Data Bindings
     Then 🌐 The selector h1:nth-of-type(7) should match "<h1>Hello World</h1>"
     Then 🌐 The selector h1:nth-of-type(8) should match "<h1>Hello World</h1>"
 
+  @skip # N/A — omit the trackBookshopData function to achieve this
   Scenario: Bookshop live respects the global dataBindings flag
-    Given [front_matter]:
-      """
-      layout: layouts/default.liquid
-      hero: "Hello World"
-      """
-    And a site/index.html file containing:
-      """
-      ---
-      [front_matter]
-      ---
-      <script>window.bookshopDataBindings = false;</script>
-      {% bookshop "title" innards: hero %}
-      """
-    And 🌐 I have loaded my site in CloudCannon
-    Then 🌐 There should be no errors
-    *    🌐 There should be no logs
-    Then 🌐 The selector h1 should match "<h1>Hello World</h1>"
