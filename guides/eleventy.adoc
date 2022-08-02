@@ -44,7 +44,7 @@ For an example of what this looks like in a real-world example, see our link:htt
 
 == Prerequisites
 
-* Bookshop requires Node >= 14 installed on your machine.
+* Bookshop requires Node >= 16 installed on your machine.
 ifdef::hugo[]
 * This guide expects that you already have link:https://gohugo.io/getting-started/installing/[Hugo] installed on your machine.
 * Since Hugo Bookshop utilizes the Hugo module system, the link:https://go.dev/doc/install[Go Programming Language] needs to be installed on your machine.

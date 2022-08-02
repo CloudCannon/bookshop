@@ -548,6 +548,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@bookshop/sveltekit-bookshop@workspace:generator-plugins/sveltekit/sveltekit-bookshop":
+  version: 0.0.0-use.local
+  resolution: "@bookshop/sveltekit-bookshop@workspace:generator-plugins/sveltekit/sveltekit-bookshop"
+  dependencies:
+    "@bookshop/helpers": 3.2.1
+    ava: ^3.15.0
+    nyc: ^15.1.0
+    svelte: ^3
+  languageName: unknown
+  linkType: soft
+
 "@bookshop/up@3.2.1, @bookshop/up@workspace:up":
   version: 0.0.0-use.local
   resolution: "@bookshop/up@workspace:up"

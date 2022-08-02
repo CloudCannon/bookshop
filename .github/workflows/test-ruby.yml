@@ -2,9 +2,9 @@ name: Ruby
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   ruby-test:
@@ -12,26 +12,26 @@ jobs:
 
     strategy:
       matrix:
-        ruby-version: ['2.6', '2.7']
+        ruby-version: ["2.6", "2.7"]
         os: [ubuntu-latest, windows-latest]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 14
-      uses: actions/setup-node@v2
-      with:
-        node-version: 14.x
-    - name: Install node dependencies
-      run: yarn install --immutable
-      working-directory: ./javascript-modules
-    - name: Vendor node modules into ruby packages
-      run: node ./scripts/publish.js vendor
-    - name: Set up jekyll-bookshop Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby-version }}
-        bundler-cache: true
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+      - name: Install node dependencies
+        run: yarn install --immutable
+        working-directory: ./javascript-modules
+      - name: Vendor node modules into ruby packages
+        run: node ./scripts/publish.js vendor
+      - name: Set up jekyll-bookshop Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+          working-directory: ./generator-plugins/jekyll/jekyll-bookshop
+      - name: Run jekyll-bookshop tests
+        run: bundle exec rake test
         working-directory: ./generator-plugins/jekyll/jekyll-bookshop
-    - name: Run jekyll-bookshop tests
-      run: bundle exec rake test
-      working-directory: ./generator-plugins/jekyll/jekyll-bookshop
