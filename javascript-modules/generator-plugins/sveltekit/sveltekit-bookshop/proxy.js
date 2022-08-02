@@ -21,7 +21,7 @@ export const make_bookshop_proxy = (obj) => {
                     writable: true,
                     value: path
                 });
-                return make_bookshop_proxy(bookshopNameObj);
+                return bookshopNameObj;
             }
             return val;
         },
