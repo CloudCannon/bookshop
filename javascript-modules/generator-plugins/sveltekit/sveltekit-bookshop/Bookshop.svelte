@@ -3,8 +3,8 @@
     import { beforeUpdate, afterUpdate } from "svelte";
     import { make_bookshop_proxy } from "./proxy.js";
 
-    export let component;
-    export let shared;
+    export let component = "";
+    export let shared = "";
 
     let proxied_fields = $$restProps;
     let components;
