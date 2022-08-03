@@ -49,7 +49,6 @@
     }
 
     const updateDataBindings = () => {
-        console.log(`Calculating data bindings for ${component || shared}`);
         proxied_fields = {};
         let dataBindPaths = [];
         let skipDataBind = false;
@@ -91,7 +90,6 @@
         if (window.inEditorMode) {
             liveRendering = true;
         }
-        console.log(`Caught beforeUpdate ${component || shared}`);
         updateDataBindings();
     });
 
@@ -107,11 +105,7 @@
     };
 
     afterUpdate(() => {
-        console.log(`Caught afterUpdate ${component || shared}`);
         if (liveRendering && dataBindPath) {
-            console.log(
-                `Setting the ${dataBindPath} binding for ${component || shared}`
-            );
             const iterator = getTemplateCommentIterator();
             const startNode = iterator.iterateNext();
             const endNode = iterator.iterateNext();
@@ -132,13 +126,7 @@
 
     let liveRendering = false;
     onMount(() => {
-        console.log(`Mounting the Bookshop wrapper for ${component || shared}`);
         if (window.inEditorMode) {
-            console.log(
-                `Mounted the Bookshop wrapper in the editor for ${
-                    component || shared
-                }`
-            );
             liveRendering = true;
             commentID = crypto.randomUUID ? crypto.randomUUID() : Math.random();
             updateDataBindings();
