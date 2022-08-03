@@ -146,6 +146,12 @@
     });
 </script>
 
-{#if liveRendering}{@html `<!--${commentID}-->`}{/if}
-<svelte:component this={TargetComponent} {...proxied_fields} />
-{#if liveRendering}{@html `<!--${commentID}-->`}{/if}
+{#if liveRendering}
+    {#key commentID}
+        {#if liveRendering}{@html `<!--${commentID}-->`}{/if}
+        <svelte:component this={TargetComponent} {...proxied_fields} />
+        {#if liveRendering}{@html `<!--${commentID}-->`}{/if}
+    {/key}
+{:else}
+    <svelte:component this={TargetComponent} {...proxied_fields} />
+{/if}
