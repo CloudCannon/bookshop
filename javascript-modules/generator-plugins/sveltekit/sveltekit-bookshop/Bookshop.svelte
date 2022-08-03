@@ -72,7 +72,11 @@
                     value.__bookshop_path.replace(/\.?\w+$/, "")
                 );
             }
-            proxied_fields[k] = make_bookshop_proxy(value);
+            if (k === "_bookshop_name") {
+                proxied_fields[k] = value;
+            } else {
+                proxied_fields[k] = make_bookshop_proxy(value);
+            }
         }
         if (!skipDataBind) {
             dataBindPath =

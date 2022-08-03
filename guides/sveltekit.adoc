@@ -1501,12 +1501,12 @@ TIP: Run `npx @bookshop/browser --help` to see the available options.
 === Integrating the Component Browser With Your Site
 
 ifdef::sveltekit[]
-Bookshop {ssg} does not yet support embedding the Bookshop browser in a website.
+*Coming Soon* — Bookshop {ssg} does not yet support embedding the Bookshop browser in a website.
 endif::sveltekit[]
 
 ifndef::sveltekit[]
 
-Bookshop {ssg} provides a helper for embedding the Bookshop browser in your website. This references the component browser started in the previous command, and embeds a live copy into your website.
+*Coming Soon* — Bookshop {ssg} provides a helper for embedding the Bookshop browser in your website. This references the component browser started in the previous command, and embeds a live copy into your website.
 
 This allows you to:
 
