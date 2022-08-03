@@ -109,7 +109,9 @@
     afterUpdate(() => {
         console.log(`Caught afterUpdate ${component || shared}`);
         if (liveRendering && dataBindPath) {
-            console.log(`Setting the ${dataBindPath} binding for ${commentID}`);
+            console.log(
+                `Setting the ${dataBindPath} binding for ${component || shared}`
+            );
             const iterator = getTemplateCommentIterator();
             const startNode = iterator.iterateNext();
             const endNode = iterator.iterateNext();
@@ -122,7 +124,6 @@
                     Node.DOCUMENT_POSITION_FOLLOWING) !==
                     0
             ) {
-                console.log(`Setting the ${dataBindPath} binding on ${node}`);
                 node.dataset.cmsBind = `#${dataBindPath}`;
                 node = node.nextElementSibling;
             }
