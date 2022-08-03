@@ -49,6 +49,7 @@
     }
 
     beforeUpdate(() => {
+        console.log("About to update Bookshop props");
         proxied_fields = {};
         let dataBindPaths = [];
         let skipDataBind = false;
@@ -98,6 +99,7 @@
     };
 
     afterUpdate(() => {
+        console.log("Have updated Bookshop props");
         if (liveRendering && dataBindPath) {
             const iterator = getTemplateCommentIterator();
             const startNode = iterator.iterateNext();
@@ -119,6 +121,7 @@
 
     let liveRendering = false;
     onMount(() => {
+        console.log("Have mounted Bookshop");
         liveRendering = true;
         commentID = crypto.randomUUID ? crypto.randomUUID() : Math.random();
     });
