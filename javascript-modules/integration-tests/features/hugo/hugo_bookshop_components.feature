@@ -52,6 +52,20 @@ Feature: Basic Hugo Bookshop
     And stdout should contain "Total in"
     And site/public/index.html should contain the text "Bookshop: Result 🧄"
 
+  Scenario: Nested components are rendered from bookshop
+    Given a component-lib/components/nested/title/title.hugo.html file containing:
+      """
+      <h1>Bookshop: {{ .text }}</h1>
+      """
+    And a site/layouts/index.html file containing:
+      """
+      {{ partial "bookshop" (slice "nested/title" (dict "text" "Result 🧄")) }}
+      """
+    When I run "hugo" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Total in"
+    And site/public/index.html should contain the text "Bookshop: Result 🧄"
+
   Scenario: Components can use the page front matter
     Given a component-lib/components/title/title.hugo.html file containing:
       """

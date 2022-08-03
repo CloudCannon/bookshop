@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import url from 'url';
 import normalizePath from 'normalize-path';
 import resolve from 'resolve';
@@ -76,7 +77,14 @@ export default (options) => ({
             };
         });
         build.onLoad({ filter: /.*/, namespace: 'bookshop-import-config' }, async (args) => {
-            const { default: config } = await import(url.pathToFileURL(path.join(args.pluginData.resolveDir, args.path)));
+            let primaryConfig = path.join(args.pluginData.resolveDir, 'bookshop.config.js');
+            if (!fs.existsSync(primaryConfig)) {
+                primaryConfig = path.join(args.pluginData.resolveDir, 'bookshop.config.cjs');
+            }
+            if (!fs.existsSync(primaryConfig)) {
+                throw new Error("Couldn't find a bookshop.config.* file.")
+            }
+            const { default: config } = await import(url.pathToFileURL(primaryConfig));
             let engines = Object.entries(config?.engines) || [];
             if (options?.onlyEngines?.length) {
                 engines = engines.filter(([engine]) => options.onlyEngines.includes(engine));

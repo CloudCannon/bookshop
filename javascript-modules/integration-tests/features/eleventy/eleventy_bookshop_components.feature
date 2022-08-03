@@ -45,6 +45,22 @@ Feature: Basic Eleventy Bookshop
     And stdout should contain "v1.0.0"
     And site/_site/index.html should contain the text "Bookshop: Result 🤽‍♂️"
 
+  Scenario: Nested components are rendered from bookshop
+    Given a component-lib/components/nested/title/title.eleventy.liquid file containing:
+      """
+      <h1>Bookshop: {{ text }}</h1>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      ---
+      {% bookshop "nested/title" text: "Result 🤽‍♂️" %}
+      """
+    When I run "npm start" in the site directory
+    Then stderr should be empty
+    And stdout should contain "v1.0.0"
+    And site/_site/index.html should contain the text "Bookshop: Result 🤽‍♂️"
+
   Scenario: Components can use the page front matter
     Given a component-lib/components/title/title.eleventy.liquid file containing:
       """

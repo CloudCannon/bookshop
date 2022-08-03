@@ -44,6 +44,22 @@ Feature: Basic Jekyll Bookshop
     And stdout should contain "done in"
     And site/_site/index.html should contain the text "Bookshop: Result 🧄"
 
+  Scenario: Nested components are rendered from bookshop
+    Given a component-lib/components/nested/title/title.jekyll.html file containing:
+      """
+      <h1>Bookshop: {{ include.text }}</h1>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      ---
+      {% bookshop nested/title text="Result 🧄" %}
+      """
+    When I run "bundle exec jekyll build --trace" in the site directory
+    Then stderr should be empty
+    And stdout should contain "done in"
+    And site/_site/index.html should contain the text "Bookshop: Result 🧄"
+
   Scenario: Components can use the page front matter
     Given a component-lib/components/title/title.jekyll.html file containing:
       """

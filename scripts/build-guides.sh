@@ -31,19 +31,21 @@ then
 build_guide () {
     SSG=$1
     SSGL=$(echo "$SSG" | tr '[:upper:]' '[:lower:]')
-    SSGEXT=$2
+    SSGENG=$2
+    SSGEXT=$3
 
     if [[ ! $SOURCE =~ $SSGL ]]; then
-    sed -E "s/:.+: ssg/:${SSGL}: ssg/; s/:ssg: .+/:ssg: ${SSG}/; s/:ssgl: .+/:ssgl: ${SSGL}/; s/:ssgext: .+/:ssgext: ${SSGEXT}/" $SOURCE > ../guides/$SSGL.adoc
+    sed -E "s/:.+: ssg/:${SSGL}: ssg/; s/:ssg: .+/:ssg: ${SSG}/; s/:ssgl: .+/:ssgl: ${SSGL}/; s/:ssgeng: .+/:ssgeng: ${SSGENG}/; s/:ssgext: .+/:ssgext: ${SSGEXT}/" $SOURCE > ../guides/$SSGL.adoc
     echo "Wrote $SSGL.adoc"
     else
     echo "Skipped $SSGL.adoc (source file)"
     fi
 }
 
-build_guide "Eleventy" "eleventy.liquid"
-build_guide "Jekyll" "jekyll.html"
-build_guide "Hugo" "hugo.html"
+build_guide "Eleventy" "eleventy" "eleventy.liquid"
+build_guide "Jekyll" "jekyll" "jekyll.html"
+build_guide "Hugo" "hugo" "hugo.html"
+build_guide "SvelteKit" "svelte" "svelte"
 
 echo "Done!"
 exit 0

@@ -18,11 +18,12 @@ const run = async () => {
     console.log(`Cleaning any old tests`);
     try {
         fs.rmSync(path.join(__dirname, './.bookshop-tmp-test-dir'), { recursive: true, force: true });
-    } catch (e) {}
+    } catch (e) { }
     console.log(`Pre-installing Jekyll Gemfile(s)`);
     await runCommand('bundle install', path.join(__dirname, "./support/starters/jekyll"));
     await runCommand('bundle install', path.join(__dirname, "./support/starters/jekyll"), { 'BUNDLE_GEMFILE': 'Gemfile.cloudcannon' });
     console.log(`Eleventy is pre-installed in the integration-tests folder`);
+    console.log(`Sveltekit is pre-installed in the integration-tests folder`);
     console.log(`Hugo should be pre-installed on the system`);
 }
 

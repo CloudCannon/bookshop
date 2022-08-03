@@ -50,6 +50,7 @@
     "javascript-modules/generate": {},
     "javascript-modules/generator-plugins/eleventy/cloudcannon-eleventy-bookshop": {},
     "javascript-modules/generator-plugins/eleventy/eleventy-bookshop": {},
+    "javascript-modules/generator-plugins/sveltekit/sveltekit-bookshop": {},
     "javascript-modules/helpers": {},
     "javascript-modules/init": {},
     "javascript-modules/live": {},

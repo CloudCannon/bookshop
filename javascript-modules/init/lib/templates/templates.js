@@ -20,6 +20,11 @@ export const eleventy = {
 	extension: 'eleventy.liquid'
 };
 
+export const svelte = {
+	render: ejs.compile(readFileSync(join(__dirname, "svelte.ejs.t"), 'utf8')),
+	extension: 'svelte'
+};
+
 export const jekyll_page = {
 	render: ejs.compile(readFileSync(join(__dirname, "page-jekyll.ejs.t"), 'utf8')),
 	extension: 'jekyll.html'
@@ -35,8 +40,8 @@ export const eleventy_page = {
 	extension: 'eleventy.liquid'
 };
 
-export const svelte = {
-	render: ejs.compile(readFileSync(join(__dirname, "svelte.ejs.t"), 'utf8')),
+export const svelte_page = {
+	render: ejs.compile(readFileSync(join(__dirname, "page-svelte.ejs.t"), 'utf8')),
 	extension: 'svelte'
 };
 

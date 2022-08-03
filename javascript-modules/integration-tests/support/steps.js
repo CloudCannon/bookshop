@@ -270,7 +270,8 @@ const readyCloudCannon = async (data, world) => {
     setLoading(str) { this.loadingMessages.push(str); }
     async value() { return this.data; }
   };
-  window.CloudCannon = new window.CC({ data: ${data} })`;
+  window.inEditorMode = true;
+  window.CloudCannon = new window.CC({ data: ${data} });`;
   await world.page.addScriptTag({ content: script });
   await p_sleep(50);
 }
@@ -408,8 +409,8 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 
   if (!this.storage.ssg) {
     throw new Error(`Expected ssg to be set with a "Given [ssg]:" step`);
   }
-  if (!/^jekyll|eleventy|hugo$/.test(this.storage.ssg)) {
-    throw new Error(`SSG was ${this.storage.ssg}, expected one of: jekyll, eleventy, hugo`);
+  if (!/^jekyll|eleventy|hugo|sveltekit$/.test(this.storage.ssg)) {
+    throw new Error(`SSG was ${this.storage.ssg}, expected one of: jekyll, eleventy, hugo, sveltekit`);
   }
   const ssg = this.storage.ssg;
 
@@ -434,6 +435,13 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 
       break;
     case 'eleventy':
       await this.runCommand(`npm start`, `site`);
+      break;
+    case 'sveltekit':
+      await this.runCommand(`npm start`, `site`);
+      // assert.strictEqual(this.stderr, ""); TODO: noisy
+      assert.strictEqual(this.commandError, "");
+      await this.runCommand(`cloudcannon-reader --output build`, `site`);
+      break;
   }
   assert.strictEqual(this.stderr, "");
   assert.strictEqual(this.commandError, "");
@@ -451,6 +459,10 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 
       break;
     case 'hugo':
       this.serveDir("site/public");
+      break;
+    case 'sveltekit':
+      this.serveDir("site/build");
+      break;
   }
   await loadPage("http://localhost:__PORT__", this);
   if (inCloudCannon) {

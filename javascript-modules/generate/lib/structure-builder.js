@@ -287,7 +287,7 @@ export const buildStructures = async (options = {}) => {
     let componentFiles = [];
     let relocations = [];
 
-    const bookshopConfigFiles = await fastGlob(`./**/bookshop.config.js`, {
+    const bookshopConfigFiles = await fastGlob(`./**/bookshop.config.{js,cjs}`, {
         cwd,
         dot: !!options.dot
     });
