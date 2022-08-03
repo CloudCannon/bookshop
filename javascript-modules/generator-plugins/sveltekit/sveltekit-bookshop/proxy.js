@@ -1,5 +1,6 @@
 export const make_bookshop_proxy = (obj) => {
     if (typeof obj !== "object") return obj;
+    if (obj instanceof String) return obj;
     return new Proxy(obj, {
         get(target, name, receiver) {
             let val = Reflect.get(target, name, receiver);
