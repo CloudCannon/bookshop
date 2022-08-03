@@ -1,3 +1,20 @@
+## [3.3.0](https://github.com/CloudCannon/bookshop/compare/v3.1.3...v3.3.0) (2022-08-03)
+
+
+### Features & Improvements
+
+* Component Initialization
+  * Component blueprints referencing nested components can now initialize those components on creation with the `!` operator. See `Initializing Nested Components` in the relevant guide.
+* SvelteKit Beta Support
+  * Bookshop now supports SvelteKit, with live editing provided by the existing CloudCannon [Svelte Connector](https://www.npmjs.com/package/@cloudcannon/svelte-connector).
+  * See the newly created [SvelteKit Guide](https://github.com/CloudCannon/bookshop/blob/main/guides/sveltekit.adoc) to get started.
+
+### Fixes & Tweaks
+
+* Fixed some console errors when live editing in Hugo
+* Improved the initialization speed of Hugo live editing
+
+
 ## [3.1.3](https://github.com/CloudCannon/bookshop/compare/v3.1.2...v3.1.3) (2022-06-17)
 
 

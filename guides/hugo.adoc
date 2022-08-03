@@ -1235,6 +1235,54 @@ endif::sveltekit[]
 
 IMPORTANT: Object Structures in CloudCannon may be empty, so testing for the existence of this component in your template is recommended.
 
+==== Initializing Nested Components
+
+By default, nested components using the `bookshop:` shorthand will be initialized empty. For example, the blueprint:
+
+```yaml
+blueprint:
+  hero_text: Hello World
+  button: bookshop:button
+```
+
+Will be initialized in CloudCannon as:
+
+```yaml
+hero_text: Hello World
+button:
+```
+
+Where `button` will provide an editor with the option to add a button component. To instead have the button component exist on creation, you can use the syntax `bookshop:button!`:
+
+```yaml
+blueprint:
+  hero_text: Hello World
+  button: bookshop:button!
+```
+
+The same setting can be applied to a structure shorthand by specifying the component that should be initialized. Taking the following example:
+
+```yaml
+blueprint:
+  hero_text: Hello World
+  column_components: 
+    - bookshop:structure:content_blocks!(hero)
+    - bookshop:structure:content_blocks!(button)
+```
+
+This will be initialized in CloudCannon as:
+
+```yaml
+hero_text: Hello World
+column_components: 
+  - _bookshop_name: hero
+    # hero fields
+  - _bookshop_name: button
+    # button fields
+```
+
+Where `column_components` can be then further added to/removed from by an editor, as per the tagged structure.
+
 ////
 //
 //
