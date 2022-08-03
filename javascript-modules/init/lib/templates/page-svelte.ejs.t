@@ -5,7 +5,9 @@
 </script>
 
 <div>
-  {#each content_blocks as component}
+  <!-- We need to key these components such that Svelte
+       understands how to reorder them when visual editing -->
+  {#each content_blocks as component, i (`${component._bookshop_name}-${i}`)}
     <Bookshop {...component} />
   {/each}
 </div>
