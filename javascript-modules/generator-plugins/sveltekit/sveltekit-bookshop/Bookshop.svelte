@@ -87,6 +87,9 @@
     };
 
     beforeUpdate(() => {
+        if (window.inEditorMode) {
+            liveRendering = true;
+        }
         updateDataBindings();
     });
 
