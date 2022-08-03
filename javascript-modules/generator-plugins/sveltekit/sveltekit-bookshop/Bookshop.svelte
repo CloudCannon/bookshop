@@ -68,7 +68,7 @@
             ) {
                 skipDataBind = true;
             }
-            if (value.__bookshop_path) {
+            if (value?.__bookshop_path) {
                 dataBindPaths.push(
                     value.__bookshop_path.replace(/\.?\w+$/, "")
                 );

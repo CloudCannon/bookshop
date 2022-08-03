@@ -270,8 +270,7 @@ const readyCloudCannon = async (data, world) => {
     setLoading(str) { this.loadingMessages.push(str); }
     async value() { return this.data; }
   };
-  window.CloudCannon = new window.CC({ data: ${data} });
-  window.CloudCannon.newData(${data});`;
+  window.CloudCannon = new window.CC({ data: ${data} });`;
   await world.page.addScriptTag({ content: script });
   await p_sleep(50);
 }

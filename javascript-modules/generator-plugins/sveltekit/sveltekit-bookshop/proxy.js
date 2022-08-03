@@ -6,7 +6,7 @@ export const make_bookshop_proxy = (obj) => {
             let val = Reflect.get(target, name, receiver);
             if (!(name instanceof String || typeof name === "string")) return val;
             let path = name;
-            if (target.__bookshop_path) path = `${target.__bookshop_path}.${path}`;
+            if (target?.__bookshop_path) path = `${target.__bookshop_path}.${path}`;
 
             if (typeof val === "object") {
                 Object.defineProperty(val, "__bookshop_path", {
