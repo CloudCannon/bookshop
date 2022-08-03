@@ -104,6 +104,7 @@
         );
     };
 
+    let firstRender = true;
     afterUpdate(() => {
         if (liveRendering && dataBindPath) {
             const iterator = getTemplateCommentIterator();
@@ -120,6 +121,10 @@
             ) {
                 node.dataset.cmsBind = `#${dataBindPath}`;
                 node = node.nextElementSibling;
+            }
+            if (firstRender) {
+                window?.CloudCannon?.refreshInterface?.();
+                firstRender = false;
             }
         }
     });
