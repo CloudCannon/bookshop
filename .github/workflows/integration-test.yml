@@ -2,9 +2,9 @@ name: Integration
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   integration-test:
@@ -22,12 +22,20 @@ jobs:
       - name: Use Hugo 0.89
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: '0.89.0'
+          hugo-version: "0.89.0"
           extended: true
-      - name: Use Node.js 14.x
+      - name: Use Node.js 16.x
         uses: actions/setup-node@v2
         with:
-          node-version: 14.x
+          node-version: 16.x
+      # TODO: Remove when possible (https://github.com/actions/setup-node/issues/515)
+      - name: Windows Node fix
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          $WhereNode = Get-Command node | Select-Object -ExpandProperty Definition
+          $NodeDirPath = Split-Path $WhereNode -Parent
+          cd $NodeDirPath
+          npm install npm@8.12.1
       - name: Use Ruby 2.7.x
         uses: ruby/setup-ruby@v1
         with:
@@ -35,7 +43,7 @@ jobs:
       - name: Use Go 1.17.x
         uses: actions/setup-go@v2
         with:
-          go-version: '^1.17.6'
+          go-version: "^1.17.6"
       - run: yarn install --immutable
         working-directory: ${{ env.cwd }}
       - name: Vendor node modules into ruby packages

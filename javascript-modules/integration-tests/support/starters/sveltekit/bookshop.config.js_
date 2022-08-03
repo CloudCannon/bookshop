@@ -1,0 +1,6 @@
+// Bookshop configuration
+module.exports = {
+    engines: {
+        "@bookshop/svelte-engine": {}
+    }
+}

@@ -4,6 +4,10 @@ import svelteFixPlugin from "./svelteFixPlugin.js";
 export const extensions = [".svelte"];
 
 export const buildPlugins = [
-    sveltePlugin({compileOptions: {css: true}}),
+    sveltePlugin({ compileOptions: { css: true } }),
     svelteFixPlugin
 ]
+
+export const esbuildConfigFn = (esbuildOptions, options) => {
+
+};

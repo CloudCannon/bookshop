@@ -1,0 +1,11 @@
+{
+  "name": "bookshop-sveltekit-cucumber-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npm i && node ../../../../node_modules/vite/bin/vite.js build"
+  },
+  "devDependencies": {
+    "@bookshop/sveltekit-bookshop": "file:../../../../../javascript-modules/generator-plugins/sveltekit/sveltekit-bookshop"
+  }
+}

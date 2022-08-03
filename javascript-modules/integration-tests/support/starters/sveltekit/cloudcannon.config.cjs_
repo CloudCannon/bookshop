@@ -1,0 +1,16 @@
+module.exports = {
+  paths: {
+    collections: 'content',
+    data: 'content/data',
+    static: 'public',
+    uploads: 'public/uploads'
+  },
+
+  'collections-config': {
+    pages: {
+      path: 'content/pages',
+      url: '/[slug]',
+      'output': true,
+    }
+  }
+};

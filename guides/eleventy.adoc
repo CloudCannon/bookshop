@@ -1,6 +1,7 @@
 :eleventy: ssg
 :ssg: Eleventy
 :ssgl: eleventy
+:ssgeng: eleventy
 :ssgext: eleventy.liquid
 :toc:
 :toclevels: 3
@@ -21,9 +22,15 @@ toc::[]
 
 == Concepts
 
+ifndef::sveltekit[]
 IMPORTANT: Migrating from Bookshop 2.0 to 3.0? Read the link:migration.adoc[Migration Guide] first.
+endif::sveltekit[]
 
-Bookshop defines conventions for writing static components for {ssg}. Using these conventions, Bookshop provides an ergonomic way to build pages out of your components, build and browse these components locally, and generate rich live editing experiences in CloudCannon.
+Bookshop defines conventions for writing
+ifndef::sveltekit[]
+static
+endif::sveltekit[]
+components for {ssg}. Using these conventions, Bookshop provides an ergonomic way to build pages out of your components, build and browse these components locally, and generate rich live editing experiences in CloudCannon.
 
 For an example of what this looks like in a real-world example, see our link:https://vimeo.com/689852104[Editing MegaKit with Bookshop] video.
 
@@ -37,7 +44,7 @@ For an example of what this looks like in a real-world example, see our link:htt
 
 == Prerequisites
 
-* Bookshop requires Node >= 14 installed on your machine.
+* Bookshop requires Node >= 16 installed on your machine.
 ifdef::hugo[]
 * This guide expects that you already have link:https://gohugo.io/getting-started/installing/[Hugo] installed on your machine.
 * Since Hugo Bookshop utilizes the Hugo module system, the link:https://go.dev/doc/install[Go Programming Language] needs to be installed on your machine.
@@ -71,6 +78,9 @@ endif::jekyll[]
 ifdef::eleventy[]
 reading link:https://www.11ty.dev/docs/getting-started/[Eleventy's Getting Started] is a good start.
 endif::eleventy[]
+ifdef::sveltekit[]
+reading link:https://kit.svelte.dev/docs/introduction#getting-started[SvelteKit's Getting Started] is a good start.
+endif::sveltekit[]
 Alternatively, grab one of CloudCannon's preconfigured link:https://cloudcannon.com/community/themes/[{ssg} templates].
 
 ////
@@ -85,7 +95,7 @@ Alternatively, grab one of CloudCannon's preconfigured link:https://cloudcannon.
 
 The first step is to create the directory structure for your Bookshop. To create this structure, you can run the following command in the root of your repository:
 
-`npx @bookshop/init --new component-library --framework {ssgl}`
+`npx @bookshop/init --new component-library --framework {ssgeng}`
 
 This command should provide you with the following directory structure:
 
@@ -96,17 +106,25 @@ ifdef::hugo[]
 ├─ config.toml
 endif::hugo[]
 ├─ bookshop/
-│  └─ bookshop.config.js
+│  └─ bookshop.config.cjs
 ├─ components/
 │  └─ sample/
 │     ├─ sample.bookshop.yml
+ifndef::sveltekit[]
 │     ├─ sample.scss
+endif::sveltekit[]
 │     └─ sample.{ssgext}
 └─ shared/
+ifdef::sveltekit[]
+   └─ {ssgl}
+      └─ page.{ssgext}
+endif::sveltekit[]
+ifndef::sveltekit[]
    ├─ {ssgl}
    │  └─ page.{ssgext}
    └─ styles/
       └─ global.scss
+endif::sveltekit[]
 ----
 
 Here's a quick run-through of what has been generated:
@@ -114,10 +132,12 @@ Here's a quick run-through of what has been generated:
 ifdef::hugo[]
 config.toml:: This file registers your component library as a Hugo Module. This will allow us to use it as a dependency for your site.
 endif::hugo[]
-bookshop/bookshop.config.js:: This houses the configuration for your Bookshop project, in this case instructing Bookshop to use the `@bookshop/{ssgl}-engine` package for any live component rendering.
+bookshop/bookshop.config.cjs:: This houses the configuration for your Bookshop project, in this case instructing Bookshop to use the `@bookshop/{ssgeng}-engine` package for any live component rendering.
 components/:: This is where you will write your component files, a sample component has been added for you.
 shared/{ssgl}/:: Any non-component files that you want to be able to use when live editing can be placed here. A page helper has been created, which helps render arrays of components.
+ifndef::sveltekit[]
 shared/styles/:: Any SCSS files in this directory will be imported alphabetically before component SCSS files. These are used on both the site, and the component browser.
+endif::sveltekit[]
 
 '''
 
@@ -145,12 +165,12 @@ target = "assets/bookshop"
 ----
 endif::hugo[]
 
-.*component-library/bookshop/bookshop.config.js*
+.*component-library/bookshop/bookshop.config.cjs*
 [source,javascript,subs="attributes"]
 ----
 module.exports = {
     engines: {
-        "@bookshop/{ssgl}-engine": {}
+        "@bookshop/{ssgeng}-engine": {}
     }
 }
 ----
@@ -274,6 +294,52 @@ TIP: Make sure that `bookshop_locations` points to the component library you jus
 
 endif::eleventy[]
 
+
+ifdef::sveltekit[]
+
+To use Bookshop with SvelteKit, the primary dependency is the `@bookshop/sveltekit-bookshop` npm package.
+
+.*command*
+```bash
+# npm
+npm i --save-exact @bookshop/sveltekit-bookshop
+
+# or yarn
+yarn add --exact @bookshop/sveltekit-bookshop
+```
+
+Within your Vite config, specify a `$bookshop` alias with the path to your Bookshop project. 
+
+.*vite.config.js*
+```javascript
+import { sveltekit } from '@sveltejs/kit/vite';
+import { resolve } from 'path';
+
+/** @type {import('vite').UserConfig} */
+const config = {
+    plugins: [sveltekit()],
+    resolve: {
+        alias: {
+            $bookshop: resolve('./component-library/')
+        }
+    },
+    server: {
+        fs: {
+            // Allow serving files from one level up to the project root
+            allow: ['..'],
+        },
+    },
+};
+
+export default config;
+```
+
+TIP: Make sure that `$bookshop` points to the component library you just created, relative to your SvelteKit source.
+
+TIP: `allow: ['..']` in the `server.fs` configuration allows Vite to serve the component files. This will need to be adusted to include your component library if it exists in another location.
+
+endif::sveltekit[]
+
 Lastly, we'll need to install a few npm packages for Bookshop. These aren't used as part of your production build, but they provide the developer tooling that enables structured data and live editing. 
 
 These packages should be installed at the root of the repository that contains your site. If this folder doesn't have a `package.json` file yet, run `npm init -y` to create one.
@@ -282,10 +348,10 @@ To get setup, run the following command to install the needed Bookshop packages:
 [source,bash,subs="attributes"]
 ----
 # npm
-npm i --save-exact @bookshop/generate @bookshop/browser @bookshop/{ssgl}-engine
+npm i --save-exact @bookshop/generate @bookshop/browser @bookshop/{ssgeng}-engine
 
 # or yarn
-yarn add --exact @bookshop/generate @bookshop/browser @bookshop/{ssgl}-engine
+yarn add --exact @bookshop/generate @bookshop/browser @bookshop/{ssgeng}-engine
 ----
 
 IMPORTANT: Bookshop uses a fixed versioning scheme, where all packages are released for every version. It is recommended that you keep the npm packages and your plugins at the same version. To help with this, you can run `npx @bookshop/up@latest` from your repository root to update all Bookshop packages in sync.
@@ -302,7 +368,9 @@ IMPORTANT: Bookshop uses a fixed versioning scheme, where all packages are relea
 
 If you ran the `@bookshop/init` command earlier, you should see that you now have a file at `components/sample/sample.{ssgext}`. Let's have a go using that component somewhere on our site.
 
+ifndef::sveltekit[]
 TIP: Bookshop supports multiple SSG targets, which is why we denote this as `.{ssgext}`.
+endif::sveltekit[]
 
 TIP: We'll cover creating these components soon — if you want to add a new component now, you can run `npx @bookshop/init --component <name>` in your Bookshop directory to scaffold it out automatically.
 
@@ -500,12 +568,36 @@ Which lets us pass the object directly to the `bookshop` partial:
 
 endif::hugo[]
 // /HUGO
+// SVELTEKIT
+ifdef::sveltekit[]
+
+Bookshop provides a `Bookshop` wrapper to render components. To start, add the following snippet to one of your pages:
+
+.*index.svelte*
+```svelte
+...
+
+<script>
+	import { Bookshop } from "@bookshop/sveltekit-bookshop";
+</script>
+
+<div>
+	<Bookshop component="sample" text="Hello from the sample component" />
+</div>
+
+...
+```
+
+If you now load your SvelteKit site in a browser, you should see the sample component rendered on the page.
+
+endif::sveltekit[]
+// /SVELTEKIT
 
 TIP: The Bookshop name of a component is the path to its directory. +
-So the name for `components/sample/sample.hugo.html` is `sample`, +
-and the name for `components/generic/button/button.hugo.html` would be `generic/button`.
+So the name for `components/sample/sample.{ssgext}` is `sample`, +
+and the name for `components/generic/button/button.{ssgext}` would be `generic/button`.
 
-TIP: The structures generated by Bookshop for CloudCannon include the `_bookshop_name` field for you, so this can be used to render components dynamically. We'll cover this a bit later on in <<Connecting Bookshop to CloudCannon>>.
+TIP: The structures generated by Bookshop for CloudCannon include a `_bookshop_name` field for you, which can be used to render components dynamically. We'll cover this a bit later on in <<Connecting Bookshop to CloudCannon>>.
 
 ////
 //
@@ -551,8 +643,16 @@ This can then be included using the `bookshop_include` tag:
 
 The format is the same as the `bookshop` tag. This is otherwise a standard Eleventy include, with the extra feature that it can be used anywhere within your Eleventy site _or_ your components.
 endif::eleventy[]
+ifdef::sveltekit[]
+This can then be included using Bookshop wrapper with the `shared` prop:
+```svelte
+<Bookshop shared="helper" lorem="ipsum" />
+```
+endif::sveltekit[]
 
+ifndef::sveltekit[]
 NOTE: While developing locally, components will have access to the rest of your site. This isn't true when live editing, which is why these helper files exist.
+endif::sveltekit[]
 
 You will notice that `@bookshop/init` created a `page.{ssgext}` file for you. Given the following front matter:
 
@@ -589,6 +689,13 @@ ifdef::eleventy[]
 ```
 
 endif::eleventy[]
+ifdef::sveltekit[]
+
+```svelte
+<Bookshop shared="page" {content_blocks} />
+```
+
+endif::sveltekit[]
 
 This will loop through the given array, and render each component according to its `_bookshop_name` key.
 
@@ -602,7 +709,9 @@ content_blocks:
     text: A second sample example
 ```
 
+ifndef::sveltekit[]
 IMPORTANT: It is essential to render arrays of components using the page helper. Live editing only works within Bookshop components and helpers, so using this method means that rearranging and adding new components will work in the Visual Editor.
+endif::sveltekit[]
 
 ////
 //
@@ -614,6 +723,13 @@ IMPORTANT: It is essential to render arrays of components using the page helper.
 
 == Importing Bookshop Styles
 
+ifdef::sveltekit[]
+In other SSGs Bookshop supports a `<component>.scss` alongside each component. 
+
+Since Svelte supports styles inside component files, you can continue to use your existing setup for styles.
+endif::sveltekit[]
+
+ifndef::sveltekit[]
 Bookshop provides some helpers for including the component and global styles that you defined in your component library. 
 
 NOTE: Locating styles inside your Bookshop is optional — you can always define them with the rest of your site — but authoring your styles in your component library will provide a better experience when we cover using the local component browser.
@@ -685,6 +801,8 @@ endif::eleventy[]
 
 IMPORTANT: Bookshop SCSS files are loaded in order of all shared files, followed by all component files, alphabetically.
 
+endif::sveltekit[]
+
 ////
 //
 //
@@ -747,6 +865,17 @@ ifdef::eleventy[]
 <a class="c-button" href="{{ link_url }}">{{ link_text }}</a>
 ----
 endif::eleventy[]
+ifdef::sveltekit[]
+[source,svelte]
+----
+<script>
+  export let link_url;
+  export let link_text;
+</script>
+
+<a class="c-button" href={ link_url }>{ link_text }</a>
+----
+endif::sveltekit[]
 
 Components can, of course, reference other components:
 
@@ -772,6 +901,20 @@ ifdef::eleventy[]
 {% bookshop "button" link_url: link_url link_text: "Click me" %}
 ----
 endif::eleventy[]
+ifdef::sveltekit[]
+[source,svelte]
+----
+<script>
+  import { Bookshop } from "@bookshop/sveltekit-bookshop";
+
+  export let hero_text;
+  export let link_url;
+</script>
+
+<h1>{ hero_text }</h1>
+<Bookshop component="button" {link_url} link_text="Click me" />
+----
+endif::sveltekit[]
 
 ////
 //
@@ -782,8 +925,13 @@ endif::eleventy[]
 ////
 
 === Authoring Component Styles
+ifdef::sveltekit[]
+Bookshop doesn't interfere with your existing style loaders, so no special actions are needed.
+endif::sveltekit[]
 
+ifndef::sveltekit[]
 A `<component>.scss` file can be written alongside your other component files. Beyond the location and the automatic import, there is nothing special about the contents of this file.
+endif::sveltekit[]
 
 ////
 //
@@ -1062,8 +1210,30 @@ ifdef::eleventy[]
 </div>
 ----
 endif::eleventy[]
+ifdef::sveltekit[]
+[source,svelte]
+----
+<script>
+  import { Bookshop } from "@bookshop/sveltekit-bookshop";
 
-IMPORTANT: Object Structures in CloudCannon will be initialized empty, so testing for the existence of this component in your template is recommended.
+  export let hero_text;
+  export let cta_button;
+  export let column_components;
+</script>
+
+<div class="hero">
+  <h1>{ hero_text }</h1>
+  {#if cta_button}
+    <Bookshop component="button" {...cta_button} />
+  {/if}
+  {#each column_components as component}
+    <Bookshop {...component} />
+  {/each}
+</div>
+----
+endif::sveltekit[]
+
+IMPORTANT: Object Structures in CloudCannon may be empty, so testing for the existence of this component in your template is recommended.
 
 ////
 //
@@ -1330,7 +1500,13 @@ TIP: Run `npx @bookshop/browser --help` to see the available options.
 
 === Integrating the Component Browser With Your Site
 
-Bookshop {ssg} provides a helper for embedding the Bookshop browser in your website. This references the component browser started in the previous command, and embeds a live copy into your website.
+ifdef::sveltekit[]
+*Coming Soon* — Bookshop {ssg} does not yet support embedding the Bookshop browser in a website.
+endif::sveltekit[]
+
+ifndef::sveltekit[]
+
+*Coming Soon* — Bookshop {ssg} provides a helper for embedding the Bookshop browser in your website. This references the component browser started in the previous command, and embeds a live copy into your website.
 
 This allows you to:
 
@@ -1378,6 +1554,8 @@ ifdef::eleventy[]
 `{% bookshop_component_browser 1234 %}`
 endif::eleventy[]
 
+endif::sveltekit[]
+
 ////
 //
 //
@@ -1388,7 +1566,12 @@ endif::eleventy[]
 
 === Hosting a Component Library
 
+ifdef::sveltekit[]
+Bookshop {ssg} does not yet support hosting the Bookshop browser on a SvelteKit website.
+endif::sveltekit[]
+ifndef::sveltekit[]
 Any page that contains the `bookshop_component_browser` snippet will get picked up by `npx @bookshop/generate` (See <<Connecting Bookshop to CloudCannon>>) and turned into a hosted component browser, no extra configuration is needed.
+endif::sveltekit[]
 
 ////
 //
@@ -1412,7 +1595,14 @@ npm i
 npx @bookshop/generate
 ----
 
-This command will automatically discover your component library, and find the output site from your build. It will then generate CloudCannon Structures for your components, as well as connect live editing to any pages on your site that contain Bookshop components.
+This command will automatically discover your component library as well as the output site from your build, and will then generate CloudCannon Structures for your components.
+ifndef::sveltekit[]
+This step will also connect live editing to any pages on your site that contain Bookshop components.
+endif::sveltekit[]
+
+ifdef::sveltekit[]
+Bookshop does not handle live editing for SvelteKit websites, as this is supported natively with CloudCannon and SvelteKit. See link:https://cloudcannon.com/documentation/articles/live-editing-with-svelte/?ssg=SvelteKit[Live editing with Svelte] on the CloudCannon documentation.
+endif::sveltekit[]
 
 ifdef::hugo[]
 With Hugo, there is one extra step to get live editing working. For any components or helpers in your Hugo layouts, you will need to use the `bookshop_bindings` partial to connect it to the page's front matter. 
@@ -1436,6 +1626,7 @@ If you're using other components in your layouts, add the `bookshop_bindings` pa
 ----
 endif::hugo[]
 
+ifndef::sveltekit[]
 With that in place, live editing should work in CloudCannon. If you have the following front matter on a page:
 
 ```yaml
@@ -1448,6 +1639,8 @@ And the `page` helper listed above in your layout, then in the CloudCannon sideb
 
 TIP: If something isn't working, browse through our link:https://github.com/CloudCannon/{ssgl}-bookshop-starter/[{ssg} Bookshop Starter Template] to see how everything is configured.
 
+endif::sveltekit[]
+
 ////
 //
 //
@@ -1458,7 +1651,46 @@ TIP: If something isn't working, browse through our link:https://github.com/Clou
 
 === Data Bindings
 
-Once you have components rendered on the page, Bookshop will create link:https://cloudcannon.com/documentation/articles/what-are-visual-data-bindings/?ssg={ssg}[Visual Data Bindings] automatically. If a component is passed data from the page front matter, you will be able to interact with that component directly on the page. 
+ifndef::sveltekit[]
+Once you have components rendered on the page, Bookshop will create link:https://cloudcannon.com/documentation/articles/what-are-visual-data-bindings/?ssg={ssg}[Visual Data Bindings] automatically.
+endif::sveltekit[]
+
+ifdef::sveltekit[]
+If you're using the link:https://cloudcannon.com/documentation/articles/live-editing-with-svelte/?ssg=SvelteKit[CloudCannon Svelte live rendering], Bookshop can automatically create link:https://cloudcannon.com/documentation/articles/what-are-visual-data-bindings/?ssg={ssg}[Visual Data Bindings] for your components. To do so, you need to import `trackBookshopLiveData` and wrap the object that is provided from `onCloudCannonChanges`:
+
+```svelte
+<script>
+	import { onDestroy, onMount } from "svelte";
+	import {
+		onCloudCannonChanges,
+		stopCloudCannonChanges,
+	} from "@cloudcannon/svelte-connector";
+	import {
+		Bookshop,
+		trackBookshopLiveData,
+	} from "@bookshop/sveltekit-bookshop";
+
+	export let pageDetails;
+
+	onMount(async () => {
+		onCloudCannonChanges(
+			(newProps) => (pageDetails = trackBookshopLiveData(newProps))
+		);
+	});
+
+	onDestroy(async () => {
+		stopCloudCannonChanges();
+	});
+</script>
+
+<div>
+	<Bookshop shared="page" content_blocks={pageDetails.content_blocks} />
+</div>
+```
+
+endif::sveltekit[]
+
+If a component is passed data from the page front matter, you will be able to interact with that component directly on the page. 
 
 By default, Bookshop will add bindings for any components on the page, but will not add bindings for shared helper files. This prevents Bookshop rendering data bindings around our shared `page` helper, so that the components within are immediately accessible.
 
@@ -1499,6 +1731,15 @@ ifdef::eleventy[]
 {% bookshop_include 'page' data_binding: true props: props %}
 ```
 endif::eleventy[]
+ifdef::sveltekit[]
+```liquid
+<!-- This component will **not** get a binding -->
+<Bookshop component="item" dataBinding=false {...props} />
+
+<!-- This include **will** get a binding -->
+<Bookshop shared="page" dataBinding=true {...props} />
+```
+endif::sveltekit[]
 
 NOTE: This flag only applies to the component directly and doesn't cascade down. Any subcomponents will follow the standard rules, or can also specify their own Data Binding flag.
 
@@ -1511,6 +1752,12 @@ NOTE: This flag only applies to the component directly and doesn't cascade down.
 ////
 
 === Live Editing Site Data and Collections
+
+ifdef::sveltekit[]
+In other SSGs, Bookshop drives the live editing experience. For SvelteKit, this is (currently) outside the scope of Bookshop.
+endif::sveltekit[]
+
+ifndef::sveltekit[]
 
 The `npx @bookshop/generate` command connects Bookshop to a subset of your site's data when live editing.
 
@@ -1544,6 +1791,8 @@ NOTE: Support is only provided for data files in your source. Any data provided 
 
 endif::eleventy[]
 
+endif::sveltekit[]
+
 ////
 //
 //
@@ -1554,6 +1803,11 @@ endif::eleventy[]
 
 === Passing Data to Bookshop Components
 
+ifdef::sveltekit[]
+In other SSGs, Bookshop drives the live editing experience. For SvelteKit, this is (currently) outside the scope of Bookshop.
+endif::sveltekit[]
+
+ifndef::sveltekit[]
 In order to live edit Bookshop components, Bookshop needs a clear path between a component and the data it draws from. In general, you should avoid adding logic around your Bookshop components in your site layouts, and instead move that logic into a Bookshop component or helper.
 
 An example:
@@ -1637,6 +1891,8 @@ hero_text: "Hello World"
 The same is true for site data and collections. Access these directly from inside your component, rather than passing them to the component from your layout.
 endif::eleventy[]
 
+endif::sveltekit[]
+
 ////
 //
 //
@@ -1646,6 +1902,10 @@ endif::eleventy[]
 ////
 
 === {ssg} Live Editing Support
+
+ifdef::sveltekit[]
+In other SSGs, Bookshop drives the live editing experience. For SvelteKit, this is (currently) outside the scope of Bookshop.
+endif::sveltekit[]
 
 ifdef::jekyll[]
 Bookshop's Jekyll live editing is built on top of the liquidjs package. As such, not all Jekyll features are supported within Bookshop components. Generally, functions that interact with Jekyll or the site as a whole are unavailable. The following features have been re-implemented for live editing in Jekyll:
@@ -1908,6 +2168,11 @@ endif::hugo[]
 
 === Rendering Different Content When Live Editing
 
+ifdef::sveltekit[]
+In other SSGs, Bookshop drives the live editing experience. For SvelteKit, this is (currently) outside the scope of Bookshop.
+endif::sveltekit[]
+
+ifndef::sveltekit[]
 You can render special content in the live editing environment by checking the Bookshop Live Editor flag. This can be useful to show extra information to your editors, or to use a feature that isn't supported while live editing.
 
 ifdef::hugo[]
@@ -1944,8 +2209,15 @@ ifdef::jekyll[]
 ```
 endif::jekyll[]
 
+endif::sveltekit[]
+
 === Disabling Live Editing
 
+ifdef::sveltekit[]
+In other SSGs, Bookshop drives the live editing experience. For SvelteKit, this is (currently) outside the scope of Bookshop.
+endif::sveltekit[]
+
+ifndef::sveltekit[]
 Some components won't be compatible with live editing, in this case you can disable live editing with on a flag in the component's data. This is intended for components such as navigation and footer blocks that aren't connected to live editing. In most scenarios, you should use the templating flags in <<Rendering Different Content When Live Editing>>.
 
 IMPORTANT: This setting will only apply if the component is rendered directly from a site layout. If this component is within another component, it will still update live (as the parent re-rendering will encapsulate it).
@@ -1991,6 +2263,8 @@ endif::eleventy[]
 If you have a specific component that you never want to live edit, you can set `_live_render` in the component's blueprint.
 
 NOTE: Since the blueprint only affects the creation of new components, you will need to add the `_live_render` flag to any existing component data in your front matter.
+
+endif::sveltekit[]
 
 ////
 //

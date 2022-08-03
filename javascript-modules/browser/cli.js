@@ -20,7 +20,7 @@ async function run() {
     if (!options.bookshop) {
         console.log(`📚 Looking for Bookshop component libraries...`);
 
-        const bookshopConfigFiles = await fastGlob(`./**/bookshop.config.js`, {
+        const bookshopConfigFiles = await fastGlob(`./**/bookshop.config.{js,cjs}`, {
             cwd: process.cwd(),
             dot: !!options.dot
         });

@@ -34,3 +34,5 @@ To get started, head over to the guide for the SSG you would like to work with.
 * link:guides/eleventy.adoc[Eleventy Bookshop Reference Guide]
 
 * link:guides/hugo.adoc[Hugo Bookshop Reference Guide]
+
+* link:guides/sveltekit.adoc[SvelteKit Bookshop Reference Guide]

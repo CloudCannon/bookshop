@@ -30,6 +30,7 @@ export default async (options) => {
     esbuildOptions.loader[".bookshop.json"] = "text";
 
     esbuildOptions.define["BOOKSHOP_VERSION"] = JSON.stringify(version);
+    esbuildOptions.define["BOOKSHOP_COMPONENT_BROWSER"] = true;
 
     options.bookshopDirs = filterBookshops(options.bookshopDirs);
     options.bookshopConfig = await loadConfig(options.bookshopDirs[0]);
