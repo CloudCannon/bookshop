@@ -8,14 +8,14 @@ export const make_bookshop_proxy = (obj) => {
             let path = name;
             if (target?.__bookshop_path) path = `${target.__bookshop_path}.${path}`;
 
-            if (typeof val === "object") {
+            if (val && typeof val === "object") {
                 Object.defineProperty(val, "__bookshop_path", {
                     enumerable: false,
                     writable: true,
                     value: path
                 });
                 return make_bookshop_proxy(val);
-            } else if (name === "_bookshop_name") {
+            } else if (val && name === "_bookshop_name") {
                 let bookshopNameObj = new String(val);
                 Object.defineProperty(bookshopNameObj, "__bookshop_path", {
                     enumerable: false,
