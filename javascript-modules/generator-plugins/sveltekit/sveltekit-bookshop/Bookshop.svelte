@@ -48,7 +48,7 @@
         throw new Error(`Component not found for ${shared || component}`);
     }
 
-    beforeUpdate(() => {
+    const updateDataBindings = () => {
         proxied_fields = {};
         let dataBindPaths = [];
         let skipDataBind = false;
@@ -84,6 +84,10 @@
                     return a.split(".").length - b.split(".").length;
                 })?.[0] ?? "";
         }
+    };
+
+    beforeUpdate(() => {
+        updateDataBindings();
     });
 
     const getTemplateCommentIterator = () => {
@@ -119,8 +123,11 @@
 
     let liveRendering = false;
     onMount(() => {
-        liveRendering = true;
-        commentID = crypto.randomUUID ? crypto.randomUUID() : Math.random();
+        if (window.inEditorMode) {
+            liveRendering = true;
+            commentID = crypto.randomUUID ? crypto.randomUUID() : Math.random();
+            updateDataBindings();
+        }
     });
 </script>
 
