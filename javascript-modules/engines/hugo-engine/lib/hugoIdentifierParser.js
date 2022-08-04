@@ -48,7 +48,7 @@ export class IdentifierParser {
     let transformedStr = this.tryShortCircuit();
     if (transformedStr) return transformedStr;
 
-    this.stream = this.input?.split('') ?? [];
+    this.stream = this.input?.split?.('') ?? [];
     while (this.stream.length && this.state !== `BREAK`) {
       this.process(this.stream.shift());
     }
