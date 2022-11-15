@@ -378,12 +378,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/cloudcannon-eleventy-bookshop@workspace:generator-plugins/eleventy/cloudcannon-eleventy-bookshop":
-  version: 0.0.0-use.local
-  resolution: "@bookshop/cloudcannon-eleventy-bookshop@workspace:generator-plugins/eleventy/cloudcannon-eleventy-bookshop"
-  languageName: unknown
-  linkType: soft
-
 "@bookshop/eleventy-bookshop@workspace:generator-plugins/eleventy/eleventy-bookshop":
   version: 0.0.0-use.local
   resolution: "@bookshop/eleventy-bookshop@workspace:generator-plugins/eleventy/eleventy-bookshop"
