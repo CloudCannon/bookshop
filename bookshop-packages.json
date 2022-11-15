@@ -36,7 +36,6 @@
     }
   },
   "rubygems": {
-    "generator-plugins/jekyll/cloudcannon-jekyll-bookshop": {},
     "generator-plugins/jekyll/jekyll-bookshop": {}
   },
   "npm": {
@@ -48,7 +47,6 @@
     "javascript-modules/engines/svelte-engine": {},
     "javascript-modules/engines/hugo-engine": {},
     "javascript-modules/generate": {},
-    "javascript-modules/generator-plugins/eleventy/cloudcannon-eleventy-bookshop": {},
     "javascript-modules/generator-plugins/eleventy/eleventy-bookshop": {},
     "javascript-modules/generator-plugins/sveltekit/sveltekit-bookshop": {},
     "javascript-modules/helpers": {},

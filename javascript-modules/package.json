@@ -10,7 +10,6 @@
         "engines/svelte-engine",
         "engines/hugo-engine",
         "generate",
-        "generator-plugins/eleventy/cloudcannon-eleventy-bookshop",
         "generator-plugins/eleventy/eleventy-bookshop",
         "generator-plugins/sveltekit/sveltekit-bookshop",
         "helpers",
