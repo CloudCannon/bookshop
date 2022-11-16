@@ -48,5 +48,8 @@ jobs:
         working-directory: ${{ env.cwd }}
       - run: npm install
         working-directory: ${{ env.cwd }}/${{ matrix.package }}
+      - name: Ugly fixes
+        if: ${{ matrix.package == 'engines/svelte-engine' }}
+        run: npm run testprep
       - run: npm test
         working-directory: ${{ env.cwd }}/${{ matrix.package }}

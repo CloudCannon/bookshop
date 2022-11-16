@@ -16,7 +16,8 @@
     "!.test/**/*"
   ],
   "scripts": {
-    "test": "nyc ava -v"
+    "test": "nyc ava -v",
+    "testprep": "npm pack && tar -xvzf *.tgz && mv package node_modules/@bookshop/svelte-engine"
   },
   "author": "@bglw",
   "license": "MIT",
