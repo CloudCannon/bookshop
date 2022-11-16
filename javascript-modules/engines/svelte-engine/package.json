@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "test": "nyc ava -v",
-    "testprep": "npm pack && tar -xvzf *.tgz && mv package node_modules/@bookshop/svelte-engine"
+    "testprep": "npm version 0.0.0 && npm pack && tar -xvzf bookshop-svelte-engine-0.0.0.tgz && mv package node_modules/@bookshop/svelte-engine"
   },
   "author": "@bglw",
   "license": "MIT",
