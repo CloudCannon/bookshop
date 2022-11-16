@@ -1,4 +1,4 @@
-name: Javascript
+name: Javascript Each
 
 on:
   push:
@@ -41,6 +41,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Move yarn workspace package
+        run: |
+          mv package.json package.json.yarn
+        working-directory: ${{ env.cwd }}
       - run: npm install
         working-directory: ${{ env.cwd }}/${{ matrix.package }}
       - run: npm test
