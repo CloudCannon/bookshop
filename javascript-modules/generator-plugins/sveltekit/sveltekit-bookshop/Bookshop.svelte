@@ -30,7 +30,7 @@
     } else if (shared) {
         path = `shared/svelte/${shared}.svelte`;
     } else if ($$restProps._bookshop_name) {
-        path = `components/${$$restProps._bookshop_name}/${$$restProps._bookshop_name}.svelte`;
+        path = getComponentKey($$restProps._bookshop_name);
     } else {
         throw new Error("No component or shared key passed to Bookshop.");
     }
