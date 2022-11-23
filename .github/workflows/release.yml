@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  test-node:
+    uses: ./.github/workflows/test-each-node.yml
+    secrets: inherit
+  test-ruby:
+    uses: ./.github/workflows/test-ruby.yml
+    secrets: inherit
+  test-integration:
+    uses: ./.github/workflows/integration-test.yml
+    secrets: inherit
+  publish-npm:
+    name: Publish NPM package
+    runs-on: ubuntu-latest
+    needs: 
+      - test-node
+      - test-ruby
+      - test-integration
+    defaults:
+      run:
+        working-directory: ./javascript-modules
+    steps:
+      - name: Clone
+        uses: actions/checkout@v2
+      - name: Prepare package
+        run: |
+          RELEASE_VERSION=${GITHUB_REF#refs/tags/}
+          echo $RELEASE_VERSION
+          # npm version $(echo $RELEASE_VERSION | cut -c1-)
+          
+      # - name: Publish
+      #   run: npm publish
+      #   env:
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
