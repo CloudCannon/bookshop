@@ -6,35 +6,57 @@ on:
       - v*
 
 jobs:
-  test-node:
-    uses: ./.github/workflows/test-each-node.yml
-    secrets: inherit
-  test-ruby:
-    uses: ./.github/workflows/test-ruby.yml
-    secrets: inherit
-  test-integration:
-    uses: ./.github/workflows/integration-test.yml
-    secrets: inherit
-  publish-npm:
-    name: Publish NPM package
-    runs-on: ubuntu-latest
-    needs: 
-      - test-node
-      - test-ruby
-      - test-integration
-    defaults:
-      run:
-        working-directory: ./javascript-modules
+  publish:
     steps:
-      - name: Clone
-        uses: actions/checkout@v2
-      - name: Prepare package
+      - uses: actions/checkout@v2
+      - name: Use Hugo 0.89
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: "0.89.0"
+          extended: true
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+      # TODO: Remove when possible (https://github.com/actions/setup-node/issues/515)
+      - name: Windows Node fix
+        if: ${{ matrix.os == 'windows-latest' }}
         run: |
-          RELEASE_VERSION=${GITHUB_REF#refs/tags/}
-          echo $RELEASE_VERSION
-          # npm version $(echo $RELEASE_VERSION | cut -c1-)
-          
-      # - name: Publish
-      #   run: npm publish
-      #   env:
-      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          $WhereNode = Get-Command node | Select-Object -ExpandProperty Definition
+          $NodeDirPath = Split-Path $WhereNode -Parent
+          cd $NodeDirPath
+          npm install npm@8.12.1
+      - name: Use Ruby 2.7.x
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+      - name: Use Go 1.17.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: "^1.17.6"
+      - run: yarn install --immutable
+        working-directory: ./javascript-modules
+      - name: Get Version
+        run: echo GIT_VERSION="$(git describe --tags | sed 's/^v\(.*\)$/\1/')" >> $GITHUB_ENV
+      - name: Update versions
+        run: |
+          node ./.backstage/version.js $GIT_VERSION
+      - name: Vendor dependencies
+        run: |
+          node ./.backstage/vendor.js
+      - name: Run tests
+        run: |
+          node ./.backstage/test.js
+      - name: Publish
+        run: |
+          node ./.backstage/publish.js $GIT_VERSION seriously
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Update git
+        run: |
+          git config --global user.name "cloudcannon-oss[bot]"
+          git config --global user.email "115603236+cloudcannon-oss[bot]@users.noreply.github.com"
+          git add -A && git commit -m "build: releasing $GIT_VERSION"
+          git tag -a v$GIT_VERSION -m "build: releasing $GIT_VERSION"
+          git tag -a hugo/v$GIT_VERSION -m "build: releasing $GIT_VERSION"
+          git push && git push --tags
