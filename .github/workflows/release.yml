@@ -15,6 +15,13 @@ jobs:
         with:
           ref: main
           fetch-depth: 0 # Full fetch
+      - name: Get Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v2
+        with:
+          application_id: ${{ secrets.CC_OSS_BOT_ID }}
+          application_private_key: ${{ secrets.CC_OSS_BOT_PEM }}
+      
       - name: Use Hugo 0.89
         uses: peaceiris/actions-hugo@v2
         with:
@@ -40,13 +47,19 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: "^1.17.6"
+
       - run: yarn install --immutable
         working-directory: ./javascript-modules
+      
       - name: Get Version
         run: echo GIT_VERSION="$(git describe --tags | sed 's/^v\(.*\)$/\1/')" >> $GITHUB_ENV
+      - name: Verify Changelog
+        run: |
+          node ./.backstage/changelog.cjs
       - name: Ensure main / tag parity
         run: |
           [[ $(git tag --points-at HEAD) = "v$GIT_VERSION" ]] && echo "Main is at v$GIT_VERSION"
+      
       - name: Update versions
         run: |
           node ./.backstage/version.js $GIT_VERSION
@@ -60,12 +73,18 @@ jobs:
         run : |
           yarn run itest
         working-directory: ./javascript-modules/integration-tests
+      
       - name: Publish
         run: |
           node ./.backstage/publish.js $GIT_VERSION seriously
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
+
+      - name: Build CHANGELOG
+        run: |
+          node ./.backstage/changelog.cjs write
+      
       - name: Update git
         run: |
           git config --global user.name "cloudcannon-oss[bot]"
@@ -73,3 +92,11 @@ jobs:
           git add -A && git commit -m "build: releasing $GIT_VERSION"
           git tag -a hugo/v$GIT_VERSION -m "build: releasing $GIT_VERSION"
           git push && git push --tags
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          body_path: RELEASE.md
+        env:
+          GITHUB_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
