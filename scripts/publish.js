@@ -11,56 +11,7 @@ const ver = process.argv[2];
 let env = process.env;
 
 const run = async () => {
-    const next = nextVersion(packages.version);
-    if (!ver) {
-        console.log(box(`Packages are currently @ ${packages.version}
-                         Next version looks like ${next}
-                         #
-                         Use: \`./scripts/publish.js next\` to bump and release
-                         Use: \`./scripts/publish.js <ver>\` to release ver
-                         #
-                         Helpers:
-                         \`./scripts/publish.js test\` only runs tests
-                         \`./scripts/publish.js git\` updates git tags`));
-        process.exit(0);
-    }
-
     let version = ver;
-    switch (ver) {
-        case 'next':
-            version = next;
-            break;
-        case 'current':
-            version = packages.version;
-            break;
-        case 'vendor':
-            console.log(`* Vendoring`);
-            env.BOOKSHOP_VERSION = packages.version;
-            vendorGems(packages.rubygems, packages.version);
-            vendorCustom(packages.custom);
-            console.log(`* * Vendoring done`);
-            process.exit(0);
-        case 'git':
-            steps.updateGit(packages.version);
-            process.exit(0);
-        case 'changelog':
-            await steps.changelog(packages.version);
-            process.exit(0);
-        case 'test':
-            console.log(`* Vendoring`);
-            vendorGems(packages.rubygems, version);
-            vendorCustom(packages.custom);
-            console.log(`* * Vendoring done`);
-
-            console.log(`* Running tests`);
-            await steps.test(packages);
-            console.log(`* * Tests passed`);
-
-            console.log(`* Running integration tests (may take a while)`);
-            await steps.integrationTest();
-            console.log(`* * Integration tests passed`);
-            process.exit(0);
-    }
     env.BOOKSHOP_VERSION = version;
 
     if (!checkVersion(version)) {
@@ -96,16 +47,7 @@ const run = async () => {
     await steps.integrationTest();
     console.log(`* * Integration tests passed`);
 
-    console.log(`* Updating changelog`);
-    await steps.changelog();
-
     console.log(`* Publishing packages`);
-    const yn = await question(`Publish? y / n: `);
-    if (yn !== 'y') {
-        process.exit(1);
-    }
-
-    console.log(`* * Publishing...`);
     const npmPublishResults = await publishNPM(Object.keys(packages.npm), version);
     const gemPublishResults = await publishGems(Object.keys(packages.rubygems), version);
     const publishFailures = [...npmPublishResults, ...gemPublishResults].filter(r => r.err).map(r => r.pkg);
@@ -116,8 +58,7 @@ const run = async () => {
         console.error(`* * ⇛ ${publishFailures.join('\n* * ⇛ ')}`);
         console.error(`* * The following packages __have__ been published:`);
         console.error(`* * ⇛ ${publishSuccesses.join('\n* * ⇛ ')}`);
-        console.log(`\n` + box(`Publishing hit an error. Versions have been changed.
-                         To re-run this publish, use \`./publish.js current\``));
+        console.log(`\n` + box(`Publishing hit an error. Versions have been changed.`));
         process.exit(1);
     }
 

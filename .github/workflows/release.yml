@@ -48,6 +48,10 @@ jobs:
       - name: Run tests
         run: |
           node ./.backstage/test.js
+      - name: Run integration tests
+        run : |
+          yarn run itest
+        working-directory: ./javascript-modules/integration-tests
       - name: Publish
         run: |
           node ./.backstage/publish.js $GIT_VERSION seriously

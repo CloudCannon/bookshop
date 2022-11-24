@@ -41,26 +41,6 @@ const testGems = async (pkgs) => {
     return await Promise.all(tests);
 }
 
-const integrationTest = async () => {
-    const testResult = await new Promise((resolve, reject) => {
-        try {
-            const cmd = `cd javascript-modules/integration-tests && yarn run itest`;
-            console.log(`* ${cmd}`);
-            execSync(cmd, { stdio: "ignore", env });
-            resolve({ err: null });
-            console.log('* > 🎉');
-        } catch (err) {
-            resolve({ err });
-            console.log('* > 😦');
-        }
-    });
-    if (testResult.err) {
-        console.error(`* * Integration tests failed!`);
-        console.error(`* * Failing command: "${cmd}"`);
-        process.exit(1);
-    }
-}
-
 const test = async () => {
     const npmTestResults = await testNPM(Object.keys(packages.npm));
     const gemTestResults = await testGems(Object.keys(packages.rubygems));
@@ -72,7 +52,5 @@ const test = async () => {
         console.log(`Cancelling publish.`);
         process.exit(1);
     }
-
-    await integrationTest();
 }
 test();
