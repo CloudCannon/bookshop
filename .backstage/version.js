@@ -58,3 +58,7 @@ if (!ver) {
 versionNpm(Object.keys(packages.npm), ver);
 versionGems(Object.keys(packages.rubygems), ver);
 versionStrings(packages.versionStrings, ver);
+
+packages.version = version;
+fs.writeFileSync(path.join(__dirname, '../bookshop-packages.json'), JSON.stringify(packages, null, 2));
+console.log(`* Updated version in bookshop-packages.json`);
