@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Swap to main
+        uses: actions/checkout@v2
+        with:
+          ref: main
+          fetch-depth: 0 # Full fetch
       - name: Use Hugo 0.89
         uses: peaceiris/actions-hugo@v2
         with:
@@ -39,6 +44,9 @@ jobs:
         working-directory: ./javascript-modules
       - name: Get Version
         run: echo GIT_VERSION="$(git describe --tags | sed 's/^v\(.*\)$/\1/')" >> $GITHUB_ENV
+      - name: Ensure main / tag parity
+        run: |
+          [[ $(git tag --points-at HEAD) = "v$GIT_VERSION" ]] && echo "Main is at v$GIT_VERSION"
       - name: Update versions
         run: |
           node ./.backstage/version.js $GIT_VERSION
@@ -63,6 +71,5 @@ jobs:
           git config --global user.name "cloudcannon-oss[bot]"
           git config --global user.email "115603236+cloudcannon-oss[bot]@users.noreply.github.com"
           git add -A && git commit -m "build: releasing $GIT_VERSION"
-          git tag -a v$GIT_VERSION -m "build: releasing $GIT_VERSION"
           git tag -a hugo/v$GIT_VERSION -m "build: releasing $GIT_VERSION"
           git push && git push --tags
