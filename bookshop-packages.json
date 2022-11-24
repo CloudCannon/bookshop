@@ -33,6 +33,10 @@
     "guides/jekyll.adoc": {
       "regex": ":version: .+",
       "replacement": ":version: NEW_VERSION"
+    },
+    "guides/sveltekit.adoc": {
+      "regex": ":version: .+",
+      "replacement": ":version: NEW_VERSION"
     }
   },
   "rubygems": {
