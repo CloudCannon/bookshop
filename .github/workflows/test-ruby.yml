@@ -24,8 +24,6 @@ jobs:
       - name: Install node dependencies
         run: yarn install --immutable
         working-directory: ./javascript-modules
-      - name: Vendor node modules into ruby packages
-        run: node ./scripts/publish.js vendor
       - name: Set up jekyll-bookshop Ruby
         uses: ruby/setup-ruby@v1
         with:
