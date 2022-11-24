@@ -1,8 +1,8 @@
 name: Javascript Each
 
-# on:
-#   push:
-#     branches: [main]
+on:
+  push:
+    branches: [none]
 #   pull_request:
 #     branches: [main]
 
