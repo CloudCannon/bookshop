@@ -56,7 +56,7 @@ jobs:
         run: |
           node ./.backstage/publish.js $GIT_VERSION seriously
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
       - name: Update git
         run: |
