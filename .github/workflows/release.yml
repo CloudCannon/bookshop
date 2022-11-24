@@ -84,6 +84,9 @@ jobs:
       - name: Build CHANGELOG
         run: |
           node ./.backstage/changelog.cjs write
+          if test -f "RELEASE.md"; then
+            echo HAS_RELEASE="true" >> $GITHUB_ENV
+          fi
       
       - name: Update git
         run: |
@@ -95,7 +98,7 @@ jobs:
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.HAS_RELEASE == 'true'
         with:
           body_path: RELEASE.md
         env:

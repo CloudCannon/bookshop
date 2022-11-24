@@ -19,6 +19,13 @@ if (!version) err("Script expected a GIT_VERSION environment variable");
 
 if (!fs.existsSync(changelogFile)) err(`Script expected a file at ${changelogFile}`);
 
+let fullRelease = /^\d+\.\d+\.\d+$/.test(version);
+if (!fullRelease) {
+    // No changelog for prereleases.
+    console.log(`Building for a prerelease, skipping changelog`);
+    process.exit(0);
+}
+
 let contents = fs.readFileSync(changelogFile, { encoding: "utf-8" });
 let release = [], lines = contents.split(/\n/g);
 let it = lines.entries();
@@ -43,8 +50,7 @@ while (!(entry = it.next()).done) {
     release.push(line);
 }
 
-let isNonPrerelease = /^\d+\.\d+\.\d+$/.test(version);
-if (isNonPrerelease && !release.some((v => v.trim().length))) {
+if (!release.some((v => v.trim().length))) {
     err([
         `No unreleased changes exist in ${changelogFile}.`,
         `Cancelling release — please write release notes!`
