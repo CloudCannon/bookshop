@@ -33,13 +33,15 @@ const publishGems = async (pkgs, version) => {
         return await new Promise((resolve, reject) => {
             try {
                 const packageName = path.basename(pkg);
-                let cmd = `gem build ${pkg}/${packageName}.gemspec`;
+                let cmd = `cd ${pkg} && gem build ${packageName}.gemspec`;
                 console.log(`* ${cmd}`);
                 if (wet === "seriously") execSync(cmd, { stdio: "inherit", env })
-                cmd = `gem push ${pkg}/${packageName}-${gemVersion}.gem`;
+                cmd = `cd ${pkg} && gem push ${packageName}-${gemVersion}.gem`;
                 console.log(`* ${cmd}`);
                 if (wet === "seriously") execSync(cmd, { stdio: "inherit", env })
-                if (wet === "seriously") execSync(`rm ${pkg}/*.gem`, { env });
+                cmd = `rm ${pkg}/*.gem`;
+                console.log(`* ${cmd}`);
+                if (wet === "seriously") execSync(cmd, { env });
                 resolve({ pkg, version: gemVersion, err: null });
             } catch (err) {
                 resolve({ pkg, err });
