@@ -1,11 +1,14 @@
 name: Javascript Each
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  workflow_call:
+# on:
+#   push:
+#     branches: [main]
+#   pull_request:
+#     branches: [main]
+
+# TODO: Update these tests to npm link
+# the internal dependencies so that they work
+# on unreleased package versions.
 
 jobs:
   node-test:
