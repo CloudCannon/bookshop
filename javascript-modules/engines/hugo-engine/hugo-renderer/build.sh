@@ -1,3 +1,5 @@
+#!/bin/bash
+
 TMPFILENAME="hugo_renderer_$(date +%s).wasm"
 OUTPUTFILENAME="hugo_renderer.wasm"
 
