@@ -23,6 +23,9 @@ if [ ! -f $OUTPUTFILENAME ]; then
 fi
 echo "Done. Repo Hugo WASM available at hugo_renderer.wasm"
 
+gzip --keep $OUTPUTFILENAME
+echo "Repo Hugo WASM also available at hugo_renderer.wasm.gz"
+
 # If we're just in a test run we don't want to touch the CDN repo
 if [[ -z "${PUBLISH_BOOKSHOP_CDN}" ]]; then
     echo "Not publishing to CDN."

@@ -1,4 +1,5 @@
 import hugoWasm from "../hugo-renderer/hugo_renderer.wasm";
+import compressedHugoWasm from "../hugo-renderer/hugo_renderer.wasm.gz";
 import { gunzipSync } from 'fflate';
 import translateTextTemplate from './translateTextTemplate.js';
 import { IdentifierParser } from './hugoIdentifierParser.js';
@@ -32,16 +33,11 @@ export class Engine {
     }
 
     async initializeHugo() {
-        const useLocalHugo = window.CloudCannon?.isMocked || /localhost|127\.0\.0\.1/i.test(window.location.host);
         // When this script is run locally, the hugo wasm is loaded as binary rather than output as a file.
         if (hugoWasm?.constructor === Uint8Array) {
             await this.initializeInlineHugo();
         } else {
-            if (useLocalHugo) {
-                await this.initializeLocalHugo();
-            } else {
-                await this.initializeRemoteCompressedHugo();
-            }
+            await this.initializeLocalCompressedHugo();
         }
 
         // TODO: Tidy
@@ -55,38 +51,20 @@ export class Engine {
         const success = window.loadHugoBookshopPartials(JSON.stringify(mappedFiles));
     }
 
-    async initializeRemoteCompressedHugo() {
+    async initializeLocalCompressedHugo() {
         try {
             const go = new Go();
-            const remoteWasmOrigin = `https://cdn.bookshop.build/hugo/hugo_renderer_${version}.wasm.gz`;
-            const remoteResponse = await fetch(remoteWasmOrigin);
-            const remoteBuffer = await remoteResponse.arrayBuffer();
-            const renderer = gunzipSync(new Uint8Array(remoteBuffer));
+            const compressedWasmOrigin = this.origin.replace(/\/[^\.\/]+\.(min\.)?js/, compressedHugoWasm.replace(/^\./, ''));
+            const compressedResponse = await fetch(compressedWasmOrigin);
+            const compressedBuffer = await compressedResponse.arrayBuffer();
+            const renderer = gunzipSync(new Uint8Array(compressedBuffer));
 
             // Check the magic word at the start of the buffer as a way to verify the CDN download worked.
             const isWasm = ([...renderer.slice(0, 4)]).map(g => g.toString(16).padStart(2, '0')).join('') === "0061736d";
             if (!isWasm) throw "Not WASM";
 
-            const remoteResult = await WebAssembly.instantiate(renderer, go.importObject);
-            go.run(remoteResult.instance);
-        } catch (e) {
-            await this.initializeRemoteHugo();
-        }
-    }
-
-    async initializeRemoteHugo() {
-        try {
-            const go = new Go();
-            const remoteWasmOrigin = `https://cdn.bookshop.build/hugo/hugo_renderer_${version}.wasm`;
-            const remoteResponse = await fetch(remoteWasmOrigin);
-            const remoteBuffer = await remoteResponse.arrayBuffer();
-
-            // Check the magic word at the start of the buffer as a way to verify the CDN download worked.
-            const isWasm = ([...new Uint8Array(remoteBuffer, 0, 4)]).map(g => g.toString(16).padStart(2, '0')).join('') === "0061736d";
-            if (!isWasm) throw "Not WASM";
-
-            const remoteResult = await WebAssembly.instantiate(remoteBuffer, go.importObject);
-            go.run(remoteResult.instance);
+            const compressedResult = await WebAssembly.instantiate(renderer, go.importObject);
+            go.run(compressedResult.instance);
         } catch (e) {
             await this.initializeLocalHugo();
         }

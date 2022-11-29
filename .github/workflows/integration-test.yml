@@ -52,5 +52,8 @@ jobs:
         env:
           GOOS: js
           GOARCH: wasm
+      - name: Gzip Hugo wasm module
+        run: gzip --keep hugo_renderer.wasm
+        working-directory: ${{ env.cwd }}/engines/hugo-engine/hugo-renderer
       - run: yarn run itest
         working-directory: ${{ env.cwd }}/integration-tests

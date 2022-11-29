@@ -25,4 +25,5 @@ coverage
 javascript-modules/integration-tests/support/starters/jekyll/*.lock
 javascript-modules/integration-tests/.bookshop-tmp-test-dir/*
 hugo_renderer.wasm
+hugo_renderer.wasm.gz
 .env

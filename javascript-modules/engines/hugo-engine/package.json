@@ -14,7 +14,8 @@
     "*.js",
     "lib/*.js",
     "!**/*.test.js",
-    "hugo-renderer/hugo_renderer.wasm"
+    "hugo-renderer/hugo_renderer.wasm",
+    "hugo-renderer/hugo_renderer.wasm.gz"
   ],
   "scripts": {
     "test": "nyc ava -v"
