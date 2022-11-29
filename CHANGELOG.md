@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Fixes a `v3.1.1` error when running the `@bookshop/browser` command for Hugo
+
 ## v3.3.1 (November 29, 2022)
 
 * Fix nested component keys in SvelteKit websites (@NJKode — #125)
