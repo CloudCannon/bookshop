@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.3.2 (November 30, 2022)
+
 * Fixes a `v3.1.1` error when running the `@bookshop/browser` command for Hugo
 
 ## v3.3.1 (November 29, 2022)
