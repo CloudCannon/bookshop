@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Added a `markdownify` filter to Eleventy Bookshop
+
 ## v3.3.2 (November 30, 2022)
 
 * Fixes a `v3.1.1` error when running the `@bookshop/browser` command for Hugo

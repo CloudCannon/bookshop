@@ -30,7 +30,8 @@
     "@bookshop/helpers": "3.3.2",
     "esbuild": "^0.13.10",
     "liquidjs": "9.28.0",
-    "slugify": "^1.5.3"
+    "slugify": "^1.5.3",
+    "markdown-it": "^13.0.1"
   },
   "engines": {
     "node": ">=14.16"

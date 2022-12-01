@@ -17,9 +17,7 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Filters and Functions
             default.liquid from starters/eleventy/default.liquid
       """
 
-  @skip # NYI
   Scenario: Bookshop live renders markdown
-    # What is the idiomatic way to render markdown in eleventy?
     Given a component-lib/components/beetroot/beetroot.eleventy.liquid file containing:
       """
       <div><code> {{ md | markdownify }} </code></div>
@@ -44,4 +42,3 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Filters and Functions
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector code should match "<p><strong>bold</strong> title</p>"
-  
