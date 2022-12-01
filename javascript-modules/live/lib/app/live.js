@@ -104,7 +104,7 @@ export const getLive = (engines) => class BookshopLive {
     async eval(identifier, scope, logger) {
         logger?.log?.(`Evaluating ${identifier} in ${JSON.stringify(scope)}`);
         const result = await this.engines[0].eval(identifier, scope);
-        logger?.log?.(`Evaluated to ${result}`);
+        logger?.log?.(`Evaluated to ${JSON.stringify(result)}`);
         return result;
     }
 

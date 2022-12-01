@@ -43,10 +43,10 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
     When I run "hugo" in the site directory
     Then stderr should be empty
     *    stdout should contain "Total in"
-    *    site/public/index.html should contain each row: 
-      | text |
-      | <!--bookshop-live name(__bookshop__subsequent) params(.: (dict "title" .Params.block.title))-->  |
-      | <!--bookshop-live name(single)-->  |
+    *    site/public/index.html should contain each row:
+      | text                                                                                            |
+      | <!--bookshop-live name(__bookshop__subsequent) params(.: (dict "title" .Params.block.title))--> |
+      | <!--bookshop-live name(single)-->                                                               |
 
   Scenario: Bookshop Generate hydrates live editing
     Given I run "hugo" in the site directory

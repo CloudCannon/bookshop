@@ -1,5 +1,5 @@
-import hugoWasm from "../hugo-renderer/hugo_renderer.wasm";
-import compressedHugoWasm from "../hugo-renderer/hugo_renderer.wasm.gz";
+import hugoWasm from "../full-hugo-renderer/hugo_renderer.wasm";
+import compressedHugoWasm from "../full-hugo-renderer/hugo_renderer.wasm.gz";
 import { gunzipSync } from 'fflate';
 import translateTextTemplate from './translateTextTemplate.js';
 import { IdentifierParser } from './hugoIdentifierParser.js';
@@ -43,12 +43,152 @@ export class Engine {
         // TODO: Tidy
         const mappedFiles = {};
         for (const file of Object.entries(this.files)) {
-            mappedFiles[file[0]] = {
-                contents: translateTextTemplate(file[1], {})
-            }
+            mappedFiles[`layouts/partials/bookshop/${file[0]}`] = translateTextTemplate(file[1], {});
         }
 
-        const success = window.loadHugoBookshopPartials(JSON.stringify(mappedFiles));
+        const success = window.writeHugoFiles(JSON.stringify(mappedFiles));
+        window["writeHugoFiles"](
+            JSON.stringify({
+                "layouts/partials/bookshop.html": `{{/*
+    Renders a Bookshop component
+
+    Expects a slice:
+    [
+        <string>, # Component name
+        <_>       # Component props
+    ]
+
+    Or a struct:
+    {
+        _bookshop_name: <string>, # Component name
+        ...,                      # Component props
+    }
+
+    Or a <string>: # Component name
+*/}}
+
+{{- $component_name := false -}}
+{{- $component_props := false -}}
+
+{{- if reflect.IsSlice . -}}
+    {{- if eq (len .) 2 -}}
+        {{- if eq (printf "%T" (index . 0)) "string" -}}
+            {{- $component_name = index . 0 -}}
+            {{- $component_props = index . 1 -}}
+        {{- else -}}
+            {{- $err := printf "Expected the first argument to be a string of the component name. Received %+v" (index . 0) -}}
+            {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+        {{- end -}}
+    {{- else -}}
+        {{- $err := printf "Expected a slice of length 2, was given %d" (len .) -}}
+        {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+    {{- end -}}
+{{- else if reflect.IsMap . -}}
+    {{- if isset . "_bookshop_name" -}}
+        {{- $component_name = ._bookshop_name -}}
+        {{- $component_props = . -}}
+    {{- else -}}
+        {{- $err := printf "Expected the provided map to contain a _bookshop_name key. Was given %+v" . -}}
+        {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+    {{- end -}}
+{{- else if eq (printf "%T" .) "string" -}}
+    {{- $component_name = . -}}
+    {{- $component_props = true -}}
+{{- else if . -}}
+    {{- $err := printf "Expected a map, slice, or string. Was given the %T: %+v" . . -}}
+    {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+{{- else -}}
+    {{- $err := printf "Expected a map, slice, or string. Was provided with no arguments" -}}
+    {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+{{- end -}}
+
+{{- if and $component_name $component_props -}}
+    {{- partial "_bookshop/helpers/component" (slice $component_name $component_props) -}}
+{{- end -}}`,
+                "layouts/partials/_bookshop/errors/err.html": `{{/*
+    It is what it says on the box.
+*/}}
+
+{{ errorf "📚 Error from Bookshop:\\n📚❕ %s" . }}
+{{ return true }}`,
+                "layouts/partials/_bookshop/errors/bad_bookshop_tag.html": `{{/*
+    Prints examples of correct usage of the bookshop tag options
+
+    Expects a String containing a helpful error message.
+*/}}
+
+{{- $err := slice 
+    .
+    "    The following Bookshop tag formats are valid:"
+    ""
+    "  ► Render a \\"button\\" component with data:"
+    " ┌─"
+    " │  {{ partial \\"bookshop\\" (slice \\"button\\" (dict \\"text\\" .button.text)) }}"
+    " ├─"
+    " │  {{ with (dict \\"text\\" .button.text) }}"
+    " │     {{ partial \\"bookshop\\" (slice \\"button\\" .) }}"
+    " │  {{ end }}"
+    " └─"
+    ""
+    "  ► Render a component from a struct, where the struct contains a _bookshop_name key:"
+    " ┌─"
+    " │  {{ partial \\"bookshop\\" (dict \\"_bookshop_name\\" \\"button\\" \\"text\\" .button.text) }}"
+    " ├─"
+    " │  {{ partial \\"bookshop\\" .Params.component_structure }}"
+    " └─"
+    ""
+    "  ► Render a \\"logo\\" component with no data:"
+    " ┌─"
+    " │  {{ partial \\"bookshop\\" \\"logo\\" }}"
+    " └─"
+    ""
+    "  ► Render a \\"tag\\" partial with data:"
+    " ┌─"
+    " │  {{ partial \\"bookshop_partial\\" (slice \\"tag\\" (dict \\"message\\" \\"Hello World\\")) }}"
+    " └─"
+    " "
+-}}
+{{- partial "_bookshop/errors/err" (delimit $err "\\n") -}}
+`,
+                "layouts/partials/_bookshop/helpers/component_key.html": `{{/*
+    Converts a bare Bookshop component key to a Bookshop path
+    i.e. "a/b" --> "bookshop/components/a/b/b.hugo.html"
+
+    Expects a String.
+*/}}
+
+{{ $component_fragments := split . "/" }}
+{{ $component_fragments = append (last 1 $component_fragments) $component_fragments }}
+{{ $component_path := (printf "bookshop/components/%s.hugo.html" (delimit $component_fragments "/")) }}
+{{ return $component_path }}`,
+                "layouts/partials/_bookshop/helpers/component.html": `{{/*
+    Renders a single Bookshop component, 
+    wrapping in in a live editing context tag.
+
+    Expects a slice:
+    [
+        <string>, # Component name
+        <_>       # Component props
+    ]
+*/}}
+
+{{- $component_name := index . 0 -}}
+{{- $component_props := index . 1 -}}
+{{- $component_path := partial "_bookshop/helpers/component_key" $component_name -}}
+
+{{- if templates.Exists ( printf "partials/%s" $component_path ) -}}
+
+{{ (printf "<!--bookshop-live name(%s)-->" $component_name) | safeHTML }}
+{{ partial $component_path $component_props }}
+{{ "<!--bookshop-live end-->" | safeHTML }}
+
+{{- else -}}
+    {{- $file_loc := slicestr $component_path 9 -}}
+    {{- partial "_bookshop/errors/err" (printf "Component \\"%s\\" does not exist.\\n     Create this component by placing a file in your bookshop at %s" $component_name $file_loc) -}}
+{{- end -}}
+`,
+            })
+        );
     }
 
     async initializeLocalCompressedHugo() {
@@ -86,8 +226,12 @@ export class Engine {
         go.run(result.instance);
     }
 
+    getSharedKey(name) {
+        return `shared/hugo/${name}.hugo.html`;
+    }
+
     getShared(name) {
-        const key = `shared/hugo/${name}.hugo.html`
+        const key = this.getSharedKey(name);
         return this.files?.[key];
     }
 
@@ -106,51 +250,60 @@ export class Engine {
         return !!this.files?.[key];
     }
 
+    hasShared(name) {
+        const key = this.getSharedKey(name);
+        return !!this.files?.[key];
+    }
+
     resolveComponentType(name) {
-        if (this.getComponent(name)) return 'component';
-        if (this.getShared(name)) return 'shared';
+        if (this.hasComponent(name)) return 'component';
+        if (this.hasShared(name)) return 'shared';
         return false;
     }
 
-    transformData(data) {
-        return {
-            Params: data
-        };
-    }
+    // transformData(data) {
+    //     return {
+    //         Params: data
+    //     };
+    // }
 
     async storeMeta(meta = {}) {
+        return
         while (!window.loadHugoBookshopMeta) {
             await sleep(100);
         };
+        //TODO: Write these as files
         window.loadHugoBookshopMeta(JSON.stringify(meta));
     }
 
     async storeInfo(info = {}) {
+        return
         while (!window.loadHugoBookshopData) {
             await sleep(100);
         };
+        //TODO: Write these as files
         window.loadHugoBookshopData(JSON.stringify(info));
     }
 
     async render(target, name, props, globals, logger) {
-        while (!window.renderHugo) {
+        while (!window.buildHugo) {
             logger?.log?.(`Waiting for the Hugo WASM to be available...`);
             await sleep(100);
         };
 
-        let source = this.getComponent(name);
-        // TODO: Remove the below check and update the live comments to denote shared
-        if (!source) source = this.getShared(name);
-        if (!source) {
+        let writeFiles = {};
+
+        if (this.hasComponent(name)) {
+            writeFiles["layouts/index.html"] = `{{ partial "bookshop" (slice "${name}" .Params.component) }}`
+        } else if (this.hasShared(name)) {
+            writeFiles["layouts/index.html"] = `{{ partial "bookshop_partial" (slice "${name}" .Params.component) }}`
+        } else {
             console.warn(`[hugo-engine] No component found for ${name}`);
             return "";
         }
-        logger?.log?.(`Going to render ${name}, with source:`);
-        logger?.log?.(source);
-        // TODO: this template already exists on the other side of the wasm bounary
-        source = translateTextTemplate(source, {});
-        logger?.log?.(`Rewritten the template for ${name} to:`);
-        logger?.log?.(source);
+        logger?.log?.(`Going to render ${name}, with layout:`);
+        logger?.log?.(writeFiles["layouts/index.html"]);
+
         if (!globals || typeof globals !== "object") globals = {};
         props = {
             ...globals, ...props,
@@ -159,7 +312,25 @@ export class Engine {
 
         // If we have assigned a root scope we need to pass that in as the context
         if (props["."]) props = props["."];
-        const output = window.renderHugo(source, JSON.stringify(props));
+        writeFiles["content/_index.md"] = JSON.stringify({
+            component: props
+        }, null, 2) + "\n";
+        window.writeHugoFiles(JSON.stringify(writeFiles));
+
+        const buildResult = window.buildHugo();
+        if (buildResult) {
+            console.error(buildResult);
+            return;
+        }
+
+        const output = window.readHugoFiles(JSON.stringify([
+            "public/index.html"
+        ]));
+
+        target.innerHTML = output["public/index.html"];
+        return;
+
+        const outputs = window.renderHugo(source, JSON.stringify(props));
         if (/BKSHERR/.test(output)) {
             logger?.log?.(`Failed to render ${output}`);
             console.error(output);
@@ -171,7 +342,7 @@ export class Engine {
     }
 
     async eval(str, props = [{}]) {
-        while (!window.renderHugo) await sleep(10);
+        while (!window.buildHugo) await sleep(10);
         let props_obj = props.reduce((a, b) => { return { ...a, ...b } });
 
         // We're capable of looking up a simple variable
@@ -198,7 +369,15 @@ export class Engine {
             }
         }).join('');
         const eval_str = `${assignments}{{ jsonify (${str}) }}`;
-        const output = window.renderHugo(eval_str, JSON.stringify(props_obj));
+        window.writeHugoFiles(JSON.stringify({
+            "layouts/index.html": eval_str,
+            "content/_index.md": JSON.stringify(props_obj, null, 2)
+        }));
+        window.buildHugo();
+
+        const output = window.readHugoFiles(JSON.stringify([
+            "public/index.html"
+        ]))["public/index.html"];
 
         try {
             return JSON.parse(output);
