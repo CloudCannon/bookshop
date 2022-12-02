@@ -5,7 +5,7 @@ test(`Dict with parameter`, async t => {
     const ident = `(dict "contents" .Params.contents)`;
     const output = (new IdentifierParser(ident)).build();
     t.deepEqual(output, {
-        "contents": "Params.contents"
+        "contents": "contents"
     });
 });
 
@@ -31,7 +31,7 @@ test(`Larger dict`, async t => {
     const output = (new IdentifierParser(ident)).build();
     t.deepEqual(output, {
         "title": `"text"`,
-        "contents": "Params.contents",
+        "contents": "contents",
         "number": "5"
     });
 });
@@ -39,7 +39,7 @@ test(`Larger dict`, async t => {
 test(`Slice`, async t => {
     const ident = `(slice "text" .Params.contents 5)`;
     const output = (new IdentifierParser(ident)).build();
-    t.deepEqual(output, [`"text"`, "Params.contents", "5"]);
+    t.deepEqual(output, [`"text"`, "contents", "5"]);
 });
 
 test(`Unknown functions untouched`, async t => {
@@ -59,7 +59,7 @@ test(`Nested dicts and slices`, async t => {
     const output = (new IdentifierParser(ident)).build();
     t.deepEqual(output, {
         "contents": ["1", `"2"`, {
-            "a": "Params.b"
+            "a": "b"
         }],
         "len": "(len .some_array)"
     });
@@ -103,7 +103,7 @@ test(`Multiline dicts and slices`, async t => {
     const output = (new IdentifierParser(ident)).build();
     t.deepEqual(output, {
         "contents": ["1", `"2"`, {
-            "a": "Params.b"
+            "a": "b"
         }],
         "len": `(\n    len\n    .some_array\n)`
     });
