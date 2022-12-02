@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.3.3 (December 2, 2022)
+
 * Added a `markdownify` filter to Eleventy Bookshop
 
 ## v3.3.2 (November 30, 2022)
