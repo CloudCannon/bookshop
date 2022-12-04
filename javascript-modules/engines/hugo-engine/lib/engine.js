@@ -249,9 +249,9 @@ export class Engine {
 
         const assignments = Object.entries(props_obj).filter(([key]) => key.startsWith('$')).map(([key, value]) => {
             if (Array.isArray(value)) {
-                return `{{ ${key} := index ( \`{"a": ${JSON.stringify(value)}}\` | transform.BookshopUnmarshal ) "a" }}`
+                return `{{ ${key} := index ( \`{"a": ${JSON.stringify(value)}}\` | transform.Unmarshal ) "a" }}`
             } else if (typeof value === 'object') {
-                return `{{ ${key} := \`${JSON.stringify(value)}\` | transform.BookshopUnmarshal }}`
+                return `{{ ${key} := \`${JSON.stringify(value)}\` | transform.Unmarshal }}`
             } else {
                 return `{{ ${key} := ${JSON.stringify(value)} }}`
             }
