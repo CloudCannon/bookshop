@@ -43,10 +43,10 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
     When I run "hugo" in the site directory
     Then stderr should be empty
     *    stdout should contain "Total in"
-    *    site/public/index.html should contain each row: 
-      | text |
-      | <!--bookshop-live name(__bookshop__subsequent) params(.: (dict "title" .Params.block.title))-->  |
-      | <!--bookshop-live name(single)-->  |
+    *    site/public/index.html should contain each row:
+      | text                                                                                            |
+      | <!--bookshop-live name(__bookshop__subsequent) params(.: (dict "title" .Params.block.title))--> |
+      | <!--bookshop-live name(single)-->                                                               |
 
   Scenario: Bookshop Generate hydrates live editing
     Given I run "hugo" in the site directory
@@ -56,7 +56,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
     *    stdout should contain "Modifying output site at ./site/public"
     *    stdout should contain "Added live editing to 1 page containing Bookshop components"
     *    site/public/_cloudcannon/info.json should exist
-    *    site/public/_cloudcannon/bookshop-live.js should contain the text "hugo_renderer-"
+    *    site/public/_cloudcannon/bookshop-live.js should contain the text "hugo_renderer.wasm-"
 
   @web
   Scenario: Bookshop live renders when CloudCannon initialises

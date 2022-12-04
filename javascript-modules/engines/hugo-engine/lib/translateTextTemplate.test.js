@@ -28,34 +28,40 @@ test("don't add live markup to bookshop_partial tags", t => {
     t.is(translateTextTemplate(input, {}), expected);
 });
 
-test("add live markup to assigns", t => {
+test("don't add live markup if no bookshop found", t => {
     let input = `{{ $a := .b }}`;
-    let expected = `{{ $a := .b }}{{ \`<!--bookshop-live context($a: (.b))-->\` | safeHTML }}`;
+    let expected = `{{ $a := .b }}`;
+    t.is(translateTextTemplate(input, {}), expected);
+});
+
+test("add live markup to assigns", t => {
+    let input = `{{ $a := .b }}bookshop`;
+    let expected = `{{ $a := .b }}{{ \`<!--bookshop-live context($a: (.b))-->\` | safeHTML }}bookshop`;
     t.is(translateTextTemplate(input, {}), expected);
 
-    input = `{{ $a := .b | chomp }}`;
-    expected = `{{ $a := .b | chomp }}{{ \`<!--bookshop-live context($a: (.b | chomp))-->\` | safeHTML }}`;
+    input = `{{ $a := .b | chomp }}bookshop`;
+    expected = `{{ $a := .b | chomp }}{{ \`<!--bookshop-live context($a: (.b | chomp))-->\` | safeHTML }}bookshop`;
     t.is(translateTextTemplate(input, {}), expected);
 
-    input = `{{ $a = .b }}`;
-    expected = `{{ $a = .b }}{{ \`<!--bookshop-live reassign($a: (.b))-->\` | safeHTML }}`;
+    input = `{{ $a = .b }}bookshop`;
+    expected = `{{ $a = .b }}{{ \`<!--bookshop-live reassign($a: (.b))-->\` | safeHTML }}bookshop`;
     t.is(translateTextTemplate(input, {}), expected);
 });
 
 test("add live markup to withs", t => {
-    const input = `{{ with .b }}<p>{{.}}</p>{{ end }}`;
+    const input = `{{ with .b }}<p>{{.}}</p>{{ end }}bookshop`;
     const expected = [`{{ with .b }}`,
         `{{ \`<!--bookshop-live stack-->\` | safeHTML }}`,
         `{{ \`<!--bookshop-live context(.: (.b))-->\` | safeHTML }}`,
         `<p>{{.}}</p>`,
         `{{ \`<!--bookshop-live unstack-->\` | safeHTML }}`,
-        `{{ end }}`
+        `{{ end }}bookshop`
     ].join('');
     t.is(translateTextTemplate(input, {}), expected);
 });
 
 test("add live markup to loops", t => {
-    const input = `{{ range .items }}<p>{{ . }}</p>{{ end }}`;
+    const input = `{{ range .items }}<p>{{ . }}</p>{{ end }}bookshop`;
     const expected = [`{{ $bookshop__live__iterator__keys := (slice) }}`,
         `{{ range $i, $e := (.items) }}{{ $bookshop__live__iterator__keys = $bookshop__live__iterator__keys | append $i }}{{ end }}`,
         `{{ $bookshop__live__iterator := 0 }}`,
@@ -66,26 +72,26 @@ test("add live markup to loops", t => {
         `{{ $bookshop__live__iterator = (add $bookshop__live__iterator 1) }}`,
         `<p>{{ . }}</p>`,
         `{{ \`<!--bookshop-live unstack-->\` | safeHTML }}`,
-        `{{ end }}`
+        `{{ end }}bookshop`
     ].join('');
     t.is(translateTextTemplate(input, {}), expected);
 });
 
 test("add live markup to loops with iterators", t => {
-    const input = `{{range $loop_index, $element := .columns}}<p>{{$element}}</p>{{ end }}`;
+    const input = `{{range $loop_index, $element := .columns}}<p>{{$element}}</p>{{ end }}bookshop`;
     const expected = [`{{range $loop_index, $element := .columns}}`,
         `{{ \`<!--bookshop-live stack-->\` | safeHTML }}`,
         `{{ (printf \`<!--bookshop-live context(.: (index (.columns) %v))-->\` (jsonify $loop_index)) | safeHTML }}`,
         `<p>{{$element}}</p>`,
         `{{ \`<!--bookshop-live unstack-->\` | safeHTML }}`,
-        `{{ end }}`
+        `{{ end }}bookshop`
     ].join('');
     t.is(translateTextTemplate(input, {}), expected);
 });
 
 test("escape backticks in values", t => {
-    let input = `{{ $a := "hi\`:)" }}`;
-    let expected = `{{ $a := "hi\`:)" }}{{ replace \`<!--bookshop-live context($a: ("hiBKSH_BACKTICK:)"))-->\` "BKSH_BACKTICK" "\`" | safeHTML }}`;
+    let input = `{{ $a := "hi\`:)" }}bookshop`;
+    let expected = `{{ $a := "hi\`:)" }}{{ replace \`<!--bookshop-live context($a: ("hiBKSH_BACKTICK:)"))-->\` "BKSH_BACKTICK" "\`" | safeHTML }}bookshop`;
     t.is(translateTextTemplate(input, {}), expected);
 });
 
@@ -105,7 +111,7 @@ test("add live markup to complex end structures", t => {
         {{end}}
     {{ end }}
 
-{{ end }}`;
+{{ end }}bookshop`;
     const expected = `
 {{ $bookshop__live__iterator__keys := (slice) }}{{ range $i, $e := (.items) }}{{ $bookshop__live__iterator__keys = $bookshop__live__iterator__keys | append $i }}{{ end }}{{ $bookshop__live__iterator := 0 }}{{ range .items }}{{ \`<!--bookshop-live stack-->\` | safeHTML }}{{ $bookshop__live__iterator__key := (index ($bookshop__live__iterator__keys) $bookshop__live__iterator) }}{{ (printf \`<!--bookshop-live context(.: (index (.items) %v))-->\` (jsonify $bookshop__live__iterator__key)) | safeHTML }}{{ $bookshop__live__iterator = (add $bookshop__live__iterator 1) }}
 
@@ -121,7 +127,7 @@ test("add live markup to complex end structures", t => {
         {{ \`<!--bookshop-live unstack-->\` | safeHTML }}{{end}}
     {{ end }}
 
-{{ \`<!--bookshop-live unstack-->\` | safeHTML }}{{ end }}`;
+{{ \`<!--bookshop-live unstack-->\` | safeHTML }}{{ end }}bookshop`;
     t.is(translateTextTemplate(input, {}), expected);
 });
 

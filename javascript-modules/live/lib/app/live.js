@@ -19,6 +19,8 @@ export const getLive = (engines) => class BookshopLive {
         this.renderTimeout = null;
         this.verbose = false;
 
+        this.memo = {};
+
         this.logFn = this.logger();
         this.loadedFn = options?.loadedFn;
 
@@ -102,16 +104,26 @@ export const getLive = (engines) => class BookshopLive {
     }
 
     async eval(identifier, scope, logger) {
-        logger?.log?.(`Evaluating ${identifier} in ${JSON.stringify(scope)}`);
-        const result = await this.engines[0].eval(identifier, scope);
-        logger?.log?.(`Evaluated to ${result}`);
-        return result;
+        const key = `Evaluating ${identifier} in ${JSON.stringify(scope)}`;
+        logger?.log?.(key);
+        if (!this.memo[key]) {
+            const result = await this.engines[0].eval(identifier, scope);
+            this.memo[key] = result;
+        }
+        logger?.log?.(`Evaluated to ${JSON.stringify(this.memo[key])}`);
+        return this.memo[key];
     }
 
     normalize(identifier, logger) {
-        logger?.log?.(`Normalizing ${identifier}`);
+        const key = `Normalizing ${identifier}`;
+        logger?.log?.(key);
         if (typeof this.engines[0].normalize === 'function') {
-            identifier = this.engines[0].normalize(identifier);
+            if (!this.memo[key]) {
+                identifier = this.engines[0].normalize(identifier);
+                this.memo[key] = identifier;
+            } else {
+                identifier = this.memo[key];
+            }
             logger?.log?.(`Normalized to ${typeof identifier === "object" ? JSON.stringify(identifier) : identifier}`);
         }
         return identifier;

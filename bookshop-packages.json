@@ -1,7 +1,7 @@
 {
   "version": "3.3.3",
   "custom": {
-    "javascript-modules/engines/hugo-engine/hugo-renderer": {
+    "javascript-modules/engines/hugo-engine/full-hugo-renderer": {
       "versionFile": null,
       "commands": [
         "rm -f ./hugo_renderer.wasm",

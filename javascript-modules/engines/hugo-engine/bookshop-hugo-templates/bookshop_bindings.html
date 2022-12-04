@@ -1,0 +1,29 @@
+{{/*
+    Binds the next bookshop component to a given front matter data source
+
+    Expects one argument, a string to use as the data binding in CloudCannon
+*/}}
+
+{{- (printf `<!--bookshop-live meta(version: "3.3.3" baseurl: "%s" copyright: "%s" title: "%s")-->` site.BaseURL site.Copyright site.Title) | safeHTML }}
+{{ $is_string := eq "string" (printf "%T" .) -}}
+
+{{- if $is_string -}}
+    {{ (printf "<!--bookshop-live name(__bookshop__subsequent) params(.: %s)-->" .) | safeHTML }}
+{{- else -}}
+    {{- $err := slice 
+        (printf "bookshop_bindings expected a string but received \"%s\"" .)
+        "     The `bookshop_bindings` partial should be passed a string"
+        "     representation of the arguments to the component."
+        "     Example usage:"
+        " ┌─"
+        " │    {{ partial \"bookshop_bindings\" `.Params.content_blocks` }}"
+        ` │    {{ partial "bookshop_partial" (slice "page" .Params.content_blocks) }}`
+        " ├─"
+        " │    {{ partial \"bookshop_bindings\" `(dict \"content_html\" .Params.note_html \"type\" \"note\")` }}"
+        ` │    {{ partial "bookshop" (slice "content" (dict "content_html" .Params.note_html "type" "note")) }}`
+        " └─"
+        "     NB: The bookshop_bindings partial is only required in site layouts."
+        "     It is not needed within Bookshop components."
+    -}}
+    {{- partial "_bookshop/errors/err" (delimit $err "\n") -}}
+{{- end -}}

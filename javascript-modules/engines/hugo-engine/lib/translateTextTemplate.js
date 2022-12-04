@@ -105,6 +105,9 @@ export default function (text, opts) {
         liveMarkup: true,
         ...opts
     }
+    if (!/bookshop/.test(text)) {
+        return text;
+    }
     const tokenizer = new Tokenizer(text.toString());
     const tokens = tokenizer.readTopLevelTokens();
     const output = [];

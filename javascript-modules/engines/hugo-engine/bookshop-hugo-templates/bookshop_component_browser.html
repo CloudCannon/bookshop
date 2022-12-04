@@ -1,0 +1,30 @@
+{{/*
+    Scaffolds the local or hosted Bookshop component browser
+*/}}
+
+{{- $port := 30775 -}}
+{{- if . -}}
+    {{- if eq "int" (printf "%T" .) -}}
+        {{- $port = . -}}
+    {{- else -}}
+        {{- $err := slice 
+            "bookshop_component_browser expected either no argument, or an integer for the local port number used when running @bookshop/browser."
+            (printf "     Received: \"%s\"" .)
+            "     "
+            "     Example usage:"
+            " ┌─"
+            " │    {{ partial \"bookshop_component_browser\" }}"
+            " ├─"
+            " │    {{ partial \"bookshop_component_browser\" 30775 }}"
+            " └─"
+        -}}
+        {{- partial "_bookshop/errors/err" (delimit $err "\n") -}}
+    {{- end -}}
+{{ end }}
+
+<div data-bookshop-browser=""></div>
+<script src="http://localhost:{{ $port }}/bookshop.js"></script>
+<script>
+    window.bookshopBrowser = new window.BookshopBrowser({globals: []});
+    window.bookshopBrowser.render();
+</script>
