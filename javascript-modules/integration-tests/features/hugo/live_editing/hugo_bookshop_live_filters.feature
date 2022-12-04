@@ -48,7 +48,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Filters and Functions
       """
       md: "**bold** title"
       multi_md: >-
-        # Hello  
+        # Hello
 
         World
       """
@@ -56,6 +56,5 @@ Feature: Hugo Bookshop CloudCannon Live Editing Filters and Functions
     *    🌐 There should be no logs
     # Hugo strips single <p> tags
     *    🌐 The selector div:nth-of-type(1) should match "<strong>bold</strong> title"
-    *    🌐 The selector div:nth-of-type(2) should match "<h1>Hello</h1>"
+    *    🌐 The selector div:nth-of-type(2) should match "<h1 id=\"hello\">Hello</h1>"
     *    🌐 The selector div:nth-of-type(2) should match "<p>World</p>"
-  
