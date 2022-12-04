@@ -158,10 +158,23 @@ func main() {
 	log.SetOutput(ioutil.Discard)
 
 	c := make(chan struct{}, 0)
+	js.Global().Set("initHugoConfig", js.FuncOf(initHugoConfig))
 	js.Global().Set("writeHugoFiles", js.FuncOf(writeHugoFiles))
 	js.Global().Set("readHugoFiles", js.FuncOf(readHugoFiles))
 	js.Global().Set("buildHugo", js.FuncOf(buildHugo))
 	<-c
+}
+
+func initHugoConfig(this js.Value, args []js.Value) interface{} {
+	if err := builder.LoadConfig(); err != nil {
+		fmt.Println(fmt.Sprintf("failed to load config: %s", err))
+		return fmt.Errorf("failed to load config: %w", err)
+	}
+	if err := builder.CreateSites(); err != nil {
+		fmt.Println(fmt.Sprintf("failed to create sites: %s", err))
+		return fmt.Errorf("failed to create sites: %w", err)
+	}
+	return nil
 }
 
 func writeHugoFiles(this js.Value, args []js.Value) interface{} {

@@ -49,7 +49,9 @@
 				const nl = outputBuf.lastIndexOf("\n");
 				if (nl != -1) {
 					// Disable all logs from the WASM side
-					// console.log(outputBuf.substr(0, nl));
+					if (window.log_hugo_wasm) {
+						console.log(outputBuf.substr(0, nl));
+					}
 					outputBuf = outputBuf.substr(nl + 1);
 				}
 				return buf.length;

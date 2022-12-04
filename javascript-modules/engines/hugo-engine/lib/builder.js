@@ -9,6 +9,7 @@ export const extensions = [".hugo.html"];
 export const esbuildConfigFn = (esbuildConfig, options) => {
     esbuildConfig.loader = {
         ...esbuildConfig.loader,
+        ".html": "text",
         ".hugo.html": "text",
         ".wasm": options?.hosted ? "file" : "binary",
         ".wasm.gz": options?.hosted ? "file" : "binary",

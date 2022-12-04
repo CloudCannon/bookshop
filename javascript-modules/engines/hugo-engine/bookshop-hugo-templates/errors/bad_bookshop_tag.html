@@ -1,0 +1,39 @@
+{{/*
+    Prints examples of correct usage of the bookshop tag options
+
+    Expects a String containing a helpful error message.
+*/}}
+
+{{- $err := slice 
+    .
+    "    The following Bookshop tag formats are valid:"
+    ""
+    "  ► Render a \"button\" component with data:"
+    " ┌─"
+    " │  {{ partial \"bookshop\" (slice \"button\" (dict \"text\" .button.text)) }}"
+    " ├─"
+    " │  {{ with (dict \"text\" .button.text) }}"
+    " │     {{ partial \"bookshop\" (slice \"button\" .) }}"
+    " │  {{ end }}"
+    " └─"
+    ""
+    "  ► Render a component from a struct, where the struct contains a _bookshop_name key:"
+    " ┌─"
+    " │  {{ partial \"bookshop\" (dict \"_bookshop_name\" \"button\" \"text\" .button.text) }}"
+    " ├─"
+    " │  {{ partial \"bookshop\" .Params.component_structure }}"
+    " └─"
+    ""
+    "  ► Render a \"logo\" component with no data:"
+    " ┌─"
+    " │  {{ partial \"bookshop\" \"logo\" }}"
+    " └─"
+    ""
+    "  ► Render a \"tag\" partial with data:"
+    " ┌─"
+    " │  {{ partial \"bookshop_partial\" (slice \"tag\" (dict \"message\" \"Hello World\")) }}"
+    " └─"
+    " "
+-}}
+{{- partial "_bookshop/errors/err" (delimit $err "\n") -}}
+

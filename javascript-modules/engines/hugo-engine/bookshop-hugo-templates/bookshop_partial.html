@@ -1,0 +1,42 @@
+{{/*
+    Renders a Bookshop partial
+
+    Expects a slice:
+    [
+        <string>, # Partial name
+        <_>       # Partial props
+    ]
+
+    Or a <string>: # Component name
+*/}}
+
+{{- $partial_name := false -}}
+{{- $partial_props := false -}}
+
+{{- if reflect.IsSlice . -}}
+    {{- if eq (len .) 2 -}}
+        {{- if eq (printf "%T" (index . 0)) "string" -}}
+            {{- $partial_name = index . 0 -}}
+            {{- $partial_props = index . 1 -}}
+        {{- else -}}
+            {{- $err := printf "Expected the first argument to be a string of the partial name. Received %+v" (index . 0) -}}
+            {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+        {{- end -}}
+    {{- else -}}
+        {{- $err := printf "Expected a slice of length 2, was given %d" (len .) -}}
+        {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+    {{- end -}}
+{{- else if eq (printf "%T" .) "string" -}}
+    {{- $partial_name = . -}}
+    {{- $partial_props = true -}}
+{{- else if . -}}
+    {{- $err := printf "bookshop_partial tag expected a slice or string. Was given the %T: %+v" . . -}}
+    {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+{{- else -}}
+    {{- $err := printf "bookshop_partial tag expected a slice or string. Was provided with no arguments" -}}
+    {{- partial "_bookshop/errors/bad_bookshop_tag" $err -}}
+{{- end -}}
+
+{{- if and $partial_name $partial_props -}}
+    {{- partial "_bookshop/helpers/partial" (slice $partial_name $partial_props) -}}
+{{- end -}}

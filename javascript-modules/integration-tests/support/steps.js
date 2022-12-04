@@ -303,9 +303,9 @@ When(/^🌐 CloudCannon pushes new json:$/i, { timeout: 60 * 1000 }, async funct
   const script = `window.CloudCannon.newData(${input});`;
   await this.page.addScriptTag({ content: script });
   try {
-    await this.page.waitForFunction(`window.bookshopLive?.renderCount >= 2`, { timeout: 4 * 1000 });
+    await this.page.waitForFunction(`window.bookshopLive?.renderCount >= 2`, { timeout: 8 * 1000 });
   } catch (e) {
-    this.trackPuppeteerError(`Bookshop didn't re-render within 4s`);
+    this.trackPuppeteerError(`Bookshop didn't re-render within 8s`);
   }
 });
 
@@ -315,9 +315,9 @@ When(/^🌐 CloudCannon pushes new yaml:$/i, { timeout: 60 * 1000 }, async funct
   const script = `window.CloudCannon.newData(${page_data});`;
   await this.page.addScriptTag({ content: script });
   try {
-    await this.page.waitForFunction(`window.bookshopLive?.renderCount >= 2`, { timeout: 4 * 1000 });
+    await this.page.waitForFunction(`window.bookshopLive?.renderCount >= 2`, { timeout: 8 * 1000 });
   } catch (e) {
-    this.trackPuppeteerError(`Bookshop didn't re-render within 4s`);
+    this.trackPuppeteerError(`Bookshop didn't re-render within 8s`);
   }
 });
 
@@ -469,10 +469,10 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 
     // Trigger cloudcannon:load
     await readyCloudCannon(page_data, this);
     try {
-      await this.page.waitForFunction("window.bookshopLive?.renderCount > 0", { timeout: 4 * 1000 });
+      await this.page.waitForFunction("window.bookshopLive?.renderCount > 0", { timeout: 8 * 1000 });
     } catch (e) {
       this.trackPuppeteerError(e.toString());
-      this.trackPuppeteerError(`Bookshop didn't do an initial render within 4s`);
+      this.trackPuppeteerError(`Bookshop didn't do an initial render within 8s`);
     }
   } else {
     await readyEmptyCloudCannon(this);
