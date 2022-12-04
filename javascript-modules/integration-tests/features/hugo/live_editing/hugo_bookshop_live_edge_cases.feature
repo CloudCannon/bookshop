@@ -21,7 +21,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Edge Cases
       {{ $level := default 2 .level }}
       {{ $level = string
           $level }}
-      {{ $level_classes := dict 
+      {{ $level_classes := dict
           "1" "class-one"
           "2" "class-two"
           "3" "class-three"
@@ -75,7 +75,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Edge Cases
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h2 should match '<h2 class="class-two" data-cms-bind="#heading"><!--bookshop-live name(text) params(.: (.))--><span data-cms-bind="#heading.copy">New heading.</span><!--bookshop-live end--></h2>'
-  
+
   Scenario: Hugo Bookshop live renders a map iterator
     Given a component-lib/components/page/page.hugo.html file containing:
       """
@@ -129,4 +129,3 @@ Feature: Hugo Bookshop CloudCannon Live Editing Edge Cases
     *    🌐 The selector div:nth-of-type(1)>span:nth-of-type(2) should contain 'text: Hello'
     *    🌐 The selector div:nth-of-type(2)>span:nth-of-type(1) should contain '_bookshop_name: text'
     *    🌐 The selector div:nth-of-type(2)>span:nth-of-type(2) should contain 'text: Hooray'
-  
