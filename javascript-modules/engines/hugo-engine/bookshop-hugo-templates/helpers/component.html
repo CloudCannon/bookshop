@@ -15,9 +15,9 @@
 
 {{- if templates.Exists ( printf "partials/%s" $component_path ) -}}
 
-{{ (printf "<!--bookshop-live name(%s)-->" $component_name) | safeHTML }}
-{{ partial $component_path $component_props }}
-{{ "<!--bookshop-live end-->" | safeHTML }}
+{{/* Suppress comments when live editing {{ (printf "<!--bookshop-live name(%s)-->" $component_name) | safeHTML }} */}}
+{{- partial $component_path $component_props -}}
+{{/* Suppress comments when live editing {{ "<!--bookshop-live end-->" | safeHTML }} */}}
 
 {{- else -}}
     {{- $file_loc := slicestr $component_path 9 -}}
