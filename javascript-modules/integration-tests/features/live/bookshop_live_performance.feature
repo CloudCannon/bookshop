@@ -69,6 +69,7 @@ Feature: Bookshop CloudCannon Live Editing Performance
       """
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
+    *    🌐 I wait 1000ms
     *    🌐 "window.bookshopLive?.renderCount === 3" should evaluate
     *    🌐 The selector h1 should contain "Rerendered 5"
     # Double check that it didn't lag another render

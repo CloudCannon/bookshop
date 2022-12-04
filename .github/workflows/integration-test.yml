@@ -55,5 +55,5 @@ jobs:
       - name: Gzip Hugo wasm module
         run: gzip --keep hugo_renderer.wasm
         working-directory: ${{ env.cwd }}/engines/hugo-engine/full-hugo-renderer
-      - run: yarn run itest
+      - run: yarn run itest --name "Bookshop live renders on a throttle"
         working-directory: ${{ env.cwd }}/integration-tests

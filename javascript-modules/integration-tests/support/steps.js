@@ -321,6 +321,10 @@ When(/^🌐 CloudCannon pushes new yaml:$/i, { timeout: 60 * 1000 }, async funct
   }
 });
 
+When(/^🌐 I wait (\d+)ms$/i, { timeout: 20 * 1000 }, async function (ms) {
+  await p_sleep(parseInt(ms));
+});
+
 When(/^🌐 "(.+)" evaluates$/i, { timeout: 5 * 1000 }, async function (statement) {
   if (!this.page) throw Error("No page open");
   try {
