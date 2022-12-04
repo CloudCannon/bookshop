@@ -71,7 +71,7 @@ jobs:
           node ./.backstage/test.js
       - name: Run integration tests
         run : |
-          yarn run itest
+          yarn run itest-slow
         working-directory: ./javascript-modules/integration-tests
       
       - name: Publish
