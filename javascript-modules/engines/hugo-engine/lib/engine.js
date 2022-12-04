@@ -49,7 +49,7 @@ export class Engine {
         templates["config.toml"] = "params.env_bookshop_live = true";
 
         // When this script is run locally, the hugo wasm is loaded as binary rather than output as a file.
-        if (hugoWasm?.constructor === Uint8Array) {
+        if (compressedHugoWasm?.constructor === Uint8Array) {
             await this.initializeInlineHugo();
         } else {
             await this.initializeLocalCompressedHugo();
@@ -88,7 +88,8 @@ export class Engine {
     async initializeInlineHugo() {
         const go = new Go();
         const buffer = hugoWasm.buffer;
-        const result = await WebAssembly.instantiate(buffer, go.importObject);
+        const renderer = gunzipSync(new Uint8Array(compressedBuffer));
+        const result = await WebAssembly.instantiate(renderer, go.importObject);
         go.run(result.instance);
     }
 

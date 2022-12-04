@@ -11,7 +11,6 @@ export const esbuildConfigFn = (esbuildConfig, options) => {
         ...esbuildConfig.loader,
         ".html": "text",
         ".hugo.html": "text",
-        ".wasm": options?.hosted ? "file" : "binary",
         ".wasm.gz": options?.hosted ? "file" : "binary",
     };
 
