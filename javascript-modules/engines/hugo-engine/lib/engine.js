@@ -1,4 +1,3 @@
-import hugoWasm from "../full-hugo-renderer/hugo_renderer.wasm";
 import compressedHugoWasm from "../full-hugo-renderer/hugo_renderer.wasm.gz";
 import { gunzipSync } from 'fflate';
 import translateTextTemplate from './translateTextTemplate.js';
@@ -81,17 +80,9 @@ export class Engine {
             const compressedResult = await WebAssembly.instantiate(renderer, go.importObject);
             go.run(compressedResult.instance);
         } catch (e) {
-            await this.initializeLocalHugo();
+            console.error("Couldn't load the local compressed Hugo WASM");
+            console.error(e);
         }
-    }
-
-    async initializeLocalHugo() {
-        const go = new Go();
-        const wasmOrigin = this.origin.replace(/\/[^\.\/]+\.(min\.)?js/, hugoWasm.replace(/^\./, ''));
-        const response = await fetch(wasmOrigin);
-        const buffer = await response.arrayBuffer();
-        const result = await WebAssembly.instantiate(buffer, go.importObject);
-        go.run(result.instance);
     }
 
     async initializeInlineHugo() {
