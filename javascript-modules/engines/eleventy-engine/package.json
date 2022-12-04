@@ -31,6 +31,7 @@
     "esbuild": "^0.13.10",
     "liquidjs": "9.28.0",
     "markdown-it": "^13.0.1",
+    "punycode": "^2.1.1",
     "slugify": "^1.5.3"
   },
   "engines": {
