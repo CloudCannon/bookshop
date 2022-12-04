@@ -48,12 +48,12 @@ jobs:
         working-directory: ${{ env.cwd }}
       - name: Build Hugo wasm module
         run: go build -tags nodeploy -o hugo_renderer.wasm
-        working-directory: ${{ env.cwd }}/engines/hugo-engine/hugo-renderer
+        working-directory: ${{ env.cwd }}/engines/hugo-engine/full-hugo-renderer
         env:
           GOOS: js
           GOARCH: wasm
       - name: Gzip Hugo wasm module
         run: gzip --keep hugo_renderer.wasm
-        working-directory: ${{ env.cwd }}/engines/hugo-engine/hugo-renderer
+        working-directory: ${{ env.cwd }}/engines/hugo-engine/full-hugo-renderer
       - run: yarn run itest
         working-directory: ${{ env.cwd }}/integration-tests
