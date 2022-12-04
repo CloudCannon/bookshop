@@ -47,6 +47,8 @@ export class Engine {
             "layouts/partials/_bookshop/errors/err.html": (await import("../bookshop-hugo-templates/errors/err.html")).default,
         };
 
+        templates["config.toml"] = "params.env_bookshop_live = true";
+
         // When this script is run locally, the hugo wasm is loaded as binary rather than output as a file.
         if (hugoWasm?.constructor === Uint8Array) {
             await this.initializeInlineHugo();
@@ -149,6 +151,7 @@ export class Engine {
                 meta.baseurl ? `baseURL = ${meta.baseurl}` : "",
                 meta.copyright ? `copyright = ${meta.copyright}` : "",
                 meta.title ? `title = ${meta.title}` : "",
+                "params.env_bookshop_live = true"
             ].join('\n')
         }));
         const err = window.initHugoConfig();
