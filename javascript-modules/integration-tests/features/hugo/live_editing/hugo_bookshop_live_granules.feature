@@ -56,7 +56,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
     *    stdout should contain "Modifying output site at ./site/public"
     *    stdout should contain "Added live editing to 1 page containing Bookshop components"
     *    site/public/_cloudcannon/info.json should exist
-    *    site/public/_cloudcannon/bookshop-live.js should contain the text "hugo_renderer-"
+    *    site/public/_cloudcannon/bookshop-live.js should contain the text "hugo_renderer.wasm-"
 
   @web
   Scenario: Bookshop live renders when CloudCannon initialises

@@ -87,8 +87,8 @@ export class Engine {
 
     async initializeInlineHugo() {
         const go = new Go();
-        const buffer = hugoWasm.buffer;
-        const renderer = gunzipSync(new Uint8Array(compressedBuffer));
+        const buffer = compressedHugoWasm.buffer;
+        const renderer = gunzipSync(new Uint8Array(buffer));
         const result = await WebAssembly.instantiate(renderer, go.importObject);
         go.run(result.instance);
     }
