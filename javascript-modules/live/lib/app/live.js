@@ -43,7 +43,7 @@ export const getLive = (engines) => class BookshopLive {
     logger(depth = 0) {
         return {
             log: (str) => {
-                if (this.verbose || (typeof window === 'undefined' && window?.bookshopLiveVerbose)) {
+                if (this.verbose || (typeof window !== 'undefined' && window?.bookshopLiveVerbose)) {
                     console.log(`+${Date.now() - this.lastLog}ms : ${'|  '.repeat(depth)}${str}`);
                 }
                 this.lastLog = Date.now();
