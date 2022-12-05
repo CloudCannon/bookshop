@@ -101,7 +101,16 @@ export const replaceHTMLRegion = (startNode, endNode, outputElement) => {
  * Takes in a DOM tree containing Bookshop live comments
  * Calls a given callback whenever a component end tag is hit
  */
-const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, templateBlockHandler = () => { }, isRetry, logger) => {
+const evaluateTemplate = async (opts) => {
+    const {
+        liveInstance,
+        documentNode,
+        parentPathStack,
+        templateBlockHandler,
+        isRetry,
+        logger,
+        processDeepComponents = true
+    } = opts;
     const stack = [{ scope: {} }];           // The stack of data scopes
     const pathStack = parentPathStack || [{}];     // The paths from the root to any assigned variables
     let stashedNodes = [];    // bookshop_bindings tags that we should keep track of for the next component
@@ -119,64 +128,78 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
         logger?.log?.(currentNode.textContent);
         const liveTag = parseComment(currentNode);
 
-        // Keep track of any metadata that the renderer wants
-        for (const [name, identifier] of parseParams(liveTag?.meta)) {
-            meta[name] = identifier;
-            logger?.log?.(`Registered metadata ${name} as ${identifier}`);
+        if (!liveInstance.storedMeta) {
+            // Keep track of any metadata that the renderer wants
+            for (const [name, identifier] of parseParams(liveTag?.meta)) {
+                meta[name] = identifier;
+                logger?.log?.(`Registered metadata ${name} as ${identifier}`);
 
-            if (name === "version" && bookshop_version) {
-                const expected_version = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
-                if (expected_version !== bookshop_version) {
-                    console.error([
-                        `Your Bookshop SSG plugin is running version ${expected_version}, but @bookshop/live is running version ${bookshop_version}.`,
-                        `Bookshop follows semantic versioning with regard to your site and components,`,
-                        `but this does not extend to Bookshop packages being compatible with each other across any version jump.`,
-                        `\nRun %cnpx @bookshop/up@latest%c in your root directory to upgrade all Bookshop dependencies.`
-                    ].join('\n'),
-                        `color: #FF4C29; font-family: monospace; font-weight: bold;`,
-                        `color: unset; font-family: unset; font-weight: unset;`
-                    );
+                if (name === "version" && bookshop_version) {
+                    const expected_version = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
+                    if (expected_version !== bookshop_version) {
+                        console.error([
+                            `Your Bookshop SSG plugin is running version ${expected_version}, but @bookshop/live is running version ${bookshop_version}.`,
+                            `Bookshop follows semantic versioning with regard to your site and components,`,
+                            `but this does not extend to Bookshop packages being compatible with each other across any version jump.`,
+                            `\nRun %cnpx @bookshop/up@latest%c in your root directory to upgrade all Bookshop dependencies.`
+                        ].join('\n'),
+                            `color: #FF4C29; font-family: monospace; font-weight: bold;`,
+                            `color: unset; font-family: unset; font-weight: unset;`
+                        );
+                    }
                 }
+
+                liveInstance.storedMeta = true;
             }
 
             await liveInstance.storeMeta(meta);
         }
 
         for (const [name, identifier] of parseParams(liveTag?.context)) {
-            logger?.log?.(`Parsing context ${name}: ${identifier}`);
-            currentScope().scope[name] = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
-            const normalizedIdentifier = liveInstance.normalize(identifier, logger?.nested?.());
-            if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
-                Object.values(normalizedIdentifier).forEach(value => {
-                    return storeResolvedPath(name, value, pathStack, logger?.nested?.())
-                });
+            const componentDepth = stack.length - 1;
+            if (componentDepth == 0 || processDeepComponents === true) {
+                logger?.log?.(`Parsing context ${name}: ${identifier}`);
+                currentScope().scope[name] = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
+                const normalizedIdentifier = liveInstance.normalize(identifier, logger?.nested?.());
+                if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
+                    Object.values(normalizedIdentifier).forEach(value => {
+                        return storeResolvedPath(name, value, pathStack, logger?.nested?.())
+                    });
+                } else {
+                    storeResolvedPath(name, normalizedIdentifier, pathStack, logger?.nested?.());
+                }
             } else {
-                storeResolvedPath(name, normalizedIdentifier, pathStack, logger?.nested?.());
+                logger?.log?.(`Skipping deep context of ${name}: ${identifier}`);
             }
         }
 
         // Hunt through the stack and try to reassign an existing variable.
         // This is currently only done in Hugo templates
         for (const [name, identifier] of parseParams(liveTag?.reassign)) {
-            logger?.log?.(`Reassigning ${name} to ${identifier}`);
-            for (let i = stack.length - 1; i >= 0; i -= 1) {
-                if (stack[i].scope[name] !== undefined) {
-                    stack[i].scope[name] = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
-                    break;
-                }
-            }
-            for (let i = pathStack.length - 1; i >= 0; i -= 1) {
-                if (pathStack[i][name] !== undefined) {
-                    const normalizedIdentifier = liveInstance.normalize(identifier, logger?.nested?.());
-                    if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
-                        Object.values(normalizedIdentifier).forEach(value => {
-                            return storeResolvedPath(name, value, [pathStack[i]])
-                        });
-                    } else {
-                        storeResolvedPath(name, normalizedIdentifier, [pathStack[i]]);
+            const componentDepth = stack.length - 1;
+            if (componentDepth == 0 || processDeepComponents === true) {
+                logger?.log?.(`Reassigning ${name} to ${identifier}`);
+                for (let i = stack.length - 1; i >= 0; i -= 1) {
+                    if (stack[i].scope[name] !== undefined) {
+                        stack[i].scope[name] = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
+                        break;
                     }
-                    break;
                 }
+                for (let i = pathStack.length - 1; i >= 0; i -= 1) {
+                    if (pathStack[i][name] !== undefined) {
+                        const normalizedIdentifier = liveInstance.normalize(identifier, logger?.nested?.());
+                        if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
+                            Object.values(normalizedIdentifier).forEach(value => {
+                                return storeResolvedPath(name, value, [pathStack[i]])
+                            });
+                        } else {
+                            storeResolvedPath(name, normalizedIdentifier, [pathStack[i]]);
+                        }
+                        break;
+                    }
+                }
+            } else {
+                logger?.log?.(`Skipping deep reassignment of ${name} to ${identifier}`);
             }
         }
 
@@ -202,48 +225,60 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             stashedNodes.push(currentNode);
             stashedParams = [...stashedParams, ...parseParams(liveTag?.params)];
         } else if (liveTag?.name) { // Entering a new component
-            logger?.log?.(`Rendering a new component ${liveTag.name}`);
-            let scope = {};
-            const params = [...stashedParams, ...parseParams(liveTag?.params)];
-            pathStack.push({});
-            for (const [name, identifier] of params) {
-                // Currently 'bind' is used in Jekyll/11ty and '.' is used in Hugo
-                if (name === 'bind') {
-                    const bindVals = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
-                    if (bindVals && typeof bindVals === 'object') {
-                        scope = { ...scope, ...bindVals };
-                        Object.keys(bindVals).forEach(key => storeResolvedPath(key, `${identifier}.${key}`, pathStack));
-                    }
-                } else if (name === ".") {
-                    const bindVals = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
-                    if (bindVals && typeof bindVals === 'object' && !Array.isArray(bindVals)) {
-                        scope = { ...scope, ...bindVals };
+            const componentDepth = stack.length - 1;
+            if (componentDepth == 0 || processDeepComponents === true) {
+                logger?.log?.(`Rendering a new component ${liveTag.name}`);
+                let scope = {};
+                const params = [...stashedParams, ...parseParams(liveTag?.params)];
+                pathStack.push({});
+                for (const [name, identifier] of params) {
+                    // Currently 'bind' is used in Jekyll/11ty and '.' is used in Hugo
+                    if (name === 'bind') {
+                        const bindVals = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
+                        if (bindVals && typeof bindVals === 'object') {
+                            scope = { ...scope, ...bindVals };
+                            Object.keys(bindVals).forEach(key => storeResolvedPath(key, `${identifier}.${key}`, pathStack));
+                        }
+                    } else if (name === ".") {
+                        const bindVals = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
+                        if (bindVals && typeof bindVals === 'object' && !Array.isArray(bindVals)) {
+                            scope = { ...scope, ...bindVals };
+                        } else {
+                            scope[name] = bindVals;
+                        }
+                        const normalizedIdentifier = liveInstance.normalize(identifier, logger?.nested?.());
+                        if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
+                            Object.entries(normalizedIdentifier).forEach(([key, value]) => {
+                                return storeResolvedPath(key, value, pathStack);
+                            });
+                        } else {
+                            storeResolvedPath(name, normalizedIdentifier, pathStack);
+                        }
                     } else {
-                        scope[name] = bindVals;
+                        scope[name] = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
+                        storeResolvedPath(name, identifier, pathStack);
                     }
-                    const normalizedIdentifier = liveInstance.normalize(identifier, logger?.nested?.());
-                    if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
-                        Object.entries(normalizedIdentifier).forEach(([key, value]) => {
-                            return storeResolvedPath(key, value, pathStack);
-                        });
-                    } else {
-                        storeResolvedPath(name, normalizedIdentifier, pathStack);
-                    }
-                } else {
-                    scope[name] = await liveInstance.eval(identifier, combinedScope(), logger?.nested?.());
-                    storeResolvedPath(name, identifier, pathStack);
-                }
-            };
+                };
 
-            stack.push({
-                startNode: currentNode,
-                name: normalizeName(liveTag?.name),
-                pathStack: JSON.parse(JSON.stringify(pathStack)),
-                scope,
-                params,
-                stashedNodes,
-                depth: stack.length - 1,
-            });
+                stack.push({
+                    startNode: currentNode,
+                    name: normalizeName(liveTag?.name),
+                    pathStack: JSON.parse(JSON.stringify(pathStack)),
+                    scope,
+                    params,
+                    stashedNodes,
+                    depth: componentDepth,
+                });
+            } else {
+                logger?.log?.(`Skipping deep render of ${liveTag.name}`);
+
+                pathStack.push({});
+                stack.push({
+                    startNode: currentNode,
+                    name: normalizeName(liveTag?.name),
+                    depth: componentDepth,
+                });
+            }
             stashedParams = [];
             stashedNodes = [];
         }
@@ -254,7 +289,7 @@ const evaluateTemplate = async (liveInstance, documentNode, parentPathStack, tem
             if (!isRetry) {
                 // DOM changed under us, start again.
                 logger?.log?.(`Trying to start again...`);
-                return await evaluateTemplate(liveInstance, documentNode, parentPathStack, templateBlockHandler, true, logger);
+                return await evaluateTemplate(opts);
             }
         }
     }
@@ -299,7 +334,13 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
     }
 
     logger?.log?.(`Evaluating templates found in a document`);
-    await evaluateTemplate(liveInstance, documentNode, null, templateBlockHandler, false, logger?.nested?.());
+    await evaluateTemplate({
+        liveInstance,
+        documentNode,
+        templateBlockHandler,
+        isRetry: false,
+        logger: logger?.nested?.()
+    });
 
     logger?.log?.(`Completed evaluating the document`);
     return updates;
@@ -357,7 +398,14 @@ export const hydrateDataBindings = async (liveInstance, documentNode, pathsInSco
     }
 
     logger?.log?.(`Evaluating template...`);
-    await evaluateTemplate(liveInstance, documentNode, [{}], templateBlockHandler, false, logger?.nested?.());
+    await evaluateTemplate({
+        liveInstance,
+        documentNode,
+        pathStack: [{}],
+        templateBlockHandler,
+        isRetry: false,
+        logger: logger?.nested?.()
+    });
 
     for (let { startNode, endNode, params, pathStack, scope, name } of components) {
         // By default, don't add bindings for bookshop shared includes

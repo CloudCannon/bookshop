@@ -18,6 +18,8 @@ export const getLive = (engines) => class BookshopLive {
         this.renderFrequency = 1000;
         this.renderTimeout = null;
         this.verbose = false;
+        this.lastLog = Date.now();
+        this.storedMeta = false;
 
         this.memo = {};
 
@@ -41,9 +43,10 @@ export const getLive = (engines) => class BookshopLive {
     logger(depth = 0) {
         return {
             log: (str) => {
-                if (this.verbose) {
-                    console.log(`${'|  '.repeat(depth)}${str}`);
+                if (this.verbose || window.bookshopLiveVerbose) {
+                    console.log(`+${Date.now() - this.lastLog}ms : ${'|  '.repeat(depth)}${str}`);
                 }
+                this.lastLog = Date.now();
             },
             nested: () => this.logger(depth + 1)
         }
