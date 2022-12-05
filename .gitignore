@@ -27,3 +27,4 @@ javascript-modules/integration-tests/.bookshop-tmp-test-dir/*
 hugo_renderer.wasm
 hugo_renderer.wasm.gz
 .env
+RELEASE.md
