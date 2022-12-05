@@ -339,7 +339,8 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
         documentNode,
         templateBlockHandler,
         isRetry: false,
-        logger: logger?.nested?.()
+        logger: logger?.nested?.(),
+        processDeepComponents: false
     });
 
     logger?.log?.(`Completed evaluating the document`);
