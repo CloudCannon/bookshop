@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module JekyllBookshop
-  VERSION = "3.4.0.pre.beta.0"
+  VERSION = "3.4.0.pre.beta.1"
 end
