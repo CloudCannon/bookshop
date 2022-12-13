@@ -51,7 +51,7 @@ export const storeResolvedPath = (name, identifier, pathStack, logger) => {
 // TODO: This is now partially coupled with Hugo.
 // This function should move into each engine.
 export const findInStack = (key, stack) => {
-    const [baseIdentifier, ...rest] = key.split('.');
+    const [baseIdentifier, ...rest] = key?.split?.('.');
     if (baseIdentifier) {
         for (let i = stack.length - 1; i >= 0; i--) {
             if (stack[i][baseIdentifier]) {
@@ -350,7 +350,7 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
 const findDataBinding = (identifier, liveInstance, pathStack, logger) => {
     logger?.log?.(`Finding the data binding for ${identifier}`);
     const normalizedIdentifier = liveInstance.normalize(identifier, logger?.nested?.());
-    if (typeof normalizedIdentifier === 'object' && !Array.isArray(normalizedIdentifier)) {
+    if (typeof normalizedIdentifier === 'object') {
         for (const innerIdentifier of Object.values(normalizedIdentifier)) {
             logger?.log?.(`'twas an object — finding the data binding for ${innerIdentifier}'`);
             let dataBinding = findDataBinding(innerIdentifier, liveInstance, pathStack, logger?.nested?.());
