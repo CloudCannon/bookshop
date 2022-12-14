@@ -80,9 +80,10 @@ Feature: Hugo Bookshop CloudCannon Live Editing Edge Cases
     Given a component-lib/components/page/page.hugo.html file containing:
       """
       {{ range . }}
+      {{ $dot := . }}
       <div>
         {{ partial "bookshop" . }}
-        {{ range $key, $value := . }}
+        {{ range $key, $value := $dot }}
           <span>{{ $key }}: {{ . }}</span>
         {{ end }}
       </div>

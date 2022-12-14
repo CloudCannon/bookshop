@@ -15,6 +15,22 @@ const dig = (obj, path) => {
     return obj;
 }
 
+let mapHugoVariablesToParams = (obj, path) => {
+    let resolved = {};
+    for (let [k,v] of Object.entries(obj)) {
+        if (k.startsWith('$')) {
+            const remapped = `__bksh_${k.substring(1)}`;
+            obj[remapped] = v;
+            resolved[k] = `${path}.${remapped}`;
+        } else {
+            if (typeof v === 'object' && !Array.isArray(v)) {
+                resolved = {...resolved, ...mapHugoVariablesToParams(v, `${path}.${k}`)}
+            }
+        }
+    }
+    return resolved
+}
+
 export class Engine {
     constructor(options) {
         options = {
@@ -227,6 +243,7 @@ export class Engine {
     async eval(str, props = [{}]) {
         while (!window.buildHugo) await sleep(10);
         let props_obj = props.reduce((a, b) => { return { ...a, ...b } });
+        let full_props = props_obj;
 
         // We're capable of looking up a simple variable
         // (and it's hard to pass to wasm since we store variables on the context)
@@ -242,6 +259,11 @@ export class Engine {
             return `index (${obj}) ${index}`;
         })
 
+        const variable_pairs = mapHugoVariablesToParams(full_props, ".Params.full_props");
+        const variable_decl = Object.entries(variable_pairs).map(([k,v]) => {
+            return `{{ ${k} := ${v} }}`
+        }).join('');
+
         const assignments = Object.entries(props_obj).filter(([key]) => key.startsWith('$')).map(([key, value]) => {
             if (Array.isArray(value)) {
                 return `{{ ${key} := index ( \`{"a": ${JSON.stringify(value)}}\` | transform.Unmarshal ) "a" }}`
@@ -251,10 +273,10 @@ export class Engine {
                 return `{{ ${key} := ${JSON.stringify(value)} }}`
             }
         }).join('');
-        const eval_str = `{{ with .Params.props }}${assignments}{{ jsonify (${str}) }}{{ end }}`;
+        const eval_str = `${variable_decl}{{ with .Params.props }}${assignments}{{ jsonify (${str}) }}{{ end }}`;
         window.writeHugoFiles(JSON.stringify({
             "layouts/index.html": eval_str,
-            "content/_index.md": JSON.stringify({ props: props_obj }, null, 2)
+            "content/_index.md": JSON.stringify({ props: props_obj, full_props: full_props }, null, 2)
         }));
 
         const buildError = window.buildHugo();
