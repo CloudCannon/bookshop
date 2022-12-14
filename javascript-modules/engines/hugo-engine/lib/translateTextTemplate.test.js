@@ -11,6 +11,16 @@ test("add live markup to bookshop tags", t => {
     t.is(translateTextTemplate(input, {}), expected);
 });
 
+test("add live markup to bookshop tags referencing variables", t => {
+    const input = `{{ partial "bookshop" (slice .item._bookshop_name .item.something )}}`;
+    const expected = [
+        `{{ (printf \`<!--bookshop-live name(%s) params(.: (.item.something))-->\` (.item._bookshop_name)) | safeHTML }}`,
+        `{{ partial "bookshop" (slice .item._bookshop_name .item.something )}}`,
+        `{{ \`<!--bookshop-live end-->\` | safeHTML }}`
+    ].join('');
+    t.is(translateTextTemplate(input, {}), expected);
+});
+
 test("add live markup to scoped bookshop tags", t => {
     const input = `{{ partial "bookshop" . }}`;
     const expected = [
@@ -30,8 +40,18 @@ test("don't add live markup to bookshop_partial tags", t => {
 
 test("don't add live markup if no bookshop found", t => {
     let input = `{{ $a := .b }}`;
-    let expected = `{{ $a := .b }}`;
-    t.is(translateTextTemplate(input, {}), expected);
+    t.is(translateTextTemplate(input, {}), input);
+});
+
+test("don't add live markup to commented out regions", t => {
+    const input = [
+        `{{/* comment start <div>`,
+        ` . {{ partial "bookshop" (slice "content" (dict "content_html" .Params.note_html "type" "note")) }}`,
+        ` <h1> Hello World </h1>`,
+        ` . {{ partial "bookshop" . }}`,
+        `</div> comment end */}}`
+    ].join('\n');
+    t.is(translateTextTemplate(input, {}), input);
 });
 
 test("add live markup to assigns", t => {
@@ -176,3 +196,34 @@ test("add live markup to complex components", t => {
 {{ \`<!--bookshop-live unstack-->\` | safeHTML }}{{ end }}`;
     t.is(translateTextTemplate(input, {}), expected);
 });
+
+// test("add live markup to another complex component", t => {
+//     const input = `
+// {{ if site.Params.env_bookshop_live }}
+
+// {{ partial "bookshop" (slice "layout_options" (slice (partial "bookshop" (slice "filtered_posts/component" .)) .)) }} 
+
+// {{ else }}
+// {{ $content := partial "bookshop" (slice "filtered_posts/component" .) }}
+// {{ $content = $content | strings.ReplaceRE \`<!--.*?-->\` "" | strings.ReplaceRE \`^\s+(.*?)\s+$\` "$1" | safeHTML }}
+
+// {{ if $content }}
+//     {{ partial "bookshop" (slice "layout_options" (slice $content .)) }} 
+// {{ end }}
+// {{ end }}`;
+//     const expected = `
+// {{ if site.Params.env_bookshop_live }}
+
+// {{ partial "bookshop" (slice "layout_options" (slice (partial "bookshop" (slice "filtered_posts/component" .)) .)) }} 
+
+// {{ else }}
+// {{ $content := partial "bookshop" (slice "filtered_posts/component" .) }}
+// {{ $content = $content | strings.ReplaceRE \`<!--.*?-->\` "" | strings.ReplaceRE \`^\s+(.*?)\s+$\` "$1" | safeHTML }}
+
+// {{ if $content }}
+//     {{ partial "bookshop" (slice "layout_options" (slice $content .)) }} 
+// {{ end }}
+// {{ end }}`;
+// console.log(translateTextTemplate(input, {}))
+//     t.is(translateTextTemplate(input, {}), expected);
+// });

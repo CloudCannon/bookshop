@@ -2,6 +2,8 @@ import { Tokenizer } from 'liquidjs';
 
 // Homebrewed pretty-regex writer
 const tokens = {
+    ENTER_COMMENT: `\\*/}}`,
+    EXIT_COMMENT: `{{/\\*`,
     END: `{{ end }}`,
     BEGIN: `{{ (if)`,
     BEGIN_SCOPED: `{{ (range|with|define|block|template)`,
@@ -11,6 +13,7 @@ const tokens = {
     REASSIGN: `{{ (\\$\\S+)  =  () }}`,
     WITH: `{{ with  () }}`,
     BOOKSHOP: `{{ partial  "bookshop"  \\( slice "()" () \\) }}`,
+    BOOKSHOP_VAR: `{{ partial  "bookshop"  \\( slice (\\S+) () \\) }}`,
     BOOKSHOP_SCOPED: `{{ partial  "bookshop"  \\(? \\. \\)? }}`,
 }
 
@@ -26,29 +29,41 @@ Object.entries(tokens).forEach(([name, r]) => {
  * that we already have in the bundle.
  * All go templating tags will come through as value tokens.
  */
-const rewriteTag = function (token, src, endTags, liveMarkup) {
+const rewriteTag = function (token, src, state, liveMarkup) {
     let raw = token.getText();
     let outputToken = {
         text: raw
     }
 
+    if (TOKENS.ENTER_COMMENT.test(raw)) {
+        state.inComment = true
+    }
+    if (TOKENS.EXIT_COMMENT.test(raw)) {
+        state.inComment = false
+        return outputToken;
+    }
+    if (state.inComment) {
+        return outputToken;
+    }
     // Skip non-value tags
     if (token.kind !== 8) return outputToken;
+
     if (TOKENS.END.test(raw)) {
-        endTags.push(outputToken);
+        state.endTags.push(outputToken);
         return outputToken;
     }
 
     if (TOKENS.BEGIN.test(raw)) {
-        endTags.pop();
+        state.endTags.pop();
     }
 
     if (TOKENS.BEGIN_SCOPED.test(raw)) {
         outputToken.text = `${outputToken.text}{{ \`<!--bookshop-live stack-->\` | safeHTML }}`;
 
-        let matchingEnd = endTags.pop();
+        let matchingEnd = state.endTags.pop();
         matchingEnd.text = `{{ \`<!--bookshop-live unstack-->\` | safeHTML }}${matchingEnd.text}`;
     }
+
 
     if (liveMarkup && TOKENS.INDEX_LOOP.test(raw)) {
         let [, index_variable, iterator] = raw.match(TOKENS.INDEX_LOOP);
@@ -89,6 +104,10 @@ const rewriteTag = function (token, src, endTags, liveMarkup) {
             `${outputToken.text}`,
             `{{ \`<!--bookshop-live end-->\` | safeHTML }}`
         ].join('');
+    } else if (liveMarkup && TOKENS.BOOKSHOP_VAR.test(raw)) {
+        let [, variable, params] = raw.match(TOKENS.BOOKSHOP_VAR);
+        const r = required_wrapper_hugo_func(params);
+        outputToken.text = `{{${r[0]} (printf \`<!--bookshop-live name(%s) params(.: (${tidy(params)}))-->\`${r[1]} (${variable})) | safeHTML }}${outputToken.text}{{ \`<!--bookshop-live end-->\` | safeHTML }}`
     }
 
     return outputToken;
@@ -111,10 +130,13 @@ export default function (text, opts) {
     const tokenizer = new Tokenizer(text.toString());
     const tokens = tokenizer.readTopLevelTokens();
     const output = [];
-    const endTags = [];
+    const state = {
+        endTags: [],
+        inComment: false
+    };
 
     tokens.reverse().forEach(tag => {
-        output.unshift(rewriteTag(tag, text, endTags, opts.liveMarkup));
+        output.unshift(rewriteTag(tag, text, state, opts.liveMarkup));
     });
 
     return output.map(t => t.text).join('');
