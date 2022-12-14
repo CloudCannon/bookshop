@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/up",
   "packageManager": "yarn@3.0.0",
-  "version": "3.4.0-beta.1",
+  "version": "3.4.0-beta.2",
   "description": "Bookshop up allows you to upgrade Bookshop versions and file syntax automatically",
   "type": "module",
   "main": "main.js",
@@ -26,7 +26,7 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/helpers": "3.4.0-beta.1",
+    "@bookshop/helpers": "3.4.0-beta.2",
     "@ltd/j-toml": "^1.30.0",
     "chalk": "^5.0.1",
     "commander": "^8.1.0",
