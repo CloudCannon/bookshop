@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/styles",
   "packageManager": "yarn@3.0.0",
-  "version": "3.4.0-beta.2",
+  "version": "3.4.0-beta.3",
   "description": "Bookshop style importer for esbuild",
   "type": "module",
   "main": "bookshopStylePlugin.js",
@@ -25,7 +25,7 @@
     "postcss-fluidvars": "^1.1.2"
   },
   "dependencies": {
-    "@bookshop/helpers": "3.4.0-beta.2",
+    "@bookshop/helpers": "3.4.0-beta.3",
     "fast-glob": "^3.2.7",
     "normalize-path": "^3.0.0",
     "postcss": "^8.3.6",
