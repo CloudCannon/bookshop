@@ -110,7 +110,7 @@ export const getLive = (engines) => class BookshopLive {
         const key = `Evaluating ${identifier} in ${JSON.stringify(scope)}`;
         logger?.log?.(key);
         if (!this.memo[key]) {
-            const result = await this.engines[0].eval(identifier, scope);
+            const result = await this.engines[0].eval(identifier, scope, logger);
             this.memo[key] = result;
         }
         logger?.log?.(`Evaluated to ${JSON.stringify(this.memo[key])}`);
@@ -127,7 +127,7 @@ export const getLive = (engines) => class BookshopLive {
             } else {
                 identifier = this.memo[key];
             }
-            logger?.log?.(`Normalized to ${typeof identifier === "object" ? JSON.stringify(identifier) : identifier}`);
+            logger?.log?.(`Normalized to ${typeof identifier === "object" ? "json: " + JSON.stringify(identifier) : identifier}`);
         }
         return identifier;
     }
@@ -162,11 +162,12 @@ export const getLive = (engines) => class BookshopLive {
             }
             this.logFn.log(`Now running previously throttled render`);
         }
+        const realNow = Date.now();
         this.shouldRenderAt = null;
         this.renderedAt = Date.now();
         this.logFn.log(`Rendering the update`);
         await this.render();
-        this.logFn.log(`Done rendering`);
+        this.logFn.log(`Done rendering in ${Date.now() - realNow}ms (${Date.now() - now}ms throttled)`);
         return true;
     }
 

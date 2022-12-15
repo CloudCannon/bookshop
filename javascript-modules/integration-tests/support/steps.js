@@ -409,7 +409,7 @@ Then(/^🌐 There should be no logs$/i, { timeout: 60 * 1000 }, async function (
  *             *
  * * * * * * * */
 
-Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 * 1000 }, async function (inCloudCannon) {
+Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?( BREAK)?$/i, { timeout: 6000 * 1000 }, async function (inCloudCannon, breakOn) {
   if (!this.storage.ssg) {
     throw new Error(`Expected ssg to be set with a "Given [ssg]:" step`);
   }
@@ -467,6 +467,10 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?$/i, { timeout: 60 
     case 'sveltekit':
       this.serveDir("site/build");
       break;
+  }
+  if (breakOn) {
+    console.log(this.replacePort(`\nAvailable on: http://localhost:__PORT__\nData: ${page_data}`));
+    await p_sleep(6000*1000);
   }
   await loadPage("http://localhost:__PORT__", this);
   if (inCloudCannon) {

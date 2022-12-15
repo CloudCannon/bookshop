@@ -240,7 +240,7 @@ export class Engine {
         }
     }
 
-    async eval(str, props = [{}]) {
+    async eval(str, props = [{}], logger) {
         while (!window.buildHugo) await sleep(10);
         let props_obj = props.reduce((a, b) => { return { ...a, ...b } });
         let full_props = props_obj;
@@ -248,11 +248,50 @@ export class Engine {
         // We're capable of looking up a simple variable
         // (and it's hard to pass to wasm since we store variables on the context)
         if (/^\$/.test(str)) {
-            return props_obj[str] ?? null;
+            logger?.log?.(`Trying to short circuit to return a variable`);
+            if (props_obj[str]) return props_obj[str];
         }
 
         // If we have assigned a root scope we need to pass that in as the context
-        if (props_obj["."]) props_obj = props_obj["."];
+        if (props_obj["."]) {
+            logger?.log?.(`Nesting the props object into its dot scope`);
+            props_obj = props_obj["."];
+        }
+
+        if (str === ".") {
+            logger?.log?.(`Short circuiting dot notation to return the scope`);
+            return props_obj;
+        }
+
+        let normalized = this.normalize(str);
+        if (typeof normalized === 'object') {
+            logger?.log?.(`Digging into the object ${JSON.stringify(normalized)}`);
+            const process = async (obj)  => {
+                for (const [k,v] of Object.entries(obj)) {
+                    if (typeof v === "string") {
+                        if (/^".*"$/.test(v)) {
+                            // Normalized strings look like "\"string\""
+                            logger?.log?.(`Unwrapping the string ${k}: ${v}`);
+                            obj[k] = JSON.parse(v);
+                        } else {
+                            // No inner quotes means it needs to be evaled again
+                            logger?.log?.(`Evaluating the inner ${k}: ${v}`);
+                            obj[k] = await this.eval(v, [props_obj], logger.nested());
+                        }
+                    } else if (typeof v === "object") {
+                        logger?.log?.(`Processing the inner object ${k}`);
+                    }
+                }
+            }
+            await process(normalized);
+            return normalized;
+        }
+        if (/^\w+(\.\w+)*$/.test(normalized)) {
+            logger?.log?.(`Trying to short circuit to return the dot notation ${normalized}`);
+            // We're capable of looking up a simple dot notation access
+            const result = dig(props_obj, normalized);
+            if (result !== undefined) return result
+        }
 
         // Rewrite array.0 into index array 0
         str = str.replace(/(.*)\.(\d+)$/, (_, obj, index) => {

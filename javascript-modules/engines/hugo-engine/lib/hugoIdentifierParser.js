@@ -36,11 +36,6 @@ export class IdentifierParser {
       return `${variable}.${index}`;
     }
 
-    // strip the leading .Params. from basic variable references
-    // if (/^\s*\./.test(this.input)) {
-    //   return this.input.replace(/^\s*\.Params\.([^\.\s])/, '$1');
-    // }
-
     // strip the leading . from basic variable references
     if (/^\s*\./.test(this.input)) {
       return this.input.replace(/^\s*\.([^\.\s])/, '$1');
