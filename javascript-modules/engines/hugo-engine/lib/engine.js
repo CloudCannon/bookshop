@@ -17,14 +17,14 @@ const dig = (obj, path) => {
 
 let mapHugoVariablesToParams = (obj, path) => {
     let resolved = {};
-    for (let [k,v] of Object.entries(obj)) {
+    for (let [k, v] of Object.entries(obj)) {
         if (k.startsWith('$')) {
             const remapped = `__bksh_${k.substring(1)}`;
             obj[remapped] = v;
             resolved[k] = `${path}.${remapped}`;
         } else {
-            if (typeof v === 'object' && !Array.isArray(v)) {
-                resolved = {...resolved, ...mapHugoVariablesToParams(v, `${path}.${k}`)}
+            if (v && typeof v === 'object' && !Array.isArray(v)) {
+                resolved = { ...resolved, ...mapHugoVariablesToParams(v, `${path}.${k}`) }
             }
         }
     }
@@ -266,8 +266,8 @@ export class Engine {
         let normalized = this.normalize(str);
         if (typeof normalized === 'object') {
             logger?.log?.(`Digging into the object ${JSON.stringify(normalized)}`);
-            const process = async (obj)  => {
-                for (const [k,v] of Object.entries(obj)) {
+            const process = async (obj) => {
+                for (const [k, v] of Object.entries(obj)) {
                     if (typeof v === "string") {
                         if (/^".*"$/.test(v)) {
                             // Normalized strings look like "\"string\""
@@ -299,7 +299,7 @@ export class Engine {
         })
 
         const variable_pairs = mapHugoVariablesToParams(full_props, ".Params.full_props");
-        const variable_decl = Object.entries(variable_pairs).map(([k,v]) => {
+        const variable_decl = Object.entries(variable_pairs).map(([k, v]) => {
             return `{{ ${k} := ${v} }}`
         }).join('');
 
