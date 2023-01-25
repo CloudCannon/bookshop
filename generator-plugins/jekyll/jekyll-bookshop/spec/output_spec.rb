@@ -39,7 +39,7 @@ module JekyllBookshop
     it "should sort shared SCSS above component SCSS" do
       output_file = TestHelpers.read_output_file("index.css")
 
-      expect(output_file).must_match %r!c-global.*c-block!
+      expect(output_file).must_match %r!c-global.*c-block!m
     end
 
     make_my_diffs_pretty!
