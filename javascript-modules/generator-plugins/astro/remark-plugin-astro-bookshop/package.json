@@ -1,5 +1,5 @@
 {
-  "name": "@bookshop/astro-bookshop",
+  "name": "@bookshop/remark-plugin-astro-bookshop",
   "packageManager": "yarn@3.0.0",
   "version": "3.4.0-beta.3",
   "type": "module",
@@ -23,8 +23,7 @@
   },
   "dependencies": {
     "@bookshop/helpers": "3.4.0-beta.3",
-    "@bookshop/vite-plugin-astro-bookshop": "3.4.0-beta.3",
-    "@bookshop/remark-plugin-astro-bookshop": "3.4.0-beta.3"
+    "fast-glob": "^3.2.12"
   },
   "engines": {
     "node": ">=14.16"

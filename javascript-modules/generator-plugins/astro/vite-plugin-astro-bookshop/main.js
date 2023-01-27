@@ -1,8 +1,4 @@
 import escodegen from 'escodegen'
-import { processFrontmatter as _processFrontmatter, getDataBinding as _getDataBinding } from './helpers/frontmatter-helper'
-
-export const processFrontmatter = _processFrontmatter;
-export const getDataBinding = _getDataBinding;
 
 export default () => {
 	return {
@@ -10,12 +6,12 @@ export default () => {
 		enforce: 'pre',
 
 		transform(src, id) {
-			let bookshopMatch = id.match(/.*src\/components\/(?<component>\w*)\.astro$/)
-			let layoutMatch = id.match(/.*src\/layouts\/(?<layout>\w*)\.astro$/)
+			const bookshopMatch = id.match(/.*src\/components\/(?<component>\w*)\.astro$/)
+			const layoutMatch = id.match(/.*src\/layouts\/(?<layout>\w*)\.astro$/)
 			if(layoutMatch){
 				return {
 					code: `
-					import {processFrontmatter} from '@bookshop/vite-plugin-astro-bookshop';
+					import {processFrontmatter} from '@bookshop/vite-plugin-astro-bookshop/helpers/frontmatter-helper.js';
 					${src.replace(/const Astro2.*$/m, '$&\nif(Astro2.props.frontmatter){ processFrontmatter(Astro2.props.frontmatter);}')}
 					`
 				}
@@ -23,7 +19,7 @@ export default () => {
 			if(bookshopMatch){
 				const {component} = bookshopMatch.groups
 				const tree = this.parse(`
-				import {getDataBinding} from '@bookshop/vite-plugin-astro-bookshop';
+				import {getDataBinding} from '@bookshop/vite-plugin-astro-bookshop/helpers/frontmatter-helper.js';
 				${src.replace(/const Astro2.*$/m, '$&\nconst data_binding_path = Astro2.props.__bookshop_path || getDataBinding(Astro2.props); delete Astro2.props.__bookshop_path; const commentID = Math.random()')}
 				`);
 				// writeFileSync(`/Users/tate/Desktop/${component}.src.js`, src)
