@@ -21,6 +21,8 @@ Feature: Bookshop Prefetch Generation
       """
       <html>
       <body>
+      Bookshop tag to force live editing
+      {{ partial "bookshop_bindings" `...` }}
       </body>
       </html>
       """
@@ -45,4 +47,4 @@ Feature: Bookshop Prefetch Generation
     When I run "npm start" in the . directory
     Then stderr should be empty
     And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
-    Then DEBUG site/public/_cloudcannon/info.json should contain the text "/_cloudcannon/hugo_renderer.wasm-"
+    Then site/public/_cloudcannon/info.json should contain the text "/_cloudcannon/hugo_renderer.wasm-"
