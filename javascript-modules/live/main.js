@@ -17,6 +17,5 @@ export const runner = async (options) => {
         hosted: true
     }
 
-    const output = await Builder(builderOptions);
-    console.log(output);
+    return await Builder(builderOptions);
 }
