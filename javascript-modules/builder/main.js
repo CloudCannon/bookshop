@@ -54,6 +54,7 @@ export default async (options) => {
 
     return await esbuild.build({
         ...esbuildOptions,
-        bundle: true
+        bundle: true,
+        metafile: true,
     });
 }

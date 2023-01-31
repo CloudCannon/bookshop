@@ -63,10 +63,10 @@ Feature: Bookshop Structure Generation
       blueprint:
         card_text: ""
         color: Blue
-      
+
       preview:
         card_text: This is the card
-      
+
       _inputs:
         color:
           type: select
@@ -80,15 +80,15 @@ Feature: Bookshop Structure Generation
     Then stderr should be empty
     And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path | value |
-      | _structures.content_blocks.id_key | "_bookshop_name" |
-      | _structures.content_blocks.values.0.label | "Card" |
-      | _structures.content_blocks.values.0.value._bookshop_name | "card" |
-      | _structures.content_blocks.values.0.value.card_text | "" |
-      | _structures.content_blocks.values.0.value.color | "Blue" |
-      | _structures.content_blocks.values.0._inputs.color.type | "select" |
-      | _structures.content_blocks.values.0._inputs.color.comment | "Comment" |
-      | _structures.content_blocks.values.0._inputs.color.options.values | ["Red", "Blue"] |
+      | path                                                             | value            |
+      | _structures.content_blocks.id_key                                | "_bookshop_name" |
+      | _structures.content_blocks.values.0.label                        | "Card"           |
+      | _structures.content_blocks.values.0.value._bookshop_name         | "card"           |
+      | _structures.content_blocks.values.0.value.card_text              | ""               |
+      | _structures.content_blocks.values.0.value.color                  | "Blue"           |
+      | _structures.content_blocks.values.0._inputs.color.type           | "select"         |
+      | _structures.content_blocks.values.0._inputs.color.comment        | "Comment"        |
+      | _structures.content_blocks.values.0._inputs.color.options.values | ["Red", "Blue"]  |
 
   Scenario: Generating structures carries through extra fields
     Given a component-lib/components/nested/card/card.bookshop.yml file containing:
@@ -99,7 +99,7 @@ Feature: Bookshop Structure Generation
 
       blueprint:
         color: "#034AD8"
-      
+
       _comments:
         color: "Woo"
       """
@@ -107,9 +107,9 @@ Feature: Bookshop Structure Generation
     Then stderr should be empty
     And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path | value |
-      | _structures.blocks.values.0.label | "Nested / Card" |
-      | _structures.blocks.values.0._comments.color | "Woo" |
+      | path                                        | value           |
+      | _structures.blocks.values.0.label           | "Nested / Card" |
+      | _structures.blocks.values.0._comments.color | "Woo"           |
 
   Scenario: Object arrays become structures
     Given a component-lib/components/card/card.bookshop.toml file containing:
@@ -126,14 +126,14 @@ Feature: Bookshop Structure Generation
     Then stderr should be empty
     And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path | value |
-      | _structures.blocks.values.0.value._bookshop_name | "card" |
-      | _structures.blocks.values.0.value.title | "Hello World" |
-      | _structures.blocks.values.0.value.nested.my_links | [] |
-      | _structures.blocks.values.0._inputs.my_links.type | "array" |
-      | _structures.blocks.values.0._inputs.my_links.options.structures.values.0.label | "My Link" |
-      | _structures.blocks.values.0._inputs.my_links.options.structures.values.0.icon | "add_box" |
-      | _structures.blocks.values.0._inputs.my_links.options.structures.values.0.value.text | "My link" |
+      | path                                                                                | value         |
+      | _structures.blocks.values.0.value._bookshop_name                                    | "card"        |
+      | _structures.blocks.values.0.value.title                                             | "Hello World" |
+      | _structures.blocks.values.0.value.nested.my_links                                   | []            |
+      | _structures.blocks.values.0._inputs.my_links.type                                   | "array"       |
+      | _structures.blocks.values.0._inputs.my_links.options.structures.values.0.label      | "My Link"     |
+      | _structures.blocks.values.0._inputs.my_links.options.structures.values.0.icon       | "add_box"     |
+      | _structures.blocks.values.0._inputs.my_links.options.structures.values.0.value.text | "My link"     |
 
   Scenario: Object arrays do not become structures if otherwise configured
     Given a component-lib/components/card/card.bookshop.toml file containing:
@@ -153,11 +153,11 @@ Feature: Bookshop Structure Generation
     Then stderr should be empty
     And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path | value |
-      | _structures.blocks.values.0.value._bookshop_name | "card" |
-      | _structures.blocks.values.0.value.title | "Hello World" |
-      | _structures.blocks.values.0.value.my_links.0.text | "My link" |
-      | _structures.blocks.values.0._inputs.my_links.options | undefined |
+      | path                                                 | value         |
+      | _structures.blocks.values.0.value._bookshop_name     | "card"        |
+      | _structures.blocks.values.0.value.title              | "Hello World" |
+      | _structures.blocks.values.0.value.my_links.0.text    | "My link"     |
+      | _structures.blocks.values.0._inputs.my_links.options | undefined     |
 
   Scenario: Object array structures get a copy of any configured settings
     Given a component-lib/components/card/card.bookshop.toml file containing:
@@ -180,18 +180,20 @@ Feature: Bookshop Structure Generation
     Then stderr should be empty
     And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path | value |
-      | _structures.blocks.values.0._inputs.text.comment | "Text comment" |
-      | _structures.blocks.values.0._misc.something_else | true |
+      | path                                                                                          | value          |
+      | _structures.blocks.values.0._inputs.text.comment                                              | "Text comment" |
+      | _structures.blocks.values.0._misc.something_else                                              | true           |
       | _structures.blocks.values.0._inputs.my_links.options.structures.values.0._inputs.text.comment | "Text comment" |
-      | _structures.blocks.values.0._inputs.my_links.options.structures.values.0._misc.something_else | true |
+      | _structures.blocks.values.0._inputs.my_links.options.structures.values.0._misc.something_else | true           |
 
   Scenario: JSON config is supported
     Given a component-lib/components/a/b/c/d/e/e.bookshop.json file containing:
       """
       {
         "spec": {
-          "structures": ["anything"]
+          "structures": [
+            "anything"
+          ]
         },
         "blueprint": {
           "title": "Hello"
@@ -202,10 +204,10 @@ Feature: Bookshop Structure Generation
     Then stderr should be empty
     And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path | value |
-      | _structures.anything.values.0.label | "A / B / C / D / E" |
-      | _structures.anything.values.0.value._bookshop_name | "a/b/c/d/e" |
-      | _structures.anything.values.0.value.title | "Hello" |
+      | path                                               | value               |
+      | _structures.anything.values.0.label                | "A / B / C / D / E" |
+      | _structures.anything.values.0.value._bookshop_name | "a/b/c/d/e"         |
+      | _structures.anything.values.0.value.title          | "Hello"             |
 
   Scenario: JS object config is supported
     Given a component-lib/components/a/b/c/d/e/e.bookshop.js file containing:
@@ -223,10 +225,10 @@ Feature: Bookshop Structure Generation
     Then stderr should be empty
     And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path | value |
-      | _structures.anything.values.0.label | "A / B / C / D / E" |
-      | _structures.anything.values.0.value._bookshop_name | "a/b/c/d/e" |
-      | _structures.anything.values.0.value.title | "Hello" |
+      | path                                               | value               |
+      | _structures.anything.values.0.label                | "A / B / C / D / E" |
+      | _structures.anything.values.0.value._bookshop_name | "a/b/c/d/e"         |
+      | _structures.anything.values.0.value.title          | "Hello"             |
 
   Scenario: JS function config is supported
     Given a component-lib/components/a/b/c/d/e/e.bookshop.js file containing:
@@ -243,7 +245,7 @@ Feature: Bookshop Structure Generation
     Then stderr should be empty
     And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path | value |
-      | _structures.🤷‍♂️.values.0.label | "A / B / C / D / E" |
-      | _structures.🤷‍♂️.values.0.value._bookshop_name | "a/b/c/d/e" |
-      | _structures.🤷‍♂️.values.0.value.title | "Hello" |
+      | path                                            | value               |
+      | _structures.🤷‍♂️.values.0.label                | "A / B / C / D / E" |
+      | _structures.🤷‍♂️.values.0.value._bookshop_name | "a/b/c/d/e"         |
+      | _structures.🤷‍♂️.values.0.value.title          | "Hello"             |

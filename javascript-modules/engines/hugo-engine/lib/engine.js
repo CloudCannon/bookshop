@@ -83,10 +83,27 @@ export class Engine {
 
     async initializeLocalCompressedHugo() {
         try {
+
+            let prefetched = {};
+            if (typeof window !== "undefined" && window?.CloudCannon && window?.CloudCannon?.prefetchedFiles) {
+                prefetched = await window.CloudCannon.prefetchedFiles?.();
+                this.availablePrefetchKeys = Object.keys(prefetched);
+            }
+
             const go = new Go();
             const compressedWasmOrigin = this.origin.replace(/\/[^\.\/]+\.(min\.)?js/, compressedHugoWasm.replace(/^\./, ''));
-            const compressedResponse = await fetch(compressedWasmOrigin);
-            const compressedBuffer = await compressedResponse.arrayBuffer();
+            const compressedWasmPath = (new URL(compressedWasmOrigin)).pathname;
+
+            let compressedBuffer;
+            if (prefetched[compressedWasmPath]) {
+                compressedBuffer = prefetched[compressedWasmPath]?.arrayBuffer();
+                this.loadedFrom = "prefetch";
+            } else {
+                const compressedResponse = await fetch(compressedWasmOrigin);
+                compressedBuffer = await compressedResponse.arrayBuffer();
+                this.loadedFrom = "network";
+            }
+
             const renderer = gunzipSync(new Uint8Array(compressedBuffer));
 
             // Check the magic word at the start of the buffer as a way to verify the CDN download worked.
