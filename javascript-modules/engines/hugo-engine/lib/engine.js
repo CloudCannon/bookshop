@@ -96,7 +96,7 @@ export class Engine {
 
             let compressedBuffer;
             if (prefetched[compressedWasmPath]) {
-                compressedBuffer = prefetched[compressedWasmPath]?.arrayBuffer();
+                compressedBuffer = await prefetched[compressedWasmPath]?.arrayBuffer();
                 this.loadedFrom = "prefetch";
             } else {
                 const compressedResponse = await fetch(compressedWasmOrigin);
