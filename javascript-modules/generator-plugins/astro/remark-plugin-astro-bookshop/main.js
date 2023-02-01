@@ -4,7 +4,7 @@ import {join} from 'path'
 export default () => {
 	return (tree, file) => {
 		fg.sync(["src/components/**/*.astro"]).forEach((path) => {
-			const bookshopMatch = path.match(/.*src\/components\/(?<component>\w*)\.astro$/)
+			const bookshopMatch = path.match(/.*src\/components.*\/(?<component>\w*)\.astro$/)
 			tree.children.unshift({
 				"type": "mdxjsEsm",
 				"position": {

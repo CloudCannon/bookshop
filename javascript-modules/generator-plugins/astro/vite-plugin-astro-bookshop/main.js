@@ -1,4 +1,5 @@
 import escodegen from 'escodegen'
+import {parse} from 'acorn'
 
 export default () => {
 	return {
@@ -6,8 +7,8 @@ export default () => {
 		enforce: 'pre',
 
 		transform(src, id) {
-			const bookshopMatch = id.match(/.*src\/components\/(?<component>\w*)\.astro$/)
-			const layoutMatch = id.match(/.*src\/layouts\/(?<layout>\w*)\.astro$/)
+			const bookshopMatch = id.match(/.*src\/components.*\/(?<component>\w*)\.astro$/)
+			const layoutMatch = id.match(/.*src\/layouts.*\/(?<layout>\w*)\.astro$/)
 			if(layoutMatch){
 				return {
 					code: `
@@ -18,12 +19,13 @@ export default () => {
 			}
 			if(bookshopMatch){
 				const {component} = bookshopMatch.groups
-				const tree = this.parse(`
+				const tree = parse(`
 				import {getDataBinding} from '@bookshop/vite-plugin-astro-bookshop/helpers/frontmatter-helper.js';
 				${src.replace(/const Astro2.*$/m, '$&\nconst data_binding_path = Astro2.props.__bookshop_path || getDataBinding(Astro2.props); delete Astro2.props.__bookshop_path; const commentID = Math.random()')}
-				`);
-				// writeFileSync(`/Users/tate/Desktop/${component}.src.js`, src)
-				// writeFileSync(`/Users/tate/Desktop/${component}.ast.json`, JSON.stringify(tree))
+				`, {
+					sourceType: 'module',
+					ecmaVersion: 'latest'
+				});
 				const componentDecl = tree.body.find((statement) => {
 					if(statement.type !== 'VariableDeclaration'){
 						return false;
@@ -40,53 +42,41 @@ export default () => {
 					return !!decl
 				})
 
+				const props = [];
+				const findProps = (obj) => {
+					if(!obj){
+						return
+					}
+					if(obj?.type === 'MemberExpression'){
+						const {object} = obj;
+						if(object?.type ==='MemberExpression' && object?.object?.name === 'Astro2' && object?.property?.name === 'props'){
+							if(obj.property?.name && obj.property?.name !== '__bookshop_path' && !props.includes(obj.property?.name)){
+								props.push(obj.property.name)
+								return;
+							}
+						}
+					}
+					Object.values(obj).forEach((val) => {
+						if(Array.isArray(val)){
+							val.forEach(findProps)
+						} else if(typeof val === 'object'){
+							findProps(val)
+						}
+					})
+				}
+				findProps(tree)
+
 				const process = (obj) => {
 					if(!obj){
 						return
 					}
 					if(obj?.type === 'TaggedTemplateExpression' && obj.tag.name === '$$render'){
 							const quasis = obj.quasi.quasis;
-							const scriptStart = `
-							<script>
-							window.addEventListener("DOMContentLoaded", () => {
-								const getTemplateCommentIterator = () => {
-									const documentNode = document;
-									return documentNode.evaluate(
-										"//comment()[contains(.,'`
-							const scriptMiddle = `')]",
-										documentNode,
-										null,
-										XPathResult.ANY_TYPE,
-										null
-									);
-								};
-						
-								const data_binding_path = "`
-								const scriptEnd = `";
-								if(data_binding_path.length === 0){ return; }
-								const iterator = getTemplateCommentIterator();
-								const startNode = iterator.iterateNext();
-								const endNode = iterator.iterateNext();
-								if (!startNode || !endNode) return;
-						
-								let node = startNode.nextElementSibling;
-								while (
-									node &&
-									(node.compareDocumentPosition(endNode) &
-										Node.DOCUMENT_POSITION_FOLLOWING) !==
-										0
-								) {
-									node.dataset.cmsBind = "#"+data_binding_path;
-								node = node.nextElementSibling;
-									}
-									window?.CloudCannon?.refreshInterface?.();
-								});
-								</script>
-							`
-							quasis[0].value.raw = `--><!--bookshop-live name(${component})-->${quasis[0].value.raw}`
+							const propsString = props.map((prop) => `${prop}:${prop}`).join(',')
+							quasis[0].value.raw = `--><!--bookshop-live name(${component}) params(${propsString})-->${quasis[0].value.raw}`
 							quasis[0].value.cooked = `--><!--bookshop-live name(${component})-->${quasis[0].value.cooked}`
-							quasis[quasis.length-1].value.raw = `${quasis[quasis.length-1].value.raw}<!--bookshop-live end--><!--`
-							quasis[quasis.length-1].value.cooked = `${quasis[quasis.length-1].value.cooked}<!--bookshop-live end--><!--`
+							quasis[quasis.length-1].value.raw = `${quasis[quasis.length-1].value.raw}<!--bookshop-live end--><!--databindingend:`
+							quasis[quasis.length-1].value.cooked = `${quasis[quasis.length-1].value.cooked}<!--bookshop-live end--><!--databindingend:`
 							quasis.unshift({
 								"type": "TemplateElement",
 								"start": 595,
@@ -95,29 +85,7 @@ export default () => {
 									"start": { "line": 14, "column": 18 },
 									"end": { "line": 14, "column": 18 }
 								},
-								"value": { "raw": scriptStart, "cooked": scriptStart },
-								"tail": false
-							},
-							{
-								"type": "TemplateElement",
-								"start": 595,
-								"end": 595,
-								"loc": {
-									"start": { "line": 14, "column": 18 },
-									"end": { "line": 14, "column": 18 }
-								},
-								"value": { "raw": scriptMiddle, "cooked": scriptMiddle },
-								"tail": false
-							},
-							{
-								"type": "TemplateElement",
-								"start": 595,
-								"end": 595,
-								"loc": {
-									"start": { "line": 14, "column": 18 },
-									"end": { "line": 14, "column": 18 }
-								},
-								"value": { "raw": `${scriptEnd}<!--`, "cooked": `${scriptEnd}<!--` },
+								"value": { "raw": "<!--databinding: ", "cooked": "<!--databinding: " },
 								"tail": false
 							})
 							quasis.push({
@@ -145,39 +113,8 @@ export default () => {
 										"column": 57
 									}
 								},
-								"name": "commentID"
-							},{
-								"type": "Identifier",
-								"start": 682,
-								"end": 688,
-								"loc": {
-									"start": {
-										"line": 15,
-										"column": 51
-									},
-									"end": {
-										"line": 15,
-										"column": 57
-									}
-								},
 								"name": "data_binding_path"
-							},
-							{
-								"type": "Identifier",
-								"start": 682,
-								"end": 688,
-								"loc": {
-									"start": {
-										"line": 15,
-										"column": 51
-									},
-									"end": {
-										"line": 15,
-										"column": 57
-									}
-								},
-								"name": "commentID"
-							},)
+							})
 							obj.quasi.expressions.push({
 								"type": "Identifier",
 								"start": 682,
@@ -192,7 +129,7 @@ export default () => {
 										"column": 57
 									}
 								},
-								"name": "commentID"
+								"name": "data_binding_path"
 							})
 							return;
 						}
@@ -209,7 +146,6 @@ export default () => {
 
 				return {
 					code: escodegen.generate(tree),
-					ast: tree,
 					map: null
 				}
 			}
