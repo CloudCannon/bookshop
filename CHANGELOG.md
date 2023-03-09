@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.4.0 (March 9, 2023)
+
 ### New Hugo renderer
 
 The main aspect of this release is a new and improved Hugo renderer when live editing on CloudCannon. Alongside being more reliable, this unlocks many templating functions that were previously unavailable, such as:
