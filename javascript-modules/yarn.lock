@@ -397,7 +397,7 @@ __metadata:
     "@bookshop/helpers": 3.4.0
     ava: ^3.15.0
     esbuild: ^0.13.10
-    liquidjs: 9.28.0
+    liquidjs: 10.0.0
     markdown-it: ^13.0.1
     nyc: ^15.1.0
     punycode: ^2.1.1
@@ -433,7 +433,7 @@ __metadata:
   resolution: "@bookshop/helpers@workspace:helpers"
   dependencies:
     ava: ^3.15.0
-    liquidjs: 9.28.0
+    liquidjs: 10.0.0
     nyc: ^15.1.0
   languageName: unknown
   linkType: soft
@@ -446,7 +446,7 @@ __metadata:
     ava: ^3.15.0
     esbuild: ^0.13.10
     fflate: ^0.7.3
-    liquidjs: 9.28.0
+    liquidjs: 10.0.0
     nyc: ^15.1.0
   languageName: unknown
   linkType: soft
@@ -475,7 +475,7 @@ __metadata:
     esbuild: ^0.13.10
     js-base64: ^3.6.1
     kramed: ^0.5.6
-    liquidjs: 9.28.0
+    liquidjs: 10.0.0
     nyc: ^15.1.0
     slugify: ^1.5.3
   languageName: unknown
@@ -5855,13 +5855,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"liquidjs@npm:9.28.0":
-  version: 9.28.0
-  resolution: "liquidjs@npm:9.28.0"
+"liquidjs@npm:10.0.0":
+  version: 10.0.0
+  resolution: "liquidjs@npm:10.0.0"
   bin:
     liquid: bin/liquid.js
     liquidjs: bin/liquid.js
-  checksum: 7c89b5346ca2b8c8fe08b22e214a43cacaee6a6ba9b2a43e405a618c61245ab2c12b73c7e16716cd24982d3794fb1d95f438b1dc2f49554364b3de7dd9ff6149
+  checksum: f86850f24a6be67aa7d09741a0256311d9e1e9efe0aaed59184cff2d44973d6d4311b1045379682e561eab212e005dcb2ca7a58f45dd5fb617cc39b5ddbd6e0d
   languageName: node
   linkType: hard
 
