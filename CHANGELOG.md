@@ -9,6 +9,21 @@
 
 ## Unreleased
 
+Fixed an error where nested object arrays in a component blueprint would error out.
+
+```yml
+blueprint:
+  title: Hello World
+  nested:
+    # `nested` would be made into an array structure with a value matching the below object
+    - title: "Nested Object #1"
+      double_nested:
+        # This would not work and `double_nested` would default to a string array
+        - title: "Nested Object #2"
+```
+
+This release fixes this behaviour, and deeply nested object arrays will behave as expected.
+
 ## v3.4.0 (March 9, 2023)
 
 ### New Hugo renderer
