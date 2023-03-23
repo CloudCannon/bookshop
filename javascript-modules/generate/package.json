@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/generate",
   "packageManager": "yarn@3.0.0",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "Bookshop generate powers rich editing experiences on your Bookshop website",
   "type": "module",
   "main": "main.js",
@@ -26,10 +26,10 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/browser": "3.4.0",
-    "@bookshop/builder": "3.4.0",
-    "@bookshop/helpers": "3.4.0",
-    "@bookshop/live": "3.4.0",
+    "@bookshop/browser": "3.4.1",
+    "@bookshop/builder": "3.4.1",
+    "@bookshop/helpers": "3.4.1",
+    "@bookshop/live": "3.4.1",
     "@ltd/j-toml": "^1.30.0",
     "chalk": "^5.0.1",
     "commander": "^8.1.0",

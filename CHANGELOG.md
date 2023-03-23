@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.4.1 (March 23, 2023)
+
 Fixed an error where nested object arrays in a component blueprint would error out.
 
 ```yml
