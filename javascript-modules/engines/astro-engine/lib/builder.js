@@ -3,7 +3,7 @@ import { transform } from "@astrojs/compiler";
 import AstroPluginVite from "@bookshop/vite-plugin-astro-bookshop"
 import * as esbuild from 'esbuild'
 
-export const extensions = [".astro"];
+export const extensions = [".astro", ".jsx"];
 
 const { transform: bookshopTransform } = AstroPluginVite()
 
@@ -37,6 +37,20 @@ export const buildPlugins = [
 
         return {
           contents: result.code,
+          loader: "js",
+        };
+      });
+      build.onLoad({ filter: /\.jsx$/ }, async (args) => {
+        let text = await fs.promises.readFile(args.path, "utf8");
+        text = `import React from 'react';\n${text}`
+        let jsResult = await esbuild.transform(text, {
+          loader: 'jsx',
+          target: 'esnext',
+          sourcemap: false
+        })
+
+        return {
+          contents: jsResult.code,
           loader: "js",
         };
       });

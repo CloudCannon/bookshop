@@ -1,5 +1,9 @@
 import { renderToString } from "astro/internal/index.js";
 import { processFrontmatter } from "@bookshop/vite-plugin-astro-bookshop/helpers/frontmatter-helper";
+import { createRoot } from "react-dom/client";
+import { createElement } from 'react';
+import { renderToStaticMarkup } from "react-dom/server.browser";
+import { flushSync } from "react-dom";
 
 export class Engine {
   constructor(options) {
@@ -27,7 +31,11 @@ export class Engine {
 
   getComponentKey(name) {
     const base = name.split("/").reverse()[0];
-    return `components/${name}/${base}.astro`;
+    const root = `components/${name}`;
+    return (
+      Object.keys(this.files).find((key) => key.startsWith(`${root}/${base}`)) ??
+      Object.keys(this.files).find((key) => key.startsWith(root))
+    );
   }
 
   getComponent(name) {
@@ -47,9 +55,29 @@ export class Engine {
   }
 
   async render(target, name, props, globals) {
-    processFrontmatter(props);
+    const key = this.getComponentKey(name);
+    
+    if (key.endsWith(".astro")) {
+      return this.renderAstroComponent(target, key, props, globals);
+    } else if (key.endsWith(".jsx")) {
+      return this.renderReactComponent(target, key, props, globals);
+    }
+  }
 
-    const component = this.getComponent(name);
+  async renderReactComponent(target, key, props, globals) {
+    const component = this.files?.[key];
+    const reactNode = createElement(
+      component, props, null
+    )
+
+    const root = createRoot(target);
+    flushSync(() => root.render(reactNode));
+
+    return;
+  }
+
+  async renderAstroComponent(target, key, props, globals) {
+    const component = this.files?.[key];
     const result = await renderToString(
       {
         styles: new Set(),
@@ -62,6 +90,19 @@ export class Engine {
           hasHydrationScript: false,
           hasRenderedHead: false,
           hasDirectives: new Set(),
+          renderers: [
+            {
+              name: "@bookshop/react",
+              ssr: {
+                check: () => true,
+                renderToStaticMarkup: async (Component, props) => {
+                  const reactNode = await Component(props);
+
+                  return { html: renderToStaticMarkup(reactNode) };
+                },
+              },
+            },
+          ],
         },
         slots: null,
         props,
@@ -81,6 +122,7 @@ export class Engine {
   }
 
   async eval(str, props = [{}]) {
-    return props[0][str];
+    processFrontmatter(props[0]);
+    return str.split(".").reduce((curr, key) => curr[key], props[0]);
   }
 }
