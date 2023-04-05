@@ -95,7 +95,7 @@ export default (src, componentName) => {
   findFunctionStatements(tree).forEach((node) => {
     node.body.body.unshift(
       parse(
-        "try { dataBindingPath = '#'+getDataBinding(arguments[0]); } catch(e) {}",
+        "try { dataBindingPath = getDataBinding(arguments[0])?'#'+getDataBinding(arguments[0]):null; } catch(e) {}",
         {
           sourceType: "module",
           ecmaVersion: "latest",
