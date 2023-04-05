@@ -4,7 +4,8 @@ import processReactJSX from "./processors/react-jsx.js";
 import processAstro from "./processors/astro.js";
 
 const LAYOUT_REGEX = /.*src\/layouts.*\/(?<layout>\w*)\.astro$/;
-const COMPONENT_REGEX = /^\/src\/components\/(?<component>.*)\.(astro|jsx)$/;
+const COMPONENT_REGEX =
+  /^\/src\/components\/(?<component>.*)\.(astro|jsx|tsx)$/;
 
 export default () => {
   return {
@@ -35,7 +36,7 @@ export default () => {
       }
       componentName = parts.join("/");
 
-      if (id.endsWith(".jsx")) {
+      if (id.endsWith(".jsx") || id.endsWith(".tsx")) {
         return {
           code: processReactJSX(src, componentName),
         };

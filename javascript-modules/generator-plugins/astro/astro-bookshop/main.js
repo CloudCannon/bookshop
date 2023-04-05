@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import remarkAutoImport from "@cloudcannon/remark-auto-import";
 import mdxProcessFrontmatter from "./mdx-process-frontmatter.js";
 import reactRender from "./react/renderer.js";
+import vitePluginBookshop from "@bookshop/vite-plugin-astro-bookshop";
 
 const COMPONENT_REGEX = /\/src\/components\/(?<component>.*)\.(astro|jsx)$/;
 
@@ -51,7 +52,7 @@ export default () => {
                   additionals: [
                     {
                       importPath:
-                        "@bookshop/vite-plugin-astro-bookshop/helpers/frontmatter-helper.js",
+                        "@bookshop/astro-bookshop/helpers/frontmatter-helper.js",
                       namedImports: [{ name: "processFrontmatter" }],
                     },
                     {
@@ -63,9 +64,7 @@ export default () => {
             ],
           },
           vite: {
-            plugins: [
-              (await import("@bookshop/vite-plugin-astro-bookshop")).default(),
-            ],
+            plugins: [vitePluginBookshop()],
           },
         });
       },

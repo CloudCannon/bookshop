@@ -22,9 +22,8 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/helpers": "3.4.0-beta.3",
-    "acorn": "^8.8.2",
-    "escodegen": "^2.0.0"
+    "@babel/generator": "^7.21.4",
+    "@babel/parser": "^7.21.4"
   },
   "engines": {
     "node": ">=14.16"

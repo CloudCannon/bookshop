@@ -5,5 +5,5 @@ export default (src) => {
 		if(Astro2.props.frontmatter){ processFrontmatter(Astro2.props.frontmatter);}
 		else if(Astro2.props){ processFrontmatter(Astro2.props);}`
   );
-  return `import {processFrontmatter} from '@bookshop/vite-plugin-astro-bookshop/helpers/frontmatter-helper.js';\n${src}`;
+  return `import {processFrontmatter} from '@bookshop/astro-bookshop/helpers/frontmatter-helper.js';\n${src}`;
 };

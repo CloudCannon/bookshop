@@ -1,7 +1,7 @@
 import { renderToString } from "astro/internal/index.js";
-import { processFrontmatter } from "@bookshop/vite-plugin-astro-bookshop/helpers/frontmatter-helper";
+import { processFrontmatter } from "@bookshop/astro-bookshop/helpers/frontmatter-helper";
 import { createRoot } from "react-dom/client";
-import { createElement } from 'react';
+import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server.browser";
 import { flushSync } from "react-dom";
 
@@ -33,8 +33,9 @@ export class Engine {
     const base = name.split("/").reverse()[0];
     const root = `components/${name}`;
     return (
-      Object.keys(this.files).find((key) => key.startsWith(`${root}/${base}`)) ??
-      Object.keys(this.files).find((key) => key.startsWith(root))
+      Object.keys(this.files).find((key) =>
+        key.startsWith(`${root}/${base}`)
+      ) ?? Object.keys(this.files).find((key) => key.startsWith(root))
     );
   }
 
@@ -56,7 +57,7 @@ export class Engine {
 
   async render(target, name, props, globals) {
     const key = this.getComponentKey(name);
-    
+
     if (key.endsWith(".astro")) {
       return this.renderAstroComponent(target, key, props, globals);
     } else if (key.endsWith(".jsx")) {
@@ -66,9 +67,7 @@ export class Engine {
 
   async renderReactComponent(target, key, props, globals) {
     const component = this.files?.[key];
-    const reactNode = createElement(
-      component, props, null
-    )
+    const reactNode = createElement(component, props, null);
 
     const root = createRoot(target);
     flushSync(() => root.render(reactNode));
@@ -118,11 +117,11 @@ export class Engine {
       props,
       null
     );
-    target.innerHTML = result;
+    target.innerHTML = result.replace(/<!--bookshop-live.*-->/g, "");
   }
 
   async eval(str, props = [{}]) {
     processFrontmatter(props[0]);
-    return str.split(".").reduce((curr, key) => curr[key], props[0]);
+    return str.split(".").reduce((curr, key) => curr?.[key], props[0]);
   }
 }
