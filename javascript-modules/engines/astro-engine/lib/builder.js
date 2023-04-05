@@ -4,7 +4,7 @@ import AstroPluginVite from "@bookshop/vite-plugin-astro-bookshop";
 import { resolveConfig } from "vite";
 import * as esbuild from "esbuild";
 
-export const extensions = [".astro", ".jsx"];
+export const extensions = [".astro", ".jsx", ".tsx"];
 
 const { transform: bookshopTransform } = AstroPluginVite();
 
@@ -49,11 +49,11 @@ export const buildPlugins = [
           loader: "js",
         };
       });
-      build.onLoad({ filter: /\.jsx$/ }, async (args) => {
+      build.onLoad({ filter: /\.(j|t)sx$/ }, async (args) => {
         let text = await fs.promises.readFile(args.path, "utf8");
         text = `import __React from 'react';\n${text}`;
         let jsResult = await esbuild.transform(text, {
-          loader: "jsx",
+          loader: args.path.endsWith("jsx") ? "jsx" : "tsx",
           jsxFactory: "__React.createElement",
           jsxFragment: "__React.Fragment",
           target: "esnext",
