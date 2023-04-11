@@ -20,23 +20,31 @@
         const base = name.split("/").reverse()[0];
         return `components/${name}/${base}.svelte`;
     };
+    const getFlatComponentKey = (name) => {
+        return `components/${name}.svelte`;
+    };
 
     let TargetComponent;
     let dataBindPath;
     let commentID;
-    let path;
+    let paths = [];
     if (component) {
-        path = getComponentKey(component);
+        paths = [getComponentKey(component), getFlatComponentKey(component)];
     } else if (shared) {
-        path = `shared/svelte/${shared}.svelte`;
+        paths = [`shared/svelte/${shared}.svelte`];
     } else if ($$restProps._bookshop_name) {
-        path = getComponentKey($$restProps._bookshop_name);
+        paths = [
+            getComponentKey($$restProps._bookshop_name),
+            getFlatComponentKey($$restProps._bookshop_name),
+        ];
     } else {
         throw new Error("No component or shared key passed to Bookshop.");
     }
-    TargetComponent = Object.entries(components).filter(([k]) =>
-        k.endsWith(path)
-    )?.[0]?.[1];
+
+    // Grab a matching component with the longest path to prioritize standard components over flat names
+    TargetComponent = Object.entries(components)
+        .filter(([k]) => paths.some((path) => k.endsWith(path)))
+        ?.sort?.((a, b) => b[0].length - a[0].length)?.[0]?.[1];
 
     // In the component browser context we won't get it as `.default`,
     // but through Vite we do.
@@ -45,7 +53,14 @@
     }
 
     if (!TargetComponent) {
-        throw new Error(`Component not found for ${shared || component}`);
+        throw new Error(
+            [
+                `Component not found for ${shared || component}`,
+                `Add this component at one of these paths in a component folder: [ ${paths.join(
+                    ", "
+                )} ]`,
+            ].join("\n")
+        );
     }
 
     const updateDataBindings = () => {
