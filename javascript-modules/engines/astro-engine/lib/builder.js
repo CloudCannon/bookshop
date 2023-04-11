@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { join } from "path";
 import { transform } from "@astrojs/compiler";
 import AstroPluginVite from "@bookshop/vite-plugin-astro-bookshop";
 import { resolveConfig } from "vite";
@@ -49,6 +50,9 @@ export const buildPlugins = [
           loader: "js",
         };
       });
+      build.onResolve({ filter: /^\/.*\.(svg|png|jpe?g|webp)/ }, (args) => {
+        return { path: join(process.cwd(), "public", args.path) };
+      });
       build.onLoad({ filter: /\.(j|t)sx$/ }, async (args) => {
         let text = await fs.promises.readFile(args.path, "utf8");
         text = `import __React from 'react';\n${text}`;
@@ -95,4 +99,14 @@ export const buildPlugins = [
   },
 ];
 
-export const esbuildConfigFn = (esbuildOptions, options) => {};
+export const esbuildConfigFn = (esbuildOptions, options) => {
+  esbuildOptions.loader = esbuildOptions.loader ?? {};
+  esbuildOptions.loader = {
+    ".png": "file",
+    ".svg": "file",
+    ".jpg": "file",
+    ".jpeg": "file",
+    ".webp": "file",
+    ...esbuildOptions.loader,
+  };
+};
