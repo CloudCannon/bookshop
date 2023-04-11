@@ -94,3 +94,6 @@ Feature: SvelteKit Bookshop Component Browser Granular Steps
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Hello There, World"
+
+  @web @skip # NYI
+  Scenario: Bookshop component browser renders a flat component
