@@ -12,6 +12,8 @@ Feature: Basic Astro Bookshop
         astro.config.mjs from starters/astro/astro.config.mjs
         src/
           helper.mjs from starters/astro/helper.mjs
+          bookshop/
+            bookshop.config.cjs from starters/astro/bookshop.config.cjs
       """
 
   Scenario: Tests are functional
@@ -35,8 +37,42 @@ Feature: Basic Astro Bookshop
 
       <h1>{ page.data.title }</h1>
       """
-    When I run "npm i" in the site directory
     When I run "npm run build" in the site directory
     Then stderr should be empty
-    # And stdout should contain "v1.0.0"
+    And stdout should contain "Complete!"
     And site/dist/index.html should contain the text "Hello World"
+
+  Scenario: Components are rendered from bookshop
+    Given a site/src/components/title.jsx file containing:
+      """
+      export default function Title({ text }) {
+        return (
+          <h1>Bookshop: {text}</h1>
+        )
+      }
+      """
+    And a site/src/content/pages/index.md file containing:
+      """
+      ---
+      title: Result 🤽‍♂️
+      ---
+      """
+    And a site/src/pages/[...slug].astro file containing:
+      """
+      ---
+      import Title from "../components/title";
+      import testHelper from "../helper.mjs";
+
+      export async function getStaticPaths() {
+        return testHelper();
+      }
+
+      const page = Astro.props.page;
+      ---
+
+      <Title text={page.data.title} />
+      """
+    When I run "npm run build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Complete!"
+    And site/dist/index.html should contain the text "Bookshop: Result 🤽‍♂️"
