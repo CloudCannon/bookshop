@@ -6,8 +6,7 @@ const renderToStaticMarkup = async (Component, props, children, metadata) => {
     .filter((prop) => prop !== "class" && !prop.includes(":"))
     .map((prop) => `${prop}: ${props[prop]?.__bookshop_path ?? prop}`)
     .join(",");
-  const shouldLiveRender =
-    props["bookshop:live"] || typeof window !== "undefined";
+  const shouldLiveRender = props["bookshop:live"];
   delete props["bookshop:live"];
   let { html } = await server.renderToStaticMarkup(
     Component,
