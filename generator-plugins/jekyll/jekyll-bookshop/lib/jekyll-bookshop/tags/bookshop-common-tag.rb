@@ -23,8 +23,12 @@ module JekyllBookshop
       site = context.registers[:site]
       validate_file_name(file)
 
-      path = locate_include_file(context, file, site.safe)
-      return unless path
+      begin
+        path = locate_include_file(context, file, site.safe)
+      rescue IOError
+        return false
+      end
+      return false unless path
 
       add_include_to_dependency(site, path, context)
 

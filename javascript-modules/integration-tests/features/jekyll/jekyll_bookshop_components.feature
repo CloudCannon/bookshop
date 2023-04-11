@@ -60,6 +60,58 @@ Feature: Basic Jekyll Bookshop
     And stdout should contain "done in"
     And site/_site/index.html should contain the text "Bookshop: Result 🧄"
 
+  Scenario: Flat root components are rendered from bookshop
+    Given a component-lib/components/title.jekyll.html file containing:
+      """
+      <h1>Bookshop: {{ include.text }}</h1>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      ---
+      {% bookshop title text="Result 🧄" %}
+      """
+    When I run "bundle exec jekyll build --trace" in the site directory
+    Then stderr should be empty
+    And stdout should contain "done in"
+    And site/_site/index.html should contain the text "Bookshop: Result 🧄"
+
+  Scenario: Nested flat components are rendered from bookshop
+    Given a component-lib/components/nested/title.jekyll.html file containing:
+      """
+      <h1>Bookshop: {{ include.text }}</h1>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      ---
+      {% bookshop nested/title text="Result 🧄" %}
+      """
+    When I run "bundle exec jekyll build --trace" in the site directory
+    Then stderr should be empty
+    And stdout should contain "done in"
+    And site/_site/index.html should contain the text "Bookshop: Result 🧄"
+
+  Scenario: Standard components take precendence over flat components
+    Given a component-lib/components/nested/title.jekyll.html file containing:
+      """
+      <h1>Flat: {{ include.text }}</h1>
+      """
+    Given a component-lib/components/nested/title/title.jekyll.html file containing:
+      """
+      <h1>Standard: {{ include.text }}</h1>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      ---
+      {% bookshop nested/title text="Result 🧄" %}
+      """
+    When I run "bundle exec jekyll build --trace" in the site directory
+    Then stderr should be empty
+    And stdout should contain "done in"
+    And site/_site/index.html should contain the text "Standard: Result 🧄"
+
   Scenario: Components can use the page front matter
     Given a component-lib/components/title/title.jekyll.html file containing:
       """
