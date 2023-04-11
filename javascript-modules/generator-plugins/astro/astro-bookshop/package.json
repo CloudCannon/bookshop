@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/astro-bookshop",
   "packageManager": "yarn@3.0.0",
-  "version": "3.4.0-beta.3",
+  "version": "3.4.0-beta.4",
   "type": "module",
   "description": "Astro plugin for consuming Bookshop components",
   "main": "main.js",
@@ -23,8 +23,8 @@
   },
   "dependencies": {
     "@astrojs/react": "^2.1.0",
-    "@bookshop/helpers": "3.4.0-beta.3",
-    "@bookshop/vite-plugin-astro-bookshop": "3.4.0-beta.3",
+    "@bookshop/helpers": "3.4.0-beta.4",
+    "@bookshop/vite-plugin-astro-bookshop": "3.4.0-beta.4",
     "@cloudcannon/remark-auto-import": "^1.0.0"
   },
   "peerDependencies": {

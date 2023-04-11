@@ -12,6 +12,8 @@
         "generate",
         "generator-plugins/eleventy/eleventy-bookshop",
         "generator-plugins/sveltekit/sveltekit-bookshop",
+        "generator-plugins/astro/astro-bookshop",
+        "generator-plugins/astro/vite-plugin-astro-bookshop",
         "helpers",
         "init",
         "integration-tests",

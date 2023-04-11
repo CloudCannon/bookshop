@@ -23,6 +23,7 @@ const run = async () => {
     await runCommand('bundle install', path.join(__dirname, "./support/starters/jekyll"));
     await runCommand('bundle install', path.join(__dirname, "./support/starters/jekyll"), { 'BUNDLE_GEMFILE': 'Gemfile.cloudcannon' });
     console.log(`Eleventy is pre-installed in the integration-tests folder`);
+    console.log(`Astro and its dependencies are pre-installed in the integration-tests folder`);
     console.log(`Sveltekit is pre-installed in the integration-tests folder`);
     console.log(`Hugo should be pre-installed on the system`);
 }
