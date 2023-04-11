@@ -53,6 +53,25 @@ const findReturnStatements = (node) => {
   return res;
 };
 
+const findSpreadExpressions = (node) => {
+  let res = [];
+  if (!node) {
+    return res;
+  }
+  if (node?.type === "SpreadElement") {
+    res.push(node);
+    return res;
+  }
+  Object.values(node).forEach((val) => {
+    if (Array.isArray(val)) {
+      res = res.concat(val.flatMap(findSpreadExpressions));
+    } else if (typeof val === "object") {
+      res = res.concat(findSpreadExpressions(val));
+    }
+  });
+  return res;
+};
+
 const findFunctionStatements = (node) => {
   let res = [];
   if (!node) {
@@ -84,7 +103,7 @@ export default (src, componentName) => {
   )?.groups.export;
 
   const tree = parse(
-    `import { getDataBinding } from '@bookshop/astro-bookshop/helpers/frontmatter-helper.js';
+    `import { getDataBinding as __getDataBinding } from '@bookshop/astro-bookshop/helpers/frontmatter-helper.js';
     ${code}`,
     {
       sourceType: "module",
@@ -93,24 +112,55 @@ export default (src, componentName) => {
   ).program;
 
   findFunctionStatements(tree).forEach((node) => {
-    node.body.body.unshift(
-      parse(
-        "try { dataBindingPath = getDataBinding(arguments[0])?'#'+getDataBinding(arguments[0]):null; } catch(e) {}",
-        {
-          sourceType: "module",
-          ecmaVersion: "latest",
-        }
-      ).program.body[0]
-    );
-    node.body.body.unshift(
-      parse("let dataBindingPath;", {
-        sourceType: "module",
-        ecmaVersion: "latest",
-      }).program.body[0]
-    );
+    if (node.params[0]?.type === "Identifier") {
+      const { name } = node.params[0];
+      node.body.body.unshift(
+        ...parse(`
+          let __dataBindingPath = __getDataBinding(${name})?'#'+__getDataBinding(${name}):null;
+          delete ${name}.__bookshop_path;
+          `).program.body
+      );
+    } else if (node.params[0]?.type === "ObjectPattern") {
+      node.params[0].properties.push({
+        type: "ObjectProperty",
+        key: {
+          type: "Identifier",
+          name: "__bookshop_path",
+        },
+        value: {
+          type: "Identifier",
+          name: "__bookshop_path",
+        },
+      });
+      const objectString = node.params[0].properties
+        .filter((property) => property.value.type === "Identifier")
+        .map((property) => property.value.name)
+        .join(",");
+      node.body.body.unshift(
+        ...parse(`
+          let __dataBindingPath = __getDataBinding({${objectString}})?'#'+__getDataBinding({${objectString}}):null;;
+          `).program.body
+      );
+    }
   });
 
   findReturnStatements(tree).forEach((node) => {
+    findSpreadExpressions(tree).forEach((spread) => {
+      const { name } = spread.argument;
+      if (!name) {
+        return;
+      }
+
+      spread.argument = parse(`
+        (() => {
+          if(${name}.__bookshop_path){
+            return {...${name}, __bookshop_path: ${name}.__bookshop_path};
+          }
+          return ${name};
+        })()
+      `).program.body[0].expression;
+    });
+
     if (
       node.argument.arguments[0].name === "_Fragment" ||
       (node.argument.arguments[0]?.object?.name.endsWith("React") &&
@@ -140,7 +190,7 @@ export default (src, componentName) => {
               type: "Identifier",
               start: 667,
               end: 669,
-              name: "dataBindingPath",
+              name: "__dataBindingPath",
             },
             kind: "init",
           },
@@ -164,7 +214,7 @@ export default (src, componentName) => {
           type: "Identifier",
           start: 667,
           end: 669,
-          name: "dataBindingPath",
+          name: "__dataBindingPath",
         },
         kind: "init",
       });

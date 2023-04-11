@@ -33,6 +33,25 @@ const findProps = (node) => {
   return res;
 };
 
+const findSpreadExpressions = (node) => {
+  let res = [];
+  if (!node) {
+    return res;
+  }
+  if (node?.type === "SpreadElement") {
+    res.push(node);
+    return res;
+  }
+  Object.values(node).forEach((val) => {
+    if (Array.isArray(val)) {
+      res = res.concat(val.flatMap(findSpreadExpressions));
+    } else if (typeof val === "object") {
+      res = res.concat(findSpreadExpressions(val));
+    }
+  });
+  return res;
+};
+
 const process = (node, props, componentName) => {
   if (!node) {
     return;
@@ -42,6 +61,21 @@ const process = (node, props, componentName) => {
     node?.type === "TaggedTemplateExpression" &&
     node.tag.name === "$$render"
   ) {
+    findSpreadExpressions(node).forEach((spread) => {
+      const { name } = spread.argument;
+      if (!name) {
+        return;
+      }
+
+      spread.argument = parse(`
+        (() => {
+          if(${name}.__bookshop_path){
+            return {...${name}, __bookshop_path: ${name}.__bookshop_path};
+          }
+          return ${name};
+        })()
+      `).program.body[0].expression;
+    });
     const propsString = props.map((prop) => `${prop}:${prop} `).join(",");
     const template = parse(
       `$$render\`
@@ -78,7 +112,8 @@ export default (src, componentName) => {
     `$&
     const __should_live_render = !!Astro2.props['bookshop:live'];
     delete Astro2.props['bookshop:live'];
-		const __data_binding_path = Astro2.props.__bookshop_path || __getDataBinding(Astro2.props);`
+		const __data_binding_path = Astro2.props.__bookshop_path || __getDataBinding(Astro2.props);
+    delete Astro2.props.__bookshop_path`
   );
 
   const tree = parse(
