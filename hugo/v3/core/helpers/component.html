@@ -11,15 +11,25 @@
 
 {{- $component_name := index . 0 -}}
 {{- $component_props := index . 1 -}}
-{{- $component_path := partial "_bookshop/helpers/component_key" $component_name -}}
 
+{{- $component_path := partial "_bookshop/helpers/component_key" $component_name -}}
+{{- $flat_component_path := partial "_bookshop/helpers/flat_component_key" $component_name -}}
+
+{{- $resolved_component := false -}}
 {{- if templates.Exists ( printf "partials/%s" $component_path ) -}}
+    {{- $resolved_component = $component_path -}}
+{{- else if templates.Exists ( printf "partials/%s" $flat_component_path ) -}}
+    {{- $resolved_component = $flat_component_path -}}
+{{- end -}}
+
+{{- if $resolved_component -}}
 
 {{ (printf "<!--bookshop-live name(%s)-->" $component_name) | safeHTML }}
-{{ partial $component_path $component_props }}
+{{ partial $resolved_component $component_props }}
 {{ "<!--bookshop-live end-->" | safeHTML }}
 
 {{- else -}}
     {{- $file_loc := slicestr $component_path 9 -}}
-    {{- partial "_bookshop/errors/err" (printf "Component \"%s\" does not exist.\n     Create this component by placing a file in your bookshop at %s" $component_name $file_loc) -}}
+    {{- $flat_file_loc := slicestr $flat_component_path 9 -}}
+    {{- partial "_bookshop/errors/err" (printf "Component \"%s\" does not exist.\n     Create this component by placing a file in your bookshop at %s or %s" $component_name $file_loc $flat_file_loc) -}}
 {{- end -}}
