@@ -119,27 +119,56 @@ export default (src, componentName) => {
       return;
     }
 
-    node.argument.arguments[1].properties?.push({
-      type: "ObjectProperty",
-      start: 667,
-      end: 683,
-      method: false,
-      shorthand: false,
-      computed: false,
-      key: {
-        type: "Identifier",
+    if (node.argument.arguments[1].type === "NullLiteral") {
+      node.argument.arguments[1] = {
+        type: "ObjectExpression",
+        properties: [
+          {
+            type: "ObjectProperty",
+            start: 667,
+            end: 683,
+            method: false,
+            shorthand: false,
+            computed: false,
+            key: {
+              type: "Identifier",
+              start: 667,
+              end: 669,
+              name: "'data-cms-bind'",
+            },
+            value: {
+              type: "Identifier",
+              start: 667,
+              end: 669,
+              name: "dataBindingPath",
+            },
+            kind: "init",
+          },
+        ],
+      };
+    } else if (node.argument.arguments[1].type === "ObjectExpression") {
+      node.argument.arguments[1].properties?.push({
+        type: "ObjectProperty",
         start: 667,
-        end: 669,
-        name: "'data-cms-bind'",
-      },
-      value: {
-        type: "Identifier",
-        start: 667,
-        end: 669,
-        name: "dataBindingPath",
-      },
-      kind: "init",
-    });
+        end: 683,
+        method: false,
+        shorthand: false,
+        computed: false,
+        key: {
+          type: "Identifier",
+          start: 667,
+          end: 669,
+          name: "'data-cms-bind'",
+        },
+        value: {
+          type: "Identifier",
+          start: 667,
+          end: 669,
+          name: "dataBindingPath",
+        },
+        kind: "init",
+      });
+    }
   });
 
   code = (generate.default ?? generate)(tree).code;
