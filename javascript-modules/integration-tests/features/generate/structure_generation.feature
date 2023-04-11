@@ -90,6 +90,27 @@ Feature: Bookshop Structure Generation
       | _structures.content_blocks.values.0._inputs.color.comment | "Comment" |
       | _structures.content_blocks.values.0._inputs.color.options.values | ["Red", "Blue"] |
 
+  Scenario: Generating structures for flat components
+    Given a component-lib/components/card.bookshop.yml file containing:
+      """
+      spec:
+        structures:
+          - content_blocks
+
+      blueprint:
+        card_text: ""
+        color: Blue
+      """
+    When I run "npm start" in the . directory
+    Then stderr should be empty
+    And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
+    Then I should see "site/public/_cloudcannon/info.json" containing the values:
+      | path | value |
+      | _structures.content_blocks.id_key | "_bookshop_name" |
+      | _structures.content_blocks.values.0.value._bookshop_name | "card" |
+      | _structures.content_blocks.values.0.value.card_text | "" |
+      | _structures.content_blocks.values.0.value.color | "Blue" |
+
   Scenario: Generating structures carries through extra fields
     Given a component-lib/components/nested/card/card.bookshop.yml file containing:
       """
