@@ -28,14 +28,20 @@ export class Engine {
         return `components/${name}/${base}.svelte`;
     }
 
+    getFlatComponentKey(name) {
+        return `components/${name}.svelte`;
+    }
+
     getComponent(name) {
         const key = this.getComponentKey(name);
-        return this.files?.[key];
+        const flatKey = this.getFlatComponentKey(name);
+        return this.files?.[key] ?? this.files?.[flatKey];
     }
 
     hasComponent(name) {
         const key = this.getComponentKey(name);
-        return !!this.files?.[key];
+        const flatKey = this.getFlatComponentKey(name);
+        return !!(this.files?.[key] ?? this.files?.[flatKey]);
     }
 
     async render(target, name, props, globals) {
