@@ -28,7 +28,6 @@ Feature: Basic Eleventy Bookshop
     And stdout should contain "v1.0.0"
     And site/_site/index.html should contain the text "Hello World"
 
-
   Scenario: Components are rendered from bookshop
     Given a component-lib/components/title/title.eleventy.liquid file containing:
       """
@@ -60,6 +59,58 @@ Feature: Basic Eleventy Bookshop
     Then stderr should be empty
     And stdout should contain "v1.0.0"
     And site/_site/index.html should contain the text "Bookshop: Result 🤽‍♂️"
+
+  Scenario: Flat root components are rendered from bookshop
+    Given a component-lib/components/title.eleventy.liquid file containing:
+      """
+      <h1>Bookshop: {{ text }}</h1>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      ---
+      {% bookshop "title" text: "Result 🤽‍♂️" %}
+      """
+    When I run "npm start" in the site directory
+    Then stderr should be empty
+    And stdout should contain "v1.0.0"
+    And site/_site/index.html should contain the text "Bookshop: Result 🤽‍♂️"
+
+  Scenario: Nested flat components are rendered from bookshop
+    Given a component-lib/components/nested/title.eleventy.liquid file containing:
+      """
+      <h1>Bookshop: {{ text }}</h1>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      ---
+      {% bookshop "nested/title" text: "Result 🤽‍♂️" %}
+      """
+    When I run "npm start" in the site directory
+    Then stderr should be empty
+    And stdout should contain "v1.0.0"
+    And site/_site/index.html should contain the text "Bookshop: Result 🤽‍♂️"
+
+  Scenario: Standard components take precendence over flat components
+    Given a component-lib/components/nested/title.eleventy.liquid file containing:
+      """
+      <h1>Flat: {{ text }}</h1>
+      """
+    Given a component-lib/components/nested/title/title.eleventy.liquid file containing:
+      """
+      <h1>Standard: {{ text }}</h1>
+      """
+    And a site/index.html file containing:
+      """
+      ---
+      ---
+      {% bookshop "nested/title" text: "Result 🤽‍♂️" %}
+      """
+    When I run "npm start" in the site directory
+    Then stderr should be empty
+    And stdout should contain "v1.0.0"
+    And site/_site/index.html should contain the text "Standard: Result 🤽‍♂️"
 
   Scenario: Components can use the page front matter
     Given a component-lib/components/title/title.eleventy.liquid file containing:
