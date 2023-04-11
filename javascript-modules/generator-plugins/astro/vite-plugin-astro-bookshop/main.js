@@ -5,7 +5,7 @@ import processAstro from "./processors/astro.js";
 
 const LAYOUT_REGEX = /.*src\/layouts.*\/(?<layout>\w*)\.astro$/;
 const COMPONENT_REGEX =
-  /^\/src\/components\/(?<component>.*)\.(astro|jsx|tsx)$/;
+  /^\/src\/(components|shared\/astro)\/(?<component>.*)\.(astro|jsx|tsx)$/;
 
 export default () => {
   return {

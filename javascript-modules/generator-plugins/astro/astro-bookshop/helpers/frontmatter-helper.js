@@ -22,26 +22,20 @@ export const processFrontmatter = (frontmatter) => {
 };
 
 export const getDataBinding = (props) => {
-  const child_paths = [];
-  const get_child_paths = (obj) => {
-    if (obj?.__bookshop_path) {
-      child_paths.push(obj?.__bookshop_path);
+  if (!props) {
+    return null;
+  }
+  if (props.__bookshop_path) {
+    return props.__bookshop_path;
+  }
+  for (const key of Object.keys(props)) {
+    if (typeof props[key] !== "object") {
+      continue;
     }
-    if (Array.isArray(obj)) {
-      return obj.forEach(get_child_paths);
-    } else if (obj && typeof obj === "object") {
-      Object.values(obj).forEach(get_child_paths);
-    }
-    return obj;
-  };
-  get_child_paths(props);
-
-  let data_binding_path;
-  if (child_paths.length > 0) {
-    data_binding_path = child_paths[0];
-    while (!child_paths.every((path) => path.startsWith(data_binding_path))) {
-      data_binding_path = data_binding_path.replace(/\.?\w+$/, "");
+    const childBinding = getDataBinding(props[key]);
+    if (childBinding) {
+      return childBinding.replace(/\.[^.]*$/, "");
     }
   }
-  return data_binding_path;
+  return null;
 };

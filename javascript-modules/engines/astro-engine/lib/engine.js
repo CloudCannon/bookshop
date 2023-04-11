@@ -18,15 +18,20 @@ export class Engine {
     this.files = options.files;
 
     // Hide our files somewhere global so that
-    // the astrokit plugin can grab them instead of using its Vite import.
+    // the astro plugin can grab them instead of using its Vite import.
     window.__bookshop_astro_files = options.files;
 
     this.activeApps = [];
   }
 
   getShared(name) {
-    const key = `shared/astro/${name}.astro`;
-    return this.files?.[key];
+    const base = name.split("/").reverse()[0];
+    const root = `shared/astro/${name}`;
+    return (
+      Object.keys(this.files).find((key) =>
+        key.startsWith(`${root}/${base}`)
+      ) ?? Object.keys(this.files).find((key) => key.startsWith(root))
+    );
   }
 
   getComponentKey(name) {
@@ -56,7 +61,7 @@ export class Engine {
   }
 
   async render(target, name, props, globals) {
-    const key = this.getComponentKey(name);
+    const key = this.getComponentKey(name) ?? this.getShared(name);
 
     if (key.endsWith(".astro")) {
       return this.renderAstroComponent(target, key, props, globals);

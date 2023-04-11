@@ -37,74 +37,29 @@ const process = (node, props, componentName) => {
   if (!node) {
     return;
   }
+
   if (
     node?.type === "TaggedTemplateExpression" &&
     node.tag.name === "$$render"
   ) {
-    const quasis = node.quasi.quasis;
     const propsString = props.map((prop) => `${prop}:${prop} `).join(",");
-    quasis[0].value.raw = `--><!--bookshop-live name(${componentName}) params(${propsString})-->${quasis[0].value.raw}`;
-    quasis[0].value.cooked = `--><!--bookshop-live name(${componentName})-->${quasis[0].value.cooked} `;
-    quasis[quasis.length - 1].value.raw = `${
-      quasis[quasis.length - 1].value.raw
-    }<!--bookshop-live end--><!--databindingend: `;
-    quasis[quasis.length - 1].value.cooked = `${
-      quasis[quasis.length - 1].value.cooked
-    }<!--bookshop-live end--><!--databindingend: `;
-    quasis.unshift({
-      type: "TemplateElement",
-      start: 595,
-      end: 595,
-      loc: {
-        start: { line: 14, column: 18 },
-        end: { line: 14, column: 18 },
-      },
-      value: { raw: "<!--databinding: ", cooked: "<!--databinding: " },
-      tail: false,
-    });
-    quasis.push({
-      type: "TemplateElement",
-      start: 595,
-      end: 595,
-      loc: {
-        start: { line: 14, column: 18 },
-        end: { line: 14, column: 18 },
-      },
-      value: { raw: `-->`, cooked: `-->` },
-      tail: false,
-    });
-    node.quasi.expressions.unshift({
-      type: "Identifier",
-      start: 682,
-      end: 688,
-      loc: {
-        start: {
-          line: 15,
-          column: 51,
-        },
-        end: {
-          line: 15,
-          column: 57,
-        },
-      },
-      name: "data_binding_path",
-    });
-    node.quasi.expressions.push({
-      type: "Identifier",
-      start: 682,
-      end: 688,
-      loc: {
-        start: {
-          line: 15,
-          column: 51,
-        },
-        end: {
-          line: 15,
-          column: 57,
-        },
-      },
-      name: "data_binding_path",
-    });
+    const template = parse(
+      `$$render\`
+        \${$$maybeRenderHead($$result)}
+        \${(__should_live_render ? $$render\`<!--bookshop-live name(${componentName}) params(${propsString})-->\`: '')}
+        \${(__data_binding_path ? $$render\`<!--databinding:\${__data_binding_path}-->\` : '')}
+        \${'REPLACE_ME'}
+        \${(__data_binding_path ? $$render\`<!--databindingend:\${__data_binding_path}-->\` : '')}
+        \${(__should_live_render ? $$render\`<!--bookshop-live end-->\`: '')}
+      \``
+        .replace(/(^\s*)|(\s*$)/gm, "")
+        .replace(/\n/g, "")
+    ).program.body[0].expression;
+
+    template.quasi.expressions[3] = { ...node };
+    Object.keys(node).forEach((key) => delete node[key]);
+    Object.keys(template).forEach((key) => (node[key] = template[key]));
+
     return;
   }
 
@@ -121,12 +76,13 @@ export default (src, componentName) => {
   src = src.replace(
     /const Astro2.*$/m,
     `$&
-		const data_binding_path = Astro2.props.__bookshop_path || getDataBinding(Astro2.props);
-		const commentID = Math.random()`
+    const __should_live_render = !!Astro2.props['bookshop:live'];
+    delete Astro2.props['bookshop:live'];
+		const __data_binding_path = Astro2.props.__bookshop_path || __getDataBinding(Astro2.props);`
   );
 
   const tree = parse(
-    `import { getDataBinding } from '@bookshop/astro-bookshop/helpers/frontmatter-helper.js';
+    `import { getDataBinding as __getDataBinding } from '@bookshop/astro-bookshop/helpers/frontmatter-helper.js';
 		${src}`,
     {
       sourceType: "module",
