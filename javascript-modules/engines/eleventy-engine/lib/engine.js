@@ -87,14 +87,20 @@ export class Engine {
         return `components/${name}/${base}.eleventy.liquid`;
     }
 
+    getFlatComponentKey(name) {
+        return `components/${name}.eleventy.liquid`;
+    }
+
     getComponent(name) {
         const key = this.getComponentKey(name);
-        return this.files?.[key];
+        const flatKey = this.getFlatComponentKey(name);
+        return this.files?.[key] ?? this.files?.[flatKey];
     }
 
     hasComponent(name) {
         const key = this.getComponentKey(name);
-        return !!this.files?.[key];
+        const flatKey = this.getFlatComponentKey(name);
+        return !!(this.files?.[key] ?? this.files?.[flatKey]);
     }
 
     resolveComponentType(name) {

@@ -19,6 +19,10 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Granular Steps
       """
       <h1>{{ include.title }}</h1>
       """
+    * a component-lib/components/flat_single.jekyll.html file containing:
+      """
+      <h1>{{ include.title }}</h1>
+      """
     * [front_matter]:
       """
       layout: default
@@ -37,9 +41,9 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Granular Steps
     When I run "bundle exec jekyll build --trace" in the site directory
     Then stderr should be empty
     *    stdout should contain "done in"
-    *    site/_site/index.html should contain each row: 
-      | text |
-      | <!--bookshop-live name(single/single.jekyll.html) params(bind=page.block) context() -->  |
+    *    site/_site/index.html should contain each row:
+      | text                                                                                    |
+      | <!--bookshop-live name(single/single.jekyll.html) params(bind=page.block) context() --> |
 
   Scenario: Bookshop Generate hydrates live editing
     Given I run "bundle exec jekyll build --trace" in the site directory
@@ -62,6 +66,25 @@ Feature: Jekyll Bookshop CloudCannon Live Editing Granular Steps
 
   @web
   Scenario: Bookshop live renders when CloudCannon pushes new data
+    Given 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      block:
+        title: "Rerendered"
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Rerendered"
+
+  @web
+  Scenario: Bookshop live renders flat components when CloudCannon pushes new data
+    Given a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% bookshop flat_single bind=page.block %}
+      """
     Given 🌐 I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new yaml:
       """

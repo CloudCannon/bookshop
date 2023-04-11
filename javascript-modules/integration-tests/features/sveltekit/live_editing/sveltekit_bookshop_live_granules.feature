@@ -14,6 +14,9 @@ Feature: SvelteKit Bookshop CloudCannon Live Editing Granular Steps
   Scenario: Bookshop live renders when CloudCannon pushes new data
 
   @skip # Handled outside of Bookshop
+  Scenario: Bookshop live renders flat components when CloudCannon pushes new data
+
+  @skip # Handled outside of Bookshop
   Scenario: Bookshop doesn't live render flagged components
 
   @skip # Handled outside of Bookshop
