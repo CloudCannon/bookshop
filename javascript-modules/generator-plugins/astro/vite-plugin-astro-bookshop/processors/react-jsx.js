@@ -97,14 +97,13 @@ const findFunctionStatements = (node) => {
 };
 
 export default (src, componentName) => {
-  let code = src.replace("@astrojs/react", "@bookshop/react");
-  let name = code.match(
-    /__astro_tag_component__\((?<export>.*), "@bookshop\/react"\)/
+  let name = src.match(
+    /__astro_tag_component__\((?<export>.*), "@astrojs\/react"\)/
   )?.groups.export;
 
   const tree = parse(
     `import { getDataBinding as __getDataBinding } from '@bookshop/astro-bookshop/helpers/frontmatter-helper.js';
-    ${code}`,
+    ${src}`,
     {
       sourceType: "module",
       ecmaVersion: "latest",
@@ -224,10 +223,10 @@ export default (src, componentName) => {
     }
   });
 
-  code = (generate.default ?? generate)(tree).code;
+  src = (generate.default ?? generate)(tree).code;
 
   if (name) {
-    code = `${code}\n${name}.__bookshop_name = "${componentName}";`;
+    src = `${src}\n${name}.__bookshop_name = "${componentName}";`;
   }
-  return code;
+  return src;
 };

@@ -96,7 +96,7 @@ export class Engine {
           hasDirectives: new Set(),
           renderers: [
             {
-              name: "@bookshop/react",
+              name: "@astrojs/react",
               ssr: {
                 check: () => true,
                 renderToStaticMarkup: async (Component, props) => {
@@ -122,7 +122,7 @@ export class Engine {
       props,
       null
     );
-    target.innerHTML = result.replace(/<!--bookshop-live.*-->/g, "");
+    target.innerHTML = result;
   }
 
   async eval(str, props = [{}]) {

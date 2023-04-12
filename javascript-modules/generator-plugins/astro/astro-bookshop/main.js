@@ -3,7 +3,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import remarkAutoImport from "@cloudcannon/remark-auto-import";
 import mdxProcessFrontmatter from "./mdx-process-frontmatter.js";
-import reactRender from "./react/renderer.js";
 import vitePluginBookshop from "@bookshop/vite-plugin-astro-bookshop";
 
 const COMPONENT_REGEX = /\/src\/components\/(?<component>.*)\.(astro|jsx)$/;
@@ -14,12 +13,9 @@ export default () => {
     hooks: {
       "astro:config:setup": async ({
         updateConfig,
-        injectScript,
-        addRenderer,
+        injectScript
       }) => {
         const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-        addRenderer(await reactRender());
         injectScript(
           "page",
           readFileSync(path.join(__dirname, "data-binding.js"))

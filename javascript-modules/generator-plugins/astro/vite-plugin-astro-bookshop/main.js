@@ -1,6 +1,7 @@
 import { cwd } from "process";
-import processLayout from "./processors/layouts.js";
+import processLayout from "./processors/astro-layouts.js";
 import processReactJSX from "./processors/react-jsx.js";
+import processAstroComponent from "./processors/astro-component.js";
 import processAstro from "./processors/astro.js";
 
 const LAYOUT_REGEX = /.*src\/layouts.*\/(?<layout>\w*)\.astro$/;
@@ -17,6 +18,10 @@ export default () => {
 
       const layoutMatch = id.match(LAYOUT_REGEX);
       const componentMatch = id.match(COMPONENT_REGEX);
+
+      if(id.endsWith('.astro')){
+        src = processAstro(src);
+      }
 
       if (layoutMatch) {
         return { code: processLayout(src) };
@@ -42,7 +47,7 @@ export default () => {
         };
       }
 
-      return { code: processAstro(src, componentName) };
+      return { code: processAstroComponent(src, componentName) };
     },
   };
 };
