@@ -120,7 +120,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/compiler@npm:^1.3.1":
+"@astrojs/compiler@npm:^1.0.1, @astrojs/compiler@npm:^1.3.1":
   version: 1.3.1
   resolution: "@astrojs/compiler@npm:1.3.1"
   checksum: fcf0df0729f20656f7a504c14ca85e06c0ab26a236c3d76d6f1b7835372c996f796da1cb5b8942d6b9bc7ae8e570d4e3500d354ceabe7e6041243d8b9f6b9c07
@@ -759,7 +759,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bookshop/astro-bookshop@workspace:generator-plugins/astro/astro-bookshop":
+"@bookshop/astro-bookshop@3.4.0-beta.4, @bookshop/astro-bookshop@workspace:generator-plugins/astro/astro-bookshop":
   version: 0.0.0-use.local
   resolution: "@bookshop/astro-bookshop@workspace:generator-plugins/astro/astro-bookshop"
   dependencies:
@@ -770,6 +770,26 @@ __metadata:
     ava: ^3.15.0
     nyc: ^15.1.0
   peerDependencies:
+    react-dom: ^17.0.2 || ^18.0.0
+  languageName: unknown
+  linkType: soft
+
+"@bookshop/astro-engine@3.4.0-beta.4, @bookshop/astro-engine@workspace:engines/astro-engine":
+  version: 0.0.0-use.local
+  resolution: "@bookshop/astro-engine@workspace:engines/astro-engine"
+  dependencies:
+    "@astrojs/compiler": ^1.0.1
+    "@bookshop/astro-bookshop": 3.4.0-beta.4
+    "@bookshop/builder": 3.4.0-beta.4
+    "@bookshop/helpers": 3.4.0-beta.4
+    "@bookshop/vite-plugin-astro-bookshop": 3.4.0-beta.4
+    astro: ^2.0.4
+    ava: ^3.15.0
+    esbuild: ^0.13.15
+    nyc: ^15.1.0
+    vite: ^4.2.1
+  peerDependencies:
+    react: ^17.0.2 || ^18.0.0
     react-dom: ^17.0.2 || ^18.0.0
   languageName: unknown
   linkType: soft
@@ -880,7 +900,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/hugo-engine@workspace:engines/hugo-engine":
+"@bookshop/hugo-engine@3.4.0-beta.4, @bookshop/hugo-engine@workspace:engines/hugo-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/hugo-engine@workspace:engines/hugo-engine"
   dependencies:
@@ -972,7 +992,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/svelte-engine@workspace:engines/svelte-engine":
+"@bookshop/svelte-engine@3.4.0-beta.4, @bookshop/svelte-engine@workspace:engines/svelte-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/svelte-engine@workspace:engines/svelte-engine"
   dependencies:
@@ -2754,6 +2774,74 @@ __metadata:
   bin:
     astro: astro.js
   checksum: d3c9c8b4b21d3f0abeae325cb8d914bd4d67949dd92678151b8913e3ed5daad782890ae7f775509bb8cccbf4499e2d216075977d85adbd658f3f1f4f044a4ebf
+  languageName: node
+  linkType: hard
+
+"astro@npm:^2.0.4":
+  version: 2.2.2
+  resolution: "astro@npm:2.2.2"
+  dependencies:
+    "@astrojs/compiler": ^1.3.1
+    "@astrojs/language-server": ^0.28.3
+    "@astrojs/markdown-remark": ^2.1.3
+    "@astrojs/telemetry": ^2.1.0
+    "@astrojs/webapi": ^2.1.0
+    "@babel/core": ^7.18.2
+    "@babel/generator": ^7.18.2
+    "@babel/parser": ^7.18.4
+    "@babel/plugin-transform-react-jsx": ^7.17.12
+    "@babel/traverse": ^7.18.2
+    "@babel/types": ^7.18.4
+    "@types/babel__core": ^7.1.19
+    "@types/yargs-parser": ^21.0.0
+    acorn: ^8.8.1
+    boxen: ^6.2.1
+    chokidar: ^3.5.3
+    ci-info: ^3.3.1
+    common-ancestor-path: ^1.0.1
+    cookie: ^0.5.0
+    debug: ^4.3.4
+    deepmerge-ts: ^4.2.2
+    devalue: ^4.2.0
+    diff: ^5.1.0
+    es-module-lexer: ^1.1.0
+    estree-walker: ^3.0.1
+    execa: ^6.1.0
+    fast-glob: ^3.2.11
+    github-slugger: ^2.0.0
+    gray-matter: ^4.0.3
+    html-escaper: ^3.0.3
+    kleur: ^4.1.4
+    magic-string: ^0.27.0
+    mime: ^3.0.0
+    ora: ^6.1.0
+    path-to-regexp: ^6.2.1
+    preferred-pm: ^3.0.3
+    prompts: ^2.4.2
+    rehype: ^12.0.1
+    semver: ^7.3.8
+    server-destroy: ^1.0.1
+    shiki: ^0.11.1
+    slash: ^4.0.0
+    string-width: ^5.1.2
+    strip-ansi: ^7.0.1
+    supports-esm: ^1.0.0
+    tsconfig-resolver: ^3.0.1
+    typescript: "*"
+    unist-util-visit: ^4.1.0
+    vfile: ^5.3.2
+    vite: ^4.2.1
+    vitefu: ^0.2.4
+    yargs-parser: ^21.0.1
+    zod: ^3.17.3
+  peerDependencies:
+    sharp: ^0.31.3
+  peerDependenciesMeta:
+    sharp:
+      optional: true
+  bin:
+    astro: astro.js
+  checksum: 93425bd925a1f99539831b26728aa905036a6086fb4dc1a1dae10b51ee505009f54dc4f1859cf20b204966b3615faee287cfbd2b4199a6e7fa3de982d3516af5
   languageName: node
   linkType: hard
 
@@ -4912,7 +5000,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.13.10":
+"esbuild@npm:^0.13.10, esbuild@npm:^0.13.15":
   version: 0.13.15
   resolution: "esbuild@npm:0.13.15"
   dependencies:
@@ -6570,9 +6658,14 @@ fsevents@~2.3.2:
     "@astrojs/mdx": ^0
     "@astrojs/react": ^1
     "@babel/generator": ^7
+    "@bookshop/astro-engine": 3.4.0-beta.4
+    "@bookshop/eleventy-engine": 3.4.0-beta.4
     "@bookshop/generate": 3.4.0-beta.4
+    "@bookshop/hugo-engine": 3.4.0-beta.4
     "@bookshop/init": 3.4.0-beta.4
+    "@bookshop/jekyll-engine": 3.4.0-beta.4
     "@bookshop/sass": 3.4.0-beta.4
+    "@bookshop/svelte-engine": 3.4.0-beta.4
     "@bookshop/up": 3.4.0-beta.4
     "@bookshop/vite-plugin-astro-bookshop": 3.4.0-beta.4
     "@cloudcannon/reader": latest

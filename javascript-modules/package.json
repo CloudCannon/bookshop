@@ -5,6 +5,7 @@
         "bookshop-sass",
         "browser",
         "builder",
+        "engines/astro-engine",
         "engines/jekyll-engine",
         "engines/eleventy-engine",
         "engines/svelte-engine",
