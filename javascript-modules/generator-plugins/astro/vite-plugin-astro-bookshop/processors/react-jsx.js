@@ -132,13 +132,16 @@ export default (src, componentName) => {
           name: "__bookshop_path",
         },
       });
-      const objectString = node.params[0].properties
+      const propsString = node.params[0].properties
         .filter((property) => property.value.type === "Identifier")
         .map((property) => property.value.name)
         .join(",");
       node.body.body.unshift(
         ...parse(`
-          let __dataBindingPath = __getDataBinding({${objectString}})?'#'+__getDataBinding({${objectString}}):null;;
+          let __dataBindingPath = __bookshop_path?'#'+__bookshop_path:null;
+          if(!__dataBindingPath){
+            __dataBindingPath = [${propsString}].map(__getDataBinding).find((prop) => !!prop);
+          }
           `).program.body
       );
     }
