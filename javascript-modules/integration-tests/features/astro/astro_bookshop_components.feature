@@ -11,31 +11,25 @@ Feature: Basic Astro Bookshop
         package.json from starters/astro/package.json # <-- this .json line hurts my syntax highlighting
         astro.config.mjs from starters/astro/astro.config.mjs
         src/
-          helper.mjs from starters/astro/helper.mjs
           bookshop/
             bookshop.config.cjs from starters/astro/bookshop.config.cjs
       """
 
   Scenario: Tests are functional
-    Given a site/src/content/pages/index.md file containing:
+    Given a site/src/pages/index.md file containing:
       """
       ---
+      layout: ../layouts/Page.astro
       title: Hello World
       ---
       """
-    Given a site/src/pages/[...slug].astro file containing:
+    Given a site/src/layouts/Page.astro file containing:
       """
       ---
-      import testHelper from "../helper.mjs";
-
-      export async function getStaticPaths() {
-        return testHelper();
-      }
-
-      const page = Astro.props.page;
+      const { frontmatter } = Astro.props;
       ---
 
-      <h1>{ page.data.title }</h1>
+      <h1>{ frontmatter.title }</h1>
       """
     When I run "npm run build" in the site directory
     Then stderr should be empty
@@ -47,32 +41,27 @@ Feature: Basic Astro Bookshop
       """
       export default function Title({ text }) {
         return (
-          <h1>Bookshop: {text}</h1>
+          <h1>Bookshop: <span>{text}</span></h1>
         )
       }
       """
-    And a site/src/content/pages/index.md file containing:
+    And a site/src/pages/index.md file containing:
       """
       ---
+      layout: ../layouts/Page.astro
       title: Result 🤽‍♂️
       ---
       """
-    And a site/src/pages/[...slug].astro file containing:
+    And a site/src/layouts/Page.astro file containing:
       """
       ---
       import Title from "../components/title";
-      import testHelper from "../helper.mjs";
-
-      export async function getStaticPaths() {
-        return testHelper();
-      }
-
-      const page = Astro.props.page;
+      const { frontmatter } = Astro.props;
       ---
 
-      <Title text={page.data.title} />
+      <Title text={frontmatter.title} />
       """
     When I run "npm run build" in the site directory
     Then stderr should be empty
     And stdout should contain "Complete!"
-    And site/dist/index.html should contain the text "Bookshop: Result 🤽‍♂️"
+    And site/dist/index.html should contain the text "Bookshop: <span>Result 🤽‍♂️</span>"

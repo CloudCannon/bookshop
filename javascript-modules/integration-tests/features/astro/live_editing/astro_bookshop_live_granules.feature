@@ -10,7 +10,6 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
         package.json from starters/astro/package.json # <-- this .json line hurts my syntax highlighting
         astro.config.mjs from starters/astro/astro.config.mjs
         src/
-          helper.mjs from starters/astro/helper.mjs
           bookshop/
             bookshop.config.cjs from starters/astro/bookshop.config.cjs
       """
@@ -24,30 +23,25 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
       """
     * [front_matter]:
       """
+      layout: ../layouts/Page.astro
       block:
         title: "Hello There"
       """
-    * a site/src/content/pages/index.md file containing:
+    * a site/src/pages/index.md file containing:
       """
       ---
       [front_matter]
       ---
       """
-    * a site/src/pages/[...slug].astro file containing:
+    * a site/src/layouts/Page.astro file containing:
       """
       ---
       import Single from "../components/single";
-      import testHelper from "../helper.mjs";
-
-      export async function getStaticPaths() {
-        return testHelper();
-      }
-
-      const page = Astro.props.page;
+      const { frontmatter } = Astro.props;
       ---
 
       <html lang="en"> <body>
-      <Single bookshop:live {...page.data.block} />
+      <Single bookshop:live {...frontmatter.block} />
       </body> </html>
       """
 
@@ -55,7 +49,7 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
     When I run "npm run build" in the site directory
     Then stderr should be empty
     *    stdout should not be empty
-    *    site/dist/index.html should contain each row:
+    *    DEBUG site/dist/index.html should contain each row:
       | text                                                         |
       | <!--bookshop-live name(single) params(title: block.title)--> |
 
