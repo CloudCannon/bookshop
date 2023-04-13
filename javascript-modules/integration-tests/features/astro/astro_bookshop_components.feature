@@ -36,8 +36,8 @@ Feature: Basic Astro Bookshop
     And stdout should contain "Complete!"
     And site/dist/index.html should contain the text "Hello World"
 
-  Scenario: Flat root components are rendered from bookshop
-    Given a site/src/components/title.jsx file containing:
+  Scenario: Components are rendered from bookshop
+    Given a site/src/components/title/title.jsx file containing:
       """
       export default function Title({ text }) {
         return (
@@ -55,11 +55,10 @@ Feature: Basic Astro Bookshop
     And a site/src/layouts/Page.astro file containing:
       """
       ---
-      import Title from "../components/title";
-      const { frontmatter } = Astro.props;
+      import Title from "../components/title/title";
       ---
 
-      <Title bookshop:live text={frontmatter.title} />
+      <Title bookshop:live text={"Result 🤽‍♂️"} />
       """
     When I run "npm run build" in the site directory
     Then stderr should be empty
@@ -98,8 +97,8 @@ Feature: Basic Astro Bookshop
     And site/dist/index.html should contain the text "Bookshop: <span>Result 🤽‍♂️</span>"
     And site/dist/index.html should contain the text "bookshop-live name(nested/title)"
 
-  Scenario: Components are rendered from bookshop
-    Given a site/src/components/title/title.jsx file containing:
+  Scenario: Flat root components are rendered from bookshop
+    Given a site/src/components/title.jsx file containing:
       """
       export default function Title({ text }) {
         return (
@@ -117,7 +116,7 @@ Feature: Basic Astro Bookshop
     And a site/src/layouts/Page.astro file containing:
       """
       ---
-      import Title from "../components/title/title";
+      import Title from "../components/title";
       const { frontmatter } = Astro.props;
       ---
 
@@ -160,7 +159,131 @@ Feature: Basic Astro Bookshop
     And site/dist/index.html should contain the text "Bookshop: <span>Result 🤽‍♂️</span>"
     And site/dist/index.html should contain the text "bookshop-live name(nested/title)"
 
-  Scenario: Bookshop components can be loaded through Vite
+  @skip # Astro components are imported directly so precendence doesnt apply
+  Scenario: Standard components take precendence over flat components
+
+  Scenario: Components can use the page front matter
+    Given a site/src/components/title/title.jsx file containing:
+      """
+      export default function Title({ text }) {
+        return (
+          <h1>Bookshop: <span>{text}</span></h1>
+        )
+      }
+      """
+    And a site/src/pages/index.md file containing:
+      """
+      ---
+      layout: ../layouts/Page.astro
+      title: Result 🤽‍♂️
+      ---
+      """
+    And a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      import Title from "../components/title/title";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <Title bookshop:live text={frontmatter.title} />
+      """
+    When I run "npm run build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Complete!"
+    And site/dist/index.html should contain the text "Bookshop: <span>Result 🤽‍♂️</span>"
+    And site/dist/index.html should contain the text "bookshop-live name(title)"
+
+  Scenario: Components can use further components
+    Given a site/src/components/title/title.jsx file containing:
+      """
+      import Subtitle from './subtitle'
+      export default function Title({ title, subtitle }) {
+        return (
+          <>
+            <h1>Bookshop: <span>{title}</span></h1>
+            <Subtitle subtitle={subtitle} />
+          </>
+        )
+      }
+      """
+    And a site/src/components/title/subtitle.jsx file containing:
+      """
+      export default function Subtitle({ subtitle }) {
+        return (
+          <h2><em>{subtitle}</em></h2>
+        )
+      }
+      """
+    And a site/src/pages/index.md file containing:
+      """
+      ---
+      layout: ../layouts/Page.astro
+      title: Result 🤽‍♂️
+      subtitle: Meow 🐈
+      ---
+      """
+    And a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      import Title from "../components/title/title";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <Title bookshop:live title={frontmatter.title} subtitle={frontmatter.subtitle} />
+      """
+    When I run "npm run build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Complete!"
+    And site/dist/index.html should contain the text "Bookshop: <span>Result 🤽‍♂️</span>"
+    And site/dist/index.html should contain the text "bookshop-live name(title)"
+    And site/dist/index.html should contain the text "<em>Meow 🐈</em>"
+
+  Scenario: Bookshop tags can use the bind syntax
+    Given a site/src/components/title/title.jsx file containing:
+      """
+      import Subtitle from './subtitle'
+      export default function Title({ title, subtitle }) {
+        return (
+          <>
+            <h1>Bookshop: <span>{title}</span></h1>
+            <Subtitle subtitle={subtitle} />
+          </>
+        )
+      }
+      """
+    And a site/src/components/title/subtitle.jsx file containing:
+      """
+      export default function Subtitle({ subtitle }) {
+        return (
+          <h2><em>{subtitle}</em></h2>
+        )
+      }
+      """
+    And a site/src/pages/index.md file containing:
+      """
+      ---
+      layout: ../layouts/Page.astro
+      title: Result 🤽‍♂️
+      subtitle: Meow 🐈
+      ---
+      """
+    And a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      import Title from "../components/title/title";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <Title bookshop:live {...frontmatter} />
+      """
+    When I run "npm run build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Complete!"
+    And site/dist/index.html should contain the text "Bookshop: <span>Result 🤽‍♂️</span>"
+    And site/dist/index.html should contain the text "bookshop-live name(title)"
+    And site/dist/index.html should contain the text "<em>Meow 🐈</em>"
+
+  Scenario: Bookshop tags should support dynamic names
     Given a site/src/components/a.jsx file containing:
       """
       export default function A({ text }) {
