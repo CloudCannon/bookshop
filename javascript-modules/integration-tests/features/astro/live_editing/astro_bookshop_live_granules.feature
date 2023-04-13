@@ -50,8 +50,8 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
     Then stderr should be empty
     *    stdout should not be empty
     *    DEBUG site/dist/index.html should contain each row:
-      | text                                                         |
-      | <!--bookshop-live name(single) params(title: block.title)--> |
+      | text                                                 |
+      | <!--bookshop-live name(single) params(bind:block)--> |
 
   Scenario: Bookshop Generate hydrates live editing
     Given I run "npm run build" in the site directory
