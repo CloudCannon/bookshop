@@ -45,37 +45,54 @@ export default (src) => {
     ).map((prop) =>{
       if(prop.type === 'SpreadElement'){
         const identifier = (generate.default ?? generate)(prop.argument).code
-        return `{key:"bind", identifier: "${identifier}", value: ${identifier}}`
+        return `{key:"bind", identifiers: ["${identifier}"], values: [${identifier}]}`
       } else if(prop.value.type.endsWith("Literal")) {
         const value = (generate.default ?? generate)(prop.value).code
-        return `{key:"${prop.key.value}", value: ${value}}`
-      } else if(prop.value.type === 'Identifier' || prop.value.type === 'MemberExpression') {
+        return `{key:"${prop.key.value}", values: [${value}]}`
+      } else if(prop.value.type === 'Identifier') {
         const identifier = (generate.default ?? generate)(prop.value).code
-        return `{key:"${prop.key.value}", identifier: "${identifier}", value: ${identifier}}`
+        return `{key:"${prop.key.value}", identifiers: ["${identifier}"], values: [${identifier}]}`
+      } else if(prop.value.type === 'MemberExpression') {
+        const identifier = (generate.default ?? generate)(prop.value).code
+        if(identifier.startsWith('Astro2.props.frontmatter.')){
+          return `{key:"${prop.key.value}", identifiers: ["${identifier}"], values: [${identifier}]}`
+        }
+        const identifiers = [identifier];
+        let curr = prop.value.object;
+        while(curr){
+          identifiers.push((generate.default ?? generate)(curr).code)
+          curr = curr.object;
+        }
+        return `{key:"${prop.key.value}", values: [${identifiers.join(',')}],  identifiers: ["${identifiers.join('","')}"]}`
       }
     })
     .join(',');
     const template = parse(
       `$$render\`
         \${${component}.__bookshop_name ? $$render\`<!--bookshop-live name(\${${component}.__bookshop_name}) params(\${$$render((()=>{
-          return [${propsString}].map(({key, identifier, value}) => {
-            if(value.__bookshop_path){
-              return key+':'+value.__bookshop_path;
+          return [${propsString}].map(({key, identifiers, values}) => {
+            if(values[0].__bookshop_path){
+              return key+':'+values[0].__bookshop_path;
             }
 
-            if(!identifier){
-              if(typeof value === 'string'){
-                return \`\${key}:"\${value}"\`;
+            if(!identifiers){
+              if(typeof values[0] === 'string'){
+                return \`\${key}:"\${values[0]}"\`;
               }
-              return key+':'+value;
+              return key+':'+values[0];
             }
 
-            if(identifier.startsWith('Astro2.props.frontmatter.')){
-              return key+':'+identifier.replace('Astro2.props.frontmatter.', '');
+            const parentIndex = values.findIndex((value) => typeof value.__bookshop_path === 'string');
+            if(parentIndex>=0){
+              let param = values[parentIndex].__bookshop_path+identifiers[0].replace(identifiers[parentIndex], '');
+              if(param.startsWith('.')){
+                param = param.slice(1);
+              }
+              return key+':'+param;
             }
 
-            if(identifier.startsWith('Astro2.props.')){
-              return key+':'+identifier.replace('Astro2.props.', '');
+            if(identifiers[0].startsWith('Astro2.props.frontmatter.')){
+              return key+':'+identifiers[0].replace('Astro2.props.frontmatter.', '');
             }
           })
           .join(',');
