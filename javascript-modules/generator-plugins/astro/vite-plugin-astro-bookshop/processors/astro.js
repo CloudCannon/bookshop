@@ -46,18 +46,29 @@ export default (src) => {
       if(prop.type === 'SpreadElement'){
         const identifier = (generate.default ?? generate)(prop.argument).code
         return `{key:"bind", identifier: "${identifier}", value: ${identifier}}`
-      } else {
+      } else if(prop.value.type === 'Identifier') {
         const identifier = (generate.default ?? generate)(prop.value).code
         return `{key:"${prop.key.value}", identifier: "${identifier}", value: ${identifier}}`
+      } else if(prop.value.type.endsWith("Literal")) {
+        const value = (generate.default ?? generate)(prop.value).code
+        return `{key:"${prop.key.value}", value: ${value}}`
       }
     })
     .join(',');
+    console.log(propsString)
     const template = parse(
       `$$render\`
-        \${${component}.__bookshop_name ? $$render\`<!--bookshop-live name(\${${component}.__bookshop_name}) params(\${(()=>{
+        \${${component}.__bookshop_name ? $$render\`<!--bookshop-live name(\${${component}.__bookshop_name}) params(\${$$render((()=>{
           return [${propsString}].map(({key, identifier, value}) => {
             if(value.__bookshop_path){
               return key+':'+value.__bookshop_path;
+            }
+
+            if(!identifier){
+              if(typeof value === 'string'){
+                return \`\${key}:"\${value}"\`;
+              }
+              return key+':'+value;
             }
 
             if(identifier.startsWith('Astro2.props.frontmatter.')){
@@ -69,7 +80,7 @@ export default (src) => {
             }
           })
           .join(',');
-        })()})-->\`: ''}
+        })())})-->\`: ''}
         \${'REPLACE_ME'}
         \${${component}.__bookshop_name ? $$render\`<!--bookshop-live end-->\`: ''}
       \``
