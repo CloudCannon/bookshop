@@ -69,6 +69,7 @@ export default (src) => {
     .join(',');
     const template = parse(
       `$$render\`
+        \${typeof $$maybeRenderHead !== 'undefined' ? $$maybeRenderHead($$result) : ''}
         \${${component}.__bookshop_name ? $$render\`<!--bookshop-live name(\${${component}.__bookshop_name}) params(\${$$render((()=>{
           return [${propsString}].map(({key, identifiers, values}) => {
             if(values[0].__bookshop_path){
@@ -104,7 +105,7 @@ export default (src) => {
         .replace(/\n/g, "")
     ).program.body[0].expression;
 
-    template.quasi.expressions[1] = { ...node };
+    template.quasi.expressions[2] = { ...node };
     Object.keys(node).forEach((key) => delete node[key]);
     Object.keys(template).forEach((key) => (node[key] = template[key]));
   });

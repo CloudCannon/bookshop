@@ -49,7 +49,6 @@ Feature: Basic Astro Bookshop
       """
       ---
       layout: ../layouts/Page.astro
-      title: Result 🤽‍♂️
       ---
       """
     And a site/src/layouts/Page.astro file containing:

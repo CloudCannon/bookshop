@@ -1,10 +1,10 @@
 import { cwd } from "process";
-import processLayout from "./processors/astro-layouts.js";
+import processPage from "./processors/astro-pages.js";
 import processReactJSX from "./processors/react-jsx.js";
 import processAstroComponent from "./processors/astro-component.js";
 import processAstro from "./processors/astro.js";
 
-const LAYOUT_REGEX = /.*src\/layouts.*\/(?<layout>\w*)\.astro$/;
+const PAGE_REGEX = /.*src\/(layouts|pages).*\/(?<name>\w*)\.astro$/;
 const COMPONENT_REGEX =
   /^\/src\/(components|shared\/astro)\/(?<component>.*)\.(astro|jsx|tsx)$/;
 
@@ -16,15 +16,15 @@ export default () => {
     transform(src, id) {
       id = id.replace(cwd(), "");
 
-      const layoutMatch = id.match(LAYOUT_REGEX);
+      const pageMatch = id.match(PAGE_REGEX);
       const componentMatch = id.match(COMPONENT_REGEX);
 
       if(id.endsWith('.astro')){
         src = processAstro(src);
       }
 
-      if (layoutMatch) {
-        return { code: processLayout(src) };
+      if (pageMatch) {
+        return { code: processPage(src) };
       }
 
       if (!componentMatch) {

@@ -46,7 +46,7 @@ const process = (node, componentName) => {
     });
     const template = parse(
       `$$render\`
-        \${$$maybeRenderHead($$result)}
+        \${typeof $$maybeRenderHead !== 'undefined' ? $$maybeRenderHead($$result) : ''}
         \${(__data_binding_path ? $$render\`<!--databinding:\${__data_binding_path}-->\` : '')}
         \${'REPLACE_ME'}
         \${(__data_binding_path ? $$render\`<!--databindingend:\${__data_binding_path}-->\` : '')}
