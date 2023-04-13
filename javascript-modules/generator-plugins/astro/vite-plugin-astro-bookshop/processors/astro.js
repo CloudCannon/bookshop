@@ -46,16 +46,15 @@ export default (src) => {
       if(prop.type === 'SpreadElement'){
         const identifier = (generate.default ?? generate)(prop.argument).code
         return `{key:"bind", identifier: "${identifier}", value: ${identifier}}`
-      } else if(prop.value.type === 'Identifier') {
-        const identifier = (generate.default ?? generate)(prop.value).code
-        return `{key:"${prop.key.value}", identifier: "${identifier}", value: ${identifier}}`
       } else if(prop.value.type.endsWith("Literal")) {
         const value = (generate.default ?? generate)(prop.value).code
         return `{key:"${prop.key.value}", value: ${value}}`
+      } else if(prop.value.type === 'Identifier' || prop.value.type === 'MemberExpression') {
+        const identifier = (generate.default ?? generate)(prop.value).code
+        return `{key:"${prop.key.value}", identifier: "${identifier}", value: ${identifier}}`
       }
     })
     .join(',');
-    console.log(propsString)
     const template = parse(
       `$$render\`
         \${${component}.__bookshop_name ? $$render\`<!--bookshop-live name(\${${component}.__bookshop_name}) params(\${$$render((()=>{
