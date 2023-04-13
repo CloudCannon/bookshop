@@ -103,7 +103,7 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain the text "(.+)"$/i, funct
 
 Then(/^(debug )?(\S+) should (not |leniently )?contain the text:$/i, function (debug, file, modifier, contents) {
   assert.ok(this.fileExists(file), `${file} exists`);
-  const fileContents = this.fileContents(file);
+  let fileContents = this.fileContents(file);
 
   let negation = modifier === 'not ';
   contents = subVariables(contents, this.storage);
