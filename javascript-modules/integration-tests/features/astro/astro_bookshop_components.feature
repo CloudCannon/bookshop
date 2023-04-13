@@ -36,7 +36,7 @@ Feature: Basic Astro Bookshop
     And stdout should contain "Complete!"
     And site/dist/index.html should contain the text "Hello World"
 
-  Scenario: Components are rendered from bookshop
+  Scenario: Flat root components are rendered from bookshop
     Given a site/src/components/title.jsx file containing:
       """
       export default function Title({ text }) {
@@ -59,9 +59,214 @@ Feature: Basic Astro Bookshop
       const { frontmatter } = Astro.props;
       ---
 
-      <Title text={frontmatter.title} />
+      <Title bookshop:live text={frontmatter.title} />
       """
     When I run "npm run build" in the site directory
     Then stderr should be empty
     And stdout should contain "Complete!"
     And site/dist/index.html should contain the text "Bookshop: <span>Result 🤽‍♂️</span>"
+    And site/dist/index.html should contain the text "bookshop-live name(title)"
+
+  Scenario: Nested components are rendered from bookshop
+    Given a site/src/components/nested/title/title.jsx file containing:
+      """
+      export default function Title({ text }) {
+        return (
+          <h1>Bookshop: <span>{text}</span></h1>
+        )
+      }
+      """
+    And a site/src/pages/index.md file containing:
+      """
+      ---
+      layout: ../layouts/Page.astro
+      title: Result 🤽‍♂️
+      ---
+      """
+    And a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      import Title from "../components/nested/title/title";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <Title bookshop:live text={frontmatter.title} />
+      """
+    When I run "npm run build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Complete!"
+    And site/dist/index.html should contain the text "Bookshop: <span>Result 🤽‍♂️</span>"
+    And site/dist/index.html should contain the text "bookshop-live name(nested/title)"
+
+  Scenario: Components are rendered from bookshop
+    Given a site/src/components/title/title.jsx file containing:
+      """
+      export default function Title({ text }) {
+        return (
+          <h1>Bookshop: <span>{text}</span></h1>
+        )
+      }
+      """
+    And a site/src/pages/index.md file containing:
+      """
+      ---
+      layout: ../layouts/Page.astro
+      title: Result 🤽‍♂️
+      ---
+      """
+    And a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      import Title from "../components/title/title";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <Title bookshop:live text={frontmatter.title} />
+      """
+    When I run "npm run build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Complete!"
+    And site/dist/index.html should contain the text "Bookshop: <span>Result 🤽‍♂️</span>"
+    And site/dist/index.html should contain the text "bookshop-live name(title)"
+
+  Scenario: Nested flat components are rendered from bookshop
+    Given a site/src/components/nested/title.jsx file containing:
+      """
+      export default function Title({ text }) {
+        return (
+          <h1>Bookshop: <span>{text}</span></h1>
+        )
+      }
+      """
+    And a site/src/pages/index.md file containing:
+      """
+      ---
+      layout: ../layouts/Page.astro
+      title: Result 🤽‍♂️
+      ---
+      """
+    And a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      import Title from "../components/nested/title";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <Title bookshop:live text={frontmatter.title} />
+      """
+    When I run "npm run build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Complete!"
+    And site/dist/index.html should contain the text "Bookshop: <span>Result 🤽‍♂️</span>"
+    And site/dist/index.html should contain the text "bookshop-live name(nested/title)"
+
+  Scenario: Bookshop components can be loaded through Vite
+    Given a site/src/components/a.jsx file containing:
+      """
+      export default function A({ text }) {
+        return (
+          <h1>🅰️{text}</h1>
+        )
+      }
+      """
+    And a site/src/components/b.jsx file containing:
+      """
+      export default function B({ text }) {
+        return (
+          <h1>🅱️{text}</h1>
+        )
+      }
+      """
+    And a site/src/pages/index.md file containing:
+      """
+      ---
+      layout: ../layouts/Page.astro
+      components:
+        - name: a
+          text: 🫀
+        - name: b
+          text: 🫑
+      ---
+      """
+    And a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      const components = import.meta.glob("../components/**/*.jsx", {
+        eager: true,
+      });
+      const { frontmatter } = Astro.props;
+      ---
+      {frontmatter.components.map(({name, text}) => {
+        const Component = components[`../components/${name}.jsx`].default
+        return <Component bookshop:live text={text} />
+      })}
+      """
+    When I run "npm run build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Complete!"
+    And site/dist/index.html should contain the text "🅰️<!-- -->🫀"
+    And site/dist/index.html should contain the text "🅱️<!-- -->🫑"
+    And site/dist/index.html should contain the text "bookshop-live name(a)"
+    And site/dist/index.html should contain the text "bookshop-live name(b)"
+
+  Scenario: Bookshop page building components should work
+    Given a site/src/components/blocks.jsx file containing:
+      """
+      const components = import.meta.glob("./**/*.jsx", {
+        eager: true,
+      });
+
+      export default function Blocks({blocks}) {
+        return <>
+          {blocks.map(({name, block}) => {
+            const Component = components[`./${name}.jsx`].default
+            return <Component {...block} />
+          })}
+        </>
+      }
+      """
+    And a site/src/components/a.jsx file containing:
+      """
+      export default function A({ text }) {
+        return (
+          <h1>🅰️{text}</h1>
+        )
+      }
+      """
+    And a site/src/components/b.jsx file containing:
+      """
+      export default function B({ text }) {
+        return (
+          <h1>🅱️{text}</h1>
+        )
+      }
+      """
+    And a site/src/pages/index.md file containing:
+      """
+      ---
+      layout: ../layouts/Page.astro
+      blocks:
+        - name: a
+          block:
+            text: 🫀
+        - name: b
+          block:
+            text: 🫑
+      ---
+      """
+    And a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      import Blocks from '../components/blocks';
+      const { frontmatter } = Astro.props;
+      ---
+      <main>
+        <Blocks bookshop:live blocks={frontmatter.blocks}/>
+      </main>
+      """
+    When I run "npm run build" in the site directory
+    Then stderr should be empty
+    And stdout should contain "Complete!"
+    And site/dist/index.html should contain the text "🅰️<!-- -->🫀"
+    And site/dist/index.html should contain the text "🅱️<!-- -->🫑"
+    And site/dist/index.html should contain the text "bookshop-live name(blocks)"
