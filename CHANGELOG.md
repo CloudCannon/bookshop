@@ -9,6 +9,48 @@
 
 ## Unreleased
 
+## v3.4.1 (March 23, 2023)
+
+Fixed an error where nested object arrays in a component blueprint would error out.
+
+```yml
+blueprint:
+  title: Hello World
+  nested:
+    # `nested` would be made into an array structure with a value matching the below object
+    - title: "Nested Object #1"
+      double_nested:
+        # This would not work and `double_nested` would default to a string array
+        - title: "Nested Object #2"
+```
+
+This release fixes this behaviour, and deeply nested object arrays will behave as expected.
+
+## v3.4.0 (March 9, 2023)
+
+### New Hugo renderer
+
+The main aspect of this release is a new and improved Hugo renderer when live editing on CloudCannon. Alongside being more reliable, this unlocks many templating functions that were previously unavailable, such as:
+
+* `newScratch`
+* `absURL`
+* `highlight`
+* `humanize`
+
+Additionally, functions that would previously cause a full error (such as `resources.Get`) will now return `nil`, and as such can be handled gracefully inside a component.
+
+Looking forward, this release also paves the path for supporting site actions like `site.GetPage` in the visual editor, as well as using custom non-Bookshop Hugo partials in the visual editor.
+
+As with all releases, your repository can be upgraded to the latest Bookshop by running:
+```
+npx @bookshop/up@latest
+```
+
+### Other changes
+* Hugo WebAssembly files are now preloaded in CloudCannon, so loading the visual editor should be significantly faster
+* Improved data binding support for Hugo template files, and generally fixed many issues with complex templating
+* Reduced noise in the developer console when live editing Hugo Bookshop sites
+
 ## v3.3.3 (December 2, 2022)
 
 * Added a `markdownify` filter to Eleventy Bookshop

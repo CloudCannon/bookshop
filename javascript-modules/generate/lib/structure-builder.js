@@ -101,11 +101,17 @@ const generateDeepStructures = ({ blueprint, currentBlueprintKey, inputs, cascad
             inputs[currentBlueprintKey] = inputs[currentBlueprintKey] || {};
             inputs[currentBlueprintKey].options = inputs[currentBlueprintKey].options || {};
 
+            const deepInputs = {};
             const structure = {
                 label: niceLabel(pluralize.singular(currentBlueprintKey)),
                 icon: "add_box",
-                value: generateDeepStructures({ blueprint: blueprint[0], currentBlueprintKey, inputs, cascadeFields }),
+                value: generateDeepStructures({ blueprint: blueprint[0], currentBlueprintKey, inputs: deepInputs, cascadeFields }),
                 ...cascadeFields,
+            };
+            structure._inputs = structure._inputs || {};
+            structure._inputs = {
+                ...structure._inputs,
+                ...deepInputs
             };
 
             inputs[currentBlueprintKey].type = "array";

@@ -72,13 +72,16 @@ async function run() {
         }
         console.log(chalk.green(`Connected ${relocations.length} component thumbnail(s)`));
 
-        fs.writeFileSync(infoJsonFile, JSON.stringify(infoJson, null, 2));
-        console.log(chalk.green(`Added components as CloudCannon Structures`));
-
         if (!options.skipLive) {
             const liveEditingNeeded = await hydrateLiveForSite(siteRoot, options);
             if (liveEditingNeeded) {
-                await buildLiveScript(siteRoot, bookshopRoots);
+                const prefetchFiles = await buildLiveScript(siteRoot, bookshopRoots);
+                if (prefetchFiles?.length) {
+                    infoJson["prefetchFiles"] = infoJson["prefetchFiles"] || {};
+                    for (const file of prefetchFiles) {
+                        infoJson["prefetchFiles"][file] = file;
+                    }
+                }
             }
         } else {
             console.log(chalk.gray(`Skipping live editing generation`));
@@ -92,6 +95,9 @@ async function run() {
         } else {
             console.log(chalk.gray(`Skipping component browser generation`));
         }
+
+        fs.writeFileSync(infoJsonFile, JSON.stringify(infoJson, null, 2));
+        console.log(chalk.green(`Added components as CloudCannon Structures`));
     }
 
     console.log(chalk.green.bold(`\n📚🏁 Finished. Added ${plur(structures.length, "structure")} from ${plur(bookshopRoots.length, "Bookshop")} to ${plur(infoJsonFiles.length, "site")}.`));

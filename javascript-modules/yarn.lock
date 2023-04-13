@@ -794,12 +794,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/browser@3.4.0-beta.4, @bookshop/browser@workspace:browser":
+"@bookshop/browser@3.4.1, @bookshop/browser@workspace:browser":
   version: 0.0.0-use.local
   resolution: "@bookshop/browser@workspace:browser"
   dependencies:
-    "@bookshop/builder": 3.4.0-beta.4
-    "@bookshop/helpers": 3.4.0-beta.4
+    "@bookshop/builder": 3.4.1
+    "@bookshop/helpers": 3.4.1
     "@codemirror/basic-setup": ^0.18.2
     "@codemirror/commands": ^0.18.3
     "@codemirror/legacy-modes": ^0.18.1
@@ -824,13 +824,42 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/builder@3.4.0-beta.4, @bookshop/builder@workspace:builder":
+"@bookshop/browser@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/browser@npm:3.4.0-beta.4"
+  dependencies:
+    "@bookshop/builder": 3.4.0-beta.4
+    "@bookshop/helpers": 3.4.0-beta.4
+    "@codemirror/basic-setup": ^0.18.2
+    "@codemirror/commands": ^0.18.3
+    "@codemirror/legacy-modes": ^0.18.1
+    "@codemirror/state": ^0.18.7
+    "@codemirror/stream-parser": ^0.18.2
+    "@codemirror/view": ^0.18.19
+    "@ltd/j-toml": ^1.30.0
+    "@material-design-icons/svg": ^0.2.7
+    commander: ^8.1.0
+    esbuild: ^0.13.10
+    esbuild-svelte: ^0.5.3
+    express: ^4.17.1
+    express-ws: ^5.0.2
+    fast-glob: ^3.2.7
+    js-yaml: ^4.1.0
+    normalize-path: ^3.0.0
+    svelte: ^3.39.0
+  bin:
+    bookshop-browser: cli.js
+  checksum: 327854f3cec6b1431082fb1cbe4314ec0baafc0848aa9938e657397028b2e0cbc9eabe2bc03ff73108541a81cada617c83c76c9fc70cef5f6c7bc13e7ce8cc6e
+  languageName: node
+  linkType: hard
+
+"@bookshop/builder@3.4.1, @bookshop/builder@workspace:builder":
   version: 0.0.0-use.local
   resolution: "@bookshop/builder@workspace:builder"
   dependencies:
-    "@bookshop/helpers": 3.4.0-beta.4
-    "@bookshop/jekyll-engine": 3.4.0-beta.4
-    "@bookshop/styles": 3.4.0-beta.4
+    "@bookshop/helpers": 3.4.1
+    "@bookshop/jekyll-engine": 3.4.1
+    "@bookshop/styles": 3.4.1
     ava: ^3.15.0
     esbuild: ^0.13.10
     fast-glob: ^3.2.7
@@ -840,11 +869,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@bookshop/builder@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/builder@npm:3.4.0-beta.4"
+  dependencies:
+    "@bookshop/helpers": 3.4.0-beta.4
+    "@bookshop/styles": 3.4.0-beta.4
+    esbuild: ^0.13.10
+    fast-glob: ^3.2.7
+    normalize-path: ^3.0.0
+    resolve: ^1.22.0
+  checksum: 17f3840f03ed7108a9fb93ba074e48cf82d1bc6034540b69d22901809dfb49387d278c1cfc601df1c9fb4e43ceb27322a127ff03e1a70a492a1d99a2cfcd4b2a
+  languageName: node
+  linkType: hard
+
 "@bookshop/eleventy-bookshop@workspace:generator-plugins/eleventy/eleventy-bookshop":
   version: 0.0.0-use.local
   resolution: "@bookshop/eleventy-bookshop@workspace:generator-plugins/eleventy/eleventy-bookshop"
   dependencies:
-    "@bookshop/helpers": 3.4.0-beta.4
+    "@bookshop/helpers": 3.4.1
     ava: ^3.15.0
     normalize-path: ^3.0.0
     nyc: ^15.1.0
@@ -852,11 +895,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/eleventy-engine@3.4.0-beta.4, @bookshop/eleventy-engine@workspace:engines/eleventy-engine":
+"@bookshop/eleventy-engine@3.4.1, @bookshop/eleventy-engine@workspace:engines/eleventy-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/eleventy-engine@workspace:engines/eleventy-engine"
   dependencies:
-    "@bookshop/helpers": 3.4.0-beta.4
+    "@bookshop/helpers": 3.4.1
     ava: ^3.15.0
     esbuild: ^0.13.10
     liquidjs: 9.28.0
@@ -867,14 +910,50 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/generate@3.4.0-beta.4, @bookshop/generate@workspace:generate":
-  version: 0.0.0-use.local
-  resolution: "@bookshop/generate@workspace:generate"
+"@bookshop/eleventy-engine@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/eleventy-engine@npm:3.4.0-beta.4"
+  dependencies:
+    "@bookshop/helpers": 3.4.0-beta.4
+    esbuild: ^0.13.10
+    liquidjs: 9.28.0
+    markdown-it: ^13.0.1
+    punycode: ^2.1.1
+    slugify: ^1.5.3
+  checksum: 7a37a8d2beba683cb02be127ef7e45e9fa31399902ebf68ac621fe32801279e2dccffd0de477a01b8584e59ff26ade58c03dcc2040a27c994f7c88f55237383f
+  languageName: node
+  linkType: hard
+
+"@bookshop/generate@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/generate@npm:3.4.0-beta.4"
   dependencies:
     "@bookshop/browser": 3.4.0-beta.4
     "@bookshop/builder": 3.4.0-beta.4
     "@bookshop/helpers": 3.4.0-beta.4
     "@bookshop/live": 3.4.0-beta.4
+    "@ltd/j-toml": ^1.30.0
+    chalk: ^5.0.1
+    commander: ^8.1.0
+    fast-glob: ^3.2.7
+    normalize-path: ^3.0.0
+    pluralize: ^8.0.0
+    slugify: ^1.6.5
+    yaml: ^2.0.0-11
+  bin:
+    bookshop-generate: main.js
+  checksum: 767fe7049a2832c334e158069c03007f2d2da4bfeb556ce67c8396fbc7fda54728c270fb5dc5698dd78a62b9cb0a43062065404e736de20d4484ceb129e12a1c
+  languageName: node
+  linkType: hard
+
+"@bookshop/generate@workspace:generate":
+  version: 0.0.0-use.local
+  resolution: "@bookshop/generate@workspace:generate"
+  dependencies:
+    "@bookshop/browser": 3.4.1
+    "@bookshop/builder": 3.4.1
+    "@bookshop/helpers": 3.4.1
+    "@bookshop/live": 3.4.1
     "@ltd/j-toml": ^1.30.0
     ava: ^3.15.0
     chalk: ^5.0.1
@@ -890,7 +969,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/helpers@3.4.0-beta.4, @bookshop/helpers@workspace:helpers":
+"@bookshop/helpers@3.4.1, @bookshop/helpers@workspace:helpers":
   version: 0.0.0-use.local
   resolution: "@bookshop/helpers@workspace:helpers"
   dependencies:
@@ -900,11 +979,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/hugo-engine@3.4.0-beta.4, @bookshop/hugo-engine@workspace:engines/hugo-engine":
+"@bookshop/helpers@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/helpers@npm:3.4.0-beta.4"
+  checksum: 1d37ade2d919266b9c094418c1d3c5535fc4191ba4078294cf865b8f7d1d9500f307c1f0b6c62eeba46e7319d800149bb6a079ae341fbdd163825694f83dee11
+  languageName: node
+  linkType: hard
+
+"@bookshop/hugo-engine@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/hugo-engine@npm:3.4.0-beta.4"
+  dependencies:
+    "@bookshop/helpers": 3.4.0-beta.4
+    esbuild: ^0.13.10
+    fflate: ^0.7.3
+    liquidjs: 9.28.0
+  checksum: 248257732f0fd4726f5e70bd0b1730fde400a2567312188fb093c54ec17547977434c52cd26577cdab9d5726edd19fdf976dc95bdbc04e618a08f9629315dbaa
+  languageName: node
+  linkType: hard
+
+"@bookshop/hugo-engine@workspace:engines/hugo-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/hugo-engine@workspace:engines/hugo-engine"
   dependencies:
-    "@bookshop/helpers": 3.4.0-beta.4
+    "@bookshop/helpers": 3.4.1
     ava: ^3.15.0
     esbuild: ^0.13.10
     fflate: ^0.7.3
@@ -913,11 +1011,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/init@3.4.0-beta.4, @bookshop/init@workspace:init":
+"@bookshop/init@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/init@npm:3.4.0-beta.4"
+  dependencies:
+    "@bookshop/helpers": 3.4.0-beta.4
+    chalk: ^5.0.1
+    commander: ^9.1.0
+    ejs: ^3.1.6
+    fast-glob: ^3.2.11
+    inquirer: ^8.2.1
+  bin:
+    bookshop-init: main.js
+  checksum: 8ae9ae5b3e812e8805d8902a22cc9f228afb4f22592c297ef3e1fbafaa67c5ab7aed180d36db5e5113ee966367c57ffdbf94d96ac94023f8fffdf3cbd5b5fc84
+  languageName: node
+  linkType: hard
+
+"@bookshop/init@workspace:init":
   version: 0.0.0-use.local
   resolution: "@bookshop/init@workspace:init"
   dependencies:
-    "@bookshop/helpers": 3.4.0-beta.4
+    "@bookshop/helpers": 3.4.1
     chalk: ^5.0.1
     commander: ^9.1.0
     ejs: ^3.1.6
@@ -928,11 +1042,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/jekyll-engine@3.4.0-beta.4, @bookshop/jekyll-engine@workspace:engines/jekyll-engine":
+"@bookshop/jekyll-engine@3.4.1, @bookshop/jekyll-engine@workspace:engines/jekyll-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/jekyll-engine@workspace:engines/jekyll-engine"
   dependencies:
-    "@bookshop/helpers": 3.4.0-beta.4
+    "@bookshop/helpers": 3.4.1
     ava: ^3.15.0
     esbuild: ^0.13.10
     js-base64: ^3.6.1
@@ -943,14 +1057,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/live@3.4.0-beta.4, @bookshop/live@workspace:live":
+"@bookshop/jekyll-engine@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/jekyll-engine@npm:3.4.0-beta.4"
+  dependencies:
+    "@bookshop/helpers": 3.4.0-beta.4
+    esbuild: ^0.13.10
+    js-base64: ^3.6.1
+    kramed: ^0.5.6
+    liquidjs: 9.28.0
+    slugify: ^1.5.3
+  checksum: 7fb11f3431728a2411be20eeb711ead201ee17b180039eeb40123a7a90cd6e97bf0c2cdffdde489bd0b8c74da2eb5dcd04acb57beb45d274529d93ac9b248555
+  languageName: node
+  linkType: hard
+
+"@bookshop/live@3.4.1, @bookshop/live@workspace:live":
   version: 0.0.0-use.local
   resolution: "@bookshop/live@workspace:live"
   dependencies:
-    "@bookshop/builder": 3.4.0-beta.4
-    "@bookshop/eleventy-engine": 3.4.0-beta.4
-    "@bookshop/helpers": 3.4.0-beta.4
-    "@bookshop/jekyll-engine": 3.4.0-beta.4
+    "@bookshop/builder": 3.4.1
+    "@bookshop/eleventy-engine": 3.4.1
+    "@bookshop/helpers": 3.4.1
+    "@bookshop/jekyll-engine": 3.4.1
     ava: ^3.15.0
     commander: ^8.1.0
     jsdom: ^18.0.0
@@ -960,12 +1088,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/sass@3.4.0-beta.4, @bookshop/sass@workspace:bookshop-sass":
-  version: 0.0.0-use.local
-  resolution: "@bookshop/sass@workspace:bookshop-sass"
+"@bookshop/live@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/live@npm:3.4.0-beta.4"
   dependencies:
     "@bookshop/builder": 3.4.0-beta.4
     "@bookshop/helpers": 3.4.0-beta.4
+    commander: ^8.1.0
+  bin:
+    bookshop-live: cli.js
+  checksum: 664a75ec42d89039d8676a74c5bedfcdc8c958a82dcab9b34ab49d289ba89ee2a9f5e041540b6d91d27fe44c9a9ae1d21e6f8fdc278b73c82ce18ecf05fecd6b
+  languageName: node
+  linkType: hard
+
+"@bookshop/sass@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/sass@npm:3.4.0-beta.4"
+  dependencies:
+    "@bookshop/builder": 3.4.0-beta.4
+    "@bookshop/helpers": 3.4.0-beta.4
+    commander: ^8.1.0
+  bin:
+    bookshop-sass: main.js
+  checksum: 81f94c4285e16626f605e89301b1d43aabd6f5d18bc6c90e24dad8189d50e94aff12b5ef76de8faad70b889157b98aef359ca71229f2307a8f48fb91190d2209
+  languageName: node
+  linkType: hard
+
+"@bookshop/sass@workspace:bookshop-sass":
+  version: 0.0.0-use.local
+  resolution: "@bookshop/sass@workspace:bookshop-sass"
+  dependencies:
+    "@bookshop/builder": 3.4.1
+    "@bookshop/helpers": 3.4.1
     ava: ^3.15.0
     commander: ^8.1.0
     fast-glob: ^3.2.7
@@ -975,11 +1129,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/styles@3.4.0-beta.4, @bookshop/styles@workspace:styles":
+"@bookshop/styles@3.4.1, @bookshop/styles@workspace:styles":
   version: 0.0.0-use.local
   resolution: "@bookshop/styles@workspace:styles"
   dependencies:
-    "@bookshop/helpers": 3.4.0-beta.4
+    "@bookshop/helpers": 3.4.1
     ava: ^3.15.0
     esbuild: ^0.13.10
     fast-glob: ^3.2.7
@@ -992,12 +1146,37 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/svelte-engine@3.4.0-beta.4, @bookshop/svelte-engine@workspace:engines/svelte-engine":
+"@bookshop/styles@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/styles@npm:3.4.0-beta.4"
+  dependencies:
+    "@bookshop/helpers": 3.4.0-beta.4
+    fast-glob: ^3.2.7
+    normalize-path: ^3.0.0
+    postcss: ^8.3.6
+    postcss-load-config: ^3.1.0
+    sass: ^1.37.0
+  checksum: 4a51a5d1dd5217b5e3462bb25742edd1c92bf007b4280ff08c2da9a4621869d5e452024a888cfd12e2ece1be37994a23a7adf916753c130b7ab5fe1a6a40f118
+  languageName: node
+  linkType: hard
+
+"@bookshop/svelte-engine@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/svelte-engine@npm:3.4.0-beta.4"
+  dependencies:
+    esbuild: ^0.13.10
+    esbuild-svelte: ^0.5.3
+    svelte: ^3.42.1
+  checksum: f059d035579c91677dadb8a7d9e73088310e2c39f90229ec3ca0bc2f178f78ae2ffdb1c784dac74f6cbfa43e03521cc9b534a3bb2b210beb00786a4f90fa44c2
+  languageName: node
+  linkType: hard
+
+"@bookshop/svelte-engine@workspace:engines/svelte-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/svelte-engine@workspace:engines/svelte-engine"
   dependencies:
-    "@bookshop/builder": 3.4.0-beta.4
-    "@bookshop/helpers": 3.4.0-beta.4
+    "@bookshop/builder": 3.4.1
+    "@bookshop/helpers": 3.4.1
     ava: ^3.15.0
     esbuild: ^0.13.10
     esbuild-svelte: ^0.5.3
@@ -1010,18 +1189,37 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/sveltekit-bookshop@workspace:generator-plugins/sveltekit/sveltekit-bookshop"
   dependencies:
-    "@bookshop/helpers": 3.4.0-beta.4
+    "@bookshop/helpers": 3.4.1
     ava: ^3.15.0
     nyc: ^15.1.0
     svelte: ^3
   languageName: unknown
   linkType: soft
 
-"@bookshop/up@3.4.0-beta.4, @bookshop/up@workspace:up":
+"@bookshop/up@npm:3.4.0-beta.4":
+  version: 3.4.0-beta.4
+  resolution: "@bookshop/up@npm:3.4.0-beta.4"
+  dependencies:
+    "@bookshop/helpers": 3.4.0-beta.4
+    "@ltd/j-toml": ^1.30.0
+    chalk: ^5.0.1
+    commander: ^8.1.0
+    fast-glob: ^3.2.7
+    inquirer: ^8.2.1
+    normalize-path: ^3.0.0
+    pluralize: ^8.0.0
+    yaml: ^1.10.2
+  bin:
+    bookshop-up: main.js
+  checksum: 1e4a2b087910bd86189f4b15c9a01916dcf405d1e8d334a0cee1731aa0e9dbdcca1018c4257a4c3184f689fdd862ba3bd2a012d3e8db56ba28218f196b9d519a
+  languageName: node
+  linkType: hard
+
+"@bookshop/up@workspace:up":
   version: 0.0.0-use.local
   resolution: "@bookshop/up@workspace:up"
   dependencies:
-    "@bookshop/helpers": 3.4.0-beta.4
+    "@bookshop/helpers": 3.4.1
     "@ltd/j-toml": ^1.30.0
     ava: ^3.15.0
     chalk: ^5.0.1
