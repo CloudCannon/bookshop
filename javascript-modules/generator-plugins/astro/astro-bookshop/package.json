@@ -4,7 +4,12 @@
   "version": "3.4.0-beta.4",
   "type": "module",
   "description": "Astro plugin for consuming Bookshop components",
-  "main": "main.js",
+  "exports": {
+    ".": "./main.js",
+    "./browser": "./BookshopBrowser.astro",
+    "./helpers/frontmatter-helper": "./helpers/frontmatter-helper.js",
+    "./helpers/frontmatter-helper.js": "./helpers/frontmatter-helper.js"
+  },
   "scripts": {
     "test": "nyc ava -v"
   },

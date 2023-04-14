@@ -1,0 +1,8 @@
+---
+const port = Astro.props.port ?? 30775;
+---
+
+<div>
+  <div data-bookshop-browser=""></div>
+  <script src={`http://localhost:${port}/bookshop.js`}></script>
+</div>

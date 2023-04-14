@@ -49,7 +49,7 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
     When I run "npm run build" in the site directory
     Then stderr should be empty
     *    stdout should not be empty
-    *    DEBUG site/dist/index.html should contain each row:
+    *    site/dist/index.html should contain each row:
       | text                                                 |
       | <!--bookshop-live name(single) params(bind:block)--> |
 
