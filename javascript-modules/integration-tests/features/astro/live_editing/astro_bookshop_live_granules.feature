@@ -21,6 +21,10 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
         )
       }
       """
+    * a site/src/components/flat_single.astro file containing:
+      """
+      <h1>{Astro.props.title}</h1>
+      """
     * [front_matter]:
       """
       layout: ../layouts/Page.astro
@@ -72,3 +76,66 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Gidday"
+
+  @web
+  Scenario: Bookshop live renders when CloudCannon pushes new data
+    Given 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      block:
+        title: "Rerendered"
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Rerendered"
+
+  @web
+  Scenario: Bookshop live renders when CloudCannon pushes new data
+    Given a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      import FlatSingle from "../components/flat_single.astro";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <html lang="en"> <body>
+      <FlatSingle bookshop:live {...frontmatter.block} />
+      </body> </html>
+      """
+    Given 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      block:
+        title: "Rerendered"
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Rerendered"
+
+  @web
+  Scenario: Bookshop doesn't live render flagged components
+    Given a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      import Single from "../components/single";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <html lang="en"> <body>
+      <Single {...frontmatter.block} />
+      <!-- This is here so the test doesn't time out waiting for live-->
+      <Single bookshop:live title="🤫" />
+      </body> </html>
+      """
+    Given 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      block:
+        title: "Rerendered"
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Hello There"
+
+  @skip # Handled outside of Bookshop
+  Scenario: Bookshop sets a flag when live editing
