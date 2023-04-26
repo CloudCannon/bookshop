@@ -90,6 +90,7 @@ export class Engine {
         propagation: new Map(),
         propagators: new Map(),
         extraHead: [],
+        componentMetadata: new Map(),
         _metadata: {
           hasHydrationScript: false,
           hasRenderedHead: false,

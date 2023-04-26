@@ -72,7 +72,7 @@ export default (src) => {
         \${typeof $$maybeRenderHead !== 'undefined' ? $$maybeRenderHead($$result) : ''}
         \${${component}.__bookshop_name ? $$render\`<!--bookshop-live name(\${${component}.__bookshop_name}) params(\${$$render((()=>{
           return [${propsString}].map(({key, identifiers, values}) => {
-            if(values[0].__bookshop_path){
+            if(values[0]?.__bookshop_path){
               return key+':'+values[0].__bookshop_path;
             }
 
@@ -83,7 +83,7 @@ export default (src) => {
               return key+':'+values[0];
             }
 
-            const parentIndex = values.findIndex((value) => typeof value.__bookshop_path === 'string');
+            const parentIndex = values.findIndex((value) => typeof value?.__bookshop_path === 'string');
             if(parentIndex>=0){
               let param = values[parentIndex].__bookshop_path+identifiers[0].replace(identifiers[parentIndex], '');
               if(param.startsWith('.')){

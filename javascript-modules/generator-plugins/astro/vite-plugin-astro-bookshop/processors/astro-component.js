@@ -80,8 +80,8 @@ export default (src, componentName) => {
     `$&
     const __should_live_render = !!Astro2.props['bookshop:live'];
     delete Astro2.props['bookshop:live'];
-		const __data_binding_path = Astro2.props.__bookshop_path || __getDataBinding(Astro2.props);
-    delete Astro2.props.__bookshop_path`
+		const __data_binding_path = Astro2.props?.__bookshop_path || __getDataBinding(Astro2.props);
+    delete Astro2.props?.__bookshop_path`
   );
 
   const tree = parse(
