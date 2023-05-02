@@ -116,7 +116,13 @@ export default (src, componentName) => {
       node.body.body.unshift(
         ...parse(`
           let __dataBindingPath = __getDataBinding(${name})?'#'+__getDataBinding(${name}):null;
-          delete ${name}.__bookshop_path;
+          if(${name}?.__bookshop_path){
+            let obj = {};
+            Object.keys(${name}).forEach((key) => {
+              if(key !== '__bookshop_path') obj[key] = ${name}[key];
+            })
+            ${name} = obj;
+          }
           `).program.body
       );
     } else if (node.params[0]?.type === "ObjectPattern") {

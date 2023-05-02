@@ -44,20 +44,6 @@ const process = (node, componentName) => {
         })()
       `).program.body[0].expression;
     });
-    const template = parse(
-      `$$render\`
-        \${typeof $$maybeRenderHead !== 'undefined' ? $$maybeRenderHead($$result) : ''}
-        \${(__data_binding_path ? $$render\`<!--databinding:\${__data_binding_path}-->\` : '')}
-        \${'REPLACE_ME'}
-        \${(__data_binding_path ? $$render\`<!--databindingend:\${__data_binding_path}-->\` : '')}
-      \``
-        .replace(/(^\s*)|(\s*$)/gm, "")
-        .replace(/\n/g, "")
-    ).program.body[0].expression;
-
-    template.quasi.expressions[2] = { ...node };
-    Object.keys(node).forEach((key) => delete node[key]);
-    Object.keys(template).forEach((key) => (node[key] = template[key]));
 
     return;
   }

@@ -53,6 +53,6 @@ Feature: Astro Bookshop Includes
     Then stderr should be empty
     And stdout should contain "Complete!"
     And site/dist/index.html should leniently contain each row:
-      | text                                                                                                           |
-      | <!--bookshop-live name(block) params(title:"Component")--><div>Component🎉-Block</div><!--bookshop-live end--> |
-      | <!--bookshop-live name(basic) params(label:label)-->Site🎉<!--bookshop-live end-->-Inline                      |
+      | text                                                                                                                                    |
+      | <!--bookshop-live name(block) params(title:"Component")--><div>Component🎉-Block</div><!--bookshop-live end-->                          |
+      | <!--databinding:#label--><!--bookshop-live name(basic) params(label:label)-->Site🎉<!--bookshop-live end--><!--databindingend:#label--> |

@@ -72,10 +72,10 @@ Feature: Astro Bookshop CloudCannon Integration
     Then stderr should be empty
     And stdout should contain "Complete!"
     And site/dist/index.html should contain each row:
-      | text                                                                                |
-      | <!--bookshop-live name(blocks) params(blocks:blocks)-->                             |
-      | <!--databinding:blocks-->                                                           |
-      | <h1 data-cms-bind="#blocks.0.block">🅰️<!-- -->🫀</h1>                              |
-      | <!--databinding:blocks.1.block--><h1>🅱️🫑</h1><!--databindingend:blocks.1.block--> |
-      | <!--databindingend:blocks-->                                                        |
-      | <!--bookshop-live end-->                                                            |
+      | text                                                                                  |
+      | <!--bookshop-live name(blocks) params(blocks:blocks)-->                               |
+      | <!--databinding:#blocks-->                                                            |
+      | <h1 data-cms-bind="#blocks.0.block">🅰️<!-- -->🫀</h1>                                |
+      | <!--databinding:#blocks.1.block--><h1>🅱️🫑</h1><!--databindingend:#blocks.1.block--> |
+      | <!--databindingend:#blocks-->                                                         |
+      | <!--bookshop-live end-->                                                              |

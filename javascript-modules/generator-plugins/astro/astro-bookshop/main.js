@@ -1,6 +1,3 @@
-import { readFileSync } from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import remarkAutoImport from "@cloudcannon/remark-auto-import";
 import mdxProcessFrontmatter from "./mdx-process-frontmatter.js";
 import vitePluginBookshop from "@bookshop/vite-plugin-astro-bookshop";
@@ -12,14 +9,8 @@ export default () => {
     name: "bookshop",
     hooks: {
       "astro:config:setup": async ({
-        updateConfig,
-        injectScript
+        updateConfig
       }) => {
-        const __dirname = path.dirname(fileURLToPath(import.meta.url));
-        injectScript(
-          "page",
-          readFileSync(path.join(__dirname, "data-binding.js"))
-        );
         updateConfig({
           markdown: {
             remarkPlugins: [

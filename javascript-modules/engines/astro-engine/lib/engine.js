@@ -93,7 +93,7 @@ export class Engine {
         componentMetadata: new Map(),
         _metadata: {
           hasHydrationScript: false,
-          hasRenderedHead: false,
+          hasRenderedHead: true,
           hasDirectives: new Set(),
           renderers: [
             {
@@ -123,11 +123,78 @@ export class Engine {
       props,
       null
     );
-    target.innerHTML = result;
+    const doc = document.implementation.createHTMLDocument();
+    doc.body.innerHTML = result
+    this.updateBindings(doc)
+    target.innerHTML =  doc.body.innerHTML;
   }
 
   async eval(str, props = [{}]) {
     processFrontmatter(props[0]);
     return str.split(".").reduce((curr, key) => curr?.[key], props[0]);
   }
+  
+  getBindingCommentIterator(documentNode) {
+    return documentNode.evaluate(
+      "//comment()[contains(.,'databinding:')]",
+      documentNode,
+      null,
+      XPathResult.ANY_TYPE,
+      null
+    );
+  }
+
+  getEndingBindingCommentIterator(documentNode, binding) {
+    return documentNode.evaluate(
+      `//comment()[contains(.,'databindingend:${binding}')]`,
+      documentNode,
+      null,
+      XPathResult.ANY_TYPE,
+      null
+    );
+  };
+
+  updateBindings(documentNode) {
+    const iter = this.getBindingCommentIterator(documentNode);
+    const nodes = [];
+    let current = iter.iterateNext();
+
+    while (current) {
+      nodes.push(current);
+      current = iter.iterateNext();
+    }
+
+    for (current of nodes) {
+      const data_binding_path = current.textContent.split(":")[1].trim();
+      if (data_binding_path.length > 0) {
+        const endIter = this.getEndingBindingCommentIterator(documentNode, data_binding_path);
+        let end = endIter.iterateNext();
+        while (end) {
+          const binding = end.textContent.split(":")[1].trim();
+          if (
+            (end.compareDocumentPosition(current) &
+              Node.DOCUMENT_POSITION_FOLLOWING) ===
+              0 &&
+            binding === data_binding_path
+          ) {
+            break;
+          }
+          end = endIter.iterateNext();
+        }
+
+        if (end) {
+          let node = current.nextElementSibling;
+          while (
+            node &&
+            (node.compareDocumentPosition(end) &
+              Node.DOCUMENT_POSITION_FOLLOWING) !==
+              0
+          ) {
+            node.dataset.cmsBind = data_binding_path;
+            node = node.nextElementSibling;
+          }
+        }
+      }
+    }
+  };
 }

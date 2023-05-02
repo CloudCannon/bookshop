@@ -130,7 +130,10 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
       """
       ---
       import Title from './title.astro';
-      const v = Astro.props.title.item
+      const a = Astro;
+      const p = a.props;
+      const t = p.title;
+      const v = t.item
       ---
       <div> <Title innards={v} /></div>
       """
