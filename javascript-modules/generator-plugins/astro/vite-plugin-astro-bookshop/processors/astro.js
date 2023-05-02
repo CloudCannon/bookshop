@@ -32,19 +32,54 @@ const findDefinition = (node) => {
   let curr = node;
 
   while (curr) {
-    if (curr.type === 'BlockStatement'){
-      const decl = curr.body.find(({declarations}) => declarations?.find(({id}) => id.name === node.name))
-      if(decl){
-        const declarator = decl.declarations.find(({id}) => id.name === node.name);
-        if(declarator.init.type === 'MemberExpression' || declarator.init.type === 'Identifier'){
+    if (curr.type === "BlockStatement") {
+      const decl = curr.body.find(({ declarations }) =>
+        declarations?.find(({ id }) => id.name === node.name)
+      );
+      if (decl) {
+        const declarator = decl.declarations.find(
+          ({ id }) => id.name === node.name
+        );
+        if (
+          declarator.init.type === "MemberExpression" ||
+          declarator.init.type === "Identifier"
+        ) {
           return declarator.init;
         }
       }
+      const destructures = curr.body.filter(({ declarations }) =>
+        declarations?.find(({ id }) => id.type === "ObjectPattern")
+      );
+      const patternDecls = destructures.flatMap(
+        ({ declarations }) => declarations
+      );
+      const patternDecl = patternDecls.find(({ id }) =>
+        id.properties.find(({ value }) => value.name === node.name)
+      );
+      if (patternDecl) {
+        if (
+          patternDecl.init.type === "MemberExpression" ||
+          patternDecl.init.type === "Identifier"
+        ) {
+          const prop = patternDecl.id.properties.find(
+            ({ value }) => value.name === node.name
+          );
+          return {
+            type: "MemberExpression",
+            object: patternDecl.init,
+            property: {
+              type: "Identifier",
+              name: prop.key.name,
+            },
+          };
+        }
+      }
     }
+
     if (
       curr.parent?.type === "CallExpression" &&
       curr.parent?.callee.property?.name === "map" &&
-      curr.type === 'ArrowFunctionExpression'
+      curr.type === "ArrowFunctionExpression"
     ) {
       let func = curr.parent;
       let index = func.arguments[0]?.params[1]?.name ?? "__arg1";
@@ -101,8 +136,15 @@ export default (src) => {
       (prop) => prop.key?.value === "bookshop:live"
     );
 
+    const shouldDataBind =
+      node.arguments[3].properties.find(
+        (prop) => prop.key?.value === "bookshop:binding"
+      )?.value.value ?? true;
+
     node.arguments[3].properties = node.arguments[3].properties.filter(
-      (prop) => prop.key?.value !== "bookshop:live"
+      (prop) =>
+        prop.key?.value !== "bookshop:live" &&
+        prop.key?.value !== "bookshop:binding"
     );
     const component = node.arguments[2].name;
     const propsString = node.arguments[3].properties
@@ -177,14 +219,20 @@ export default (src) => {
             return {key, path: identifiers[0].replace('Astro2.props.frontmatter.', '')};
           }
         }).filter((item) => !!item);
+        ${
+          !shouldDataBind
+            ? 'bookshop_paths.push({key:"dataBinding", path: "false", literal: true});'
+            : ""
+        }
         const params = bookshop_paths.map(({key, path}) => key+':'+path).join(',');
+        const bookshop_path = bookshop_paths.filter(({literal}) => !literal)[0]?.path;
         return $$render\`
         \${(typeof $$maybeRenderHead !== 'undefined') ? $$maybeRenderHead($$result) : ''}
-        \${(bookshop_paths[0]?.path && !bookshop_paths[0]?.literal) ? $$render\`<!--databinding:#\${$$render(bookshop_paths[0].path)}-->\`: ''}
+        \${(${shouldDataBind} && bookshop_path) ? $$render\`<!--databinding:#\${$$render(bookshop_path)}-->\`: ''}
         \${(${shouldLiveRender} && ${component}.__bookshop_name) ? $$render\`<!--bookshop-live name(\${${component}.__bookshop_name}) params(\${$$render(params)})-->\`: ''}
         \${'REPLACE_ME'}
         \${(${shouldLiveRender} && ${component}.__bookshop_name) ? $$render\`<!--bookshop-live end-->\`: ''}
-        \${(bookshop_paths[0]?.path && !bookshop_paths[0]?.literal) ? $$render\`<!--databindingend:#\${$$render(bookshop_paths[0].path)}-->\`: ''}
+        \${(${shouldDataBind} && bookshop_path) ? $$render\`<!--databindingend:#\${$$render(bookshop_path)}-->\`: ''}
       \`})()`
         .replace(/(^\s*)|(\s*$)/gm, "")
         .replace(/\n/g, "")

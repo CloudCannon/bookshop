@@ -166,7 +166,100 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
     Then 🌐 The selector h1 should match "<h1 data-cms-bind=\"#items.item\">Hello There</h1>"
 
   Scenario: Bookshop live renders a parent data binding over a child
+    Given a site/src/components/loop.astro file containing:
+      """
+      ---
+      import Title from './title.astro';
+      const { rows } = Astro.props;
+      ---
+      {rows.map((row) => <Title innards={row} />)}
+      """
+    And [front_matter]:
+      """
+      layout: ../layouts/Page.astro
+      rows:
+        - "Hello There"
+        - "Goodbye You"
+        - "A third one."
+      """
+    And a site/src/pages/index.md file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      """
+    And a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      import Loop from "../components/loop.astro";
+      const { rows } = Astro.props.frontmatter;
+      ---
+
+      <html lang="en"> <body>
+      <Loop bookshop:live rows={rows} />
+      </body> </html>
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    Then 🌐 The selector h1:nth-of-type(1) should match "<h1 data-cms-bind=\"#rows\">Hello There</h1>"
+    Then 🌐 The selector h1:nth-of-type(2) should match "<h1 data-cms-bind=\"#rows\">Goodbye You</h1>"
+    Then 🌐 The selector h1:nth-of-type(3) should match "<h1 data-cms-bind=\"#rows\">A third one.</h1>"
 
   Scenario: Bookshop live respects the per-component dataBinding flag
+    Given [front_matter]:
+      """
+      layout: ../layouts/Page.astro
+      hero: "Hello World"
+      """
+    And a site/src/pages/index.md file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      """
+    And a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      import Title from "../components/title.astro";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <html lang="en"> <body>
+      <Title bookshop:live bookshop:binding={false} innards={frontmatter.hero} />
+      </body> </html>
+      """
+    And 🌐 I have loaded my site
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    Then 🌐 The selector h1 should match "<h1>Hello World</h1>"
 
   Scenario: Bookshop live respects the global dataBindings flag
+    Given [front_matter]:
+      """
+      layout: ../layouts/Page.astro
+      hero: "Hello World"
+      """
+    And a site/src/pages/index.md file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      """
+    And a site/src/layouts/Page.astro file containing:
+      """
+      ---
+      import Title from "../components/title.astro";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <html lang="en"> <head>
+      <script>window.bookshopDataBindings = false;</script>
+      </head> <body>
+      <Title bookshop:live innards={frontmatter.hero} />
+      </body> </html>
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    Then 🌐 The selector h1 should match "<h1>Hello World</h1>"

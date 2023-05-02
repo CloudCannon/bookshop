@@ -58,26 +58,19 @@ const process = (node, componentName) => {
 };
 
 export default (src, componentName) => {
-  let name = src.match(
-    /export default (?<export>.*);/
-  )?.groups.export;
+  let name = src.match(/export default (?<export>.*);/)?.groups.export;
   src = src.replace(
     /const Astro2.*$/m,
     `$&
-    const __should_live_render = !!Astro2.props['bookshop:live'];
     delete Astro2.props['bookshop:live'];
-		const __data_binding_path = Astro2.props?.__bookshop_path || __getDataBinding(Astro2.props);
-    delete Astro2.props?.__bookshop_path`
+    delete Astro2.props['bookshop:binding'];
+    delete Astro2.props?.__bookshop_path;`
   );
 
-  const tree = parse(
-    `import { getDataBinding as __getDataBinding } from '@bookshop/astro-bookshop/helpers/frontmatter-helper.js';
-		${src}`,
-    {
-      sourceType: "module",
-      ecmaVersion: "latest",
-    }
-  ).program;
+  const tree = parse(src, {
+    sourceType: "module",
+    ecmaVersion: "latest",
+  }).program;
 
   const componentDecl = tree.body.find((statement) => {
     if (statement.type !== "VariableDeclaration") {
