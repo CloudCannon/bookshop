@@ -40,7 +40,7 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
     * a site/src/layouts/Page.astro file containing:
       """
       ---
-      import Single from "../components/single";
+      import Single from "../components/single.jsx";
       const { frontmatter } = Astro.props;
       ---
 
@@ -117,7 +117,7 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
     Given a site/src/layouts/Page.astro file containing:
       """
       ---
-      import Single from "../components/single";
+      import Single from "../components/single.jsx";
       const { frontmatter } = Astro.props;
       ---
 

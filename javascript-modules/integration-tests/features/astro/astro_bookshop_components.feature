@@ -54,7 +54,7 @@ Feature: Basic Astro Bookshop
     And a site/src/layouts/Page.astro file containing:
       """
       ---
-      import Title from "../components/title/title";
+      import Title from "../components/title/title.jsx";
       ---
 
       <Title bookshop:live text={"Result 🤽‍♂️"} />
@@ -84,7 +84,7 @@ Feature: Basic Astro Bookshop
     And a site/src/layouts/Page.astro file containing:
       """
       ---
-      import Title from "../components/nested/title/title";
+      import Title from "../components/nested/title/title.jsx";
       const { frontmatter } = Astro.props;
       ---
 
@@ -115,7 +115,7 @@ Feature: Basic Astro Bookshop
     And a site/src/layouts/Page.astro file containing:
       """
       ---
-      import Title from "../components/title";
+      import Title from "../components/title.jsx";
       const { frontmatter } = Astro.props;
       ---
 
@@ -146,7 +146,7 @@ Feature: Basic Astro Bookshop
     And a site/src/layouts/Page.astro file containing:
       """
       ---
-      import Title from "../components/nested/title";
+      import Title from "../components/nested/title.jsx";
       const { frontmatter } = Astro.props;
       ---
 
@@ -180,7 +180,7 @@ Feature: Basic Astro Bookshop
     And a site/src/layouts/Page.astro file containing:
       """
       ---
-      import Title from "../components/title/title";
+      import Title from "../components/title/title.jsx";
       const { frontmatter } = Astro.props;
       ---
 
@@ -195,7 +195,7 @@ Feature: Basic Astro Bookshop
   Scenario: Components can use further components
     Given a site/src/components/title/title.jsx file containing:
       """
-      import Subtitle from './subtitle'
+      import Subtitle from './subtitle.jsx'
       export default function Title({ title, subtitle }) {
         return (
           <>
@@ -224,7 +224,7 @@ Feature: Basic Astro Bookshop
     And a site/src/layouts/Page.astro file containing:
       """
       ---
-      import Title from "../components/title/title";
+      import Title from "../components/title/title.jsx";
       const { frontmatter } = Astro.props;
       ---
 
@@ -269,7 +269,7 @@ Feature: Basic Astro Bookshop
     And a site/src/layouts/Page.astro file containing:
       """
       ---
-      import Title from "../components/title/title";
+      import Title from "../components/title/title.jsx";
       const { frontmatter } = Astro.props;
       ---
 
@@ -379,7 +379,7 @@ Feature: Basic Astro Bookshop
     And a site/src/layouts/Page.astro file containing:
       """
       ---
-      import Blocks from '../components/blocks';
+      import Blocks from '../components/blocks.jsx';
       const { frontmatter } = Astro.props;
       ---
       <main>
