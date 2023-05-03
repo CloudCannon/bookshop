@@ -14,7 +14,7 @@ export default () => {
     enforce: "pre",
 
     transform(src, id) {
-      id = id.replace(cwd(), "");
+      id = id.replace(cwd().replace(/\\/g, '/'), "");
 
       const pageMatch = id.match(PAGE_REGEX);
       const componentMatch = id.match(COMPONENT_REGEX);
