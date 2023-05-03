@@ -15,7 +15,7 @@ Feature: Astro Bookshop CloudCannon Integration
             bookshop.config.cjs from starters/astro/bookshop.config.cjs
       """
 
-  Scenario: Tests are functional
+  Scenario: Bookshop Live schema comments
     Given a site/src/components/blocks.astro file containing:
       """
       ---
@@ -25,10 +25,12 @@ Feature: Astro Bookshop CloudCannon Integration
 
       const {blocks} = Astro.props;
       ---
+      <div>
       {blocks.map(({name, block}) => {
         const Component = (components[`./${name}.jsx`] ?? components[`./${name}.astro`]).default
         return <Component {...block} />
       })}
+      </div>
       """
     And a site/src/components/a.jsx file containing:
       """
@@ -72,10 +74,8 @@ Feature: Astro Bookshop CloudCannon Integration
     Then stderr should be empty
     And stdout should contain "Complete!"
     And site/dist/index.html should contain each row:
-      | text                                                                                  |
-      | <!--bookshop-live name(blocks) params(blocks:blocks)-->                               |
-      | <!--databinding:#blocks-->                                                            |
-      | <h1 data-cms-bind="#blocks.0.block">🅰️<!-- -->🫀</h1>                                |
-      | <!--databinding:#blocks.1.block--><h1>🅱️🫑</h1><!--databindingend:#blocks.1.block--> |
-      | <!--databindingend:#blocks-->                                                         |
-      | <!--bookshop-live end-->                                                              |
+      | text                                                                                                                          |
+      | <!--databinding:#blocks--><!--bookshop-live name(blocks) params(blocks:blocks)--><div>                                        |
+      | <!--databinding:#blocks.0.block--><h1 data-cms-bind="#blocks.0.block">🅰️<!-- -->🫀</h1><!--databindingend:#blocks.0.block--> |
+      | <!--databinding:#blocks.1.block--><h1>🅱️🫑</h1><!--databindingend:#blocks.1.block-->                                         |
+      | </div><!--bookshop-live end--><!--databindingend:#blocks-->                                                                   |

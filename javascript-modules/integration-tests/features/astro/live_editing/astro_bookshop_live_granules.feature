@@ -90,7 +90,7 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
     *    🌐 The selector h1 should contain "Rerendered"
 
   @web
-  Scenario: Bookshop live renders when CloudCannon pushes new data
+  Scenario: Bookshop live renders flat components when CloudCannon pushes new data
     Given a site/src/layouts/Page.astro file containing:
       """
       ---
