@@ -32,7 +32,7 @@ export default () => {
       }
 
       let { component: componentName } = componentMatch.groups;
-      let parts = componentName.split("/");
+      let parts = componentName.replace(/\\/g, '/').split("/");
       if (
         parts.length >= 2 &&
         parts[parts.length - 1] === parts[parts.length - 2]
