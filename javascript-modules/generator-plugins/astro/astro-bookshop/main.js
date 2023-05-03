@@ -2,7 +2,7 @@ import remarkAutoImport from "@cloudcannon/remark-auto-import";
 import mdxProcessFrontmatter from "./mdx-process-frontmatter.js";
 import vitePluginBookshop from "@bookshop/vite-plugin-astro-bookshop";
 
-const COMPONENT_REGEX = /\/src\/components\/(?<component>.*)\.(astro|jsx)$/;
+const COMPONENT_REGEX = /(\/|\\)src(\/|\\)components(\/|\\)(?<component>.*)\.(astro|jsx)$/;
 
 export default () => {
   return {

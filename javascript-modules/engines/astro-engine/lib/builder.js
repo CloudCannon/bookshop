@@ -80,7 +80,7 @@ export const buildPlugins = [
         };
       });
       build.onLoad(
-        { filter: /astro\/dist\/runtime\/server\/index.js$/ },
+        { filter: /astro(\/|\\)dist(\/|\\)runtime(\/|\\)server(\/|\\)index.js$/ },
         async (args) => {
           let text = await fs.promises.readFile(args.path, "utf8");
           return {
