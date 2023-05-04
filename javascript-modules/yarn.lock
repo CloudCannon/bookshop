@@ -814,6 +814,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@cloudcannon/filer@npm:latest":
+  version: 0.0.3
+  resolution: "@cloudcannon/filer@npm:0.0.3"
+  dependencies:
+    gray-matter: ^4.0.3
+    markdown-it: ^13.0.1
+  bin:
+    cloudcannon-filer: src/index.js
+  checksum: 7b7f8bfee63db278cd3cda4dbc4b0e3c6b25b385fffcdf59917838cdb9bee5648e33dc0d6f0b72b29abdedaff2244080b902ae3c8f3fa6191b54a5f5ba3e5991
+  languageName: node
+  linkType: hard
+
 "@cloudcannon/reader@npm:latest":
   version: 1.1.2
   resolution: "@cloudcannon/reader@npm:1.1.2"
@@ -6299,6 +6311,7 @@ fsevents@~2.3.2:
     "@bookshop/svelte-engine": 3.4.1
     "@bookshop/up": 3.4.1
     "@bookshop/vite-plugin-astro-bookshop": 3.4.1
+    "@cloudcannon/filer": latest
     "@cloudcannon/reader": latest
     "@cloudcannon/remark-auto-import": latest
     "@cloudcannon/svelte-connector": ^1.0.3

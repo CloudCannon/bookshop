@@ -27,6 +27,7 @@
     "@bookshop/svelte-engine": "3.4.1",
     "@bookshop/up": "3.4.1",
     "@bookshop/vite-plugin-astro-bookshop": "3.4.1",
+    "@cloudcannon/filer": "latest",
     "@cloudcannon/reader": "latest",
     "@cloudcannon/remark-auto-import": "latest",
     "@cloudcannon/svelte-connector": "^1.0.3",
