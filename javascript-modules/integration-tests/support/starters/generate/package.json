@@ -5,7 +5,7 @@
     "start": "bookshop-generate",
     "generate-no-live": "bookshop-generate --skip-live",
     "cc-hugo": "cloudcannon-hugo --baseURL /",
-    "cc-astro": "cd site && cloudcannon-reader --output 'dist'"
+    "cc-astro": "cd site && cloudcannon-reader --output dist"
   },
   "devDependencies": {
     "@bookshop/generate": "file:../../../javascript-modules/generate"
