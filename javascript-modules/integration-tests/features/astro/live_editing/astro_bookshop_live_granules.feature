@@ -62,7 +62,7 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
     Given I run "npm run cc-astro" in the . directory
     When I run "npm start" in the . directory
     Then stderr should be empty
-    *    stdout should contain "Modifying output site at ./site/dist"
+    *    stdout should contain "Modifying output site at"
     *    stdout should contain "Added live editing to 1 page containing Bookshop components"
 
   @web

@@ -1,4 +1,4 @@
-@Astro
+@astro
 Feature: Astro Bookshop Component Browser Granular Steps
 
   Background:

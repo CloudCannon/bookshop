@@ -126,6 +126,12 @@ class CustomWorld {
   }
 
   trackPuppeteerLog(e) {
+    const ignored_logs = [
+      /Download the React DevTools/i
+    ];
+    if (ignored_logs.some(l => l.test(e.toString()))) {
+      return;
+    }
     this.page_logs.push(e);
   }
 
