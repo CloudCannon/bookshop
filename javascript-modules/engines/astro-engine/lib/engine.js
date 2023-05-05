@@ -65,7 +65,7 @@ export class Engine {
 
     if (key.endsWith(".astro")) {
       return this.renderAstroComponent(target, key, props, globals);
-    } else if (key.endsWith(".jsx")) {
+    } else if (key.endsWith(".jsx") || key.endsWith(".tsx")) {
       return this.renderReactComponent(target, key, props, globals);
     }
   }

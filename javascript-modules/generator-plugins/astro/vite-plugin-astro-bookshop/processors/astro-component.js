@@ -93,7 +93,12 @@ export default (src, componentName) => {
   src = (generate.default ?? generate)(tree).code;
 
   if (name) {
-    src = `${src}\n${name}.__bookshop_name = "${componentName}";`;
+    src = `${src}
+    Object.defineProperty(${name}, "__bookshop_name", {
+      enumerable: false,
+      writable: true,
+      value: "${componentName}",
+    });`;
   }
   return src;
 };

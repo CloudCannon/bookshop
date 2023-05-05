@@ -6,7 +6,7 @@ import processAstro from "./processors/astro.js";
 
 const PAGE_REGEX = /.*src(\/|\\)(layouts|pages).*(\/|\\)(?<name>\w*)\.astro$/;
 const COMPONENT_REGEX =
-  /^(\/|\\)src(\/|\\)(components|shared(\/|\\)astro)(\/|\\)(?<component>.*)\.(astro|jsx|tsx)$/;
+  /.*src(\/|\\)(components|shared(\/|\\)astro)(\/|\\)(?<component>.*)\.(astro|jsx|tsx)$/;
 
 export default () => {
   return {

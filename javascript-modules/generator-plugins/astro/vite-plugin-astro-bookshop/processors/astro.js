@@ -192,6 +192,23 @@ export default (src) => {
         }
       })
       .join(",");
+
+    if(shouldDataBind){
+      node.arguments[3].properties.unshift({
+        type: 'ObjectProperty',
+        method: false,
+        key: {
+          type: 'Identifier',
+          name: '__data_binding_path'
+        },
+        computed: false,
+        shorthand: false,
+        value: {
+          type: 'Identifier',
+          name: 'bookshop_path'
+        },
+      })
+    }
     const template = parse(
       `(async () => {
         const bookshop_paths = [${propsString}].map(({key, identifiers, values}) => {

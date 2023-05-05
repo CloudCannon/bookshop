@@ -18,7 +18,7 @@ export default () => {
                 remarkAutoImport,
                 {
                   directories: ["src/components"],
-                  patterns: ["**/*.astro", "**/*.jsx"],
+                  patterns: ["**/*.astro", "**/*.jsx", "**/*.tsx"],
                   name: (path) => {
                     const componentMatch = path.match(COMPONENT_REGEX);
                     let { component: componentName } = componentMatch.groups;
