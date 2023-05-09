@@ -70,8 +70,7 @@ export default (src, componentName) => {
   )?.groups.export;
 
   const tree = parse(
-    `import { getDataBinding as __getDataBinding } from '@bookshop/astro-bookshop/helpers/frontmatter-helper.js';
-    ${src}`,
+    src,
     {
       sourceType: "module",
       ecmaVersion: "latest",
@@ -79,42 +78,17 @@ export default (src, componentName) => {
   ).program;
 
   findFunctionStatements(tree).forEach((node) => {
+    let name = '__props';
     if (node.params[0]?.type === "Identifier") {
-      const { name } = node.params[0];
-      node.params[0] = {
-        type: "Identifier",
-        name: "___props",
-      };
-      node.body.body.unshift(
-        ...parse(`
-          ${name}.__bookshop_path = ${name}.__bookshop_path ?? ${name}?.__data_binding_path
-          let __data_binding_path =  ${name}.__bookshop_path;
-            `).program.body
-      );
-      node.body.body.unshift(
-        ...parse(`
-          let ${name} = {...___props};
-          `).program.body
-      );
+      ({ name } = node.params[0]);
     } else if (node.params[0]?.type === "ObjectPattern") {
-      const destructure = node.params[0];
-      node.params[0] = {
-        type: "Identifier",
-        name: "___props",
-      };
-      node.body.body.unshift(
-        ...parse(`
-        __props.__bookshop_path = __props.__bookshop_path ?? __props?.__data_binding_path
-        let __data_binding_path =  __props.__bookshop_path;
-          `).program.body
-      );
       node.body.body.unshift({
         type: "VariableDeclaration",
         kind: "let",
         declarations: [
           {
             type: "VariableDeclarator",
-            id: destructure,
+            id: node.params[0],
             init: {
               type: "Identifier",
               name: "__props",
@@ -122,17 +96,24 @@ export default (src, componentName) => {
           },
         ],
       });
-      node.body.body.unshift(
-        ...parse(`
-          let __props = {...___props};
-          `).program.body
-      );
     }
+    node.params[0] = {
+      type: "Identifier",
+      name: "___props",
+    };
+    node.body.body.unshift(
+      ...parse(`
+        let __data_binding_path =  ${name}?.__data_binding_path ?? ${name}.__bookshop_path;
+          `).program.body
+    );
+    node.body.body.unshift(
+      ...parse(`
+        let ${name} = {...___props};
+        `).program.body
+    );
   });
 
   addParentLinks(tree);
-
-  let shouldDataBind = true;
 
   findComponents(tree).forEach((node) => {
     const shouldDataBind =
@@ -149,8 +130,8 @@ export default (src, componentName) => {
         ].includes(prop.key?.value)
       )?.value.value ?? true;
 
-    node.arguments[3].properties = node.arguments[1].properties.filter((prop) =>
-      [
+    node.arguments[1].properties = node.arguments[1].properties.filter((prop) =>
+      ![
         "dataBinding",
         "_dataBinding",
         "data_binding",
@@ -255,7 +236,14 @@ export default (src, componentName) => {
             return {key, path: identifiers[0].replace('Astro2.props.frontmatter.', '')};
           }
         }).filter((item) => !!item);
-        const bookshop_path = bookshop_paths.filter(({literal}) => !literal)[0]?.path ;
+        const bookshop_path = bookshop_paths
+          .filter(({literal}) => !literal)
+          .reduce((acc, {path}) => {
+            while(!path.startsWith(acc)){
+              acc = acc.replace(/\\.?[^.]*$/, '');
+            }
+            return acc;
+          }, bookshop_paths[0]?.path);
         return REPLACE_ME;
       })()`
         .replace(/(^\s*)|(\s*$)/gm, "")
@@ -290,7 +278,7 @@ export default (src, componentName) => {
       return;
     }
 
-    if (shouldDataBind && node.argument.arguments[1].type === "NullLiteral") {
+    if (node.argument.arguments[1].type === "NullLiteral") {
       node.argument.arguments[1] = {
         type: "ObjectExpression",
         properties: [

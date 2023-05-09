@@ -21,22 +21,3 @@ const process = (path, obj) => {
 export const processFrontmatter = (frontmatter) => {
   process([], frontmatter);
 };
-
-export const getDataBinding = (props) => {
-  if (!props) {
-    return null;
-  }
-  if (props.__bookshop_path) {
-    return props.__bookshop_path;
-  }
-  for (const key of Object.keys(props)) {
-    if (typeof props[key] !== "object") {
-      continue;
-    }
-    const childBinding = getDataBinding(props[key]);
-    if (childBinding) {
-      return childBinding.replace(/\.[^.]*$/, "");
-    }
-  }
-  return null;
-};

@@ -130,7 +130,14 @@ export default (src) => {
             : ""
         }
         const params = bookshop_paths.map(({key, path}) => key+':'+path).join(',');
-        const bookshop_path = bookshop_paths.filter(({literal}) => !literal)[0]?.path;
+        const bookshop_path = bookshop_paths
+          .filter(({literal}) => !literal)
+          .reduce((acc, {path}) => {
+            while(!path.startsWith(acc)){
+              acc = acc.replace(/\\.?[^.]*$/, '');
+            }
+            return acc;
+          }, bookshop_paths[0]?.path);
         return $$render\`
         \${(typeof $$maybeRenderHead !== 'undefined') ? $$maybeRenderHead($$result) : ''}
         \${(${shouldDataBind} && bookshop_path) ? $$render\`<!--databinding:#\${$$render(bookshop_path)}-->\`: ''}
