@@ -62,13 +62,32 @@ export class Engine {
     }
 
     async retrieveInclude(file) {
+        let not_found = (name) => {
+            return [
+                `<div class="bookshop_error" style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
+                `Failed to find component ${name}`,
+                `</div>`
+            ].join('\n');
+        }
         let content;
         if (/_bookshop_include_/.test(file)) {
-            content = this.getShared(file.replace(/^.*_bookshop_include_/, ""));
+            content = this.getComponent(file.replace(/^.*_bookshop_include_/, ""));
+
+            if (!content && content !== "") {
+                content = not_found(file);
+            }
         } else if (/_bookshop_/.test(file)) {
             content = this.getComponent(file.replace(/^.*_bookshop_/, ""));
+
+            if (!content && content !== "") {
+                content = not_found(file);
+            }
         } else {
             content = this.files?.[file];
+
+            if (!content && content !== "") {
+                content = not_found(file);
+            }
         }
         if (!content && content !== "") {
             console.warn(`[jekyll-engine] No file found for ${file}`);
@@ -147,6 +166,31 @@ export class Engine {
         this.info = info;
     }
 
+    /**
+     * Tries to parse an error message and patch up the components
+     * in a rudimentary way before a rebuild.
+     */
+    async componentQuack(error_string = "") {
+        try {
+            const component_regex = /file:._bookshop_([^,]+),/ig;
+            let file_stack = [...error_string.matchAll(component_regex)];
+            if (file_stack.length) {
+                const deepest_errored_component = file_stack[file_stack.length-1];
+                const component_key = this.getComponentKey(deepest_errored_component[1]);
+                this.files = this.files || {};
+                this.files[component_key] = [
+                    `<div style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
+                    `Failed to render ${deepest_errored_component[1]}. <br/>`,
+                    `<pre style="margin-top: 10px; background-color: lightcoral; border: solid 1px black;">`,
+                    `<code style="font-family: monospace; color: black;">${error_string.replace(/</, '&lt;')}</code></pre>`,
+                    `</div>`
+                ].join('\n');
+                return deepest_errored_component;
+            }
+        } catch(e) {}
+        return null;
+    }
+
     async render(target, name, props, globals, logger) {
         let source = this.getComponent(name);
         // TODO: Remove the below check and update the live comments to denote shared
@@ -162,7 +206,20 @@ export class Engine {
         logger?.log?.(source);
         if (!globals || typeof globals !== "object") globals = {};
         props = this.injectInfo({ ...globals, include: props });
-        target.innerHTML = await this.liquid.parseAndRender(source || "", props);
+
+        let rendered = false, render_attempts = 1, max_renders = 5;
+        while (!rendered && render_attempts < max_renders) {
+            try {
+                target.innerHTML = await this.liquid.parseAndRender(source || "", props);
+                rendered = true;
+            } catch(e) {
+                if (!this.componentQuack(e.toString())) {
+                    max_renders = render_attempts;
+                    target.innerHTML = `<code>Bookshop failed to render: ${e.toString()}</code>`
+                }
+            }
+            render_attempts += 1;
+        }
         logger?.log?.(`Rendered ${name} as:`);
         logger?.log?.(target.innerHTML);
     }
