@@ -1,24 +1,6 @@
 import { parse } from "@babel/parser";
 import generate from "@babel/generator";
-
-const findSpreadExpressions = (node) => {
-  let res = [];
-  if (!node) {
-    return res;
-  }
-  if (node?.type === "SpreadElement") {
-    res.push(node);
-    return res;
-  }
-  Object.values(node).forEach((val) => {
-    if (Array.isArray(val)) {
-      res = res.concat(val.flatMap(findSpreadExpressions));
-    } else if (typeof val === "object") {
-      res = res.concat(findSpreadExpressions(val));
-    }
-  });
-  return res;
-};
+import { findSpreadExpressions } from "../helpers/ast-helper.js";
 
 const process = (node, componentName) => {
   if (!node) {

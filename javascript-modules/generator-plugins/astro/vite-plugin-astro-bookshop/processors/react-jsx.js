@@ -1,31 +1,30 @@
 import generate from "@babel/generator";
 import { parse } from "@babel/parser";
+import {
+  findDefinition,
+  addParentLinks,
+  findSpreadExpressions,
+  createFinder,
+} from "../helpers/ast-helper.js";
 
-const addParentLinks = (node) => {
-  if (!node) {
-    return;
-  }
-  Object.values(node).forEach((val) => {
-    if (Array.isArray(val)) {
-      val.forEach((item) => {
-        if (item && typeof item === "object") {
-          Object.defineProperty(item, "parent", {
-            enumerable: false,
-            writable: true,
-            value: node,
-          });
-          addParentLinks(item);
-        }
-      });
-    } else if (val && typeof val === "object") {
-      Object.defineProperty(val, "parent", {
-        enumerable: false,
-        writable: true,
-        value: node,
-      });
-      addParentLinks(val);
-    }
-  });
+const isJSXNode = (node) => {
+  return (
+    node?.type === "CallExpression" &&
+    (node?.callee?.name === "_jsx" ||
+      node?.callee?.name === "_jsxs" ||
+      (node?.callee?.object?.name?.endsWith("React") &&
+        node?.callee?.property?.name === "createElement"))
+  );
+};
+
+const isJSXComponentNode = (node) => {
+  return (
+    node.name === "_Fragment" ||
+    (node?.object?.name.endsWith("React") &&
+      node?.property?.name === "Fragment") ||
+    (node?.object?.name.endsWith("React") &&
+      node?.property?.name === "createElement")
+  );
 };
 
 const hasJSXExpression = (node) => {
@@ -33,13 +32,7 @@ const hasJSXExpression = (node) => {
   if (!node) {
     return res;
   }
-  if (
-    node?.type === "CallExpression" &&
-    (node?.callee?.name === "_jsx" ||
-      node?.callee?.name === "_jsxs" ||
-      (node?.callee?.object?.name?.endsWith("React") &&
-        node?.callee?.property?.name === "createElement"))
-  ) {
+  if (isJSXNode(node)) {
     return true;
   }
   Object.values(node).forEach((val) => {
@@ -52,178 +45,24 @@ const hasJSXExpression = (node) => {
   return res;
 };
 
-const findReturnStatements = (node) => {
-  let res = [];
-  if (!node) {
-    return res;
-  }
-  if (node?.type === "ReturnStatement") {
-    const { argument } = node;
-    if (
-      argument?.type === "CallExpression" &&
-      (argument?.callee?.name === "_jsx" ||
-        argument?.callee?.name === "_jsxs" ||
-        (argument?.callee?.object?.name?.endsWith("React") &&
-          argument?.callee?.property?.name === "createElement"))
-    ) {
-      res.push(node);
-    }
-    return res;
-  }
-  Object.values(node).forEach((val) => {
-    if (Array.isArray(val)) {
-      res = res.concat(val.flatMap(findReturnStatements));
-    } else if (typeof val === "object") {
-      res = res.concat(findReturnStatements(val));
-    }
-  });
-  return res;
-};
+const findReturnStatements = createFinder(
+  (node) => node?.type === "ReturnStatement" && isJSXNode(node?.argument),
+  false
+);
 
-const findSpreadExpressions = (node) => {
-  let res = [];
-  if (!node) {
-    return res;
-  }
-  if (node?.type === "SpreadElement") {
-    res.push(node);
-    return res;
-  }
-  Object.values(node).forEach((val) => {
-    if (Array.isArray(val)) {
-      res = res.concat(val.flatMap(findSpreadExpressions));
-    } else if (typeof val === "object") {
-      res = res.concat(findSpreadExpressions(val));
-    }
-  });
-  return res;
-};
+const findFunctionStatements = createFinder(
+  (node) =>
+    (node?.type === "FunctionDeclaration" ||
+      node?.type === "ArrowFunctionExpression") &&
+    node.body?.type === "BlockStatement" &&
+    hasJSXExpression(node),
+  false
+);
 
-const findFunctionStatements = (node) => {
-  let res = [];
-  if (!node) {
-    return res;
-  }
-  if (
-    node?.type === "FunctionDeclaration" ||
-    node?.type === "ArrowFunctionExpression"
-  ) {
-    if (node.body?.type === "BlockStatement" && hasJSXExpression(node)) {
-      res.push(node);
-      return res;
-    }
-  }
-  Object.values(node).forEach((val) => {
-    if (Array.isArray(val)) {
-      res = res.concat(val.flatMap(findFunctionStatements));
-    } else if (typeof val === "object") {
-      res = res.concat(findFunctionStatements(val));
-    }
-  });
-  return res;
-};
-
-const findComponents = (node) => {
-  let res = [];
-  if (!node) {
-    return res;
-  }
-  if (
-    node?.type === "CallExpression" &&
-    (node?.callee?.name === "_jsx" ||
-      node?.callee?.name === "_jsxs" ||
-      (node?.callee?.object?.name?.endsWith("React") &&
-        node?.callee?.property?.name === "createElement")) &&
-    node.arguments?.[0].type === "Identifier"
-  ) {
-    res.push(node);
-  }
-  Object.values(node).forEach((val) => {
-    if (Array.isArray(val)) {
-      res = res.concat(val.flatMap(findComponents));
-    } else if (typeof val === "object") {
-      res = res.concat(findComponents(val));
-    }
-  });
-  return res;
-};
-
-const findDefinition = (node) => {
-  let curr = node;
-
-  while (curr) {
-    const body = curr.body?.body ?? curr.body;
-    if (Array.isArray(body)) {
-      const decl = body.find(({ declarations }) =>
-        declarations?.find(({ id }) => id.name === node.name)
-      );
-      if (decl) {
-        const declarator = decl.declarations.find(
-          ({ id }) => id.name === node.name
-        );
-        if (
-          declarator.init.type === "MemberExpression" ||
-          declarator.init.type === "Identifier"
-        ) {
-          return declarator.init;
-        }
-      }
-      const destructures = body.filter(({ declarations }) =>
-        declarations?.find(({ id }) => id.type === "ObjectPattern")
-      );
-      const patternDecls = destructures.flatMap(
-        ({ declarations }) => declarations
-      );
-      const patternDecl = patternDecls.find(({ id }) =>
-        id.properties.find(({ value }) => value.name === node.name)
-      );
-      if (patternDecl) {
-        if (
-          patternDecl.init.type === "MemberExpression" ||
-          patternDecl.init.type === "Identifier"
-        ) {
-          const prop = patternDecl.id.properties.find(
-            ({ value }) => value.name === node.name
-          );
-          return {
-            type: "MemberExpression",
-            object: patternDecl.init,
-            property: {
-              type: "Identifier",
-              name: prop.key.name,
-            },
-          };
-        }
-      }
-    }
-
-    if (
-      curr.parent?.type === "CallExpression" &&
-      curr.parent?.callee.property?.name === "map" &&
-      curr.type === "ArrowFunctionExpression"
-    ) {
-      let func = curr.parent;
-      let index = func.arguments[0]?.params[1]?.name ?? "__arg1";
-      while (func.arguments[0].params.length < 2) {
-        func.arguments[0].params.push({
-          type: "Identifier",
-          name: `__arg${func.arguments[0].params.length}`,
-        });
-      }
-
-      return {
-        type: "MemberExpression",
-        object: func.callee.object,
-        property: {
-          type: "Identifier",
-          name: `[${index}]`,
-        },
-      };
-    }
-    curr = curr.parent;
-  }
-  return null;
-};
+const findComponents = createFinder(
+  (node) => isJSXNode(node) && node.arguments?.[0].type === "Identifier",
+  true
+);
 
 export default (src, componentName) => {
   let name = src.match(
@@ -243,9 +82,9 @@ export default (src, componentName) => {
     if (node.params[0]?.type === "Identifier") {
       const { name } = node.params[0];
       node.params[0] = {
-        type: 'Identifier',
-        name: '___props',
-      }
+        type: "Identifier",
+        name: "___props",
+      };
       node.body.body.unshift(
         ...parse(`
           ${name}.__bookshop_path = ${name}.__bookshop_path ?? ${name}?.__data_binding_path
@@ -260,9 +99,9 @@ export default (src, componentName) => {
     } else if (node.params[0]?.type === "ObjectPattern") {
       const destructure = node.params[0];
       node.params[0] = {
-        type: 'Identifier',
-        name: '___props',
-      }
+        type: "Identifier",
+        name: "___props",
+      };
       node.body.body.unshift(
         ...parse(`
         __props.__bookshop_path = __props.__bookshop_path ?? __props?.__data_binding_path
@@ -270,18 +109,18 @@ export default (src, componentName) => {
           `).program.body
       );
       node.body.body.unshift({
-        type: 'VariableDeclaration',
-        kind: 'let',
-        declarations:[
+        type: "VariableDeclaration",
+        kind: "let",
+        declarations: [
           {
-            type: 'VariableDeclarator',
+            type: "VariableDeclarator",
             id: destructure,
             init: {
-              type: 'Identifier',
-              name: '__props'
-            }
-          }
-        ]
+              type: "Identifier",
+              name: "__props",
+            },
+          },
+        ],
       });
       node.body.body.unshift(
         ...parse(`
@@ -293,8 +132,36 @@ export default (src, componentName) => {
 
   addParentLinks(tree);
 
+  let shouldDataBind = true;
+
   findComponents(tree).forEach((node) => {
-    const component = node.arguments[0].name;
+    const shouldDataBind =
+      node.arguments[1].properties.find((prop) =>
+        [
+          "dataBinding",
+          "_dataBinding",
+          "data_binding",
+          "_data_binding",
+          "editorLink",
+          "_editorLink",
+          "editor_link",
+          "_editor_link",
+        ].includes(prop.key?.value)
+      )?.value.value ?? true;
+
+    node.arguments[3].properties = node.arguments[1].properties.filter((prop) =>
+      [
+        "dataBinding",
+        "_dataBinding",
+        "data_binding",
+        "_data_binding",
+        "editorLink",
+        "_editorLink",
+        "editor_link",
+        "_editor_link",
+      ].includes(prop.key?.value)
+    );
+
     const propsString = node.arguments[1].properties
       .filter((prop) => prop.key?.value !== "class")
       .map((prop) => {
@@ -308,7 +175,10 @@ export default (src, componentName) => {
           let identifiers = [];
           let curr = prop.value;
 
-          while (curr.type === 'Identifier' || curr.type === 'MemberExpression') {
+          while (
+            curr.type === "Identifier" ||
+            curr.type === "MemberExpression"
+          ) {
             let currIdentifier;
             while (true) {
               currIdentifier = (generate.default ?? generate)(curr).code;
@@ -340,20 +210,24 @@ export default (src, componentName) => {
         }
       })
       .join(",");
-    node.arguments[1].properties.push({
-      type: 'ObjectProperty',
-      method: false,
-      key: {
-        type: 'Identifier',
-        name: '__data_binding_path'
-      },
-      computed: false,
-      shorthand: false,
-      value: {
-        type: 'Identifier',
-        name: 'bookshop_path'
-      },
-    })
+
+    if (shouldDataBind) {
+      node.arguments[1].properties.push({
+        type: "ObjectProperty",
+        method: false,
+        key: {
+          type: "Identifier",
+          name: "__data_binding_path",
+        },
+        computed: false,
+        shorthand: false,
+        value: {
+          type: "Identifier",
+          name: "bookshop_path",
+        },
+      });
+    }
+
     const template = parse(
       `(() => {
         const bookshop_paths = [${propsString}].map(({key, identifiers, values}) => {
@@ -388,9 +262,9 @@ export default (src, componentName) => {
         .replace(/\n/g, "")
     ).program.body[0].expression;
 
-    template.callee.body.body[
-      template.callee.body.body.length - 1
-    ].argument = { ...node };
+    template.callee.body.body[template.callee.body.body.length - 1].argument = {
+      ...node,
+    };
     Object.keys(node).forEach((key) => delete node[key]);
     Object.keys(template).forEach((key) => (node[key] = template[key]));
   });
@@ -412,17 +286,11 @@ export default (src, componentName) => {
       `).program.body[0].expression;
     });
 
-    if (
-      node.argument.arguments[0].name === "_Fragment" ||
-      (node.argument.arguments[0]?.object?.name.endsWith("React") &&
-        node.argument.arguments[0]?.property?.name === "Fragment") ||
-      (node.argument.arguments[0]?.object?.name.endsWith("React") &&
-        node.argument.arguments[0]?.property?.name === "createElement")
-    ) {
+    if (isJSXComponentNode(node.argument.arguments[0])) {
       return;
     }
 
-    if (node.argument.arguments[1].type === "NullLiteral") {
+    if (shouldDataBind && node.argument.arguments[1].type === "NullLiteral") {
       node.argument.arguments[1] = {
         type: "ObjectExpression",
         properties: [
@@ -439,7 +307,8 @@ export default (src, componentName) => {
               end: 669,
               name: "'data-cms-bind'",
             },
-            value: parse('__data_binding_path?"#"+__data_binding_path: null;').program.body[0].expression,
+            value: parse('__data_binding_path?"#"+__data_binding_path: null;')
+              .program.body[0].expression,
             kind: "init",
           },
         ],
@@ -458,7 +327,8 @@ export default (src, componentName) => {
           end: 669,
           name: "'data-cms-bind'",
         },
-        value: parse('__data_binding_path?"#"+__data_binding_path: null;').program.body[0].expression,
+        value: parse('__data_binding_path?"#"+__data_binding_path: null;')
+          .program.body[0].expression,
         kind: "init",
       });
     }
