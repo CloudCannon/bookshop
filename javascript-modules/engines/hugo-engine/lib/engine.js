@@ -201,6 +201,50 @@ export class Engine {
         window.writeHugoFiles(JSON.stringify(files));
     }
 
+    /**
+     * Tries to parse an error message and patch up the components
+     * in a rudimentary way before a rebuild.
+     */
+    async componentQuack(error_string = "", log_messages = []) {
+        try {
+            const component_regex = /execute of template failed: template: ([^:]+):\d/ig;
+            let file_stack = [...error_string.matchAll(component_regex)].map(([, file]) => `layouts/${file}`);
+            if (file_stack.length) {
+                const deepest_errored_component = file_stack[file_stack.length-1];
+                const error_chunks = error_string.split("execute of template failed:");
+                const error_msg = error_chunks[error_chunks.length-1] ?? "template error";
+                window.writeHugoFiles(JSON.stringify({
+                    [deepest_errored_component]: [
+                        `<div style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
+                        `Failed to render ${deepest_errored_component}. <br/>`,
+                        `<pre style="margin-top: 10px; background-color: lightcoral; border: solid 1px black;">`,
+                        `<code style="font-family: monospace; color: black;">${error_msg.replace(/</, '&lt;')}</code></pre>`,
+                        `</div>`
+                    ].join('\n')
+                }));
+                return deepest_errored_component;
+            }
+
+            const error_logs = log_messages.filter(log => log.startsWith("ERROR")).join("\n");
+            const missing_regex = /Component "([^"]+)" does not exist/ig;
+            file_stack = [...error_logs.matchAll(missing_regex)].map(([, file]) => `layouts/partials/bookshop/components/${file}.hugo.html`);
+            if (file_stack.length) {
+                const deepest_errored_component = file_stack[file_stack.length-1];
+                window.writeHugoFiles(JSON.stringify({
+                    [deepest_errored_component]: [
+                        `<div class="bookshop_error" style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
+                        `Failed to find ${deepest_errored_component}`,
+                        `</div>`
+                    ].join('\n')
+                }));
+                return deepest_errored_component;
+            }
+        } catch (e) {
+            console.error(`ComponentQuack failed to patch things up: ${e}`);
+            return null;
+        }
+    }
+
     async render(target, name, props, globals, logger) {
         while (!window.buildHugo) {
             logger?.log?.(`Waiting for the Hugo WASM to be available...`);
@@ -233,9 +277,22 @@ export class Engine {
         }, null, 2) + "\n";
         window.writeHugoFiles(JSON.stringify(writeFiles));
 
-        const buildResult = window.buildHugo();
-        if (buildResult) {
-            console.error(buildResult);
+        window.hugo_wasm_logging = [];
+        let render_attempts = 1;
+        let buildError = window.buildHugo();
+        while (buildError && render_attempts < 5) {
+            if (this.componentQuack(buildError, window.hugo_wasm_logging) === null) {
+                // Can't find a template to overwrite and re-render
+                break;
+            }
+            // Try render again with the problem template stubbed out
+            window.hugo_wasm_logging = [];
+            buildError = window.buildHugo();
+            render_attempts += 1;
+        }
+
+        if (buildError) {
+            console.error(buildError);
             return;
         }
 
@@ -245,16 +302,6 @@ export class Engine {
 
         target.innerHTML = output["public/index.html"];
         return;
-
-        const outputs = window.renderHugo(source, JSON.stringify(props));
-        if (/BKSHERR/.test(output)) {
-            logger?.log?.(`Failed to render ${output}`);
-            console.error(output);
-        } else {
-            target.innerHTML = output;
-            logger?.log?.(`Rendered ${name} as:`);
-            logger?.log?.(target.innerHTML);
-        }
     }
 
     async eval(str, props = [{}], logger) {

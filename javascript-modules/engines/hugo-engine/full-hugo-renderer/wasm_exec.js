@@ -48,7 +48,11 @@
 				outputBuf += decoder.decode(buf);
 				const nl = outputBuf.lastIndexOf("\n");
 				if (nl != -1) {
-					// Disable all logs from the WASM side
+					// Track logs for Bookshop to pick up later
+					window.hugo_wasm_logging = window.hugo_wasm_logging || [];
+					window.hugo_wasm_logging.push(outputBuf.substr(0, nl));
+
+					// Disable console logs from the WASM side
 					if (window.log_hugo_wasm) {
 						console.log(outputBuf.substr(0, nl));
 					}
