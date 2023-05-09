@@ -233,7 +233,7 @@ export class Engine {
                 window.writeHugoFiles(JSON.stringify({
                     [deepest_errored_component]: [
                         `<div class="bookshop_error" style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
-                        `Failed to find ${deepest_errored_component}`,
+                        `Failed to find component ${deepest_errored_component}`,
                         `</div>`
                     ].join('\n')
                 }));

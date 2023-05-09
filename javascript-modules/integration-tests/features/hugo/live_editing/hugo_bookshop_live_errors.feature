@@ -1,4 +1,4 @@
-@hugo
+@hugo @web
 Feature: Hugo Bookshop CloudCannon Live Editing Error Boundaries
 
   Background:
@@ -70,7 +70,7 @@ Feature: Hugo Bookshop CloudCannon Live Editing Error Boundaries
     *    🌐 The selector h1:nth-of-type(1) should contain "Hello World 01"
     *    🌐 The selector h1:nth-of-type(2) should contain "Hello World 02"
 
-  Scenario: Bookshop replaces Hugo non-existent components in an error boundary
+  Scenario: Bookshop replaces non-existent components in an error boundary
     # Note: No `bad.hugo.html` component has been created.
     Given 🌐 I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new yaml:
