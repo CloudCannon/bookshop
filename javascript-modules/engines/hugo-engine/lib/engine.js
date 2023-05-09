@@ -227,7 +227,7 @@ export class Engine {
 
             const error_logs = log_messages.filter(log => log.startsWith("ERROR")).join("\n");
             const missing_regex = /Component "([^"]+)" does not exist/ig;
-            file_stack = [...error_logs.matchAll(missing_regex)].map(([, file]) => `layouts/partials/bookshop/components/${file}.hugo.html`);
+            file_stack = [...error_logs.matchAll(missing_regex)].map(([, file]) => `layouts/partials/bookshop/components/${file}/${file}.hugo.html`);
             if (file_stack.length) {
                 const deepest_errored_component = file_stack[file_stack.length-1];
                 window.writeHugoFiles(JSON.stringify({
