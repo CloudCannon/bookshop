@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.5.0 (May 10, 2023)
+
 This release adds component error boundaries to the Hugo, Jekyll, and Eleventy live editing engines.
 
 Now when syntax errors or unsupported SSG features are used, the individual component should render an error on the page,
