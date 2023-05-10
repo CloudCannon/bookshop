@@ -71,7 +71,7 @@ export class Engine {
         }
         let content;
         if (/_bookshop_include_/.test(file)) {
-            content = this.getComponent(file.replace(/^.*_bookshop_include_/, ""));
+            content = this.getShared(file.replace(/^.*_bookshop_include_/, ""));
 
             if (!content && content !== "") {
                 content = not_found(file);
