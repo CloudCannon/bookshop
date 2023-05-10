@@ -137,5 +137,33 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
     *    🌐 There should be no logs
     *    🌐 The selector h1 should contain "Hello There"
 
-  @skip # Handled outside of Bookshop
+  @web
   Scenario: Bookshop sets a flag when live editing
+    Given a site/src/components/single.jsx file containing:
+      """
+      import Nested from './nested/nested.jsx';
+
+      export default function Single({ title }) {
+        return <>
+          <h1>{ENV_BOOKSHOP_LIVE?"LIVE!":"DEAD?"} {title}</h1>
+          <Nested title={title} />
+        </>
+      }
+      """
+    Given a site/src/components/nested/nested.jsx file containing:
+      """
+      export default function Nested({ title }) {
+        return <h2>{ENV_BOOKSHOP_LIVE?"LIVE!":"DEAD?"} {title}</h2>
+      }
+      """
+    Given 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      block:
+        title: "🫑"
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "LIVE! 🫑"
+    *    🌐 The selector h2 should contain "LIVE! 🫑"
+

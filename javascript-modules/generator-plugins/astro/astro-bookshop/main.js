@@ -51,6 +51,9 @@ export default () => {
             ],
           },
           vite: {
+            define: {
+              ENV_BOOKSHOP_LIVE: false,
+            },
             plugins: [vitePluginBookshop()],
           },
         });

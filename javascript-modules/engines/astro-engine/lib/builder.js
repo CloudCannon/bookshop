@@ -29,6 +29,7 @@ export const buildPlugins = [
         let tsResult = await transform(text, {
           internalURL: "astro/runtime/server/index.js",
           filename: args.path.replace(process.cwd(), ""),
+          define: { ENV_BOOKSHOP_LIVE: true },
         });
         let jsResult = await esbuild.transform(tsResult.code, {
           loader: "ts",
@@ -62,6 +63,7 @@ export const buildPlugins = [
           jsxFragment: "__React.Fragment",
           target: "esnext",
           sourcemap: false,
+          define: { ENV_BOOKSHOP_LIVE: true },
         });
 
         let result = await bookshopTransform(
