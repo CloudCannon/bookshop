@@ -27,15 +27,43 @@ Feature: Astro Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       <span>{ Astro.props.text }</span>
       """
+    * a site/src/components/single/single_react.jsx file containing:
+      """
+      export default ({title}) => {
+        return <h1>{ title }</h1>
+      }
+      """
+    * a site/src/components/tag/tag_react.jsx file containing:
+      """
+      export default ({inner}) => {
+        return <span>{ inner.text }</span>
+      }
+      """
+    * a site/src/shared/astro/span_react.jsx file containing:
+      """
+      export default ({text}) => {
+        return <span>{ text }</span>
+      }
+      """
   Scenario: Bookshop live renders a subcomponent
     Given a site/src/components/outer/outer.astro file containing:
       """
       ---
       import Single from '../single/single.astro'
+      import SingleReact from '../single/single_react.jsx'
 
       const { contents } = Astro.props;
       ---
       <div> <Single title={contents.title} /> </div>
+      <div> <SingleReact title={contents.title} /> </div>
+      """
+    * a site/src/components/outer/outer_react.jsx file containing:
+      """
+      import Single from '../single/single_react.jsx'
+
+      export default ({contents}) => {
+        return <div> <Single title={contents.title} /> </div>
+      }
       """
     Given [front_matter]:
       """
@@ -53,10 +81,12 @@ Feature: Astro Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       ---
       import Outer from "../components/outer/outer.astro";
+      import OuterReact from "../components/outer/outer_react.jsx";
       const { frontmatter } = Astro.props;
       ---
       <html lang="en"> <body>
       <Outer bookshop:live contents={frontmatter.contents} />
+      <OuterReact bookshop:live contents={frontmatter.contents} />
       </body> </html>
       """
     And 🌐 I have loaded my site in CloudCannon
@@ -67,7 +97,9 @@ Feature: Astro Bookshop CloudCannon Live Editing Selective Re-rendering
       """
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
-    *    🌐 The selector h1 should contain "Your title"
+    *    🌐 The selector div:nth-of-type(1)>h1 should contain "Your title"
+    *    🌐 The selector div:nth-of-type(2)>h1 should contain "Your title"
+    *    🌐 The selector div:nth-of-type(3)>h1 should contain "Your title"
 
   Scenario: Bookshop live renders a subinclude
     Given a site/src/components/outer/outer.astro file containing:
@@ -118,10 +150,23 @@ Feature: Astro Bookshop CloudCannon Live Editing Selective Re-rendering
       const testVar = Astro.props.component._bookshop_name;
       const titleVar = Astro.props.component.title;
 
-      const components = import.meta.glob('../**/*.astro', { eager: true });
+      const components = import.meta.glob('../**/*.*', { eager: true });
       const Component = components[`../${testVar}/${testVar}.astro`].default
+      const ReactComponent = components[`../${testVar}/${testVar}_react.jsx`].default
       ---
       <div> <Component bookshop:live title={titleVar} /></div>
+      <div> <ReactComponent bookshop:live title={titleVar} /></div>
+      """
+    Given a site/src/components/assigner/assigner_react.jsx file containing:
+      """
+      const components = import.meta.glob('../**/*.*', { eager: true });
+
+      export default ({component}) => {
+        const testVar = component._bookshop_name;
+        const titleVar = component.title;
+        const ReactComponent = components[`../${testVar}/${testVar}_react.jsx`].default
+        return <div> <ReactComponent title={titleVar} /></div>
+      }
       """
     Given [front_matter]:
       """
@@ -140,10 +185,12 @@ Feature: Astro Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       ---
       import Assigner from "../components/assigner/assigner.astro";
+      import AssignerReact from "../components/assigner/assigner_react.jsx";
       const { frontmatter } = Astro.props;
       ---
       <html lang="en"> <body>
       <Assigner component={frontmatter.component} />
+      <AssignerReact bookshop:live component={frontmatter.component} />
       </body> </html>
       """
     And 🌐 I have loaded my site in CloudCannon
@@ -155,7 +202,9 @@ Feature: Astro Bookshop CloudCannon Live Editing Selective Re-rendering
       """
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
-    *    🌐 The selector h1 should contain "Live Love Laugh"
+    *    🌐 The selector div:nth-of-type(1)>h1 should contain "Live Love Laugh"
+    *    🌐 The selector div:nth-of-type(2)>h1 should contain "Live Love Laugh"
+    *    🌐 The selector div:nth-of-type(3)>h1 should contain "Live Love Laugh"
 
   Scenario: Bookshop live renders a top level loop
     Given [front_matter]:
@@ -176,10 +225,12 @@ Feature: Astro Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       ---
       import Single from "../components/single/single.astro";
+      import SingleReact from "../components/single/single_react.jsx";
       const { frontmatter } = Astro.props;
       ---
       <html lang="en"> <body>
-      {frontmatter.titles.map((t) => <Single bookshop:live title={t} />)}
+      <div>{frontmatter.titles.map((t) => <Single bookshop:live title={t} />)}</div>
+      <div>{frontmatter.titles.map((t) => <SingleReact bookshop:live title={t} />)}</div>
       </body> </html>
       """
     And 🌐 I have loaded my site in CloudCannon
@@ -192,7 +243,8 @@ Feature: Astro Bookshop CloudCannon Live Editing Selective Re-rendering
       """
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
-    *    🌐 The selector h1:nth-of-type(2) should contain "New!"
+    *    🌐 The selector div:nth-of-type(1)>h1:nth-of-type(2) should contain "New!"
+    *    🌐 The selector div:nth-of-type(2)>h1:nth-of-type(2) should contain "New!"
 
   @skip # Astro doesnt have ranges
   Scenario: Bookshop live renders a range loop
@@ -202,12 +254,13 @@ Feature: Astro Bookshop CloudCannon Live Editing Selective Re-rendering
       """
       ---
       const { content_blocks } = Astro.props;
-      const components = import.meta.glob('../**/*.astro', { eager: true });
+      const components = import.meta.glob('../**/*.*', { eager: true });
       ---
       <div class="page">
       { content_blocks.map((block) => {
         const Component = components[`../${block._bookshop_name}/${block._bookshop_name}.astro`].default;
-        return <Component {...block}/>
+        const ReactComponent = components[`../${block._bookshop_name}/${block._bookshop_name}_react.jsx`].default;
+        return <><Component {...block}/><ReactComponent {...block}/></>;
       })}
       </div>
       """
@@ -253,8 +306,10 @@ Feature: Astro Bookshop CloudCannon Live Editing Selective Re-rendering
       """
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
-    *    🌐 The selector span should contain "New Tag"
-    *    🌐 The selector .page>*:nth-child(3) should contain "Block Three"
+    *    🌐 The selector .page>*:nth-child(3) should contain "New Tag"
+    *    🌐 The selector .page>*:nth-child(4) should contain "New Tag"
+    *    🌐 The selector .page>*:nth-child(5) should contain "Block Three"
+    *    🌐 The selector .page>*:nth-child(6) should contain "Block Three"
 
   Scenario: Bookshop live renders a multiline component tag
     Given a site/src/components/outer/outer.astro file containing:

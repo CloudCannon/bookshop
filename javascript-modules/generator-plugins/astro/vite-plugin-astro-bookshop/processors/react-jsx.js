@@ -17,11 +17,17 @@ const isJSXNode = (node) => {
   );
 };
 
-const isJSXComponentNode = (node) => {
+const isJSXFragmentNode = (node) => {
   return (
     node.name === "_Fragment" ||
     (node?.object?.name.endsWith("React") &&
-      node?.property?.name === "Fragment") ||
+      node?.property?.name === "Fragment")
+  );
+};
+
+const isJSXComponentNode = (node) => {
+  return (
+    (node.type === "Identifier" && node.name !== "_Fragment") ||
     (node?.object?.name.endsWith("React") &&
       node?.property?.name === "createElement")
   );
@@ -69,16 +75,13 @@ export default (src, componentName) => {
     /__astro_tag_component__\((?<export>.*), "@astrojs\/react"\)/
   )?.groups.export;
 
-  const tree = parse(
-    src,
-    {
-      sourceType: "module",
-      ecmaVersion: "latest",
-    }
-  ).program;
+  const tree = parse(src, {
+    sourceType: "module",
+    ecmaVersion: "latest",
+  }).program;
 
   findFunctionStatements(tree).forEach((node) => {
-    let name = '__props';
+    let name = "__props";
     if (node.params[0]?.type === "Identifier") {
       ({ name } = node.params[0]);
     } else if (node.params[0]?.type === "ObjectPattern") {
@@ -130,17 +133,18 @@ export default (src, componentName) => {
         ].includes(prop.key?.value)
       )?.value.value ?? true;
 
-    node.arguments[1].properties = node.arguments[1].properties.filter((prop) =>
-      ![
-        "dataBinding",
-        "_dataBinding",
-        "data_binding",
-        "_data_binding",
-        "editorLink",
-        "_editorLink",
-        "editor_link",
-        "_editor_link",
-      ].includes(prop.key?.value)
+    node.arguments[1].properties = node.arguments[1].properties.filter(
+      (prop) =>
+        ![
+          "dataBinding",
+          "_dataBinding",
+          "data_binding",
+          "_data_binding",
+          "editorLink",
+          "_editorLink",
+          "editor_link",
+          "_editor_link",
+        ].includes(prop.key?.value)
     );
 
     const propsString = node.arguments[1].properties
@@ -192,7 +196,7 @@ export default (src, componentName) => {
       })
       .join(",");
 
-    if (shouldDataBind) {
+    if (shouldDataBind && isJSXComponentNode(node.arguments[0])) {
       node.arguments[1].properties.push({
         type: "ObjectProperty",
         method: false,
@@ -274,7 +278,10 @@ export default (src, componentName) => {
       `).program.body[0].expression;
     });
 
-    if (isJSXComponentNode(node.argument.arguments[0])) {
+    if (
+      isJSXComponentNode(node.argument.arguments[0]) ||
+      isJSXFragmentNode(node.argument.arguments[0])
+    ) {
       return;
     }
 
