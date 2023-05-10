@@ -66,14 +66,14 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Error Boundaries
     *    🌐 The selector h1:nth-of-type(2) should contain "Hello World 02"
 
   Scenario: Bookshop replaces non-existent components in an error boundary
-    # Note: No `bad.eleventy.liquid` component has been created.
+    # Note: No `really/bad` component has been created.
     Given 🌐 I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new yaml:
       """
       components:
         - _bookshop_name: good
           text: Hello World 01
-        - _bookshop_name: bad
+        - _bookshop_name: really/bad
         - _bookshop_name: good
           text: Hello World 02
       """

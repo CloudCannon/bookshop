@@ -217,7 +217,7 @@ export class Engine {
                     [deepest_errored_component]: [
                         `<div style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
                         `Failed to render ${deepest_errored_component}. <br/>`,
-                        `<pre style="margin-top: 10px; background-color: lightcoral; border: solid 1px black;">`,
+                        `<pre style="margin-top: 10px; background-color: lightcoral; border: solid 1px black; white-space: pre-line;">`,
                         `<code style="font-family: monospace; color: black;">${error_msg.replace(/</, '&lt;')}</code></pre>`,
                         `</div>`
                     ].join('\n')
@@ -227,7 +227,10 @@ export class Engine {
 
             const error_logs = log_messages.filter(log => log.startsWith("ERROR")).join("\n");
             const missing_regex = /Component "([^"]+)" does not exist/ig;
-            file_stack = [...error_logs.matchAll(missing_regex)].map(([, file]) => `layouts/partials/bookshop/components/${file}/${file}.hugo.html`);
+            file_stack = [...error_logs.matchAll(missing_regex)].map(([, file]) => {
+                let filename = file.split('/').pop();
+                return `layouts/partials/bookshop/components/${file}/${filename}.hugo.html`;
+            });
             if (file_stack.length) {
                 const deepest_errored_component = file_stack[file_stack.length-1];
                 window.writeHugoFiles(JSON.stringify({

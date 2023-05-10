@@ -175,7 +175,7 @@ export class Engine {
                 this.files[component_key] = [
                     `<div style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
                     `Failed to render ${deepest_errored_component[1]}. <br/>`,
-                    `<pre style="margin-top: 10px; background-color: lightcoral; border: solid 1px black;">`,
+                    `<pre style="margin-top: 10px; background-color: lightcoral; border: solid 1px black; white-space: pre-line;">`,
                     `<code style="font-family: monospace; color: black;">${error_string.replace(/</, '&lt;')}</code></pre>`,
                     `</div>`
                 ].join('\n');
