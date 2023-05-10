@@ -9,6 +9,12 @@
 
 ## Unreleased
 
+This release adds component error boundaries to the Hugo, Jekyll, and Eleventy live editing engines.
+
+Now when syntax errors or unsupported SSG features are used, the individual component should render an error on the page,
+and the surrounding components will continue to render correctly. This only applies to the CloudCannon live editing environment,
+and does not impact your production website build.
+
 ## v3.4.1 (March 23, 2023)
 
 Fixed an error where nested object arrays in a component blueprint would error out.
