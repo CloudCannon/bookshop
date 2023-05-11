@@ -525,13 +525,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bookshop/astro-bookshop@3.4.1, @bookshop/astro-bookshop@workspace:generator-plugins/astro/astro-bookshop":
+"@bookshop/astro-bookshop@3.5.0, @bookshop/astro-bookshop@workspace:generator-plugins/astro/astro-bookshop":
   version: 0.0.0-use.local
   resolution: "@bookshop/astro-bookshop@workspace:generator-plugins/astro/astro-bookshop"
   dependencies:
     "@astrojs/react": ^2.1.0
-    "@bookshop/helpers": 3.4.1
-    "@bookshop/vite-plugin-astro-bookshop": 3.4.1
+    "@bookshop/helpers": 3.5.0
+    "@bookshop/vite-plugin-astro-bookshop": 3.5.0
     "@cloudcannon/remark-auto-import": ^1.0.0
     ava: ^3.15.0
     nyc: ^15.1.0
@@ -540,15 +540,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/astro-engine@3.4.1, @bookshop/astro-engine@workspace:engines/astro-engine":
+"@bookshop/astro-engine@3.5.0, @bookshop/astro-engine@workspace:engines/astro-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/astro-engine@workspace:engines/astro-engine"
   dependencies:
     "@astrojs/compiler": ^1.0.1
-    "@bookshop/astro-bookshop": 3.4.1
-    "@bookshop/builder": 3.4.1
-    "@bookshop/helpers": 3.4.1
-    "@bookshop/vite-plugin-astro-bookshop": 3.4.1
+    "@bookshop/astro-bookshop": 3.5.0
+    "@bookshop/builder": 3.5.0
+    "@bookshop/helpers": 3.5.0
+    "@bookshop/vite-plugin-astro-bookshop": 3.5.0
     astro: ^2.0.4
     ava: ^3.15.0
     esbuild: ^0.13.15
@@ -560,7 +560,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/browser@3.4.1, @bookshop/browser@workspace:browser":
+"@bookshop/browser@3.5.0, @bookshop/browser@workspace:browser":
   version: 0.0.0-use.local
   resolution: "@bookshop/browser@workspace:browser"
   dependencies:
@@ -666,7 +666,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/hugo-engine@3.4.1, @bookshop/hugo-engine@workspace:engines/hugo-engine":
+"@bookshop/hugo-engine@3.5.0, @bookshop/hugo-engine@workspace:engines/hugo-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/hugo-engine@workspace:engines/hugo-engine"
   dependencies:
@@ -758,7 +758,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/svelte-engine@3.4.1, @bookshop/svelte-engine@workspace:engines/svelte-engine":
+"@bookshop/svelte-engine@3.5.0, @bookshop/svelte-engine@workspace:engines/svelte-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/svelte-engine@workspace:engines/svelte-engine"
   dependencies:
@@ -803,7 +803,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/vite-plugin-astro-bookshop@3.4.1, @bookshop/vite-plugin-astro-bookshop@workspace:generator-plugins/astro/vite-plugin-astro-bookshop":
+"@bookshop/vite-plugin-astro-bookshop@3.5.0, @bookshop/vite-plugin-astro-bookshop@workspace:generator-plugins/astro/vite-plugin-astro-bookshop":
   version: 0.0.0-use.local
   resolution: "@bookshop/vite-plugin-astro-bookshop@workspace:generator-plugins/astro/vite-plugin-astro-bookshop"
   dependencies:
@@ -6301,16 +6301,16 @@ fsevents@~2.3.2:
     "@astrojs/mdx": ^0
     "@astrojs/react": ^1
     "@babel/generator": ^7
-    "@bookshop/astro-engine": 3.4.1
-    "@bookshop/eleventy-engine": 3.4.1
-    "@bookshop/generate": 3.4.1
-    "@bookshop/hugo-engine": 3.4.1
-    "@bookshop/init": 3.4.1
-    "@bookshop/jekyll-engine": 3.4.1
-    "@bookshop/sass": 3.4.1
-    "@bookshop/svelte-engine": 3.4.1
-    "@bookshop/up": 3.4.1
-    "@bookshop/vite-plugin-astro-bookshop": 3.4.1
+    "@bookshop/astro-engine": 3.5.0
+    "@bookshop/eleventy-engine": 3.5.0
+    "@bookshop/generate": 3.5.0
+    "@bookshop/hugo-engine": 3.5.0
+    "@bookshop/init": 3.5.0
+    "@bookshop/jekyll-engine": 3.5.0
+    "@bookshop/sass": 3.5.0
+    "@bookshop/svelte-engine": 3.5.0
+    "@bookshop/up": 3.5.0
+    "@bookshop/vite-plugin-astro-bookshop": 3.5.0
     "@cloudcannon/filer": latest
     "@cloudcannon/reader": latest
     "@cloudcannon/remark-auto-import": latest
