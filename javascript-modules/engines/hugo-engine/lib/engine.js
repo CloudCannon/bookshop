@@ -2,7 +2,6 @@ import compressedHugoWasm from "../full-hugo-renderer/hugo_renderer.wasm.gz";
 import { gunzipSync } from 'fflate';
 import translateTextTemplate from './translateTextTemplate.js';
 import { IdentifierParser } from './hugoIdentifierParser.js';
-import { version } from '../package.json';
 
 const sleep = (ms = 0) => {
     return new Promise(r => setTimeout(r, ms));
