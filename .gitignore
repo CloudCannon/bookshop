@@ -28,3 +28,4 @@ hugo_renderer.wasm
 hugo_renderer.wasm.gz
 .env
 RELEASE.md
+engine__test__.js
