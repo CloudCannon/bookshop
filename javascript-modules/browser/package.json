@@ -42,7 +42,7 @@
     "commander": "^8.1.0",
     "esbuild": "^0.13.10",
     "esbuild-svelte": "^0.5.3",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-ws": "^5.0.2",
     "fast-glob": "^3.2.7",
     "js-yaml": "^4.1.0",
