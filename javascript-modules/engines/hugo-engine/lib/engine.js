@@ -42,9 +42,12 @@ export class Engine {
         this.key = 'hugo';
         this.name = options.name;
         this.files = options.files;
-        this.origin = document.currentScript?.src || `/bookshop.js`;
+        this.origin = (typeof document !== 'undefined' && document.currentScript?.src) || `/bookshop.js`;
+        this.synthetic = options.synthetic ?? false;
 
-        this.initializeHugo();
+        if (!this.synthetic) {
+            this.initializeHugo();
+        }
     }
 
     async initializeHugo() {
@@ -210,9 +213,9 @@ export class Engine {
             const component_regex = /execute of template failed: template: ([^:]+):\d/ig;
             let file_stack = [...error_string.matchAll(component_regex)].map(([, file]) => `layouts/${file}`);
             if (file_stack.length) {
-                const deepest_errored_component = file_stack[file_stack.length-1];
+                const deepest_errored_component = file_stack[file_stack.length - 1];
                 const error_chunks = error_string.split("execute of template failed:");
-                const error_msg = error_chunks[error_chunks.length-1] ?? "template error";
+                const error_msg = error_chunks[error_chunks.length - 1] ?? "template error";
                 window.writeHugoFiles(JSON.stringify({
                     [deepest_errored_component]: [
                         `<div style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
@@ -232,7 +235,7 @@ export class Engine {
                 return `layouts/partials/bookshop/components/${file}/${filename}.hugo.html`;
             });
             if (file_stack.length) {
-                const deepest_errored_component = file_stack[file_stack.length-1];
+                const deepest_errored_component = file_stack[file_stack.length - 1];
                 window.writeHugoFiles(JSON.stringify({
                     [deepest_errored_component]: [
                         `<div class="bookshop_error" style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
@@ -308,9 +311,25 @@ export class Engine {
     }
 
     async eval(str, props = [{}], logger) {
-        while (!window.buildHugo) await sleep(10);
+        if (!this.synthetic) {
+            while (!window.buildHugo) await sleep(10);
+        }
         let props_obj = props.reduce((a, b) => { return { ...a, ...b } });
         let full_props = props_obj;
+        str = str.trim();
+
+        // We can return early if we're evaluating a literal string or digit
+        if (/^".*"$|^`.*`$|^\d+(\.\d+)?$|^true$|^false$/.test(str)) {
+            logger?.log?.(`Unwrapping the string ${str}`);
+            try {
+                if (/^`.*`$/.test(str)) {
+                    return JSON.parse(str.replace(/^`|`$/g, '"'));
+                }
+                return JSON.parse(str);
+            } catch (e) {
+                logger?.log?.(`Was not valid JSON for some reason. Moving on...`);
+            }
+        }
 
         // We're capable of looking up a simple variable
         // (and it's hard to pass to wasm since we store variables on the context)
@@ -336,17 +355,11 @@ export class Engine {
             const process = async (obj) => {
                 for (const [k, v] of Object.entries(obj)) {
                     if (typeof v === "string") {
-                        if (/^".*"$/.test(v)) {
-                            // Normalized strings look like "\"string\""
-                            logger?.log?.(`Unwrapping the string ${k}: ${v}`);
-                            obj[k] = JSON.parse(v);
-                        } else {
-                            // No inner quotes means it needs to be evaled again
-                            logger?.log?.(`Evaluating the inner ${k}: ${v}`);
-                            obj[k] = await this.eval(v, [props_obj], logger.nested());
-                        }
+                        logger?.log?.(`Evaluating the inner ${k}: ${v}`);
+                        obj[k] = await this.eval(v, [props_obj], logger?.nested?.());
                     } else if (typeof v === "object") {
                         logger?.log?.(`Processing the inner object ${k}`);
+                        process(v);
                     }
                 }
             }
@@ -380,6 +393,11 @@ export class Engine {
             }
         }).join('');
         const eval_str = `${variable_decl}{{ with .Params.props }}${assignments}{{ jsonify (${str}) }}{{ end }}`;
+
+        if (this.synthetic) {
+            return null;
+        }
+
         window.writeHugoFiles(JSON.stringify({
             "layouts/index.html": eval_str,
             "content/_index.md": JSON.stringify({ props: props_obj, full_props: full_props }, null, 2)
