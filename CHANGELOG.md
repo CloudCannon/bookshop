@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.5.1 (May 12, 2023)
+
 * Fixes a performance regression when live editing Hugo with many literal assignments
   * Since 3.4.0 literal assignments such as `{{ $var := "string" }}` caused a significant performance hit. This has now been resolved
 
