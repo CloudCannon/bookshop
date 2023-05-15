@@ -532,7 +532,7 @@ __metadata:
     "@astrojs/react": ^2.1.0
     "@bookshop/helpers": 3.5.0
     "@bookshop/vite-plugin-astro-bookshop": 3.5.0
-    "@cloudcannon/remark-auto-import": ^1.0.0
+    "@cloudcannon/remark-auto-import": ^1.0.1
     ava: ^3.15.0
     nyc: ^15.1.0
   peerDependencies:
@@ -847,7 +847,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cloudcannon/remark-auto-import@npm:^1.0.0, @cloudcannon/remark-auto-import@npm:latest":
+"@cloudcannon/remark-auto-import@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@cloudcannon/remark-auto-import@npm:1.0.1"
+  dependencies:
+    fast-glob: ^3.2.12
+  checksum: 63aea73ae8b0db8843185c0bdda442410eaa3ff7869df3a8c589fb0ba77242d1f4a3afcc5329b07964a740b436862ce104e33e902beae75a2b5c9c5c4de89606
+  languageName: node
+  linkType: hard
+
+"@cloudcannon/remark-auto-import@npm:latest":
   version: 1.0.0
   resolution: "@cloudcannon/remark-auto-import@npm:1.0.0"
   dependencies:
