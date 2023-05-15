@@ -9,6 +9,11 @@
 
 ## Unreleased
 
+## v3.5.1 (May 12, 2023)
+
+* Fixes a performance regression when live editing Hugo with many literal assignments
+  * Since 3.4.0 literal assignments such as `{{ $var := "string" }}` caused a significant performance hit. This has now been resolved
+
 ## v3.5.0 (May 10, 2023)
 
 This release adds component error boundaries to the Hugo, Jekyll, and Eleventy live editing engines.

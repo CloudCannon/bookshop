@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/astro-bookshop",
   "packageManager": "yarn@3.0.0",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "type": "module",
   "description": "Astro plugin for consuming Bookshop components",
   "exports": {
@@ -28,8 +28,8 @@
   },
   "dependencies": {
     "@astrojs/react": "^2.1.0",
-    "@bookshop/helpers": "3.5.0",
-    "@bookshop/vite-plugin-astro-bookshop": "3.5.0",
+    "@bookshop/helpers": "3.5.1",
+    "@bookshop/vite-plugin-astro-bookshop": "3.5.1",
     "@cloudcannon/remark-auto-import": "^1.0.1"
   },
   "peerDependencies": {
