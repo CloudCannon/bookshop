@@ -66,6 +66,10 @@ jobs:
       - name: Vendor dependencies
         run: |
           node ./.backstage/vendor.js
+
+      - run: yarn install
+        working-directory: ./javascript-modules
+
       - name: Run tests
         run: |
           node ./.backstage/test.js
