@@ -1,0 +1,9 @@
+{{/*
+    Converts a bare Bookshop component key to a flat Bookshop path
+    i.e. "a/b" --> "bookshop/components/a/b.hugo.html"
+
+    Expects a String.
+*/}}
+
+{{ $component_path := (printf "bookshop/components/%s.hugo.html" .) }}
+{{ return $component_path }}

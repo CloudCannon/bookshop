@@ -58,6 +58,7 @@ export class Engine {
             "layouts/partials/bookshop_bindings.html": (await import("../bookshop-hugo-templates/bookshop_bindings.html")).default,
             "layouts/partials/_bookshop/helpers/component.html": (await import("../bookshop-hugo-templates/helpers/component.html")).default,
             "layouts/partials/_bookshop/helpers/component_key.html": (await import("../bookshop-hugo-templates/helpers/component_key.html")).default,
+            "layouts/partials/_bookshop/helpers/flat_component_key.html": (await import("../bookshop-hugo-templates/helpers/flat_component_key.html")).default,
             "layouts/partials/_bookshop/helpers/partial.html": (await import("../bookshop-hugo-templates/helpers/partial.html")).default,
             "layouts/partials/_bookshop/helpers/partial_key.html": (await import("../bookshop-hugo-templates/helpers/partial_key.html")).default,
             "layouts/partials/_bookshop/errors/bad_bookshop_tag.html": (await import("../bookshop-hugo-templates/errors/bad_bookshop_tag.html")).default,
@@ -156,14 +157,20 @@ export class Engine {
         return `components/${name}/${base}.hugo.html`;
     }
 
+    getFlatComponentKey(name) {
+        return `components/${name}.hugo.html`;
+    }
+
     getComponent(name) {
         const key = this.getComponentKey(name);
-        return this.files?.[key];
+        const flatKey = this.getFlatComponentKey(name);
+        return this.files?.[key] ?? this.files?.[flatKey];
     }
 
     hasComponent(name) {
         const key = this.getComponentKey(name);
-        return !!this.files?.[key];
+        const flatKey = this.getFlatComponentKey(name);
+        return !!(this.files?.[key] ?? this.files?.[flatKey]);
     }
 
     hasShared(name) {

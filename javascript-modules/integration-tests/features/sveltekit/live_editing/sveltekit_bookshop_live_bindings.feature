@@ -18,12 +18,11 @@ Feature: SvelteKit Bookshop CloudCannon Live Editing Automatic Data Bindings
             index.md from starters/sveltekit/content/pages/index.md
         src/
           app.html from starters/sveltekit/src/app.html
-          lib/
-            collections.js from starters/sveltekit/src/lib/collections.js_
-            routing.js from starters/sveltekit/src/lib/routing.js_
           routes/
-            [slug].json.js from starters/sveltekit/src/routes/[slug].json.js_
-            index.svelte from starters/sveltekit/src/routes/index.svelte
+            +layout.server.js from starters/sveltekit/src/routes/+layout.server.js_
+            +layout.svelte from starters/sveltekit/src/routes/+layout.svelte
+            +page.server.js from starters/sveltekit/src/routes/+page.server.js_
+            +page.svelte from starters/sveltekit/src/routes/+page.svelte
       """
     Given a component-lib/components/title/title.svelte file containing:
       """
@@ -35,28 +34,33 @@ Feature: SvelteKit Bookshop CloudCannon Live Editing Automatic Data Bindings
       """
     Given [boilerplate]:
       """
-      <script context="module">
-        import { loadPage } from "$lib/routing.js";
-
-        export async function load({ fetch }) {
-          return await loadPage("/index.json", { fetch });
-        }
-      </script>
-
       <script>
-        import { onMount } from "svelte";
-        import { onCloudCannonChanges } from "@cloudcannon/svelte-connector";
-        import { Bookshop, trackBookshopLiveData } from "@bookshop/sveltekit-bookshop";
+        import { onDestroy, onMount } from "svelte";
+        import {
+            onCloudCannonChanges,
+            stopCloudCannonChanges,
+        } from "@cloudcannon/svelte-connector";
+        import {
+            Bookshop,
+            trackBookshopLiveData,
+        } from "@bookshop/sveltekit-bookshop";
 
-        export let pageDetails;
+        export let data;
+        let pageDetails = data.data;
 
         onMount(async () => {
-          onCloudCannonChanges((newProps) => {
-            pageDetails = trackBookshopLiveData(newProps);
-            // Set some flags that our tests look for — not needed in real usage.
-            window.bookshopLive = window.bookshopLive || { renderCount: 0 };
-            setTimeout(() => { window.bookshopLive.renderCount++; }, 100);
-          });
+            onCloudCannonChanges(
+                (newProps) => {
+                  pageDetails = trackBookshopLiveData(newProps);
+                  // Set some flags that our tests look for — not needed in real usage.
+                  window.bookshopLive = window.bookshopLive || { renderCount: 0 };
+                  setTimeout(() => { window.bookshopLive.renderCount++; }, 100);
+                }
+            );
+        });
+
+        onDestroy(async () => {
+            stopCloudCannonChanges();
         });
       </script>
       """
@@ -74,7 +78,7 @@ Feature: SvelteKit Bookshop CloudCannon Live Editing Automatic Data Bindings
       [front_matter]
       ---
       """
-    And a site/src/routes/index.svelte file containing:
+    And a site/src/routes/+page.svelte file containing:
       """
       [boilerplate]
 
@@ -110,7 +114,7 @@ Feature: SvelteKit Bookshop CloudCannon Live Editing Automatic Data Bindings
       [front_matter]
       ---
       """
-    And a site/src/routes/index.svelte file containing:
+    And a site/src/routes/+page.svelte file containing:
       """
       [boilerplate]
 

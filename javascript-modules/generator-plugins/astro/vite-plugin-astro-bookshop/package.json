@@ -1,0 +1,31 @@
+{
+  "name": "@bookshop/vite-plugin-astro-bookshop",
+  "packageManager": "yarn@3.0.0",
+  "version": "3.5.1",
+  "type": "module",
+  "description": "Astro plugin for consuming Bookshop components",
+  "main": "main.js",
+  "scripts": {
+    "test": "nyc ava -v"
+  },
+  "files": [
+    "**/*.js",
+    "!**/*.test.js"
+  ],
+  "author": "@bglw",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "ava": "^3.15.0",
+    "nyc": "^15.1.0"
+  },
+  "dependencies": {
+    "@babel/generator": "^7.21.4",
+    "@babel/parser": "^7.21.4"
+  },
+  "engines": {
+    "node": ">=14.16"
+  }
+}

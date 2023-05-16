@@ -1,0 +1,48 @@
+{
+  "name": "@bookshop/astro-engine",
+  "packageManager": "yarn@3.0.0",
+  "version": "3.5.1",
+  "description": "Bookshop frontend Astro renderer",
+  "type": "module",
+  "sideEffects": false,
+  "main": "main.js",
+  "exports": {
+    ".": "./main.js",
+    "./build": "./build.js"
+  },
+  "files": [
+    "**/*.js",
+    "!**/*.test.js",
+    "!.test/**/*"
+  ],
+  "scripts": {
+    "test": "nyc ava -v",
+    "testprep": "npm version 0.0.0 && npm pack && tar -xvzf bookshop-astro-engine-0.0.0.tgz && mv package node_modules/@bookshop/astro-engine"
+  },
+  "author": "@bglw",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@bookshop/builder": "3.5.1",
+    "@bookshop/helpers": "3.5.1",
+    "ava": "^3.15.0",
+    "nyc": "^15.1.0"
+  },
+  "dependencies": {
+    "@astrojs/compiler": "^1.0.1",
+    "@bookshop/astro-bookshop": "3.5.1",
+    "@bookshop/vite-plugin-astro-bookshop": "3.5.1",
+    "astro": "^2.0.4",
+    "esbuild": "^0.13.15",
+    "vite": "^4.2.1"
+  },
+  "peerDependencies": {
+    "react": "^17.0.2 || ^18.0.0",
+    "react-dom": "^17.0.2 || ^18.0.0"
+  },
+  "engines": {
+    "node": ">=14.16"
+  }
+}

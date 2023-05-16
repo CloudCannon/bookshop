@@ -20,6 +20,10 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Granular Steps
       """
       <h1>{{ title }}</h1>
       """
+    * a component-lib/components/flat_single.eleventy.liquid file containing:
+      """
+      <h1>{{ title }}</h1>
+      """
     * [front_matter]:
       """
       layout: layouts/default.liquid
@@ -38,9 +42,9 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Granular Steps
     When I run "npm start" in the site directory
     Then stderr should be empty
     *    stdout should not be empty
-    *    site/_site/index.html should contain each row: 
-      | text |
-      | <!--bookshop-live name(single) params(bind: block) context() -->  |
+    *    site/_site/index.html should contain each row:
+      | text                                                             |
+      | <!--bookshop-live name(single) params(bind: block) context() --> |
 
   Scenario: Bookshop Generate hydrates live editing
     Given I run "npm start" in the site directory
@@ -63,6 +67,25 @@ Feature: Eleventy Bookshop CloudCannon Live Editing Granular Steps
 
   @web
   Scenario: Bookshop live renders when CloudCannon pushes new data
+    Given 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      block:
+        title: "Rerendered"
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Rerendered"
+
+  @web
+  Scenario: Bookshop live renders flat components when CloudCannon pushes new data
+    Given a site/index.html file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      {% bookshop "flat_single" bind: block %}
+      """
     Given 🌐 I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new yaml:
       """

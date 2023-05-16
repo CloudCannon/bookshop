@@ -20,12 +20,11 @@ Feature: SvelteKit Bookshop Includes
             index.md from starters/sveltekit/content/pages/index.md
         src/
           app.html from starters/sveltekit/src/app.html
-          lib/
-            collections.js from starters/sveltekit/src/lib/collections.js_
-            routing.js from starters/sveltekit/src/lib/routing.js_
           routes/
-            [slug].json.js from starters/sveltekit/src/routes/[slug].json.js_
-            index.svelte from starters/sveltekit/src/routes/index.svelte
+            +layout.server.js from starters/sveltekit/src/routes/+layout.server.js_
+            +layout.svelte from starters/sveltekit/src/routes/+layout.svelte
+            +page.server.js from starters/sveltekit/src/routes/+page.server.js_
+            +page.svelte from starters/sveltekit/src/routes/+page.svelte
       """
     Given I run "npm i" in the component-lib directory
 
@@ -47,7 +46,7 @@ Feature: SvelteKit Bookshop Includes
 
       <div><Bookshop shared="basic" label={title} />-Block</div>
       """
-    And a site/src/routes/index.svelte file containing:
+    And a site/src/routes/+page.svelte file containing:
       """
       <script>
         import { Bookshop } from "@bookshop/sveltekit-bookshop";

@@ -103,7 +103,7 @@ Then(/^(debug )?(\S+) should (not |leniently )?contain the text "(.+)"$/i, funct
 
 Then(/^(debug )?(\S+) should (not |leniently )?contain the text:$/i, function (debug, file, modifier, contents) {
   assert.ok(this.fileExists(file), `${file} exists`);
-  const fileContents = this.fileContents(file);
+  let fileContents = this.fileContents(file);
 
   let negation = modifier === 'not ';
   contents = subVariables(contents, this.storage);
@@ -261,7 +261,8 @@ const loadPage = async (url, world) => {
 
 const readyCloudCannon = async (data, world) => {
   if (!world.page) throw Error("No page open");
-  const script = `window.CC = class CloudCannon {
+  const script = `window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = { isDisabled: true }; // Disables react console log
+  window.CC = class CloudCannon {
     constructor(options) { this.isMocked = true; this.loadingMessages = []; this.data = options.data; document.dispatchEvent(this.event('cloudcannon:load')); }
     newData(data) { this.data = data; document.dispatchEvent(this.event('cloudcannon:update')); }
     event(name) { return new CustomEvent(name, { detail: { CloudCannon: this } });}
@@ -413,7 +414,7 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?( BREAK)?$/i, { tim
   if (!this.storage.ssg) {
     throw new Error(`Expected ssg to be set with a "Given [ssg]:" step`);
   }
-  if (!/^jekyll|eleventy|hugo|sveltekit$/.test(this.storage.ssg)) {
+  if (!/^jekyll|eleventy|hugo|sveltekit|astro$/.test(this.storage.ssg)) {
     throw new Error(`SSG was ${this.storage.ssg}, expected one of: jekyll, eleventy, hugo, sveltekit`);
   }
   const ssg = this.storage.ssg;
@@ -446,6 +447,12 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?( BREAK)?$/i, { tim
       assert.strictEqual(this.commandError, "");
       await this.runCommand(`cloudcannon-reader --output build`, `site`);
       break;
+    case 'astro':
+      await this.runCommand(`npm run build`, `site`);
+      assert.strictEqual(this.stderr, "");
+      assert.strictEqual(this.commandError, "");
+      await this.runCommand(`cloudcannon-reader --output dist`, `site`);
+      break;
   }
   assert.strictEqual(this.stderr, "");
   assert.strictEqual(this.commandError, "");
@@ -466,6 +473,9 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?( BREAK)?$/i, { tim
       break;
     case 'sveltekit':
       this.serveDir("site/build");
+      break;
+    case 'astro':
+      this.serveDir("site/dist");
       break;
   }
   if (breakOn) {

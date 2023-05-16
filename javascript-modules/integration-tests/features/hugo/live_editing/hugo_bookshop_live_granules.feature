@@ -18,6 +18,10 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
       """
       <h1>{{ .title }}</h1>
       """
+    * a component-lib/components/flat_single.hugo.html file containing:
+      """
+      <h1>{{ .title }}</h1>
+      """
     * a site/layouts/index.html file containing:
       """
       <html>
@@ -72,6 +76,27 @@ Feature: Hugo Bookshop CloudCannon Live Editing Granular Steps
 
   @web
   Scenario: Bookshop live renders when CloudCannon pushes new data
+    Given 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      block:
+        title: "Rerendered"
+      """
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h1 should contain "Rerendered"
+
+  @web
+  Scenario: Bookshop live renders flat components when CloudCannon pushes new data
+    Given a site/layouts/index.html file containing:
+      """
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `(dict "title" .Params.block.title)` }}
+      {{ partial "bookshop" (slice "flat_single" (dict "title" .Params.block.title)) }}
+      </body>
+      </html>
+      """
     Given 🌐 I have loaded my site in CloudCannon
     When 🌐 CloudCannon pushes new yaml:
       """
