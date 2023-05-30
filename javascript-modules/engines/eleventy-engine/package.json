@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/eleventy-engine",
   "packageManager": "yarn@3.0.0",
-  "version": "3.6.0-beta.0",
+  "version": "3.6.0-beta.1",
   "description": "Bookshop frontend Eleventy renderer",
   "type": "module",
   "sideEffects": false,
@@ -27,7 +27,7 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/helpers": "3.6.0-beta.0",
+    "@bookshop/helpers": "3.6.0-beta.1",
     "esbuild": "^0.13.10",
     "liquidjs": "9.28.0",
     "markdown-it": "^13.0.1",
