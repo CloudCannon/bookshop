@@ -124,6 +124,10 @@ export default function (text, opts) {
         liveMarkup: true,
         ...opts
     }
+
+    // If this component contains no subcomponents,
+    // we don't need to add any special comments as there
+    // can be no data bindings within.
     if (!/bookshop/.test(text)) {
         return text;
     }

@@ -68,25 +68,31 @@ test("add live markup to bookshop_include tags", t => {
 });
 
 test("add live markup to assigns", t => {
-    const input = `{% assign a=b %}`;
-    const expected = `{% assign a=b %}<!--bookshop-live context(a: (b))-->`;
+    const input = `{% assign a=b %}bookshop`;
+    const expected = `{% assign a=b %}<!--bookshop-live context(a: (b))-->bookshop`;
     t.is(translateLiquid(input, { expandBindSyntax: false }), expected);
 });
 
 test("add live markup to complex assigns", t => {
-    const input = `{% assign a = b | where: "a", "b" %}`;
-    const expected = `{% assign a = b | where: "a", "b" %}<!--bookshop-live context(a: (b | where: "a", "b"))-->`;
+    const input = `{% assign a = b | where: "a", "b" %}bookshop`;
+    const expected = `{% assign a = b | where: "a", "b" %}<!--bookshop-live context(a: (b | where: "a", "b"))-->bookshop`;
     t.is(translateLiquid(input, { expandBindSyntax: false }), expected);
 });
 
 test("add live markup to local assigns", t => {
-    const input = `{% local a=b %}`;
-    const expected = `{% local a=b %}<!--bookshop-live context(a: (b))-->`;
+    const input = `{% local a=b %}bookshop`;
+    const expected = `{% local a=b %}<!--bookshop-live context(a: (b))-->bookshop`;
     t.is(translateLiquid(input, { expandBindSyntax: false }), expected);
 });
 
 test("add live markup to loops", t => {
-    const input = `{% for a in b %}`;
-    const expected = `{% for a in b %}{% loop_context a in b %}`;
+    const input = `{% for a in b %}bookshop`;
+    const expected = `{% for a in b %}{% loop_context a in b %}bookshop`;
+    t.is(translateLiquid(input, { expandBindSyntax: false }), expected);
+});
+
+test("don't add live markup when no subcomponent", t => {
+    const input = `{% assign a=b %}`;
+    const expected = `{% assign a=b %}`;
     t.is(translateLiquid(input, { expandBindSyntax: false }), expected);
 });
