@@ -83,6 +83,14 @@ export default function (text, opts) {
         ...opts
     }
     text = text.toString();
+
+    // If this component contains no subcomponents,
+    // we don't need to add any special comments as there
+    // can be no data bindings within.
+    if (!/bookshop/.test(text)) {
+        opts.liveMarkup = false;
+    }
+
     const tokenizer = new Tokenizer(text);
     const output = tokenizer.readTopLevelTokens();
 
