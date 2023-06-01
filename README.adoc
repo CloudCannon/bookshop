@@ -29,10 +29,12 @@ A good rundown of our motivations and the problems we are looking to solve can b
 == Quick start
 To get started, head over to the guide for the SSG you would like to work with.
 
-* link:guides/jekyll.adoc[Jekyll Bookshop Reference Guide]
-
-* link:guides/eleventy.adoc[Eleventy Bookshop Reference Guide]
-
 * link:guides/hugo.adoc[Hugo Bookshop Reference Guide]
+
+* link:https://cloudcannon.com/documentation/guides/bookshop-eleventy-guide/[Eleventy Bookshop Guide]
+
+* link:https://cloudcannon.com/documentation/guides/bookshop-astro-guide/[Astro Bookshop Guide]
+
+* link:guides/jekyll.adoc[Jekyll Bookshop Reference Guide]
 
 * link:guides/sveltekit.adoc[SvelteKit Bookshop Reference Guide]

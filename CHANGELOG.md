@@ -9,6 +9,16 @@
 
 ## Unreleased
 
+### Astro Bookshop 🚀
+
+This release introduces experimental support for Astro Bookshop sites 🙌
+
+We're also transitioning away from the current (intimidating) reference guides in this repository, so all of the details on Astro Bookshop can be found in the new [Bookshop Astro Guide](https://cloudcannon.com/documentation/guides/bookshop-astro-guide/) on the CloudCannon documentation.
+
+### Other changes
+
+* Improved live editing performance for Eleventy and Jekyll sites
+
 ## v3.5.1 (May 12, 2023)
 
 * Fixes a performance regression when live editing Hugo with many literal assignments
