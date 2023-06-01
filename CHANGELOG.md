@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.6.0 (June 1, 2023)
+
 ### Astro Bookshop 🚀
 
 This release introduces experimental support for Astro Bookshop sites 🙌
