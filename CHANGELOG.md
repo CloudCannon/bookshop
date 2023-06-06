@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.6.1 (June 6, 2023)
+
 * Improved error handling for Astro Bookshop sites.
 * Fixed a bug which could cause incorrect component data-bindings for Astro sites.
 * Fixed Bookshop metadata not being correctly removed from Astro components in some cases.
