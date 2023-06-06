@@ -14,6 +14,15 @@ const findComponents = createFinder(
 );
 
 export default (src) => {
+  src = src.replace(
+    /const Astro2.*$/m,
+    `$&
+    delete Astro2.props['bookshop:live'];
+    delete Astro2.props['bookshop:binding'];
+    delete Astro2.props?.__data_binding_path;
+    delete Astro2.props?.__bookshop_path;`
+  );
+
   const tree = parse(src, {
     sourceType: "module",
     ecmaVersion: "latest",
@@ -73,10 +82,10 @@ export default (src) => {
           }
           return `{key:"${prop.key.value}", values: [${identifiers
             .join(",")
-            .replace(".[", "[")}],  identifiers: [\`${identifiers
+            .replaceAll(".[", "[")}],  identifiers: [\`${identifiers
             .join("`,`")
-            .replace(".[", ".${")
-            .replace("]", "}")}\`]}`;
+            .replaceAll(".[", ".${")
+            .replaceAll("]", "}")}\`]}`;
         }
       })
       .join(",");
@@ -97,58 +106,74 @@ export default (src) => {
         },
       });
     }
-    const template = parse(
-      `(async () => {
-        const bookshop_paths = [${propsString}].map(({key, identifiers, values}) => {
-          if(values[0]?.__bookshop_path){
-            return {key, path: values[0].__bookshop_path};
-          }
 
-          if(!identifiers){
-            if(typeof values[0] === 'string'){
-              return {key, path: \`"\${values[0]}"\`, literal: true};
-            }
-            return {key, path: values[0], literal: true};
+    const templateString = `(async () => {
+      const bookshop_paths = [${propsString}].map(({key, identifiers, values}) => {
+        if(typeof values[0]?.__bookshop_path === 'string'){
+          if(values[0].__bookshop_path.length === 0){
+            return;
           }
-
-          const parentIndex = values.findIndex((value) => typeof value?.__bookshop_path === 'string');
-          if(parentIndex>=0){
-            let path = values[parentIndex].__bookshop_path+identifiers[0].replace(identifiers[parentIndex], '');
-            if(path.startsWith('.')){
-              path = path.slice(1);
-            }
-            return {key, path};
-          }
-
-          if(identifiers[0].startsWith('Astro2.props.frontmatter.')){
-            return {key, path: identifiers[0].replace('Astro2.props.frontmatter.', '')};
-          }
-        }).filter((item) => !!item);
-        ${
-          !shouldDataBind
-            ? 'bookshop_paths.push({key:"dataBinding", path: "false", literal: true});'
-            : ""
+          return {key, path: values[0].__bookshop_path};
         }
-        const params = bookshop_paths.map(({key, path}) => key+':'+path).join(',');
-        const bookshop_path = bookshop_paths
-          .filter(({literal}) => !literal)
-          .reduce((acc, {path}) => {
-            while(!path.startsWith(acc)){
-              acc = acc.replace(/\\.?[^.]*$/, '');
-            }
-            return acc;
-          }, bookshop_paths[0]?.path);
-        return $$render\`
-        \${(typeof $$maybeRenderHead !== 'undefined') ? $$maybeRenderHead($$result) : ''}
-        \${(${shouldDataBind} && bookshop_path) ? $$render\`<!--databinding:#\${$$render(bookshop_path)}-->\`: ''}
-        \${(${shouldLiveRender} && ${component}.__bookshop_name) ? $$render\`<!--bookshop-live name(\${${component}.__bookshop_name}) params(\${$$render(params)})-->\`: ''}
-        \${'REPLACE_ME'}
-        \${(${shouldLiveRender} && ${component}.__bookshop_name) ? $$render\`<!--bookshop-live end-->\`: ''}
-        \${(${shouldDataBind} && bookshop_path) ? $$render\`<!--databindingend:#\${$$render(bookshop_path)}-->\`: ''}
-      \`})()`
-        .replace(/(^\s*)|(\s*$)/gm, "")
-        .replace(/\n/g, "")
-    ).program.body[0].expression;
+
+        if(!identifiers){
+          if(typeof values[0] === 'string'){
+            return {key, path: \`"\${values[0]}"\`, literal: true};
+          }
+          return {key, path: values[0], literal: true};
+        }
+
+        const parentIndex = values.findIndex((value) => typeof value?.__bookshop_path === 'string');
+        if(parentIndex>=0){
+          let path = values[parentIndex].__bookshop_path+identifiers[0].replace(identifiers[parentIndex], '');
+          if(path.startsWith('.')){
+            path = path.slice(1);
+          }
+          return {key, path};
+        }
+
+        if(identifiers[0].startsWith('Astro2.props.frontmatter.')){
+          return {key, path: identifiers[0].replace('Astro2.props.frontmatter.', '')};
+        }
+      }).filter((item) => !!item);
+      ${
+        !shouldDataBind
+          ? 'bookshop_paths.push({key:"dataBinding", path: "false", literal: true});'
+          : ""
+      }
+      const params = bookshop_paths.map(({key, path}) => key+':'+path).join(',');
+      const bookshop_path = bookshop_paths
+        .filter(({literal}) => !literal)
+        .reduce((acc, {path}) => {
+          if(!acc){
+            return path;
+          }
+          while(!path.startsWith(acc)){
+            acc = acc.replace(/\\.?[^.]*$/, '');
+          }
+          return acc;
+        }, null);
+      return $$render\`
+      \${(typeof $$maybeRenderHead !== 'undefined') ? $$maybeRenderHead($$result) : ''}
+      \${(${shouldDataBind} && bookshop_path) ? $$render\`<!--databinding:#\${$$render(bookshop_path)}-->\`: ''}
+      \${(${shouldLiveRender} && ${component}.__bookshop_name) ? $$render\`<!--bookshop-live name(\${${component}.__bookshop_name}) params(\${$$render(params)})-->\`: ''}
+      \${'REPLACE_ME'}
+      \${(${shouldLiveRender} && ${component}.__bookshop_name) ? $$render\`<!--bookshop-live end-->\`: ''}
+      \${(${shouldDataBind} && bookshop_path) ? $$render\`<!--databindingend:#\${$$render(bookshop_path)}-->\`: ''}
+    \`})()`;
+
+    let template;
+    try {
+      template = parse(
+        templateString.replace(/(^\s*)|(\s*$)/gm, "").replace(/\n/g, "")
+      ).program.body[0].expression;
+    } catch (err) {
+      const bookshopErr = new Error(
+        `Failed to parse template string\n${templateString}`
+      );
+      bookshopErr.originalError = err;
+      throw bookshopErr;
+    }
 
     template.callee.body.body[
       template.callee.body.body.length - 1

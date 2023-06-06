@@ -1,4 +1,6 @@
-export const findDefinition = (node) => {
+import { env } from 'process';
+
+const findDefinitionInner = (node) => {
   let curr = node;
 
   while (curr) {
@@ -25,7 +27,9 @@ export const findDefinition = (node) => {
         ({ declarations }) => declarations
       );
       const patternDecl = patternDecls.find(({ id }) =>
-        id.properties.find(({ value }) => value.name === node.name)
+        id.properties.find(({ value }) => {
+          return value?.name === node.name
+        })
       );
       if (patternDecl) {
         if (
@@ -73,6 +77,17 @@ export const findDefinition = (node) => {
     curr = curr.parent;
   }
   return null;
+}
+
+export const findDefinition = (node) => {
+  try{
+    return findDefinitionInner(node)
+  } catch (err){
+    if(env.BOOKSHOP_VERBOSE){
+      console.warn(`[vite-plugin-astro-bookshop] Failed to find definition: ${err}`);
+    }
+    return null;
+  }
 };
 
 export const addParentLinks = (node) => {

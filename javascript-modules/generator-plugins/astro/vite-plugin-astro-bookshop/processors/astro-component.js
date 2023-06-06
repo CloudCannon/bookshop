@@ -41,13 +41,6 @@ const process = (node, componentName) => {
 
 export default (src, componentName) => {
   let name = src.match(/export default (?<export>.*);/)?.groups.export;
-  src = src.replace(
-    /const Astro2.*$/m,
-    `$&
-    delete Astro2.props['bookshop:live'];
-    delete Astro2.props['bookshop:binding'];
-    delete Astro2.props?.__bookshop_path;`
-  );
 
   const tree = parse(src, {
     sourceType: "module",
