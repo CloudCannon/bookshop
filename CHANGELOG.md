@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* (Temporarily) Pin an exact `sass` version to workaround sass/dart-sass#1995
+
 ## v3.6.1 (June 6, 2023)
 
 * Improved error handling for Astro Bookshop sites.
