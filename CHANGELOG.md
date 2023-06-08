@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.6.2 (June 8, 2023)
+
 * (Temporarily) Pin an exact `sass` version to workaround sass/dart-sass#1995
 
 ## v3.6.1 (June 6, 2023)

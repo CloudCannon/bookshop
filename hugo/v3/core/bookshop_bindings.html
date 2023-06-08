@@ -4,7 +4,7 @@
     Expects one argument, a string to use as the data binding in CloudCannon
 */}}
 
-{{- (printf `<!--bookshop-live meta(version: "3.6.1" baseurl: "%s" copyright: "%s" title: "%s")-->` site.BaseURL site.Copyright site.Title) | safeHTML }}
+{{- (printf `<!--bookshop-live meta(version: "3.6.2" baseurl: "%s" copyright: "%s" title: "%s")-->` site.BaseURL site.Copyright site.Title) | safeHTML }}
 {{ $is_string := eq "string" (printf "%T" .) -}}
 
 {{- if $is_string -}}
