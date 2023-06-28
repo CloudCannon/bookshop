@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Improved memory performance when live editing
+
 ## v3.6.2 (June 8, 2023)
 
 * (Temporarily) Pin an exact `sass` version to workaround sass/dart-sass#1995
