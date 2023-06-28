@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.6.3 (June 28, 2023)
+
 * Improved memory performance when live editing
 
 ## v3.6.2 (June 8, 2023)

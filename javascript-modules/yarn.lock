@@ -525,13 +525,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bookshop/astro-bookshop@3.6.2, @bookshop/astro-bookshop@workspace:generator-plugins/astro/astro-bookshop":
+"@bookshop/astro-bookshop@3.6.3, @bookshop/astro-bookshop@workspace:generator-plugins/astro/astro-bookshop":
   version: 0.0.0-use.local
   resolution: "@bookshop/astro-bookshop@workspace:generator-plugins/astro/astro-bookshop"
   dependencies:
     "@astrojs/react": ^2.1.0
-    "@bookshop/helpers": 3.6.2
-    "@bookshop/vite-plugin-astro-bookshop": 3.6.2
+    "@bookshop/helpers": 3.6.3
+    "@bookshop/vite-plugin-astro-bookshop": 3.6.3
     "@cloudcannon/remark-auto-import": ^1.0.1
     ava: ^3.15.0
     nyc: ^15.1.0
@@ -540,15 +540,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/astro-engine@3.6.2, @bookshop/astro-engine@workspace:engines/astro-engine":
+"@bookshop/astro-engine@3.6.3, @bookshop/astro-engine@workspace:engines/astro-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/astro-engine@workspace:engines/astro-engine"
   dependencies:
     "@astrojs/compiler": ^1.0.1
-    "@bookshop/astro-bookshop": 3.6.2
-    "@bookshop/builder": 3.6.2
-    "@bookshop/helpers": 3.6.2
-    "@bookshop/vite-plugin-astro-bookshop": 3.6.2
+    "@bookshop/astro-bookshop": 3.6.3
+    "@bookshop/builder": 3.6.3
+    "@bookshop/helpers": 3.6.3
+    "@bookshop/vite-plugin-astro-bookshop": 3.6.3
     astro: ^2.0.4
     ava: ^3.15.0
     esbuild: ^0.13.15
@@ -560,12 +560,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/browser@3.6.2, @bookshop/browser@workspace:browser":
+"@bookshop/browser@3.6.3, @bookshop/browser@workspace:browser":
   version: 0.0.0-use.local
   resolution: "@bookshop/browser@workspace:browser"
   dependencies:
-    "@bookshop/builder": 3.6.2
-    "@bookshop/helpers": 3.6.2
+    "@bookshop/builder": 3.6.3
+    "@bookshop/helpers": 3.6.3
     "@codemirror/basic-setup": ^0.18.2
     "@codemirror/commands": ^0.18.3
     "@codemirror/legacy-modes": ^0.18.1
@@ -590,13 +590,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/builder@3.6.2, @bookshop/builder@workspace:builder":
+"@bookshop/builder@3.6.3, @bookshop/builder@workspace:builder":
   version: 0.0.0-use.local
   resolution: "@bookshop/builder@workspace:builder"
   dependencies:
-    "@bookshop/helpers": 3.6.2
-    "@bookshop/jekyll-engine": 3.6.2
-    "@bookshop/styles": 3.6.2
+    "@bookshop/helpers": 3.6.3
+    "@bookshop/jekyll-engine": 3.6.3
+    "@bookshop/styles": 3.6.3
     ava: ^3.15.0
     esbuild: ^0.13.10
     fast-glob: ^3.2.7
@@ -610,7 +610,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/eleventy-bookshop@workspace:generator-plugins/eleventy/eleventy-bookshop"
   dependencies:
-    "@bookshop/helpers": 3.6.2
+    "@bookshop/helpers": 3.6.3
     ava: ^3.15.0
     normalize-path: ^3.0.0
     nyc: ^15.1.0
@@ -618,11 +618,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/eleventy-engine@3.6.2, @bookshop/eleventy-engine@workspace:engines/eleventy-engine":
+"@bookshop/eleventy-engine@3.6.3, @bookshop/eleventy-engine@workspace:engines/eleventy-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/eleventy-engine@workspace:engines/eleventy-engine"
   dependencies:
-    "@bookshop/helpers": 3.6.2
+    "@bookshop/helpers": 3.6.3
     ava: ^3.15.0
     esbuild: ^0.13.10
     liquidjs: 9.28.0
@@ -633,14 +633,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/generate@3.6.2, @bookshop/generate@workspace:generate":
+"@bookshop/generate@3.6.3, @bookshop/generate@workspace:generate":
   version: 0.0.0-use.local
   resolution: "@bookshop/generate@workspace:generate"
   dependencies:
-    "@bookshop/browser": 3.6.2
-    "@bookshop/builder": 3.6.2
-    "@bookshop/helpers": 3.6.2
-    "@bookshop/live": 3.6.2
+    "@bookshop/browser": 3.6.3
+    "@bookshop/builder": 3.6.3
+    "@bookshop/helpers": 3.6.3
+    "@bookshop/live": 3.6.3
     "@ltd/j-toml": ^1.30.0
     ava: ^3.15.0
     chalk: ^5.0.1
@@ -656,7 +656,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/helpers@3.6.2, @bookshop/helpers@workspace:helpers":
+"@bookshop/helpers@3.6.3, @bookshop/helpers@workspace:helpers":
   version: 0.0.0-use.local
   resolution: "@bookshop/helpers@workspace:helpers"
   dependencies:
@@ -666,11 +666,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/hugo-engine@3.6.2, @bookshop/hugo-engine@workspace:engines/hugo-engine":
+"@bookshop/hugo-engine@3.6.3, @bookshop/hugo-engine@workspace:engines/hugo-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/hugo-engine@workspace:engines/hugo-engine"
   dependencies:
-    "@bookshop/helpers": 3.6.2
+    "@bookshop/helpers": 3.6.3
     ava: ^3.15.0
     esbuild: ^0.13.10
     fflate: ^0.7.3
@@ -679,11 +679,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/init@3.6.2, @bookshop/init@workspace:init":
+"@bookshop/init@3.6.3, @bookshop/init@workspace:init":
   version: 0.0.0-use.local
   resolution: "@bookshop/init@workspace:init"
   dependencies:
-    "@bookshop/helpers": 3.6.2
+    "@bookshop/helpers": 3.6.3
     chalk: ^5.0.1
     commander: ^9.1.0
     ejs: ^3.1.6
@@ -694,11 +694,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/jekyll-engine@3.6.2, @bookshop/jekyll-engine@workspace:engines/jekyll-engine":
+"@bookshop/jekyll-engine@3.6.3, @bookshop/jekyll-engine@workspace:engines/jekyll-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/jekyll-engine@workspace:engines/jekyll-engine"
   dependencies:
-    "@bookshop/helpers": 3.6.2
+    "@bookshop/helpers": 3.6.3
     ava: ^3.15.0
     esbuild: ^0.13.10
     js-base64: ^3.6.1
@@ -709,14 +709,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/live@3.6.2, @bookshop/live@workspace:live":
+"@bookshop/live@3.6.3, @bookshop/live@workspace:live":
   version: 0.0.0-use.local
   resolution: "@bookshop/live@workspace:live"
   dependencies:
-    "@bookshop/builder": 3.6.2
-    "@bookshop/eleventy-engine": 3.6.2
-    "@bookshop/helpers": 3.6.2
-    "@bookshop/jekyll-engine": 3.6.2
+    "@bookshop/builder": 3.6.3
+    "@bookshop/eleventy-engine": 3.6.3
+    "@bookshop/helpers": 3.6.3
+    "@bookshop/jekyll-engine": 3.6.3
     ava: ^3.15.0
     commander: ^8.1.0
     jsdom: ^18.0.0
@@ -726,12 +726,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/sass@3.6.2, @bookshop/sass@workspace:bookshop-sass":
+"@bookshop/sass@3.6.3, @bookshop/sass@workspace:bookshop-sass":
   version: 0.0.0-use.local
   resolution: "@bookshop/sass@workspace:bookshop-sass"
   dependencies:
-    "@bookshop/builder": 3.6.2
-    "@bookshop/helpers": 3.6.2
+    "@bookshop/builder": 3.6.3
+    "@bookshop/helpers": 3.6.3
     ava: ^3.15.0
     commander: ^8.1.0
     fast-glob: ^3.2.7
@@ -741,11 +741,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/styles@3.6.2, @bookshop/styles@workspace:styles":
+"@bookshop/styles@3.6.3, @bookshop/styles@workspace:styles":
   version: 0.0.0-use.local
   resolution: "@bookshop/styles@workspace:styles"
   dependencies:
-    "@bookshop/helpers": 3.6.2
+    "@bookshop/helpers": 3.6.3
     ava: ^3.15.0
     esbuild: ^0.13.10
     fast-glob: ^3.2.7
@@ -758,12 +758,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/svelte-engine@3.6.2, @bookshop/svelte-engine@workspace:engines/svelte-engine":
+"@bookshop/svelte-engine@3.6.3, @bookshop/svelte-engine@workspace:engines/svelte-engine":
   version: 0.0.0-use.local
   resolution: "@bookshop/svelte-engine@workspace:engines/svelte-engine"
   dependencies:
-    "@bookshop/builder": 3.6.2
-    "@bookshop/helpers": 3.6.2
+    "@bookshop/builder": 3.6.3
+    "@bookshop/helpers": 3.6.3
     ava: ^3.15.0
     esbuild: ^0.13.10
     esbuild-svelte: ^0.5.3
@@ -776,18 +776,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bookshop/sveltekit-bookshop@workspace:generator-plugins/sveltekit/sveltekit-bookshop"
   dependencies:
-    "@bookshop/helpers": 3.6.2
+    "@bookshop/helpers": 3.6.3
     ava: ^3.15.0
     nyc: ^15.1.0
     svelte: ^3
   languageName: unknown
   linkType: soft
 
-"@bookshop/up@3.6.2, @bookshop/up@workspace:up":
+"@bookshop/up@3.6.3, @bookshop/up@workspace:up":
   version: 0.0.0-use.local
   resolution: "@bookshop/up@workspace:up"
   dependencies:
-    "@bookshop/helpers": 3.6.2
+    "@bookshop/helpers": 3.6.3
     "@ltd/j-toml": ^1.30.0
     ava: ^3.15.0
     chalk: ^5.0.1
@@ -803,7 +803,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bookshop/vite-plugin-astro-bookshop@3.6.2, @bookshop/vite-plugin-astro-bookshop@workspace:generator-plugins/astro/vite-plugin-astro-bookshop":
+"@bookshop/vite-plugin-astro-bookshop@3.6.3, @bookshop/vite-plugin-astro-bookshop@workspace:generator-plugins/astro/vite-plugin-astro-bookshop":
   version: 0.0.0-use.local
   resolution: "@bookshop/vite-plugin-astro-bookshop@workspace:generator-plugins/astro/vite-plugin-astro-bookshop"
   dependencies:
@@ -6310,16 +6310,16 @@ fsevents@~2.3.2:
     "@astrojs/mdx": ^0
     "@astrojs/react": ^1
     "@babel/generator": ^7
-    "@bookshop/astro-engine": 3.6.2
-    "@bookshop/eleventy-engine": 3.6.2
-    "@bookshop/generate": 3.6.2
-    "@bookshop/hugo-engine": 3.6.2
-    "@bookshop/init": 3.6.2
-    "@bookshop/jekyll-engine": 3.6.2
-    "@bookshop/sass": 3.6.2
-    "@bookshop/svelte-engine": 3.6.2
-    "@bookshop/up": 3.6.2
-    "@bookshop/vite-plugin-astro-bookshop": 3.6.2
+    "@bookshop/astro-engine": 3.6.3
+    "@bookshop/eleventy-engine": 3.6.3
+    "@bookshop/generate": 3.6.3
+    "@bookshop/hugo-engine": 3.6.3
+    "@bookshop/init": 3.6.3
+    "@bookshop/jekyll-engine": 3.6.3
+    "@bookshop/sass": 3.6.3
+    "@bookshop/svelte-engine": 3.6.3
+    "@bookshop/up": 3.6.3
+    "@bookshop/vite-plugin-astro-bookshop": 3.6.3
     "@cloudcannon/filer": latest
     "@cloudcannon/reader": latest
     "@cloudcannon/remark-auto-import": latest
