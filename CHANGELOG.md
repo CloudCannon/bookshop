@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Fixed `ENV_BOOKSHOP_LIVE` flag being undefined when live editing Astro components
+
 ## v3.6.3 (June 28, 2023)
 
 * Improved memory performance when live editing
