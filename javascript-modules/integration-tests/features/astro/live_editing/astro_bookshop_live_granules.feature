@@ -139,9 +139,34 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
 
   @web
   Scenario: Bookshop sets a flag when live editing
-    Given a site/src/components/single.jsx file containing:
+    Given a site/src/layouts/Page.astro file containing:
       """
-      import Nested from './nested/nested.jsx';
+      ---
+      import Single from "../components/single.astro";
+      import SingleReact from "../components/single_react.jsx";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <html lang="en"> <body>
+      <Single bookshop:live {...frontmatter.block} />
+      <SingleReact bookshop:live {...frontmatter.block} />
+      </body> </html>
+      """
+    Given a site/src/components/single.astro file containing:
+      """
+      ---
+      import Nested from './nested/nested.astro';
+      ---
+      <h1>{ENV_BOOKSHOP_LIVE?"LIVE!":"DEAD?"} {Astro.props.title}</h1>
+      <Nested title={Astro.props.title} />
+      """
+    Given a site/src/components/nested/nested.astro file containing:
+      """
+      <h2>{ENV_BOOKSHOP_LIVE?"LIVE!":"DEAD?"} {Astro.props.title}</h2>
+      """
+    Given a site/src/components/single_react.jsx file containing:
+      """
+      import Nested from './nested/nested_react.jsx';
 
       export default function Single({ title }) {
         return <>
@@ -150,7 +175,7 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
         </>
       }
       """
-    Given a site/src/components/nested/nested.jsx file containing:
+    Given a site/src/components/nested/nested_react.jsx file containing:
       """
       export default function Nested({ title }) {
         return <h2>{ENV_BOOKSHOP_LIVE?"LIVE!":"DEAD?"} {title}</h2>
@@ -164,6 +189,8 @@ Feature: Astro Bookshop CloudCannon Live Editing Granular Steps
       """
     Then 🌐 There should be no errors
     *    🌐 There should be no logs
-    *    🌐 The selector h1 should contain "LIVE! 🫑"
-    *    🌐 The selector h2 should contain "LIVE! 🫑"
+    *    🌐 The selector h1:nth-of-type(1) should contain "LIVE! 🫑"
+    *    🌐 The selector h2:nth-of-type(1) should contain "LIVE! 🫑"
+    *    🌐 The selector h1:nth-of-type(2) should contain "LIVE! 🫑"
+    *    🌐 The selector h2:nth-of-type(2) should contain "LIVE! 🫑"
 
