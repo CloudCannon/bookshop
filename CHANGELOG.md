@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Fixed an edge case generating structures for component names that end with the word `components`
+
 ## v3.6.4 (July 18, 2023)
 
 * Fixed `ENV_BOOKSHOP_LIVE` flag being undefined when live editing Astro components

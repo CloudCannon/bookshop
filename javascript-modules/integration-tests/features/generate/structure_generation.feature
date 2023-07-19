@@ -105,11 +105,32 @@ Feature: Bookshop Structure Generation
     Then stderr should be empty
     And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
     Then I should see "site/public/_cloudcannon/info.json" containing the values:
-      | path | value |
-      | _structures.content_blocks.id_key | "_bookshop_name" |
-      | _structures.content_blocks.values.0.value._bookshop_name | "card" |
-      | _structures.content_blocks.values.0.value.card_text | "" |
-      | _structures.content_blocks.values.0.value.color | "Blue" |
+      | path                                                     | value            |
+      | _structures.content_blocks.id_key                        | "_bookshop_name" |
+      | _structures.content_blocks.values.0.value._bookshop_name | "card"           |
+      | _structures.content_blocks.values.0.value.card_text      | ""               |
+      | _structures.content_blocks.values.0.value.color          | "Blue"           |
+
+  Scenario: Generating structures for complex component keys
+    Given a component-lib/components/section/section--heading-and-components/section--heading-and-components.bookshop.yml file containing:
+      """
+      spec:
+        structures:
+          - content_blocks
+
+      blueprint:
+        card_text: ""
+        color: Blue
+      """
+    When I run "npm start" in the . directory
+    Then stderr should be empty
+    And stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
+    Then I should see "site/public/_cloudcannon/info.json" containing the values:
+      | path                                                     | value                                     |
+      | _structures.content_blocks.id_key                        | "_bookshop_name"                          |
+      | _structures.content_blocks.values.0.value._bookshop_name | "section/section--heading-and-components" |
+      | _structures.content_blocks.values.0.value.card_text      | ""                                        |
+      | _structures.content_blocks.values.0.value.color          | "Blue"                                    |
 
   Scenario: Generating structures carries through extra fields
     Given a component-lib/components/nested/card/card.bookshop.yml file containing:

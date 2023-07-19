@@ -57,7 +57,7 @@ const cascadeEntries = ([key,]) => {
 }
 
 const getComponentBase = (componentPath) => {
-    return componentPath.replace(/^.*components\//, '').split(".")[0];
+    return componentPath.replace(/^.*?components\//, '').split(".")[0];
 }
 
 const getComponentKey = (componentPath) => {
