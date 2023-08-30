@@ -119,6 +119,10 @@ export default (src, componentName) => {
   addParentLinks(tree);
 
   findComponents(tree).forEach((node) => {
+    if(!node.arguments[1].properties){
+      return;
+    }
+
     const shouldDataBind =
       node.arguments[1].properties.find((prop) =>
         [
