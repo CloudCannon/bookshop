@@ -9,6 +9,9 @@
 
 ## Unreleased
 
+* Added support for Sass and CSS imports in Astro components
+* Fixed an error when bundling an Astro component with no props
+
 ## v3.6.5 (July 19, 2023)
 
 * Fixed an edge case generating structures for component names that end with the word `components`
