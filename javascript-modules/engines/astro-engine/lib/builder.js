@@ -4,12 +4,20 @@ import { transform } from "@astrojs/compiler";
 import AstroPluginVite from "@bookshop/vite-plugin-astro-bookshop";
 import { resolveConfig } from "vite";
 import * as esbuild from "esbuild";
+import { sassPlugin, postcssModules } from 'esbuild-sass-plugin'
 
 export const extensions = [".astro", ".jsx", ".tsx"];
 
 const { transform: bookshopTransform } = AstroPluginVite();
 
 export const buildPlugins = [
+  sassPlugin({
+    filter: /\.module\.(s[ac]ss|css)$/,
+    transform: postcssModules({})
+  }),
+  sassPlugin({
+    filter: /\.(s[ac]ss|css)$/
+  }),
   {
     name: "bookshop-astro",
     setup(build) {
@@ -34,12 +42,17 @@ export const buildPlugins = [
           loader: "ts",
           target: "esnext",
           sourcemap: false,
-          define: { ENV_BOOKSHOP_LIVE: true },
+          define: { ENV_BOOKSHOP_LIVE: "true" },
         });
         let result = await bookshopTransform(
           jsResult.code,
           args.path.replace(process.cwd(), "")
         );
+
+        if(!result){
+          console.warn('Bookshop transform failed:', args.path);
+          result = jsResult;
+        }
 
         let importTransform = (await resolveConfig({}, "build")).plugins.find(
           ({ name }) => name === "vite:import-glob"
@@ -63,13 +76,18 @@ export const buildPlugins = [
           jsxFragment: "__React.Fragment",
           target: "esnext",
           sourcemap: false,
-          define: { ENV_BOOKSHOP_LIVE: true },
+          define: { ENV_BOOKSHOP_LIVE: "true" },
         });
 
         let result = await bookshopTransform(
           jsResult.code,
           args.path.replace(process.cwd(), "")
         );
+
+        if(!result){
+          console.warn('Bookshop transform failed:', args.path);
+          result = jsResult;
+        }
 
         let importTransform = (await resolveConfig({}, "build")).plugins.find(
           ({ name }) => name === "vite:import-glob"
