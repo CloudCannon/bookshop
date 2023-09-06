@@ -1,9 +1,23 @@
-import { renderToString } from "astro/internal/index.js";
+import { renderToString } from "astro/runtime/server/index.js";
 import { processFrontmatter } from "@bookshop/astro-bookshop/helpers/frontmatter-helper";
 import { createRoot } from "react-dom/client";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server.browser";
 import { flushSync } from "react-dom";
+
+const renderers = [
+  {
+    name: "@astrojs/react",
+    ssr: {
+      check: () => true,
+      renderToStaticMarkup: async (Component, props) => {
+        const reactNode = await Component(props);
+
+        return { html: renderToStaticMarkup(reactNode) };
+      },
+    },
+  },
+];
 
 export class Engine {
   constructor(options) {
@@ -91,23 +105,12 @@ export class Engine {
         propagators: new Map(),
         extraHead: [],
         componentMetadata: new Map(),
+        renderers,
         _metadata: {
+          renderers,
           hasHydrationScript: false,
           hasRenderedHead: true,
           hasDirectives: new Set(),
-          renderers: [
-            {
-              name: "@astrojs/react",
-              ssr: {
-                check: () => true,
-                renderToStaticMarkup: async (Component, props) => {
-                  const reactNode = await Component(props);
-
-                  return { html: renderToStaticMarkup(reactNode) };
-                },
-              },
-            },
-          ],
         },
         slots: null,
         props,

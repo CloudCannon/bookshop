@@ -8,5 +8,8 @@
   "devDependencies": {
     "@bookshop/astro-bookshop": "file:../../../../../javascript-modules/generator-plugins/astro/astro-bookshop",
     "@bookshop/vite-plugin-astro-bookshop": "file:../../../../../javascript-modules/generator-plugins/astro/vite-plugin-astro-bookshop"
+  },
+  "dependencies": {
+    "@astrojs/react": "^3.0.0"
   }
 }

@@ -9,25 +9,25 @@ const COMPONENT_REGEX =
   /.*src(\/|\\)(components|shared(\/|\\)astro)(\/|\\)(?<component>.*)\.(astro|jsx|tsx)$/;
 
 const process = (src, id) => {
-  id = id.replace(cwd().replace(/\\/g, '/'), "");
+  id = id.replace(cwd().replace(/\\/g, "/"), "");
 
   const pageMatch = id.match(PAGE_REGEX);
   const componentMatch = id.match(COMPONENT_REGEX);
 
-  if(id.endsWith('.astro')){
-    try{
+  if (id.endsWith(".astro")) {
+    try {
       src = processAstro(src);
-    } catch (err){
-      err.processor = 'astro'
+    } catch (err) {
+      err.processor = "astro";
       throw err;
     }
   }
 
   if (pageMatch) {
-    try{
+    try {
       return { code: processPage(src) };
-    } catch (err){
-      err.processor = 'astro-page'
+    } catch (err) {
+      err.processor = "astro-page";
       throw err;
     }
   }
@@ -37,7 +37,7 @@ const process = (src, id) => {
   }
 
   let { component: componentName } = componentMatch.groups;
-  let parts = componentName.replace(/\\/g, '/').split("/");
+  let parts = componentName.replace(/\\/g, "/").split("/");
   if (
     parts.length >= 2 &&
     parts[parts.length - 1] === parts[parts.length - 2]
@@ -51,19 +51,19 @@ const process = (src, id) => {
       return {
         code: processReactJSX(src, componentName),
       };
-    } catch (err){
-      err.processor = 'react-js'
+    } catch (err) {
+      err.processor = "react-jsx";
       throw err;
     }
   }
 
   try {
     return { code: processAstroComponent(src, componentName) };
-  } catch (err){
-    err.processor = 'astro-component';
+  } catch (err) {
+    err.processor = "astro-component";
     throw err;
   }
-}
+};
 
 export default () => {
   return {
@@ -73,13 +73,14 @@ export default () => {
     transform(src, id) {
       try {
         return process(src, id);
-      } catch(err){
-        if(env.BOOKSHOP_VERBOSE){
-          let prefix = '[vite-plugin-astro-bookshop]';
-          if(err.processor){
-            prefix = prefix.concat(`[${err.processor}]`);
-          }
-          console.warn(`${prefix} Failed to process ${id}: ${err}`)
+      } catch (err) {
+        let prefix = "[vite-plugin-astro-bookshop]";
+        if (err.processor) {
+          prefix = prefix.concat(`[${err.processor}]`);
+        }
+        console.warn(`${prefix} Failed to process ${id}: ${err}`);
+        if (env.BOOKSHOP_VERBOSE && err.stack) {
+          console.warn(err.stack);
         }
       }
     },

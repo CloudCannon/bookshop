@@ -7,30 +7,81 @@ import {
   createFinder,
 } from "../helpers/ast-helper.js";
 
+const dataBindingKeys = [
+  "dataBinding",
+  "_dataBinding",
+  "data_binding",
+  "_data_binding",
+  "editorLink",
+  "_editorLink",
+  "editor_link",
+  "_editor_link",
+];
+
 const isJSXNode = (node) => {
-  return (
-    node?.type === "CallExpression" &&
-    (node?.callee?.name === "_jsx" ||
-      node?.callee?.name === "_jsxs" ||
-      (node?.callee?.object?.name?.endsWith("React") &&
-        node?.callee?.property?.name === "createElement"))
-  );
+  if (node?.type === "JSXElement") {
+    return true;
+  }
+
+  if (node?.type === "CallExpression") {
+    if (node.callee?.name === "_jsx" || node.callee?.name === "_jsxs") {
+      return true;
+    }
+
+    if (
+      node.callee?.object?.name?.endsWith("React") &&
+      node.callee?.property?.name === "createElement"
+    ) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 const isJSXFragmentNode = (node) => {
-  return (
-    node.name === "_Fragment" ||
-    (node?.object?.name.endsWith("React") &&
-      node?.property?.name === "Fragment")
-  );
+  if (node.type === "CallExpression") {
+    let arg = node.arguments[0];
+
+    if (arg?.name === "_Fragment") {
+      return true;
+    }
+
+    if (
+      arg?.object?.name.endsWith("React") &&
+      arg?.property?.name === "Fragment"
+    ) {
+      return true;
+    }
+  }
+
+  return node.type === "JSXFragment";
 };
 
 const isJSXComponentNode = (node) => {
-  return (
-    (node.type === "Identifier" && node.name !== "_Fragment") ||
-    (node?.object?.name.endsWith("React") &&
-      node?.property?.name === "createElement")
-  );
+  if (node.type === "CallExpression") {
+    let arg = node.arguments[0];
+
+    if (arg?.type === "Identifier" && arg?.name !== "_Fragment") {
+      return true;
+    }
+
+    if (
+      arg?.object?.name.endsWith("React") &&
+      arg?.property?.name === "createElement"
+    ) {
+      return true;
+    }
+  }
+
+  if (
+    node.type === "JSXElement" &&
+    node.openingElement?.name?.name?.match(/^[A-Z]/)
+  ) {
+    return true;
+  }
+
+  return false;
 };
 
 const hasJSXExpression = (node) => {
@@ -65,22 +116,139 @@ const findFunctionStatements = createFinder(
   false
 );
 
-const findComponents = createFinder(
-  (node) => isJSXNode(node) && node.arguments?.[0].type === "Identifier",
-  true
+const findComponents = createFinder((node) => {
+  if (!isJSXNode(node)) {
+    return false;
+  }
+
+  return isJSXComponentNode(node);
+}, true);
+
+const findDefaultExportDeclaration = createFinder(
+  (node) => node.type === "ExportDefaultDeclaration"
 );
 
 export default (src, componentName) => {
+  const tree = parse(src, {
+    sourceType: "module",
+    ecmaVersion: "latest",
+    plugins: ["jsx"],
+  }).program;
+
   let name = src.match(
     /__astro_tag_component__\((?<export>.*), "@astrojs\/react"\)/
   )?.groups.export;
 
-  const tree = parse(src, {
-    sourceType: "module",
-    ecmaVersion: "latest",
-  }).program;
+  addParentLinks(tree);
+  const functionStatements = findFunctionStatements(tree);
+  const returnStatements = findReturnStatements(tree);
+  const spreadExpressions = findSpreadExpressions(tree);
+  const components = findComponents(tree);
 
-  findFunctionStatements(tree).forEach((node) => {
+  if (!name) {
+    const defaultExport = findDefaultExportDeclaration(tree)[0];
+
+    if (!defaultExport) {
+      throw new Error("Component file has no exports");
+    }
+
+    if (defaultExport.declaration.type === "Identifier") {
+      name = defaultExport.declaration.name;
+    } else if (defaultExport.declaration.type === "FunctionDeclaration") {
+      name = defaultExport.declaration.id.name;
+    } else {
+      name = componentName.split('/').pop();;
+      defaultExport.type = "VariableDeclaration";
+      defaultExport.declarations = [
+        {
+          type: "VariableDeclarator",
+          id: {
+            type: "Identifier",
+            name: name,
+          },
+          init: defaultExport.declaration,
+        },
+      ];
+      defaultExport.kind = "const";
+      tree.body.push({
+        type: "ExportDefaultDeclaration",
+        declaration: {
+          type: "Identifier",
+          name: name,
+        },
+      });
+    }
+  }
+
+  spreadExpressions.forEach((spread) => {
+    const { name } = spread.argument;
+    if (!name) {
+      return;
+    }
+
+    spread.argument = parse(`
+      (() => {
+        if(${name}.__bookshop_path){
+          return {...${name}, __bookshop_path: ${name}.__bookshop_path};
+        }
+        return ${name};
+      })()
+    `).program.body[0].expression;
+  });
+
+  returnStatements.forEach((returnNode) => {
+    const node = returnNode.argument;
+
+    if (isJSXComponentNode(node) || isJSXFragmentNode(node)) {
+      return;
+    }
+
+    const valueExpression = parse(
+      '__data_binding_path?"#"+__data_binding_path: null;'
+    ).program.body[0].expression;
+
+    if (node.arguments?.[1]?.type === "NullLiteral") {
+      node.arguments[1] = {
+        type: "ObjectExpression",
+        properties: [
+          {
+            type: "ObjectProperty",
+            key: {
+              type: "Identifier",
+              name: "'data-cms-bind'",
+            },
+            value: valueExpression,
+            kind: "init",
+          },
+        ],
+      };
+    } else if (node.arguments?.[1]?.type === "ObjectExpression") {
+      node.arguments[1].properties?.push({
+        type: "ObjectProperty",
+        key: {
+          type: "Identifier",
+          name: "'data-cms-bind'",
+        },
+        value: valueExpression,
+        kind: "init",
+      });
+    } else if (node.openingElement) {
+      node.openingElement.attributes = node.openingElement.attributes ?? [];
+      node.openingElement.attributes.push({
+        type: "JSXAttribute",
+        name: {
+          type: "JSXIdentifier",
+          name: "data-cms-bind",
+        },
+        value: {
+          type: "JSXExpressionContainer",
+          expression: valueExpression,
+        },
+      });
+    }
+  });
+
+  functionStatements.forEach((node) => {
     let name = "__props";
     if (node.params[0]?.type === "Identifier") {
       ({ name } = node.params[0]);
@@ -116,53 +284,55 @@ export default (src, componentName) => {
     );
   });
 
-  addParentLinks(tree);
+  components.forEach((node) => {
+    const props =
+      node.type === "CallExpression"
+        ? node.arguments[1].properties
+        : node.openingElement.attributes;
 
-  findComponents(tree).forEach((node) => {
-    if(!node.arguments[1].properties){
+    if (!props) {
       return;
     }
 
-    const shouldDataBind =
-      node.arguments[1].properties.find((prop) =>
-        [
-          "dataBinding",
-          "_dataBinding",
-          "data_binding",
-          "_data_binding",
-          "editorLink",
-          "_editorLink",
-          "editor_link",
-          "_editor_link",
-        ].includes(prop.key?.value)
-      )?.value.value ?? true;
-
-    node.arguments[1].properties = node.arguments[1].properties.filter(
-      (prop) =>
-        ![
-          "dataBinding",
-          "_dataBinding",
-          "data_binding",
-          "_data_binding",
-          "editorLink",
-          "_editorLink",
-          "editor_link",
-          "_editor_link",
-        ].includes(prop.key?.value)
+    const dataBindingProp = props.find((prop) =>
+      dataBindingKeys.includes(prop.name?.name ?? prop.key?.value)
     );
 
-    const propsString = node.arguments[1].properties
-      .filter((prop) => prop.key?.value !== "class")
+    const shouldDataBind =
+      dataBindingProp?.value.expression?.value ??
+      dataBindingProp?.value.value ??
+      true;
+
+    if (node.type === "CallExpression") {
+      node.arguments[1].properties = node.arguments[1].properties.filter(
+        (prop) => !dataBindingKeys.includes(prop.key?.value)
+      );
+    } else {
+      node.openingElement.attributes = node.openingElement.attributes.filter(
+        (prop) => !dataBindingKeys.includes(prop.name?.name)
+      );
+    }
+
+    const propsString = props
+      .filter((prop) => (prop.name?.name ?? prop.key?.value) !== "class")
       .map((prop) => {
-        if (prop.type === "SpreadElement") {
+        if (
+          prop.type === "SpreadElement" ||
+          prop.type === "JSXSpreadAttribute"
+        ) {
           const identifier = (generate.default ?? generate)(prop.argument).code;
           return `{key:"bind", identifiers: ["${identifier}"], values: [${identifier}]}`;
         } else if (prop.value.type.endsWith("Literal")) {
           const value = (generate.default ?? generate)(prop.value).code;
           return `{key:"${prop.key.name}", values: [${value}]}`;
+        } else if (prop.value.expression?.type.endsWith("Literal")) {
+          const value = (generate.default ?? generate)(
+            prop.value.expression
+          ).code;
+          return `{key:"${prop.name.name}", values: [${value}]}`;
         } else {
           let identifiers = [];
-          let curr = prop.value;
+          let curr = prop.value.expression ?? prop.value;
 
           while (
             curr.type === "Identifier" ||
@@ -190,7 +360,7 @@ export default (src, componentName) => {
               );
             });
           }
-          return `{key:"${prop.key.name}", values: [${identifiers
+          return `{key:"${prop.name?.name ?? prop.key?.name}", values: [${identifiers
             .join(",")
             .replace(".[", "[")}],  identifiers: [\`${identifiers
             .join("`,`")
@@ -200,8 +370,8 @@ export default (src, componentName) => {
       })
       .join(",");
 
-    if (shouldDataBind && isJSXComponentNode(node.arguments[0])) {
-      node.arguments[1].properties.push({
+    if (shouldDataBind && isJSXComponentNode(node)) {
+      node.arguments?.[1].properties.push({
         type: "ObjectProperty",
         method: false,
         key: {
@@ -215,9 +385,24 @@ export default (src, componentName) => {
           name: "bookshop_path",
         },
       });
+
+      node.openingElement?.attributes.push({
+        type: "JSXAttribute",
+        name: {
+          type: "JSXIdentifier",
+          name: "__data_binding_path",
+        },
+        value: {
+          type: "JSXExpressionContainer",
+          expression: {
+            type: "Identifier",
+            name: "bookshop_path",
+          },
+        },
+      });
     }
 
-    const template = parse(
+    let template = parse(
       `(() => {
         const bookshop_paths = [${propsString}].map(({key, identifiers, values}) => {
           if(values[0]?.__bookshop_path){
@@ -261,76 +446,19 @@ export default (src, componentName) => {
     template.callee.body.body[template.callee.body.body.length - 1].argument = {
       ...node,
     };
-    Object.keys(node).forEach((key) => delete node[key]);
-    Object.keys(template).forEach((key) => (node[key] = template[key]));
-  });
-
-  findReturnStatements(tree).forEach((node) => {
-    findSpreadExpressions(tree).forEach((spread) => {
-      const { name } = spread.argument;
-      if (!name) {
-        return;
-      }
-
-      spread.argument = parse(`
-        (() => {
-          if(${name}.__bookshop_path){
-            return {...${name}, __bookshop_path: ${name}.__bookshop_path};
-          }
-          return ${name};
-        })()
-      `).program.body[0].expression;
-    });
 
     if (
-      isJSXComponentNode(node.argument.arguments[0]) ||
-      isJSXFragmentNode(node.argument.arguments[0])
+      node.parent?.type.startsWith("JSX") &&
+      node.parent?.type !== "JSXExpressionContainer"
     ) {
-      return;
+      template = {
+        type: "JSXExpressionContainer",
+        expression: template,
+      };
     }
 
-    if (node.argument.arguments[1].type === "NullLiteral") {
-      node.argument.arguments[1] = {
-        type: "ObjectExpression",
-        properties: [
-          {
-            type: "ObjectProperty",
-            start: 667,
-            end: 683,
-            method: false,
-            shorthand: false,
-            computed: false,
-            key: {
-              type: "Identifier",
-              start: 667,
-              end: 669,
-              name: "'data-cms-bind'",
-            },
-            value: parse('__data_binding_path?"#"+__data_binding_path: null;')
-              .program.body[0].expression,
-            kind: "init",
-          },
-        ],
-      };
-    } else if (node.argument.arguments[1].type === "ObjectExpression") {
-      node.argument.arguments[1].properties?.push({
-        type: "ObjectProperty",
-        start: 667,
-        end: 683,
-        method: false,
-        shorthand: false,
-        computed: false,
-        key: {
-          type: "Identifier",
-          start: 667,
-          end: 669,
-          name: "'data-cms-bind'",
-        },
-        value: parse('__data_binding_path?"#"+__data_binding_path: null;')
-          .program.body[0].expression,
-        kind: "init",
-      });
-    }
+    Object.keys(node).forEach((key) => delete node[key]);
+    Object.keys(template).forEach((key) => (node[key] = template[key]));
   });
 
   src = (generate.default ?? generate)(tree).code;

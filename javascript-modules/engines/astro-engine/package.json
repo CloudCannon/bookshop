@@ -31,10 +31,10 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@astrojs/compiler": "^1.0.1",
+    "@astrojs/compiler": "^1.0.0 || ^2.0.0",
     "@bookshop/astro-bookshop": "3.6.5",
     "@bookshop/vite-plugin-astro-bookshop": "3.6.5",
-    "astro": "^2.0.4",
+    "astro": "^2.0.0 || ^3.0.0",
     "esbuild": "^0.19.1",
     "esbuild-sass-plugin": "^2.13.0",
     "postcss": "^8.4.29",
