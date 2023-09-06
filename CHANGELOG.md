@@ -11,6 +11,9 @@
 
 * Added support for Sass and CSS imports in Astro components
 * Fixed an error when bundling an Astro component with no props
+* Fixed support for React components when using Astro 3
+* Fixed support for scoped CSS when using Astro 3
+* Fixed an inconsistency in CSS class name generation
 
 ## v3.6.5 (July 19, 2023)
 
