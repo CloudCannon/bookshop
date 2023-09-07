@@ -4,20 +4,41 @@ import { transform } from "@astrojs/compiler";
 import AstroPluginVite from "@bookshop/vite-plugin-astro-bookshop";
 import { resolveConfig } from "vite";
 import * as esbuild from "esbuild";
+import { sassPlugin, postcssModules } from 'esbuild-sass-plugin'
 
 export const extensions = [".astro", ".jsx", ".tsx"];
 
 const { transform: bookshopTransform } = AstroPluginVite();
 
 export const buildPlugins = [
+  sassPlugin({
+    filter: /\.module\.(s[ac]ss|css)$/,
+    transform: postcssModules({})
+  }),
+  sassPlugin({
+    filter: /\.(s[ac]ss|css)$/
+  }),
   {
     name: "bookshop-astro",
-    setup(build) {
+    async setup(build) {
+      let astroConfig;
+      let defaultScopedStyleStrategy;
+      try {
+        const astroPackageJSON = JSON.parse(await fs.promises.readFile(join(process.cwd(), 'node_modules', 'astro', 'package.json'), "utf8"))
+        defaultScopedStyleStrategy = astroPackageJSON.version.startsWith('2')
+          ? 'where'
+          : 'attribute';
+        astroConfig = (await import(join(process.cwd(), 'astro.config.mjs'))).default;
+      }catch (err){ 
+        astroConfig = {};
+      }
+
       build.onLoad({ filter: /\.astro$/, namespace: "style" }, async (args) => {
         let text = await fs.promises.readFile(args.path, "utf8");
         let transformed = await transform(text, {
           internalURL: "astro/runtime/server/index.js",
-          filename: args.path,
+          filename: args.path.replace(process.cwd(), ""),
+          scopedStyleStrategy: astroConfig.scopedStyleStrategy ?? defaultScopedStyleStrategy
         });
         return {
           contents: transformed.css[0],
@@ -29,17 +50,23 @@ export const buildPlugins = [
         let tsResult = await transform(text, {
           internalURL: "astro/runtime/server/index.js",
           filename: args.path.replace(process.cwd(), ""),
+          scopedStyleStrategy: astroConfig.scopedStyleStrategy ?? defaultScopedStyleStrategy
         });
         let jsResult = await esbuild.transform(tsResult.code, {
           loader: "ts",
           target: "esnext",
           sourcemap: false,
-          define: { ENV_BOOKSHOP_LIVE: true },
+          define: { ENV_BOOKSHOP_LIVE: "true" },
         });
         let result = await bookshopTransform(
           jsResult.code,
           args.path.replace(process.cwd(), "")
         );
+
+        if(!result){
+          console.warn('Bookshop transform failed:', args.path);
+          result = jsResult;
+        }
 
         let importTransform = (await resolveConfig({}, "build")).plugins.find(
           ({ name }) => name === "vite:import-glob"
@@ -63,13 +90,18 @@ export const buildPlugins = [
           jsxFragment: "__React.Fragment",
           target: "esnext",
           sourcemap: false,
-          define: { ENV_BOOKSHOP_LIVE: true },
+          define: { ENV_BOOKSHOP_LIVE: "true" },
         });
 
         let result = await bookshopTransform(
           jsResult.code,
           args.path.replace(process.cwd(), "")
         );
+
+        if(!result){
+          console.warn('Bookshop transform failed:', args.path);
+          result = jsResult;
+        }
 
         let importTransform = (await resolveConfig({}, "build")).plugins.find(
           ({ name }) => name === "vite:import-glob"

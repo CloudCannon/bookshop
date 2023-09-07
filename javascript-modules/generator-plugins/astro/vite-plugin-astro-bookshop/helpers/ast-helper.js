@@ -142,6 +142,6 @@ export const createFinder = (filter, recursive = true) => {
 };
 
 export const findSpreadExpressions = createFinder(
-  ({ type }) => type === "SpreadElement",
+  ({ type }) => type === "SpreadElement" || type === "JSXSpreadAttribute",
   false
 );
