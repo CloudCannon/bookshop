@@ -141,7 +141,7 @@ export default (src) => {
           ? 'bookshop_paths.push({key:"dataBinding", path: "false", literal: true});'
           : ""
       }
-      const params = bookshop_paths.map(({key, path}) => key+':'+path).join(',');
+      const params = bookshop_paths.map(({key, path}) => key+':'+path).join(' ');
       const bookshop_path = bookshop_paths
         .filter(({literal}) => !literal)
         .reduce((acc, {path}) => {
