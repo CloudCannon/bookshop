@@ -145,7 +145,7 @@ export default (src) => {
       const bookshop_path = bookshop_paths
         .filter(({literal}) => !literal)
         .reduce((acc, {path}) => {
-          if(!acc){
+          if(acc === null){
             return path;
           }
           while(!path.startsWith(acc)){
@@ -155,11 +155,11 @@ export default (src) => {
         }, null);
       return $$render\`
       \${(typeof $$maybeRenderHead !== 'undefined') ? $$maybeRenderHead($$result) : ''}
-      \${(${shouldDataBind} && bookshop_path) ? $$render\`<!--databinding:#\${$$render(bookshop_path)}-->\`: ''}
+      \${(${shouldDataBind} && bookshop_path !== null) ? $$render\`<!--databinding:#\${$$render(bookshop_path)}-->\`: ''}
       \${(${shouldLiveRender} && ${component}.__bookshop_name) ? $$render\`<!--bookshop-live name(\${${component}.__bookshop_name}) params(\${$$render(params)})-->\`: ''}
       \${'REPLACE_ME'}
       \${(${shouldLiveRender} && ${component}.__bookshop_name) ? $$render\`<!--bookshop-live end-->\`: ''}
-      \${(${shouldDataBind} && bookshop_path) ? $$render\`<!--databindingend:#\${$$render(bookshop_path)}-->\`: ''}
+      \${(${shouldDataBind} && bookshop_path !== null) ? $$render\`<!--databindingend:#\${$$render(bookshop_path)}-->\`: ''}
     \`})()`;
 
     let template;
