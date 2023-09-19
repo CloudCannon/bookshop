@@ -432,11 +432,14 @@ export default (src, componentName) => {
         const bookshop_path = bookshop_paths
           .filter(({literal}) => !literal)
           .reduce((acc, {path}) => {
+            if(acc === null){
+              return path;
+            }
             while(!path.startsWith(acc)){
               acc = acc.replace(/\\.?[^.]*$/, '');
             }
             return acc;
-          }, bookshop_paths[0]?.path);
+          }, null);
         return REPLACE_ME;
       })()`
         .replace(/(^\s*)|(\s*$)/gm, "")
