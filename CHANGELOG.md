@@ -14,6 +14,7 @@
 * Fixed support for React components when using Astro 3
 * Fixed support for scoped CSS when using Astro 3
 * Fixed an inconsistency in CSS class name generation
+* Fixed an issue with live rendering a component with multiple Front Matter props in Astro
 
 ## v3.6.5 (July 19, 2023)
 
