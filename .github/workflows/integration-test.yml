@@ -21,8 +21,10 @@ jobs:
         include:
           - os: ubuntu-latest
             hugo_target: linux-amd64
+            hugo_extension: ".tar.gz"
           - os: windows-latest
             hugo_target: windows-amd64
+            hugo_extension: ".zip"
 
     steps:
       - uses: actions/checkout@v3
@@ -30,7 +32,7 @@ jobs:
       - name: Install hugo
         uses: supplypike/setup-bin@v1
         with:
-          uri: "https://github.com/gohugoio/hugo/releases/download/v${{env.HUGO_VERSION}}/hugo_extended_${{env.HUGO_VERSION}}_${{matrix.hugo_target}}.tar.gz"
+          uri: "https://github.com/gohugoio/hugo/releases/download/v${{env.HUGO_VERSION}}/hugo_extended_${{env.HUGO_VERSION}}_${{matrix.hugo_target}}.${{matrix.hugo_extension}}"
           name: "hugo"
           version: ${{env.HUGO_VERSION}}
 
