@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@bookshop/helpers": "3.6.5",
-    "esbuild": "^0.13.10",
+    "esbuild": "^0.19.3",
     "fflate": "^0.7.3",
     "liquidjs": "9.28.0"
   },

@@ -132,6 +132,7 @@ export class Engine {
         } catch (e) {
             console.error("Couldn't load the local compressed Hugo WASM");
             console.error(e);
+            console.error(e.toString());
         }
     }
 
