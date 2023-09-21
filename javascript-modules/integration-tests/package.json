@@ -6,7 +6,7 @@
   "scripts": {
     "test": "ava -v && echo \"* * * *\n* * * * Run `yarn run itest` to run the integration tests\n* * * *\"",
     "itest": "node prep.js && cucumber-js --parallel 4 --tags \"not @skip\"",
-    "itest-slow": "node prep.js && cucumber-js --parallel 1 --tags \"not @skip\"",
+    "itest-slow": "node prep.js && cucumber-js --parallel 1 --name \"Bookshop live renders a simple data binding\" --tags \"@hugo\"",
     "itest:skipped": "node prep.js && cucumber-js --parallel 4 --tags \"@skip\""
   },
   "author": "@bglw",
