@@ -34,10 +34,10 @@
     }
 
     const refreshComponent = async (component, framework) => {
-        componentDetail = hydratedComponents?.[component];
+        let componentDetail = hydratedComponents?.[component];
         if (!componentDetail) return;
 
-        availableFrameworks = componentDetail.frameworks || [];
+        let availableFrameworks = componentDetail.frameworks || [];
         if (!availableFrameworks.includes(framework)) {
             framework = selectedFramework = availableFrameworks[0] || "none";
         }

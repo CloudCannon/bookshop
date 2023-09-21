@@ -5,13 +5,16 @@ on:
     tags:
       - v*
 
+env:
+  HUGO_VERSION: 0.118.2
+
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Swap to main
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: main
           fetch-depth: 0 # Full fetch
@@ -22,15 +25,17 @@ jobs:
           application_id: ${{ secrets.CC_OSS_BOT_ID }}
           application_private_key: ${{ secrets.CC_OSS_BOT_PEM }}
       
-      - name: Use Hugo 0.89
-        uses: peaceiris/actions-hugo@v2
+      - name: Install hugo
+        uses: supplypike/setup-bin@v1
         with:
-          hugo-version: "0.89.0"
-          extended: true
-      - name: Use Node.js 16.x
+          uri: "https://github.com/gohugoio/hugo/releases/download/v${{env.HUGO_VERSION}}/hugo_extended_${{env.HUGO_VERSION}}_${{matrix.hugo_target}}.${{matrix.hugo_extension}}"
+          name: "hugo"
+          version: ${{env.HUGO_VERSION}}
+
+      - name: Use Node.js 18.x
         uses: actions/setup-node@v2
         with:
-          node-version: 16.x
+          node-version: 18.x
       # TODO: Remove when possible (https://github.com/actions/setup-node/issues/515)
       - name: Windows Node fix
         if: ${{ matrix.os == 'windows-latest' }}
@@ -43,10 +48,10 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
-      - name: Use Go 1.17.x
+      - name: Use Go 1.21.x
         uses: actions/setup-go@v2
         with:
-          go-version: "^1.17.6"
+          go-version: "^1.21.1"
 
       - run: yarn install --immutable
         working-directory: ./javascript-modules
