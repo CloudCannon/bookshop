@@ -21,10 +21,10 @@ jobs:
         include:
           - os: ubuntu-latest
             hugo_target: linux-amd64
-            hugo_extension: ".tar.gz"
+            hugo_extension: "tar.gz"
           - os: windows-latest
             hugo_target: windows-amd64
-            hugo_extension: ".zip"
+            hugo_extension: "zip"
 
     steps:
       - uses: actions/checkout@v3
