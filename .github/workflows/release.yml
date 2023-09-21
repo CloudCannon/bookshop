@@ -28,7 +28,7 @@ jobs:
       - name: Install hugo
         uses: supplypike/setup-bin@v1
         with:
-          uri: "https://github.com/gohugoio/hugo/releases/download/v${{env.HUGO_VERSION}}/hugo_extended_${{env.HUGO_VERSION}}_${{matrix.hugo_target}}.${{matrix.hugo_extension}}"
+          uri: "https://github.com/gohugoio/hugo/releases/download/v${{env.HUGO_VERSION}}/hugo_extended_${{env.HUGO_VERSION}}_linux-amd64.tar.gz"
           name: "hugo"
           version: ${{env.HUGO_VERSION}}
 
