@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  HUGO_VERSION: 0.118.2
+
 jobs:
   integration-test:
     runs-on: ${{ matrix.os }}
@@ -15,15 +18,24 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            hugo_target: linux-amd64
+            hugo_extension: "tar.gz"
+          - os: windows-latest
+            hugo_target: windows-amd64
+            hugo_extension: "zip"
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Hugo 0.89
-        uses: peaceiris/actions-hugo@v2
+      - uses: actions/checkout@v3
+
+      - name: Install hugo
+        uses: supplypike/setup-bin@v1
         with:
-          hugo-version: "0.89.0"
-          extended: true
+          uri: "https://github.com/gohugoio/hugo/releases/download/v${{env.HUGO_VERSION}}/hugo_extended_${{env.HUGO_VERSION}}_${{matrix.hugo_target}}.${{matrix.hugo_extension}}"
+          name: "hugo"
+          version: ${{env.HUGO_VERSION}}
+
       - name: Use Node.js 18.x
         uses: actions/setup-node@v2
         with:
@@ -40,10 +52,10 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
-      - name: Use Go 1.17.x
+      - name: Use Go 1.21.x
         uses: actions/setup-go@v2
         with:
-          go-version: "^1.17.6"
+          go-version: "^1.21.1"
       - run: yarn install --immutable
         working-directory: ${{ env.cwd }}
       - name: Build Hugo wasm module
