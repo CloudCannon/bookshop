@@ -79,6 +79,10 @@ Then(/^(\S+) should (not )?exist$/i, function (file, negation) {
   else assert.ok(exists, `${file} exists`);
 });
 
+Then(/^list the files in "(.*)"$/i, function (path) {
+  console.error(this.listDir(path));
+});
+
 Then(/^(debug )?(\S+) should (not |leniently )?contain the text "(.+)"$/i, function (debug, file, modifier, contents) {
   assert.ok(this.fileExists(file), `${file} exists`);
   const fileContents = this.fileContents(file);
@@ -461,6 +465,9 @@ Given(/^🌐 I (?:have loaded|load) my site( in CloudCannon)?( BREAK)?$/i, { tim
   await this.runCommand(`npm start`, `.`);
   assert.strictEqual(this.stderr, "");
   assert.strictEqual(this.commandError, "");
+
+  console.error(this.stderr);
+  console.error(this.listDir("site/public/_cloudcannon"));
 
   // Open the site in a browser
   switch (ssg) {

@@ -130,7 +130,7 @@ export class Engine {
             const compressedResult = await WebAssembly.instantiate(renderer, go.importObject);
             go.run(compressedResult.instance);
         } catch (e) {
-            console.error("Couldn't load the local compressed Hugo WASM");
+            console.error(`Couldn't load the local compressed Hugo WASM from ${compressedHugoWasm}`);
             console.error(e);
             console.error(e.toString());
         }

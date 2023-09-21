@@ -99,6 +99,10 @@ class CustomWorld {
     return fs.existsSync(path.join(this.tmp_dir, name));
   }
 
+  listDir(name) {
+    return fs.readdirSync(path.join(this.tmp_dir, name));
+  }
+
   fileContents(name) {
     return fs.readFileSync(path.join(this.tmp_dir, name), 'utf8');
   }
