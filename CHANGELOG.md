@@ -9,6 +9,9 @@
 
 ## Unreleased
 
+* Added support for extraFiles that can be passed to Bookshop's Hugo engine, allowing custom shortcodes and partials to be used
+  * See the [Hugo extra files guide](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo-extra-files.md) for interim documentation
+
 ## v3.7.0 (September 21, 2023)
 
 * Added support for Sass and CSS imports in Astro components
