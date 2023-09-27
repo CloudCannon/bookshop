@@ -41,6 +41,7 @@ export class Engine {
         this.key = 'hugo';
         this.name = options.name;
         this.files = options.files;
+        this.extraFiles = options.extraFiles;
         this.origin = (typeof document === 'undefined' ? '' : document.currentScript?.src) || `/bookshop.js`;
         this.synthetic = options.synthetic ?? false;
 
@@ -82,6 +83,7 @@ export class Engine {
 
         const componentSuccess = window["writeHugoFiles"](JSON.stringify(mappedFiles));
         const templateSuccess = window["writeHugoFiles"](JSON.stringify(templates));
+        const extraSuccess = window["writeHugoFiles"](JSON.stringify(this.extraFiles));
 
         // BIG OL' TODO: Writing these files ahead of render() seems to be load-bearing,
         // which doesn't yet make sense to me.
