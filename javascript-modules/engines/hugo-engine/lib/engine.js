@@ -72,7 +72,7 @@ export class Engine {
         if (compressedHugoWasm?.constructor === Uint8Array) {
             await this.initializeInlineHugo();
         } else {
-            await this.initializeLocalCompressedHugo();
+            await this.initializeLocalCompressedHugo(true);
         }
 
         // TODO: Tidy
@@ -100,7 +100,7 @@ export class Engine {
         }));
     }
 
-    async initializeLocalCompressedHugo() {
+    async initializeLocalCompressedHugo(usePrefetch) {
         try {
 
             let prefetched = {};
@@ -114,7 +114,7 @@ export class Engine {
             const compressedWasmPath = (new URL(compressedWasmOrigin)).pathname;
 
             let compressedBuffer;
-            if (prefetched[compressedWasmPath]) {
+            if (usePrefetch && prefetched[compressedWasmPath]) {
                 compressedBuffer = await prefetched[compressedWasmPath]?.arrayBuffer();
                 this.loadedFrom = "prefetch";
             } else {
@@ -134,6 +134,11 @@ export class Engine {
         } catch (e) {
             console.error("Couldn't load the local compressed Hugo WASM");
             console.error(e);
+
+            // If our prefetch fails, fall back to loading the wasm ourselves
+            if (usePrefetch) {
+                await this.initializeLocalCompressedHugo(false);
+            }
         }
     }
 

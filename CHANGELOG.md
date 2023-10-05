@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Fixes an error when loading Bookshop's dependencies through CloudCannon's client editing interface
+
 ## v3.8.0 (September 27, 2023)
 
 * Added support for extraFiles that can be passed to Bookshop's Hugo engine, allowing custom shortcodes and partials to be used
