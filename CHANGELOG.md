@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.8.1 (October 5, 2023)
+
 * Fixes an error when loading Bookshop's dependencies through CloudCannon's client editing interface
 
 ## v3.8.0 (September 27, 2023)
