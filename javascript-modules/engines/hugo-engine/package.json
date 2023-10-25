@@ -34,7 +34,7 @@
     "@bookshop/helpers": "3.8.1",
     "esbuild": "^0.19.3",
     "fflate": "^0.7.3",
-    "liquidjs": "9.28.0"
+    "liquidjs": "10.0.0"
   },
   "engines": {
     "node": ">=14.16"
