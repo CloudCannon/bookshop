@@ -29,7 +29,7 @@
   "dependencies": {
     "@bookshop/helpers": "3.8.1",
     "esbuild": "^0.13.10",
-    "liquidjs": "9.28.0",
+    "liquidjs": "10.0.0",
     "markdown-it": "^13.0.1",
     "punycode": "^2.1.1",
     "slugify": "^1.5.3"
