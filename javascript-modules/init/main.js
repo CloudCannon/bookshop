@@ -132,7 +132,7 @@ const initComponent = async (options, bookshopConfigFiles) => {
       message: 'What flavor of CSS would you like for components?',
       choices: ['SCSS (Recommended)', 'CSS'],
       filter(val) {
-        return val.split(' ')[0].toLowerCase().replace(/yaml/, 'yml');
+        return val.split(' ')[0].toLowerCase();
       },
     }]);
     targetStyle = resp.style;
