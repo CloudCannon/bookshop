@@ -1,6 +1,6 @@
 # Changelog
 
-<!-- 
+<!--
     Add changes to the Unreleased section during development.
     Do not change this header — the GitHub action that releases
     this project will edit this file and add the version header for you.
@@ -9,49 +9,50 @@
 
 ## Unreleased
 
-* Fixes an error in Astro Bookshop, when spreading a prop that is possibly undefined.
-* Fixes the Bookshop browser failing to load for Astro sites.
+- Fixes an error in Astro Bookshop, when spreading a prop that is possibly undefined.
+- Fixes the Bookshop browser failing to load for Astro sites.
+- Astro Bookshop will now detect component folders within subfolders of the Astro `src` folder.
 
 ## v3.8.1 (October 5, 2023)
 
-* Fixes an error when loading Bookshop's dependencies through CloudCannon's client editing interface
+- Fixes an error when loading Bookshop's dependencies through CloudCannon's client editing interface
 
 ## v3.8.0 (September 27, 2023)
 
-* Added support for extraFiles that can be passed to Bookshop's Hugo engine, allowing custom shortcodes and partials to be used
-  * See the [Hugo extra files guide](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo-extra-files.md) for interim documentation
+- Added support for extraFiles that can be passed to Bookshop's Hugo engine, allowing custom shortcodes and partials to be used
+  - See the [Hugo extra files guide](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo-extra-files.md) for interim documentation
 
 ## v3.7.0 (September 21, 2023)
 
-* Added support for Sass and CSS imports in Astro components
-* Fixed an error when bundling an Astro component with no props
-* Fixed support for React components when using Astro 3
-* Fixed support for scoped CSS when using Astro 3
-* Fixed an inconsistency in CSS class name generation
-* Fixed an issue with live rendering a component with multiple Front Matter props in Astro
-* Fixed Astro databindings for components with multiple Front Matter props with no common prefix
+- Added support for Sass and CSS imports in Astro components
+- Fixed an error when bundling an Astro component with no props
+- Fixed support for React components when using Astro 3
+- Fixed support for scoped CSS when using Astro 3
+- Fixed an inconsistency in CSS class name generation
+- Fixed an issue with live rendering a component with multiple Front Matter props in Astro
+- Fixed Astro databindings for components with multiple Front Matter props with no common prefix
 
 ## v3.6.5 (July 19, 2023)
 
-* Fixed an edge case generating structures for component names that end with the word `components`
+- Fixed an edge case generating structures for component names that end with the word `components`
 
 ## v3.6.4 (July 18, 2023)
 
-* Fixed `ENV_BOOKSHOP_LIVE` flag being undefined when live editing Astro components
+- Fixed `ENV_BOOKSHOP_LIVE` flag being undefined when live editing Astro components
 
 ## v3.6.3 (June 28, 2023)
 
-* Improved memory performance when live editing
+- Improved memory performance when live editing
 
 ## v3.6.2 (June 8, 2023)
 
-* (Temporarily) Pin an exact `sass` version to workaround sass/dart-sass#1995
+- (Temporarily) Pin an exact `sass` version to workaround sass/dart-sass#1995
 
 ## v3.6.1 (June 6, 2023)
 
-* Improved error handling for Astro Bookshop sites.
-* Fixed a bug which could cause incorrect component data-bindings for Astro sites.
-* Fixed Bookshop metadata not being correctly removed from Astro components in some cases.
+- Improved error handling for Astro Bookshop sites.
+- Fixed a bug which could cause incorrect component data-bindings for Astro sites.
+- Fixed Bookshop metadata not being correctly removed from Astro components in some cases.
 
 ## v3.6.0 (June 1, 2023)
 
@@ -63,12 +64,12 @@ We're also transitioning away from the current (intimidating) reference guides i
 
 ### Other changes
 
-* Improved live editing performance for Eleventy and Jekyll sites
+- Improved live editing performance for Eleventy and Jekyll sites
 
 ## v3.5.1 (May 12, 2023)
 
-* Fixes a performance regression when live editing Hugo with many literal assignments
-  * Since 3.4.0 literal assignments such as `{{ $var := "string" }}` caused a significant performance hit. This has now been resolved
+- Fixes a performance regression when live editing Hugo with many literal assignments
+  - Since 3.4.0 literal assignments such as `{{ $var := "string" }}` caused a significant performance hit. This has now been resolved
 
 ## v3.5.0 (May 10, 2023)
 
@@ -101,474 +102,412 @@ This release fixes this behaviour, and deeply nested object arrays will behave a
 
 The main aspect of this release is a new and improved Hugo renderer when live editing on CloudCannon. Alongside being more reliable, this unlocks many templating functions that were previously unavailable, such as:
 
-* `newScratch`
-* `absURL`
-* `highlight`
-* `humanize`
+- `newScratch`
+- `absURL`
+- `highlight`
+- `humanize`
 
 Additionally, functions that would previously cause a full error (such as `resources.Get`) will now return `nil`, and as such can be handled gracefully inside a component.
 
 Looking forward, this release also paves the path for supporting site actions like `site.GetPage` in the visual editor, as well as using custom non-Bookshop Hugo partials in the visual editor.
 
 As with all releases, your repository can be upgraded to the latest Bookshop by running:
+
 ```
 npx @bookshop/up@latest
 ```
 
 ### Other changes
-* Hugo WebAssembly files are now preloaded in CloudCannon, so loading the visual editor should be significantly faster
-* Improved data binding support for Hugo template files, and generally fixed many issues with complex templating
-* Reduced noise in the developer console when live editing Hugo Bookshop sites
+
+- Hugo WebAssembly files are now preloaded in CloudCannon, so loading the visual editor should be significantly faster
+- Improved data binding support for Hugo template files, and generally fixed many issues with complex templating
+- Reduced noise in the developer console when live editing Hugo Bookshop sites
 
 ## v3.3.3 (December 2, 2022)
 
-* Added a `markdownify` filter to Eleventy Bookshop
+- Added a `markdownify` filter to Eleventy Bookshop
 
 ## v3.3.2 (November 30, 2022)
 
-* Fixes a `v3.1.1` error when running the `@bookshop/browser` command for Hugo
+- Fixes a `v3.1.1` error when running the `@bookshop/browser` command for Hugo
 
 ## v3.3.1 (November 29, 2022)
 
-* Fix nested component keys in SvelteKit websites (@NJKode — #125)
-* Stopped loading Hugo WebAssembly files from `cdn.bookshop.build`
-  * These are instead compressed and served from the site alongside Bookshop assets
-* General repository tidyups and release automation, in preparation for a larger Hugo Bookshop release
+- Fix nested component keys in SvelteKit websites (@NJKode — #125)
+- Stopped loading Hugo WebAssembly files from `cdn.bookshop.build`
+  - These are instead compressed and served from the site alongside Bookshop assets
+- General repository tidyups and release automation, in preparation for a larger Hugo Bookshop release
 
 ## v3.3.0 (August 03, 2022)
 
 ### Features & Improvements
 
-* Component Initialization
-  * Component blueprints referencing nested components can now initialize those components on creation with the `!` operator. See `Initializing Nested Components` in the relevant guide.
-* SvelteKit Beta Support
-  * Bookshop now supports SvelteKit, with live editing provided by the existing CloudCannon [Svelte Connector](https://www.npmjs.com/package/@cloudcannon/svelte-connector).
-  * See the newly created [SvelteKit Guide](https://github.com/CloudCannon/bookshop/blob/main/guides/sveltekit.adoc) to get started.
+- Component Initialization
+  - Component blueprints referencing nested components can now initialize those components on creation with the `!` operator. See `Initializing Nested Components` in the relevant guide.
+- SvelteKit Beta Support
+  - Bookshop now supports SvelteKit, with live editing provided by the existing CloudCannon [Svelte Connector](https://www.npmjs.com/package/@cloudcannon/svelte-connector).
+  - See the newly created [SvelteKit Guide](https://github.com/CloudCannon/bookshop/blob/main/guides/sveltekit.adoc) to get started.
 
 ### Fixes & Tweaks
 
-* Fixed some console errors when live editing in Hugo
-* Improved the initialization speed of Hugo live editing
-
+- Fixed some console errors when live editing in Hugo
+- Improved the initialization speed of Hugo live editing
 
 ## [3.1.3](https://github.com/CloudCannon/bookshop/compare/v3.1.2...v3.1.3) (2022-06-17)
 
-
 ### Bug Fixes
 
-* eleventy collection loops no longer crash ([84a64c4](https://github.com/CloudCannon/bookshop/commit/84a64c4cb74243d3030373f8f9ddac68c48dfd75))
-  * The forloop.name feature implemented in liquidjs has now made it to Eleventy, so the Bookshop workaround has been removed. This workaround was previously causing a crash when nested inside a collection loop.
+- eleventy collection loops no longer crash ([84a64c4](https://github.com/CloudCannon/bookshop/commit/84a64c4cb74243d3030373f8f9ddac68c48dfd75))
+  - The forloop.name feature implemented in liquidjs has now made it to Eleventy, so the Bookshop workaround has been removed. This workaround was previously causing a crash when nested inside a collection loop.
 
 ### Features
 
-* default @bookshop/init to new component if a bookshop dir was found ([12ad117](https://github.com/CloudCannon/bookshop/commit/12ad117d188073754c111ea85eccd1e6614d56c7))
-  * Previously, running @bookshop/init would prompt you for the decision between creating a new component or a new Bookshop every time. Now, if it find a Bookshop directory it will default to the new component decision.
-
-
+- default @bookshop/init to new component if a bookshop dir was found ([12ad117](https://github.com/CloudCannon/bookshop/commit/12ad117d188073754c111ea85eccd1e6614d56c7))
+  - Previously, running @bookshop/init would prompt you for the decision between creating a new component or a new Bookshop every time. Now, if it find a Bookshop directory it will default to the new component decision.
 
 ## [3.1.2](https://github.com/CloudCannon/bookshop/compare/v3.1.1...v3.1.2) (2022-05-10)
 
-
 ### Bug Fixes
 
-* set input configuration on generated structures within blueprints ([ed0d6b3](https://github.com/CloudCannon/bookshop/commit/ed0d6b339585cb9c505bfbe9451b544e89a12067))
-  * Previously, an array of objects within a component would not use a field configured in the `_inputs` block of the component. Any `_` cascade fields are now set on all generated sub-structures in a component.
-
+- set input configuration on generated structures within blueprints ([ed0d6b3](https://github.com/CloudCannon/bookshop/commit/ed0d6b339585cb9c505bfbe9451b544e89a12067))
+  - Previously, an array of objects within a component would not use a field configured in the `_inputs` block of the component. Any `_` cascade fields are now set on all generated sub-structures in a component.
 
 ## [3.1.1](https://github.com/CloudCannon/bookshop/compare/v3.1.0...v3.1.1) (2022-05-04)
 
-
 ### Bug Fixes
 
-* move the Hugo live environment flag to site.Params ([0d6b0c8](https://github.com/CloudCannon/bookshop/commit/0d6b0c8b7c9eadc38ab88611b45e52077979c7be))
-  * Flag has been moved to `site.Params.env_bookshop_live`: [Hugo docs](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo.adoc#rendering-different-content-when-live-editing)
-
-
+- move the Hugo live environment flag to site.Params ([0d6b0c8](https://github.com/CloudCannon/bookshop/commit/0d6b0c8b7c9eadc38ab88611b45e52077979c7be))
+  - Flag has been moved to `site.Params.env_bookshop_live`: [Hugo docs](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo.adoc#rendering-different-content-when-live-editing)
 
 # [3.1.0](https://github.com/CloudCannon/bookshop/compare/v3.0.1...v3.1.0) (2022-05-04)
 
-
 ### Features
 
-* components can determine whether they are being live edited ([c9b9b45](https://github.com/CloudCannon/bookshop/commit/c9b9b45d638943fcf57a81952afcc7237837632f))
-  * [Hugo docs](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo.adoc#rendering-different-content-when-live-editing)
-  * [Eleventy docs](https://github.com/CloudCannon/bookshop/blob/main/guides/eleventy.adoc#rendering-different-content-when-live-editing)
-  * [Jekyll docs](https://github.com/CloudCannon/bookshop/blob/main/guides/jekyll.adoc#rendering-different-content-when-live-editing)
-
+- components can determine whether they are being live edited ([c9b9b45](https://github.com/CloudCannon/bookshop/commit/c9b9b45d638943fcf57a81952afcc7237837632f))
+  - [Hugo docs](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo.adoc#rendering-different-content-when-live-editing)
+  - [Eleventy docs](https://github.com/CloudCannon/bookshop/blob/main/guides/eleventy.adoc#rendering-different-content-when-live-editing)
+  - [Jekyll docs](https://github.com/CloudCannon/bookshop/blob/main/guides/jekyll.adoc#rendering-different-content-when-live-editing)
 
 ## [3.0.1](https://github.com/CloudCannon/bookshop/compare/v3.0.0...v3.0.1) (2022-04-12)
 
-
 ### Bug Fixes
 
-* add `_bookshop_name` keys to structures in the component browser ([513cb32](https://github.com/CloudCannon/bookshop/commit/513cb327546036393fc4d04909e4e7456ae1601f))
+- add `_bookshop_name` keys to structures in the component browser ([513cb32](https://github.com/CloudCannon/bookshop/commit/513cb327546036393fc4d04909e4e7456ae1601f))
 
-* override nested components with preview in the component browser ([7b3ab9b](https://github.com/CloudCannon/bookshop/commit/7b3ab9b9bef509bd6ad1688fbd4897feea4d6f96))
+- override nested components with preview in the component browser ([7b3ab9b](https://github.com/CloudCannon/bookshop/commit/7b3ab9b9bef509bd6ad1688fbd4897feea4d6f96))
 
-* support adding multiple nested components in the component browser ([0ad843e](https://github.com/CloudCannon/bookshop/commit/0ad843e2c63c7d905e9497a00aa85c5095fe9165))
-
-
+- support adding multiple nested components in the component browser ([0ad843e](https://github.com/CloudCannon/bookshop/commit/0ad843e2c63c7d905e9497a00aa85c5095fe9165))
 
 # [3.0.0](https://github.com/CloudCannon/bookshop/compare/v2.6.1...v3.0.0) (2022-04-07)
 
 ### Features
 
-* Bookshop has a new component configuration syntax. See the [Bookshop 3.0 migration guide](https://github.com/CloudCannon/bookshop/blob/main/guides/migration.adoc) for in-depth information
-  * The new configuration files allow for your inputs to be configured using CloudCannon's `_inputs` configuration
+- Bookshop has a new component configuration syntax. See the [Bookshop 3.0 migration guide](https://github.com/CloudCannon/bookshop/blob/main/guides/migration.adoc) for in-depth information
 
-* Your component blueprint can now nest other components and structures ([c1dd5f2](https://github.com/CloudCannon/bookshop/commit/c1dd5f2120b3904a9e1ca83ee2c2f05e934ce850))
-  * By using `bookshop:<component>` or `bookshop:structure:<structure>` in your component blueprint, you can nest the blueprint of other components, rather than having to re-specify their fields.
-  * See the [Jekyll](https://github.com/CloudCannon/bookshop/blob/main/guides/jekyll.adoc), [Eleventy](https://github.com/CloudCannon/bookshop/blob/main/guides/eleventy.adoc), or [Hugo](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo.adoc) guide for more examples.
+  - The new configuration files allow for your inputs to be configured using CloudCannon's `_inputs` configuration
 
-* **eleventy:** Site data and collections are now available to your templates while live editing ([df009c4](https://github.com/CloudCannon/bookshop/commit/df009c49ba2b6c3a58123fe24092ee42965a24e6))
-  * For data to be accessible, you will need to expose each data set using `data_config` in your CloudCannon Global Configuration file.
+- Your component blueprint can now nest other components and structures ([c1dd5f2](https://github.com/CloudCannon/bookshop/commit/c1dd5f2120b3904a9e1ca83ee2c2f05e934ce850))
 
-* **hugo:** `site.Data` is now available to your templates while live editing ([cac0fd3](https://github.com/CloudCannon/bookshop/commit/cac0fd312b632217c1033c1311cdea08c0f342f9))
-  * For data to be accessible, you will need to set `data_config: true` in your CloudCannon Global Configuration file.
+  - By using `bookshop:<component>` or `bookshop:structure:<structure>` in your component blueprint, you can nest the blueprint of other components, rather than having to re-specify their fields.
+  - See the [Jekyll](https://github.com/CloudCannon/bookshop/blob/main/guides/jekyll.adoc), [Eleventy](https://github.com/CloudCannon/bookshop/blob/main/guides/eleventy.adoc), or [Hugo](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo.adoc) guide for more examples.
 
-* **hugo:** Site string functions are now available to your templates while live editing ([a71e1ea](https://github.com/CloudCannon/bookshop/commit/a71e1ea3dec976cc4106689f3b809832d3facf8f))
-  * This encompasses the common configuration variables `site.Title`, `site.BaseURL`, and `site.Copyright`
+- **eleventy:** Site data and collections are now available to your templates while live editing ([df009c4](https://github.com/CloudCannon/bookshop/commit/df009c49ba2b6c3a58123fe24092ee42965a24e6))
 
-* Embedding the Component Browser is now easier across all SSGs ([1226d01](https://github.com/CloudCannon/bookshop/commit/1226d01925f403b4c16e59bb80338dff0c103f9f))
-  * Using the `{% bookshop_component_browser %}` or `{{ partial "bookshop_component_browser" }}` is now all that is needed.
-  * This will handle both local browsing of the component library, and building a hosted component library.
+  - For data to be accessible, you will need to expose each data set using `data_config` in your CloudCannon Global Configuration file.
 
-* Bookshop will now set a CMS loading state while live editing is initializing ([5b65707](https://github.com/CloudCannon/bookshop/commit/5b657072e42614d34e2342f5eed8edb890527865))
-  * This is especially helpful for first loads on Hugo sites, while loading the live editing WebAssembly
+- **hugo:** `site.Data` is now available to your templates while live editing ([cac0fd3](https://github.com/CloudCannon/bookshop/commit/cac0fd312b632217c1033c1311cdea08c0f342f9))
 
-* The bookshop/init command can now create new Bookshop projects ([824de51](https://github.com/CloudCannon/bookshop/commit/824de5160fc9a74a34ea3c3306b1ffb60caeeb53))
-  * Running `npx @bookshop/init --new <name>` will scaffold out a new Bookshop for you
+  - For data to be accessible, you will need to set `data_config: true` in your CloudCannon Global Configuration file.
 
-* The new `npx @bookshop/up@latest` command can upgrade all Bookshop dependencies. ([6ffe599](https://github.com/CloudCannon/bookshop/commit/6ffe5992202f5d0f7ada03ee24aeb2a61bedd1b8))
-  * This will also migrate old config files to the new syntax, and can convert between different file formats.
+- **hugo:** Site string functions are now available to your templates while live editing ([a71e1ea](https://github.com/CloudCannon/bookshop/commit/a71e1ea3dec976cc4106689f3b809832d3facf8f))
 
-* `npx @bookshop/init` can now generate all supported file formats ([4ab5276](https://github.com/CloudCannon/bookshop/commit/4ab52765c2c5c4264fe05a5ad060bd57d84ee136))
+  - This encompasses the common configuration variables `site.Title`, `site.BaseURL`, and `site.Copyright`
 
-* **eleventy:** The `url` filter is now available to your templates while live editing ([bd44ae0](https://github.com/CloudCannon/bookshop/commit/bd44ae03da61796b60332d08d2e6574856b8f3ab))
-  * This requires that a `pathPrefix` is passed to `eleventy-bookshop` in your `.eleventy.js`.
+- Embedding the Component Browser is now easier across all SSGs ([1226d01](https://github.com/CloudCannon/bookshop/commit/1226d01925f403b4c16e59bb80338dff0c103f9f))
 
-* **jekyll:** The `relative_url` filter is now available to your templates while live editing ([79304cc](https://github.com/CloudCannon/bookshop/commit/79304cc0d6c3e49afe2e563fd5158beeb2f1091f))
+  - Using the `{% bookshop_component_browser %}` or `{{ partial "bookshop_component_browser" }}` is now all that is needed.
+  - This will handle both local browsing of the component library, and building a hosted component library.
 
-* Bookshop will now log a console error when your live editing package versions don't match the Bookshop plugin version your site was built with ([798e7ed](https://github.com/CloudCannon/bookshop/commit/798e7ed2dd84c77a9b0de03ccbc2fb30178928c5))
+- Bookshop will now set a CMS loading state while live editing is initializing ([5b65707](https://github.com/CloudCannon/bookshop/commit/5b657072e42614d34e2342f5eed8edb890527865))
+
+  - This is especially helpful for first loads on Hugo sites, while loading the live editing WebAssembly
+
+- The bookshop/init command can now create new Bookshop projects ([824de51](https://github.com/CloudCannon/bookshop/commit/824de5160fc9a74a34ea3c3306b1ffb60caeeb53))
+
+  - Running `npx @bookshop/init --new <name>` will scaffold out a new Bookshop for you
+
+- The new `npx @bookshop/up@latest` command can upgrade all Bookshop dependencies. ([6ffe599](https://github.com/CloudCannon/bookshop/commit/6ffe5992202f5d0f7ada03ee24aeb2a61bedd1b8))
+
+  - This will also migrate old config files to the new syntax, and can convert between different file formats.
+
+- `npx @bookshop/init` can now generate all supported file formats ([4ab5276](https://github.com/CloudCannon/bookshop/commit/4ab52765c2c5c4264fe05a5ad060bd57d84ee136))
+
+- **eleventy:** The `url` filter is now available to your templates while live editing ([bd44ae0](https://github.com/CloudCannon/bookshop/commit/bd44ae03da61796b60332d08d2e6574856b8f3ab))
+
+  - This requires that a `pathPrefix` is passed to `eleventy-bookshop` in your `.eleventy.js`.
+
+- **jekyll:** The `relative_url` filter is now available to your templates while live editing ([79304cc](https://github.com/CloudCannon/bookshop/commit/79304cc0d6c3e49afe2e563fd5158beeb2f1091f))
+
+- Bookshop will now log a console error when your live editing package versions don't match the Bookshop plugin version your site was built with ([798e7ed](https://github.com/CloudCannon/bookshop/commit/798e7ed2dd84c77a9b0de03ccbc2fb30178928c5))
 
 ### Bug Fixes
 
-* **eleventy:** Bookshop live editing no longer crashes when passing recursive data structures to components ([98610b4](https://github.com/CloudCannon/bookshop/commit/98610b487f72553b207607cd0e462722652838bd))
+- **eleventy:** Bookshop live editing no longer crashes when passing recursive data structures to components ([98610b4](https://github.com/CloudCannon/bookshop/commit/98610b487f72553b207607cd0e462722652838bd))
 
-* **jekyll/eleventy:** Variables using complex filters with arguments now render correctly ([d87797c](https://github.com/CloudCannon/bookshop/commit/d87797c24ef31a05f8771cba3d9ee36b9b6ce3c6))
+- **jekyll/eleventy:** Variables using complex filters with arguments now render correctly ([d87797c](https://github.com/CloudCannon/bookshop/commit/d87797c24ef31a05f8771cba3d9ee36b9b6ce3c6))
 
-* **jekyll/eleventy:** Variable assignments that span multiple lines now render correctly ([d87797c](https://github.com/CloudCannon/bookshop/commit/d87797c24ef31a05f8771cba3d9ee36b9b6ce3c6))
+- **jekyll/eleventy:** Variable assignments that span multiple lines now render correctly ([d87797c](https://github.com/CloudCannon/bookshop/commit/d87797c24ef31a05f8771cba3d9ee36b9b6ce3c6))
 
-* **browser:** The component browser now loads in safari ([10eb05f](https://github.com/CloudCannon/bookshop/commit/10eb05f81f331ae467f6a6ff21103951a5335f96))
+- **browser:** The component browser now loads in safari ([10eb05f](https://github.com/CloudCannon/bookshop/commit/10eb05f81f331ae467f6a6ff21103951a5335f96))
 
-* **hugo:** Nested component paths (like `sections/hero`) are now correctly resolved when live editing ([5fab912](https://github.com/CloudCannon/bookshop/commit/5fab9121bc44e85af3316c7949e2439ed2f6c289))
+- **hugo:** Nested component paths (like `sections/hero`) are now correctly resolved when live editing ([5fab912](https://github.com/CloudCannon/bookshop/commit/5fab9121bc44e85af3316c7949e2439ed2f6c289))
 
-* **hugo:** Ranging over a map now works correctly when live editing ([46a0d51](https://github.com/CloudCannon/bookshop/commit/46a0d5161663138bedec3196ce3e4448d52f1a2a))
+- **hugo:** Ranging over a map now works correctly when live editing ([46a0d51](https://github.com/CloudCannon/bookshop/commit/46a0d5161663138bedec3196ce3e4448d52f1a2a))
 
-* **hugo:** Loading a hosted Bookshop Component Library now loads the WebAssembly correctly ([0d8cc82](https://github.com/CloudCannon/bookshop/commit/0d8cc82c63b07504502f3627dbd7495d77fbd5f7))
+- **hugo:** Loading a hosted Bookshop Component Library now loads the WebAssembly correctly ([0d8cc82](https://github.com/CloudCannon/bookshop/commit/0d8cc82c63b07504502f3627dbd7495d77fbd5f7))
 
-* **hugo:** Live editing in Hugo now loads the WebAssembly from a cdn correctly ([e9b9aaf](https://github.com/CloudCannon/bookshop/commit/e9b9aaf537557e4e4c6a679c495247655164ac89))
-
+- **hugo:** Live editing in Hugo now loads the WebAssembly from a cdn correctly ([e9b9aaf](https://github.com/CloudCannon/bookshop/commit/e9b9aaf537557e4e4c6a679c495247655164ac89))
 
 ### BREAKING CHANGES
 
-* Bookshop config files now have a different structure.
-See the [Bookshop 3.0 migration guide](https://github.com/CloudCannon/bookshop/blob/main/guides/migration.adoc) for more information.
+- Bookshop config files now have a different structure.
+  See the [Bookshop 3.0 migration guide](https://github.com/CloudCannon/bookshop/blob/main/guides/migration.adoc) for more information.
 
-* **eleventy/jekyll:** Eleventy and Jekyll sites will need to change from the
-`{% bookshop_browser <PORT> %}` tag to the
-`{% bookshop_component_browser %}` tag. The new tag requires
-no arguments.
+- **eleventy/jekyll:** Eleventy and Jekyll sites will need to change from the
+  `{% bookshop_browser <PORT> %}` tag to the
+  `{% bookshop_component_browser %}` tag. The new tag requires
+  no arguments.
 
-* **eleventy:** The `@bookshop/cloudcannon-eleventy-bookshop` plugin is now superseded by
-the bookshop/generate npm package.
-See the [Bookshop 3.0 migration guide](https://github.com/CloudCannon/bookshop/blob/main/guides/migration.adoc) for more information.
+- **eleventy:** The `@bookshop/cloudcannon-eleventy-bookshop` plugin is now superseded by
+  the bookshop/generate npm package.
+  See the [Bookshop 3.0 migration guide](https://github.com/CloudCannon/bookshop/blob/main/guides/migration.adoc) for more information.
 
-* **jekyll:** The `cloudcannon-jekyll-bookshop` plugin is now superseded by
-the bookshop/generate npm package.
-See the [Bookshop 3.0 migration guide](https://github.com/CloudCannon/bookshop/blob/main/guides/migration.adoc) for more information.
+- **jekyll:** The `cloudcannon-jekyll-bookshop` plugin is now superseded by
+  the bookshop/generate npm package.
+  See the [Bookshop 3.0 migration guide](https://github.com/CloudCannon/bookshop/blob/main/guides/migration.adoc) for more information.
 
-* **jekyll:** For data to be accessible when live editing, you will need to set
-`data_config: true` in your `cloudcannon.config.*` file. 
+- **jekyll:** For data to be accessible when live editing, you will need to set
+  `data_config: true` in your `cloudcannon.config.*` file.
 
-* **jekyll:** Some collection fields such as page.content 
-and page.excerpt are no longer available when live editing.
+- **jekyll:** Some collection fields such as page.content
+  and page.excerpt are no longer available when live editing.
 
-* **jekyll:** Data and collections are no longer accessible
-from the component browser.
+- **jekyll:** Data and collections are no longer accessible
+  from the component browser.
 
 ## [2.6.1](https://github.com/CloudCannon/bookshop/compare/v2.6.0...v2.6.1) (2022-03-03)
 
-
 ### Bug Fixes
 
-* **eleventy:** fixes live rendering of string arguments ([1e5b979](https://github.com/CloudCannon/bookshop/commit/1e5b979f8db17feb5819190bd736fc32e06ea240))
-* **jekyll/eleventy:** multiline assign tags now render correctly ([2756be2](https://github.com/CloudCannon/bookshop/commit/2756be2e68424c4e2acafe1e46bc04e9e1cc614c))
-* **jekyll:** fail markdownify gracefully if the input is undefined ([3238f8d](https://github.com/CloudCannon/bookshop/commit/3238f8df522875b2d627ee10c9ddaf7f1f4d1c18))
-
-
+- **eleventy:** fixes live rendering of string arguments ([1e5b979](https://github.com/CloudCannon/bookshop/commit/1e5b979f8db17feb5819190bd736fc32e06ea240))
+- **jekyll/eleventy:** multiline assign tags now render correctly ([2756be2](https://github.com/CloudCannon/bookshop/commit/2756be2e68424c4e2acafe1e46bc04e9e1cc614c))
+- **jekyll:** fail markdownify gracefully if the input is undefined ([3238f8d](https://github.com/CloudCannon/bookshop/commit/3238f8df522875b2d627ee10c9ddaf7f1f4d1c18))
 
 # [2.6.0](https://github.com/CloudCannon/bookshop/compare/v2.5.0...v2.6.0) (2022-02-25)
 
-
 ### Bug Fixes
 
-* bookshop tags can now be broken up onto multiple lines in all ssgs ([9ea3462](https://github.com/CloudCannon/bookshop/commit/9ea346243fc7a193234077e1d8bef4b4a7c9db8c))
-* bookshop tags can now be called without props in all ssgs ([3e370e8](https://github.com/CloudCannon/bookshop/commit/3e370e8a77612573a76c04b4a228560ef3e6f10b))
-* **browser:** prevent compression of the bookshop browser javascript ([ba132d9](https://github.com/CloudCannon/bookshop/commit/ba132d9955667e6e89b4e60ff1867f6706950887))
-* **hugo:** components passed params directly would not get a binding ([77ec44b](https://github.com/CloudCannon/bookshop/commit/77ec44b7f69f673d3eb4a4480311e90091f7b469))
-* **hugo:** hugo partials passed only a string would error in live editor ([8ae7e67](https://github.com/CloudCannon/bookshop/commit/8ae7e677365e8912a74836e0903a465a3efa82cb))
-* **hugo:** improve complex templating support in the live editor ([5706627](https://github.com/CloudCannon/bookshop/commit/5706627d8bfecdffeaa540dc3bca9cad71bba1ea))
-* **hugo:** iterating over a map now works correctly when live editing ([408573f](https://github.com/CloudCannon/bookshop/commit/408573f6df15a95fddff3cd28ed687d49aba223b))
-* **hugo:** reduce errors when using assigned variables in components ([e6a85c2](https://github.com/CloudCannon/bookshop/commit/e6a85c2c33acb419f2ba750f4f1f6e51c3178ca7))
-* **live:** downgrade data binding errors to console warnings ([66e9dfe](https://github.com/CloudCannon/bookshop/commit/66e9dfeee65de9adf4a0df374c590c12f260619a))
-
+- bookshop tags can now be broken up onto multiple lines in all ssgs ([9ea3462](https://github.com/CloudCannon/bookshop/commit/9ea346243fc7a193234077e1d8bef4b4a7c9db8c))
+- bookshop tags can now be called without props in all ssgs ([3e370e8](https://github.com/CloudCannon/bookshop/commit/3e370e8a77612573a76c04b4a228560ef3e6f10b))
+- **browser:** prevent compression of the bookshop browser javascript ([ba132d9](https://github.com/CloudCannon/bookshop/commit/ba132d9955667e6e89b4e60ff1867f6706950887))
+- **hugo:** components passed params directly would not get a binding ([77ec44b](https://github.com/CloudCannon/bookshop/commit/77ec44b7f69f673d3eb4a4480311e90091f7b469))
+- **hugo:** hugo partials passed only a string would error in live editor ([8ae7e67](https://github.com/CloudCannon/bookshop/commit/8ae7e677365e8912a74836e0903a465a3efa82cb))
+- **hugo:** improve complex templating support in the live editor ([5706627](https://github.com/CloudCannon/bookshop/commit/5706627d8bfecdffeaa540dc3bca9cad71bba1ea))
+- **hugo:** iterating over a map now works correctly when live editing ([408573f](https://github.com/CloudCannon/bookshop/commit/408573f6df15a95fddff3cd28ed687d49aba223b))
+- **hugo:** reduce errors when using assigned variables in components ([e6a85c2](https://github.com/CloudCannon/bookshop/commit/e6a85c2c33acb419f2ba750f4f1f6e51c3178ca7))
+- **live:** downgrade data binding errors to console warnings ([66e9dfe](https://github.com/CloudCannon/bookshop/commit/66e9dfeee65de9adf4a0df374c590c12f260619a))
 
 ### Features
 
-* **generate:** add flags to skip default steps ([8660328](https://github.com/CloudCannon/bookshop/commit/86603282265c8f1c88cfaa4221ec5ac021cd8c3e))
-* **live:** opt-out of live rendering with the live_render flag in props ([939be4c](https://github.com/CloudCannon/bookshop/commit/939be4cb4b0b16133ae96184773887b847f33165))
-
+- **generate:** add flags to skip default steps ([8660328](https://github.com/CloudCannon/bookshop/commit/86603282265c8f1c88cfaa4221ec5ac021cd8c3e))
+- **live:** opt-out of live rendering with the live_render flag in props ([939be4c](https://github.com/CloudCannon/bookshop/commit/939be4cb4b0b16133ae96184773887b847f33165))
 
 ### Performance Improvements
 
-* **live:** improve performance by throttling renders ([c34e2d4](https://github.com/CloudCannon/bookshop/commit/c34e2d401b27f3c377c17c19f2d3c49efbff9cb5))
-
-
+- **live:** improve performance by throttling renders ([c34e2d4](https://github.com/CloudCannon/bookshop/commit/c34e2d401b27f3c377c17c19f2d3c49efbff9cb5))
 
 # [2.5.0](https://github.com/CloudCannon/bookshop/compare/v2.4.2...v2.5.0) (2022-02-22)
 
-
 ### Bug Fixes
 
-* **hugo:** bundle hugo correctly when running local component browser ([089dcf3](https://github.com/CloudCannon/bookshop/commit/089dcf39324e321031a58ce1f75a72e00554cfd8))
-* match hugo's (bizzare) handling of short markdown strings ([f14261f](https://github.com/CloudCannon/bookshop/commit/f14261f6ff0ae8db70f543ba2230633d0f95d3da))
-
+- **hugo:** bundle hugo correctly when running local component browser ([089dcf3](https://github.com/CloudCannon/bookshop/commit/089dcf39324e321031a58ce1f75a72e00554cfd8))
+- match hugo's (bizzare) handling of short markdown strings ([f14261f](https://github.com/CloudCannon/bookshop/commit/f14261f6ff0ae8db70f543ba2230633d0f95d3da))
 
 ### Features
 
-* add component browser setup to `bookshop/generate`'s toolkit ([70cbab9](https://github.com/CloudCannon/bookshop/commit/70cbab9577fc0380e71b76cb9bcc54f536b14d18))
-    * As mentioned in the [Hugo Guide](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo.adoc#configuring-the-component-browser)
-* **browser:** bookshop/browser can now be called without arguments ([dd13a13](https://github.com/CloudCannon/bookshop/commit/dd13a1348d33f5d1952c73af4fb17abff978c58c))
-    * See the [Component Browser guide](https://github.com/CloudCannon/bookshop/blob/main/guides/browser.adoc)
-
-
+- add component browser setup to `bookshop/generate`'s toolkit ([70cbab9](https://github.com/CloudCannon/bookshop/commit/70cbab9577fc0380e71b76cb9bcc54f536b14d18))
+  - As mentioned in the [Hugo Guide](https://github.com/CloudCannon/bookshop/blob/main/guides/hugo.adoc#configuring-the-component-browser)
+- **browser:** bookshop/browser can now be called without arguments ([dd13a13](https://github.com/CloudCannon/bookshop/commit/dd13a1348d33f5d1952c73af4fb17abff978c58c))
+  - See the [Component Browser guide](https://github.com/CloudCannon/bookshop/blob/main/guides/browser.adoc)
 
 ## [2.4.2](https://github.com/CloudCannon/bookshop/compare/v2.4.1...v2.4.2) (2022-02-02)
 
-
 ### Features
 
-* **hugo-engine:** implement many transforms for hugo live editing ([98024f8](https://github.com/CloudCannon/bookshop/commit/98024f8a80f0737db0866f483e5efd6845fbc286))
-    * Now supported:
-        * `markdownify`
-        * `plainify`
-        * `emojify`
-        * `htmlEscape`
-        * `htmlUnescape`
-        * *`highlight`
+- **hugo-engine:** implement many transforms for hugo live editing ([98024f8](https://github.com/CloudCannon/bookshop/commit/98024f8a80f0737db0866f483e5efd6845fbc286))
 
-    * `markdownify` uses a different implementation than hugo,
-        so the output is not guaranteed to be identical.
+  - Now supported:
 
-    * *`highlight` is not supported, but will no longer error.
-        It will now pass through the input unchanged.
-* **jekyll-engine:** implement markdownify for jekyll live editing ([53af90d](https://github.com/CloudCannon/bookshop/commit/53af90db0028224bdc7e40e87f8045483293cda9))
-    * `markdownify` uses a different kramdown implementation than jekyll,
-so the output is not guaranteed to be identical.
+    - `markdownify`
+    - `plainify`
+    - `emojify`
+    - `htmlEscape`
+    - `htmlUnescape`
+    - \*`highlight`
 
+  - `markdownify` uses a different implementation than hugo,
+    so the output is not guaranteed to be identical.
 
+  - \*`highlight` is not supported, but will no longer error.
+    It will now pass through the input unchanged.
+
+- **jekyll-engine:** implement markdownify for jekyll live editing ([53af90d](https://github.com/CloudCannon/bookshop/commit/53af90db0028224bdc7e40e87f8045483293cda9)) \* `markdownify` uses a different kramdown implementation than jekyll,
+  so the output is not guaranteed to be identical.
 
 ## [2.4.1](https://github.com/CloudCannon/bookshop/compare/v2.4.0...v2.4.1) (2022-02-01)
 
-
 ### Features
 
-* attempt to load the hugo wasm from a cdn where possible ([8423acb](https://github.com/CloudCannon/bookshop/commit/8423acb8d7c6bacaa3afad25480293e346822219))
-
-
+- attempt to load the hugo wasm from a cdn where possible ([8423acb](https://github.com/CloudCannon/bookshop/commit/8423acb8d7c6bacaa3afad25480293e346822219))
 
 # [2.4.0](https://github.com/CloudCannon/bookshop/compare/v2.3.1...v2.4.0) (2022-01-31)
 
-
 ### Bug Fixes
-* fix complex assignments and loops that were breaking live editing in Jekyll and Eleventy
-* fix initial render of data bindings on Jekyll sites that load external data
-* improved resolution of complex data bindings
+
+- fix complex assignments and loops that were breaking live editing in Jekyll and Eleventy
+- fix initial render of data bindings on Jekyll sites that load external data
+- improved resolution of complex data bindings
 
 ### Features
-* Hugo Bookshop support 🎉
-* Hugo live editing beta 🎉
-* Hugo component browser beta 🎉
-* new method of updating the page when live editing — image flickering should be greatly reduced
-* new @bookshop/generate command for structures and live editing — Jekyll and Eleventy documentation to come
 
+- Hugo Bookshop support 🎉
+- Hugo live editing beta 🎉
+- Hugo component browser beta 🎉
+- new method of updating the page when live editing — image flickering should be greatly reduced
+- new @bookshop/generate command for structures and live editing — Jekyll and Eleventy documentation to come
 
 ## [2.3.1](https://github.com/CloudCannon/bookshop/compare/v2.3.0...v2.3.1) (2022-01-19)
 
-
 ### Bug Fixes
 
-* live rendering error boundary around bad comments ([91e77f1](https://github.com/CloudCannon/bookshop/commit/91e77f1aad02a64b6e710c38eb43c37e5172b6d7))
-
-
+- live rendering error boundary around bad comments ([91e77f1](https://github.com/CloudCannon/bookshop/commit/91e77f1aad02a64b6e710c38eb43c37e5172b6d7))
 
 # [2.3.0](https://github.com/CloudCannon/bookshop/compare/v2.2.3...v2.3.0) (2022-01-19)
 
-
 ### Features
 
-* **generate:** add new structures cli to replace cc-ssg plugins ([8a4bff3](https://github.com/CloudCannon/bookshop/commit/8a4bff3deadd3ef9d39001d298aaab835a98cee6))
-
-
+- **generate:** add new structures cli to replace cc-ssg plugins ([8a4bff3](https://github.com/CloudCannon/bookshop/commit/8a4bff3deadd3ef9d39001d298aaab835a98cee6))
 
 ## [2.2.3](https://github.com/CloudCannon/bookshop/compare/v2.2.2...v2.2.3) (2021-12-14)
 
-
 ### Bug Fixes
 
-* **live:** patch for complex layouts assigning html to variables ([#76](https://github.com/CloudCannon/bookshop/issues/76)) ([0a90a4d](https://github.com/CloudCannon/bookshop/commit/0a90a4de206df3f60c6cb076df6e16fc988c5400))
-
-
+- **live:** patch for complex layouts assigning html to variables ([#76](https://github.com/CloudCannon/bookshop/issues/76)) ([0a90a4d](https://github.com/CloudCannon/bookshop/commit/0a90a4de206df3f60c6cb076df6e16fc988c5400))
 
 ## [2.2.2](https://github.com/CloudCannon/bookshop/compare/v2.2.1...v2.2.2) (2021-12-08)
 
-
 ### Features
 
-* support `_editor_link` and `_editorLink` as flags in component data ([1fa8591](https://github.com/CloudCannon/bookshop/commit/1fa859113a2b6a3a9a7f71ae46d430890e055839))
-
-
+- support `_editor_link` and `_editorLink` as flags in component data ([1fa8591](https://github.com/CloudCannon/bookshop/commit/1fa859113a2b6a3a9a7f71ae46d430890e055839))
 
 ## [2.2.1](https://github.com/CloudCannon/bookshop/compare/v2.2.0...v2.2.1) (2021-12-07)
 
-
 ### Bug Fixes
 
-* handle some editor link corner cases ([a45653a](https://github.com/CloudCannon/bookshop/commit/a45653aa63542d5d756e5d2c2674e6e9bf22cfe4))
+- handle some editor link corner cases ([a45653a](https://github.com/CloudCannon/bookshop/commit/a45653aa63542d5d756e5d2c2674e6e9bf22cfe4))
 
 ### Features
 
-* editor links can be toggled on a per-component basis by setting the `editor_links` or `editorLinks` flag in a components props
-
-
+- editor links can be toggled on a per-component basis by setting the `editor_links` or `editorLinks` flag in a components props
 
 # [2.2.0](https://github.com/CloudCannon/bookshop/compare/v2.1.1...v2.2.0) (2021-12-05)
 
-
 ### Features
 
-* **live:** automatically add cms editor links in the live renderer ([08fa8b3](https://github.com/CloudCannon/bookshop/commit/08fa8b3ad32f142357a9febe8146ff4c1d18aa65))
+- **live:** automatically add cms editor links in the live renderer ([08fa8b3](https://github.com/CloudCannon/bookshop/commit/08fa8b3ad32f142357a9febe8146ff4c1d18aa65))
 
 This will take effect with the upcoming CloudCannon editor panels release.
 
-
 ## [2.1.1](https://github.com/CloudCannon/bookshop/compare/v2.1.0...v2.1.1) (2021-11-16)
-
 
 ### Bug Fixes
 
-* **init:** fix arguments to @bookshop/init command ([c15282d](https://github.com/CloudCannon/bookshop/commit/c15282d96bde4029491d53ad6bcfba72145cc11b))
-
-
+- **init:** fix arguments to @bookshop/init command ([c15282d](https://github.com/CloudCannon/bookshop/commit/c15282d96bde4029491d53ad6bcfba72145cc11b))
 
 # [2.1.0](https://github.com/CloudCannon/bookshop/compare/2.0.9...2.1.0) (2021-11-16)
 
-
 ### Bug Fixes
 
-* **eleventy:** make eleventy engine more lenient for dynamic components ([f6de1f0](https://github.com/CloudCannon/bookshop/commit/f6de1f0ec108a36d7334455dd7a11b67e8588886))
-
+- **eleventy:** make eleventy engine more lenient for dynamic components ([f6de1f0](https://github.com/CloudCannon/bookshop/commit/f6de1f0ec108a36d7334455dd7a11b67e8588886))
 
 ### Features
 
-* **eleventy:** eleventy 1.0.0-beta support ([35fce81](https://github.com/CloudCannon/bookshop/commit/35fce812dec4057aee36f45cb6a028bdfb2cd7a0))
-* **hugo:** core hugo component support ([#60](https://github.com/CloudCannon/bookshop/issues/60)) ([75a9765](https://github.com/CloudCannon/bookshop/commit/75a97656cf11f8da1a87c9ba46aa3c415eb2473b))
-* **init:** renamed the @bookshop/gen package to @bookshop/init ([86ad798](https://github.com/CloudCannon/bookshop/commit/86ad798d92ebcfd353f3233de6dfee58044aafb6))
-
-
+- **eleventy:** eleventy 1.0.0-beta support ([35fce81](https://github.com/CloudCannon/bookshop/commit/35fce812dec4057aee36f45cb6a028bdfb2cd7a0))
+- **hugo:** core hugo component support ([#60](https://github.com/CloudCannon/bookshop/issues/60)) ([75a9765](https://github.com/CloudCannon/bookshop/commit/75a97656cf11f8da1a87c9ba46aa3c415eb2473b))
+- **init:** renamed the @bookshop/gen package to @bookshop/init ([86ad798](https://github.com/CloudCannon/bookshop/commit/86ad798d92ebcfd353f3233de6dfee58044aafb6))
 
 ## [2.0.10](https://github.com/CloudCannon/bookshop/compare/2.0.9...2.0.10) (2021-10-29)
 
-* no-op release to reset npm latest tag
+- no-op release to reset npm latest tag
 
 ## [2.0.9](https://github.com/CloudCannon/bookshop/compare/2.0.8...2.0.9) (2021-10-13)
 
-
 ### Bug Fixes
 
-* **eleventy-bookshop:** correctly handle nested liquidjs contexts ([c4899f7](https://github.com/CloudCannon/bookshop/commit/c4899f786d59b3475265f48f2b82ea68947e7e3d))
-* **toml-narrator:** fix quotes in TOML comments ([50992f2](https://github.com/CloudCannon/bookshop/commit/50992f2da8360ef66103b1f32a0ac1ebcf7efdbc))
+- **eleventy-bookshop:** correctly handle nested liquidjs contexts ([c4899f7](https://github.com/CloudCannon/bookshop/commit/c4899f786d59b3475265f48f2b82ea68947e7e3d))
+- **toml-narrator:** fix quotes in TOML comments ([50992f2](https://github.com/CloudCannon/bookshop/commit/50992f2da8360ef66103b1f32a0ac1ebcf7efdbc))
 
 ## [2.0.8](https://github.com/CloudCannon/bookshop/compare/2.0.7...2.0.8) (2021-10-12)
 
-
 ### Bug Fixes
 
-* **live:** wrong injected window variable ([d226bcd](https://github.com/CloudCannon/bookshop/commit/d226bcdb754c10344ea2b24d8927392b472ec111))
-
-
+- **live:** wrong injected window variable ([d226bcd](https://github.com/CloudCannon/bookshop/commit/d226bcdb754c10344ea2b24d8927392b472ec111))
 
 ## [2.0.7](https://github.com/CloudCannon/bookshop/compare/2.0.6...2.0.7) (2021-10-11)
 
-
 ### Bug Fixes
 
-* **jekyll-engine:** correct jekyll highlight tag implementation ([020d8c2](https://github.com/CloudCannon/bookshop/commit/020d8c2368bfbd6d3c4e1623cf62f8f9dd69f766))
-* **live:** handle more live editing edge cases ([9ee51c0](https://github.com/CloudCannon/bookshop/commit/9ee51c0bfda5ed5c98810d5960a2d56f9c0784fb))
-
-
+- **jekyll-engine:** correct jekyll highlight tag implementation ([020d8c2](https://github.com/CloudCannon/bookshop/commit/020d8c2368bfbd6d3c4e1623cf62f8f9dd69f766))
+- **live:** handle more live editing edge cases ([9ee51c0](https://github.com/CloudCannon/bookshop/commit/9ee51c0bfda5ed5c98810d5960a2d56f9c0784fb))
 
 ## [2.0.6](https://github.com/CloudCannon/bookshop/compare/2.0.5...2.0.6) (2021-10-08)
 
-
 ### Bug Fixes
 
-* normalize paths for fast-glob on windows ([d37e9ed](https://github.com/CloudCannon/bookshop/commit/d37e9ed226dda5d32a9105f988a3c013288f494b))
-* use patched node-runner while awaiting next publish ([d98a91b](https://github.com/CloudCannon/bookshop/commit/d98a91b3634c2d29b917fc4e9b26d5d75e54e95f))
-
-
+- normalize paths for fast-glob on windows ([d37e9ed](https://github.com/CloudCannon/bookshop/commit/d37e9ed226dda5d32a9105f988a3c013288f494b))
+- use patched node-runner while awaiting next publish ([d98a91b](https://github.com/CloudCannon/bookshop/commit/d98a91b3634c2d29b917fc4e9b26d5d75e54e95f))
 
 ## [2.0.5](https://github.com/CloudCannon/bookshop/compare/2.0.4...2.0.5) (2021-10-06)
 
-
 ### Features
 
-* automatically set the array structure id_key for components ([e9a1650](https://github.com/CloudCannon/bookshop/commit/e9a1650192c729d4c1211786aabcb351b493e3e3))
-
-
+- automatically set the array structure id_key for components ([e9a1650](https://github.com/CloudCannon/bookshop/commit/e9a1650192c729d4c1211786aabcb351b493e3e3))
 
 ## [2.0.4](https://github.com/CloudCannon/bookshop/compare/2.0.3...2.0.4) (2021-10-06)
 
-
 ### Bug Fixes
 
-* live rendering name parsing edge cases ([f7badef](https://github.com/CloudCannon/bookshop/commit/f7badefab019dd2ad76e3620e754025b5f404447))
-
-
+- live rendering name parsing edge cases ([f7badef](https://github.com/CloudCannon/bookshop/commit/f7badefab019dd2ad76e3620e754025b5f404447))
 
 ## [2.0.3](https://github.com/CloudCannon/bookshop/compare/2.0.2...2.0.3) (2021-10-05)
 
-
 ### Bug Fixes
 
-* retry components that error in jekyll due to a thread race ([1cc3172](https://github.com/CloudCannon/bookshop/commit/1cc31729e086197ca300a87f0b10df9521c8f6eb))
-
-
+- retry components that error in jekyll due to a thread race ([1cc3172](https://github.com/CloudCannon/bookshop/commit/1cc31729e086197ca300a87f0b10df9521c8f6eb))
 
 ## [2.0.2](https://github.com/CloudCannon/bookshop/compare/2.0.1...2.0.2) (2021-10-05)
 
 ### Bug Fixes
 
-* Fix incorrect live rendering behavior for @bookshop/live
+- Fix incorrect live rendering behavior for @bookshop/live
 
 ## [2.0.1](https://github.com/CloudCannon/bookshop/compare/2.0.0...2.0.1) (2021-10-05)
 
 ### Features
 
-* Provide an optional hosted component library outside of the website when running npx @bookshop/live
-* Introduced npx @bookshop/gen command
+- Provide an optional hosted component library outside of the website when running npx @bookshop/live
+- Introduced npx @bookshop/gen command
 
 ## 2.0.0 (2021-10-05)
 
-* Initial stable release for Jekyll and Eleventy
+- Initial stable release for Jekyll and Eleventy
