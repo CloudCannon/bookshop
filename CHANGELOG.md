@@ -10,6 +10,7 @@
 ## Unreleased
 
 * Fixes an error in Astro Bookshop, when spreading a prop that is possibly undefined.
+* Fixes the Bookshop browser failing to load for Astro sites.
 
 ## v3.8.1 (October 5, 2023)
 
