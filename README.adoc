@@ -6,7 +6,7 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
-:version: 3.8.1
+:version: 3.8.2
 
 https://github.com/CloudCannon/bookshop/actions/workflows/integration-test.yml[image:https://github.com/CloudCannon/bookshop/actions/workflows/integration-test.yml/badge.svg?branch=main&event=push[Integration Test Status]]
 https://github.com/CloudCannon/bookshop/actions/workflows/test-node.yml[image:https://github.com/CloudCannon/bookshop/actions/workflows/test-node.yml/badge.svg?branch=main&event=push[Javascript Test Status]]

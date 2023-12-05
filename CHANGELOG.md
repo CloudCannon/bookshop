@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.8.2 (December 5, 2023)
+
 * Fixes an error in Astro Bookshop, when spreading a prop that is possibly undefined.
 * Fixes the Bookshop browser failing to load for Astro sites.
 * Astro Bookshop will now detect component folders within subfolders of the Astro `src` folders.
