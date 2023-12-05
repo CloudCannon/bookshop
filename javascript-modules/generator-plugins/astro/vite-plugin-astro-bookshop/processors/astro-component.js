@@ -19,7 +19,7 @@ const process = (node, componentName) => {
 
       spread.argument = parse(`
         (() => {
-          if(${name}.__bookshop_path){
+          if(${name}?.__bookshop_path){
             return {...${name}, __bookshop_path: ${name}.__bookshop_path};
           }
           return ${name};

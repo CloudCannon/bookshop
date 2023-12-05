@@ -188,7 +188,7 @@ export default (src, componentName) => {
 
     spread.argument = parse(`
       (() => {
-        if(${name}.__bookshop_path){
+        if(${name}?.__bookshop_path){
           return {...${name}, __bookshop_path: ${name}.__bookshop_path};
         }
         return ${name};
@@ -274,7 +274,7 @@ export default (src, componentName) => {
     };
     node.body.body.unshift(
       ...parse(`
-        let __data_binding_path =  ${name}?.__data_binding_path ?? ${name}.__bookshop_path;
+        let __data_binding_path =  ${name}?.__data_binding_path ?? ${name}?.__bookshop_path;
           `).program.body
     );
     node.body.body.unshift(

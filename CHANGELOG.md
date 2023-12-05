@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Fixes an error in Astro Bookshop, when spreading a prop that is possibly undefined.
+
 ## v3.8.1 (October 5, 2023)
 
 * Fixes an error when loading Bookshop's dependencies through CloudCannon's client editing interface
