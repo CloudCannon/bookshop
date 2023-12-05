@@ -1,5 +1,6 @@
 #! /usr/bin/env node
-
+import { tmpdir } from "os";
+import { mkdtemp } from "fs/promises";
 import path from "path";
 import Builder from "@bookshop/builder";
 import { Command } from "commander";
@@ -11,10 +12,12 @@ import BrowserServer from "./lib/build/browserServer.js";
 
 export const runner = async (options) => {
     const bookshopDirs = options.bookshop.map(d => path.join(process.cwd(), d));
-    const outputFile = options.output ? path.join(process.cwd(), options.output) : null;
+    const outputFile = options.output
+        ? path.join(process.cwd(), options.output)
+        : path.join(await mkdtemp(path.join(tmpdir(), 'bookshop-')), 'app.js');
     let port = options.port ?? null;
     let server = null;
-    const watch = outputFile ? null : {
+    const watch = options.output ? null : {
         onRebuild(error, result) {
             if (error) {
                 console.error('📚 Renderer rebuild failed:', error)
@@ -24,12 +27,12 @@ export const runner = async (options) => {
         },
     };
 
-    if (outputFile && port) {
+    if (options.output && port) {
         console.error(`Output file and port both specified — one or the other must be provided.`);
         process.exit(1);
     }
 
-    if (!outputFile) {
+    if (!options.output) {
         port = 30775;
     }
 
@@ -53,7 +56,7 @@ export const runner = async (options) => {
         exclude: JSON.stringify(options.exclude || []),
         onlyEngines: options.onlyEngines,
         bookshopDirs: bookshopDirs,
-        hosted: !!outputFile,
+        hosted: !!options.output,
     }
 
     const output = await Builder(builderOptions);

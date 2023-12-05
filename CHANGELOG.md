@@ -9,6 +9,10 @@
 
 ## Unreleased
 
+* Fixes an error in Astro Bookshop, when spreading a prop that is possibly undefined.
+* Fixes the Bookshop browser failing to load for Astro sites.
+* Astro Bookshop will now detect component folders within subfolders of the Astro `src` folders.
+
 ## v3.8.1 (October 5, 2023)
 
 * Fixes an error when loading Bookshop's dependencies through CloudCannon's client editing interface
