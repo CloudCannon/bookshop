@@ -32,6 +32,8 @@ jobs:
           name: "hugo"
           version: ${{env.HUGO_VERSION}}
 
+      - name: Enable Corepack before setting up Node
+        run: corepack enable
       - name: Use Node.js 18.x
         uses: actions/setup-node@v2
         with:
@@ -53,7 +55,10 @@ jobs:
         with:
           go-version: "^1.21.1"
 
-      - run: yarn install --immutable
+      - name: Yarn stuff
+        run: |
+          yarn set version 3 --yarn-path
+          yarn install --immutable
         working-directory: ./javascript-modules
       
       - name: Get Version
