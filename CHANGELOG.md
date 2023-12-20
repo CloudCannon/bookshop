@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Adds support for the `astro:content` and `astro:assets` modules inside Bookshop components.
+
 ## v3.8.2 (December 5, 2023)
 
 * Fixes an error in Astro Bookshop, when spreading a prop that is possibly undefined.

@@ -137,6 +137,31 @@ export class Engine {
     return str.split(".").reduce((curr, key) => curr?.[key], props[0]);
   }
 
+  async storeInfo(info = {}) {
+    const collections = info.collections || {};
+    for (const [key, val] of Object.entries(collections)) {
+      const collectionKey = val[0]?.path.match(/^\/?src\/content\/(?<collection>[^/]*)/)?.groups.collection ?? key
+      const collection = val.map((item) => {
+        let id = item.path.replace(`src/content/${collectionKey}/`, "");
+        if(!id.match(/\.md(x|oc)?$/)){
+          id = id.replace(/\..*$/, '');
+        }
+        return {
+          id,
+          collection: collectionKey,
+          slug: item.slug ?? id.replace(/\..*$/, ''),
+          render: () => () => "Content is not available when live editing",
+          body: "Content is not available when live editing",
+          data: item,
+        };
+      });
+      collections[key] = collection;
+      collections[collectionKey] = collection;
+    }
+
+    window.__bookshop_collections = collections;
+  }
+
   getBindingCommentIterator(documentNode) {
     return documentNode.evaluate(
       "//comment()[contains(.,'databinding:')]",
