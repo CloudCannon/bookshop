@@ -160,31 +160,35 @@ export const buildPlugins = [
         }
       );
       build.onLoad({ filter: /.*/ }, async (args) => {
-        if (astroConfig.vite?.plugins) {
-          const text = await fs.promises.readFile(args.path, "utf8");
-          for (const plugin of astroConfig.vite.plugins) {
-            if (!plugin.transform) {
-              continue;
+        try{
+          if (astroConfig.vite?.plugins) {
+            const text = await fs.promises.readFile(args.path, "utf8");
+            for (const plugin of astroConfig.vite.plugins) {
+              if (!plugin.transform) {
+                continue;
+              }
+  
+              const result = await plugin.transform(
+                text,
+                args.path.replace(process.cwd(), "")
+              );
+  
+              if (!result) {
+                continue;
+              }
+  
+              if (typeof result !== "string" && !result.code) {
+                return;
+              }
+  
+              return {
+                contents: typeof result === "string" ? result : result.code,
+                loader: "js",
+              };
             }
-
-            const result = await plugin.transform(
-              text,
-              args.path.replace(process.cwd(), "")
-            );
-
-            if (!result) {
-              continue;
-            }
-
-            if (typeof result !== "string" && !result.code) {
-              return;
-            }
-
-            return {
-              contents: typeof result === "string" ? result : result.code,
-              loader: "js",
-            };
           }
+        } catch(err){
+          // Intentionally ignored
         }
       });
     },
