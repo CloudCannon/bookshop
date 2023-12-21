@@ -41,12 +41,14 @@ export const buildPlugins = [
 
       build.onResolve({ filter: /^astro:.*$/ }, async (args) => {
         const type = args.path.replace("astro:", "");
-        if(type !== 'content' && type !== 'assets'){
-          console.error(`Error: The 'astro:${type}' module is not supported inside Bookshop components.`)
+        if (type !== "content" && type !== "assets") {
+          console.error(
+            `Error: The 'astro:${type}' module is not supported inside Bookshop components.`
+          );
           throw new Error("Unsupported virtual module");
         }
         let dir = "";
-        if (typeof __dirname !== 'undefined') {
+        if (typeof __dirname !== "undefined") {
           dir = __dirname;
         } else {
           dir = dirname(import.meta.url);
@@ -157,6 +159,34 @@ export const buildPlugins = [
           return { path: args.importer, namespace: "style" };
         }
       );
+      build.onLoad({ filter: /.*/ }, async (args) => {
+        if (astroConfig.vite?.plugins) {
+          const text = await fs.promises.readFile(args.path, "utf8");
+          for (const plugin of astroConfig.vite.plugins) {
+            if (!plugin.transform) {
+              continue;
+            }
+
+            const result = await plugin.transform(
+              text,
+              args.path.replace(process.cwd(), "")
+            );
+
+            if (!result) {
+              continue;
+            }
+
+            if (typeof result !== "string" && !result.code) {
+              return;
+            }
+
+            return {
+              contents: typeof result === "string" ? result : result.code,
+              loader: "js",
+            };
+          }
+        }
+      });
     },
   },
 ];
