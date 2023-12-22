@@ -1,4 +1,7 @@
-import { renderToString } from "astro/runtime/server/index.js";
+import {
+  renderToString,
+  renderSlotToString,
+} from "astro/runtime/server/index.js";
 import { processFrontmatter } from "@bookshop/astro-bookshop/helpers/frontmatter-helper";
 import { createRoot } from "react-dom/client";
 import { createElement } from "react";
@@ -96,36 +99,41 @@ export class Engine {
 
   async renderAstroComponent(target, key, props, globals) {
     const component = this.files?.[key];
-    const result = await renderToString(
-      {
-        styles: new Set(),
-        scripts: new Set(),
-        links: new Set(),
-        propagation: new Map(),
-        propagators: new Map(),
-        extraHead: [],
-        componentMetadata: new Map(),
+    const SSRResult = {
+      styles: new Set(),
+      scripts: new Set(),
+      links: new Set(),
+      propagation: new Map(),
+      propagators: new Map(),
+      extraHead: [],
+      componentMetadata: new Map(),
+      renderers,
+      _metadata: {
         renderers,
-        _metadata: {
-          renderers,
-          hasHydrationScript: false,
-          hasRenderedHead: true,
-          hasDirectives: new Set(),
-        },
-        slots: null,
-        props,
-        createAstro(astroGlobal, props, slots) {
-          return {
-            __proto__: astroGlobal,
-            props,
-            slots,
-          };
-        },
+        hasHydrationScript: false,
+        hasRenderedHead: true,
+        hasDirectives: new Set(),
       },
-      component,
+      slots: null,
       props,
-      null
-    );
+      createAstro(astroGlobal, props, slots) {
+        const astroSlots = {
+          has: (name) => {
+            if (!slots) return false;
+            return Boolean(slots[name]);
+          },
+          render: (name) => {
+            return renderSlotToString(SSRResult, slots[name]);
+          },
+        };
+        return {
+          __proto__: astroGlobal,
+          props,
+          slots: astroSlots,
+        };
+      },
+    };
+    const result = await renderToString(SSRResult, component, props, null);
     const doc = document.implementation.createHTMLDocument();
     doc.body.innerHTML = result;
     this.updateBindings(doc);
@@ -135,6 +143,33 @@ export class Engine {
   async eval(str, props = [{}]) {
     processFrontmatter(props[0]);
     return str.split(".").reduce((curr, key) => curr?.[key], props[0]);
+  }
+
+  async storeInfo(info = {}) {
+    const collections = info.collections || {};
+    for (const [key, val] of Object.entries(collections)) {
+      const collectionKey =
+        val[0]?.path.match(/^\/?src\/content\/(?<collection>[^/]*)/)?.groups
+          .collection ?? key;
+      const collection = val.map((item) => {
+        let id = item.path.replace(`src/content/${collectionKey}/`, "");
+        if (!id.match(/\.md(x|oc)?$/)) {
+          id = id.replace(/\..*$/, "");
+        }
+        return {
+          id,
+          collection: collectionKey,
+          slug: item.slug ?? id.replace(/\..*$/, ""),
+          render: () => () => "Content is not available when live editing",
+          body: "Content is not available when live editing",
+          data: item,
+        };
+      });
+      collections[key] = collection;
+      collections[collectionKey] = collection;
+    }
+
+    window.__bookshop_collections = collections;
   }
 
   getBindingCommentIterator(documentNode) {

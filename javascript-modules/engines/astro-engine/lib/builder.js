@@ -1,10 +1,10 @@
 import * as fs from "fs";
-import { join } from "path";
+import { join, dirname } from "path";
 import { transform } from "@astrojs/compiler";
 import AstroPluginVite from "@bookshop/vite-plugin-astro-bookshop";
 import { resolveConfig } from "vite";
 import * as esbuild from "esbuild";
-import { sassPlugin, postcssModules } from 'esbuild-sass-plugin'
+import { sassPlugin, postcssModules } from "esbuild-sass-plugin";
 
 export const extensions = [".astro", ".jsx", ".tsx"];
 
@@ -13,10 +13,10 @@ const { transform: bookshopTransform } = AstroPluginVite();
 export const buildPlugins = [
   sassPlugin({
     filter: /\.module\.(s[ac]ss|css)$/,
-    transform: postcssModules({})
+    transform: postcssModules({}),
   }),
   sassPlugin({
-    filter: /\.(s[ac]ss|css)$/
+    filter: /\.(s[ac]ss|css)$/,
   }),
   {
     name: "bookshop-astro",
@@ -24,21 +24,48 @@ export const buildPlugins = [
       let astroConfig;
       let defaultScopedStyleStrategy;
       try {
-        const astroPackageJSON = JSON.parse(await fs.promises.readFile(join(process.cwd(), 'node_modules', 'astro', 'package.json'), "utf8"))
-        defaultScopedStyleStrategy = astroPackageJSON.version.startsWith('2')
-          ? 'where'
-          : 'attribute';
-        astroConfig = (await import(join(process.cwd(), 'astro.config.mjs'))).default;
-      }catch (err){ 
+        const astroPackageJSON = JSON.parse(
+          await fs.promises.readFile(
+            join(process.cwd(), "node_modules", "astro", "package.json"),
+            "utf8"
+          )
+        );
+        defaultScopedStyleStrategy = astroPackageJSON.version.startsWith("2")
+          ? "where"
+          : "attribute";
+        astroConfig = (await import(join(process.cwd(), "astro.config.mjs")))
+          .default;
+      } catch (err) {
         astroConfig = {};
       }
+
+      build.onResolve({ filter: /^astro:.*$/ }, async (args) => {
+        const type = args.path.replace("astro:", "");
+        if (type !== "content" && type !== "assets") {
+          console.error(
+            `Error: The 'astro:${type}' module is not supported inside Bookshop components.`
+          );
+          throw new Error("Unsupported virtual module");
+        }
+        let dir = "";
+        if (typeof __dirname !== "undefined") {
+          dir = __dirname;
+        } else {
+          dir = dirname(import.meta.url);
+        }
+        const path = join(dir, "modules", `${type}.js`).replace("file:", "");
+        return {
+          path,
+        };
+      });
 
       build.onLoad({ filter: /\.astro$/, namespace: "style" }, async (args) => {
         let text = await fs.promises.readFile(args.path, "utf8");
         let transformed = await transform(text, {
           internalURL: "astro/runtime/server/index.js",
           filename: args.path.replace(process.cwd(), ""),
-          scopedStyleStrategy: astroConfig.scopedStyleStrategy ?? defaultScopedStyleStrategy
+          scopedStyleStrategy:
+            astroConfig.scopedStyleStrategy ?? defaultScopedStyleStrategy,
         });
         return {
           contents: transformed.css[0],
@@ -50,7 +77,8 @@ export const buildPlugins = [
         let tsResult = await transform(text, {
           internalURL: "astro/runtime/server/index.js",
           filename: args.path.replace(process.cwd(), ""),
-          scopedStyleStrategy: astroConfig.scopedStyleStrategy ?? defaultScopedStyleStrategy
+          scopedStyleStrategy:
+            astroConfig.scopedStyleStrategy ?? defaultScopedStyleStrategy,
         });
         let jsResult = await esbuild.transform(tsResult.code, {
           loader: "ts",
@@ -63,8 +91,8 @@ export const buildPlugins = [
           args.path.replace(process.cwd(), "")
         );
 
-        if(!result){
-          console.warn('Bookshop transform failed:', args.path);
+        if (!result) {
+          console.warn("Bookshop transform failed:", args.path);
           result = jsResult;
         }
 
@@ -98,8 +126,8 @@ export const buildPlugins = [
           args.path.replace(process.cwd(), "")
         );
 
-        if(!result){
-          console.warn('Bookshop transform failed:', args.path);
+        if (!result) {
+          console.warn("Bookshop transform failed:", args.path);
           result = jsResult;
         }
 
@@ -114,7 +142,9 @@ export const buildPlugins = [
         };
       });
       build.onLoad(
-        { filter: /astro(\/|\\)dist(\/|\\)runtime(\/|\\)server(\/|\\)index.js$/ },
+        {
+          filter: /astro(\/|\\)dist(\/|\\)runtime(\/|\\)server(\/|\\)index.js$/,
+        },
         async (args) => {
           let text = await fs.promises.readFile(args.path, "utf8");
           return {
@@ -129,6 +159,38 @@ export const buildPlugins = [
           return { path: args.importer, namespace: "style" };
         }
       );
+      build.onLoad({ filter: /.*/ }, async (args) => {
+        try{
+          if (astroConfig.vite?.plugins) {
+            const text = await fs.promises.readFile(args.path, "utf8");
+            for (const plugin of astroConfig.vite.plugins) {
+              if (!plugin.transform) {
+                continue;
+              }
+  
+              const result = await plugin.transform(
+                text,
+                args.path.replace(process.cwd(), "")
+              );
+  
+              if (!result) {
+                continue;
+              }
+  
+              if (typeof result !== "string" && !result.code) {
+                return;
+              }
+  
+              return {
+                contents: typeof result === "string" ? result : result.code,
+                loader: "js",
+              };
+            }
+          }
+        } catch(err){
+          // Intentionally ignored
+        }
+      });
     },
   },
 ];

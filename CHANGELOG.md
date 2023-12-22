@@ -9,6 +9,10 @@
 
 ## Unreleased
 
+* Adds support for the `astro:content` and `astro:assets` modules inside Bookshop components.
+* Adds support for the `<slot/>` component and the `Astro.slots` global inside Bookshop components.
+* Astro Bookshop will now use your configured Vite plugins when building components.
+
 ## v3.8.2 (December 5, 2023)
 
 * Fixes an error in Astro Bookshop, when spreading a prop that is possibly undefined.
