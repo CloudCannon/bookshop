@@ -37,7 +37,7 @@
     "astro": "^2.0.0 || ^3.0.0",
     "esbuild": "^0.19.1",
     "esbuild-sass-plugin": "^2.13.0",
-    "postcss": "^8.4.29",
+    "postcss": "^8.4.31",
     "postcss-modules": "^6.0.0",
     "vite": "^4.2.1"
   },
