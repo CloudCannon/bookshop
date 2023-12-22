@@ -57,7 +57,6 @@ jobs:
 
       - name: Yarn stuff
         run: |
-          yarn set version 3 --yarn-path
           yarn install --immutable
         working-directory: ./javascript-modules
       
