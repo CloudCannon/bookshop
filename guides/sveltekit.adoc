@@ -1874,7 +1874,7 @@ hero_text: "Hello World"
   This component can make the connection between "text" and ".Params.hero_text",
   and will work as expected in the visual editor.
 -->
-{{ partial "bookshop_bindings" `(dict text .Params.hero_text)` }}
+{{ partial "bookshop_bindings" `(dict "text" .Params.hero_text)` }}
 {{ partial "bookshop" (slice "hero" (dict "text" .Params.hero_text)) }}
 
 {{ my_title := .Params.hero_text }}
