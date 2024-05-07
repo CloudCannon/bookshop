@@ -20,7 +20,7 @@ const findComponentsDefs = createFinder(
   true
 );
 
-export default (src, componentName, includeErrorBoundaries) => {
+export default (src, componentName, includeErrorBoundaries, removeClientDirectives) => {
   src = src.replace(
     /const Astro2.*$/m,
     `$&
@@ -45,11 +45,35 @@ export default (src, componentName, includeErrorBoundaries) => {
         (prop) => prop.key?.value === "bookshop:binding"
       )?.value.value ?? true;
 
+    let clientRendered = false;
+    if(removeClientDirectives){
+      clientRendered = node.arguments[3].properties.find((prop) => prop.key?.value.startsWith('client:'));
+    }
+
     node.arguments[3].properties = node.arguments[3].properties.filter(
       (prop) =>
         prop.key?.value !== "bookshop:live" &&
-        prop.key?.value !== "bookshop:binding"
+        prop.key?.value !== "bookshop:binding" &&
+        (!prop.key?.value.startsWith('client:') || !removeClientDirectives)
     );
+
+    if (clientRendered) {
+      node.arguments[3].properties.unshift({
+        type: "ObjectProperty",
+        method: false,
+        key: {
+          type: "Identifier",
+          name: "__client_rendered",
+        },
+        computed: false,
+        shorthand: false,
+        value: {
+          type: "BooleanLiteral",
+          value: true,
+        },
+      });
+    }
+
     const component = node.arguments[2].name;
     const propsString = node.arguments[3].properties
       .filter((prop) => prop.key?.value !== "class")

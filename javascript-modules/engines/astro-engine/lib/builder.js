@@ -10,6 +10,7 @@ export const extensions = [".astro", ".jsx", ".tsx"];
 
 const { transform: bookshopTransform } = AstroPluginVite({
   __includeErrorBoundaries: true,
+  __removeClientDirectives: true
 });
 
 export const buildPlugins = [

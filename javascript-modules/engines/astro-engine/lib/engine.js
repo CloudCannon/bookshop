@@ -8,35 +8,41 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server.browser";
 import { flushSync } from "react-dom";
 
-const renderers = [
-  {
-    name: "dynamic-tags",
-    ssr: {
-      check: (Component) => {
-        return typeof Component === 'string';
-      },
-      renderToStaticMarkup: async (Component, props, slots) => {
-        const propsString = Object.entries(props)
-          .map(([key, value]) => `${key}="${value}"`)
-          .join(' ');
-        return `<${Component} ${propsString}>${slots.default ?? ''}</${Component}>`
-      },
-    },
-  },
-  {
-    name: "@astrojs/react",
-    ssr: {
-      check: () => true,
-      renderToStaticMarkup: async (Component, props) => {
-        const reactNode = await Component(props);
-
-        return { html: renderToStaticMarkup(reactNode) };
-      },
-    },
-  },
-];
-
 export class Engine {
+  renderers = [
+    {
+      name: "dynamic-tags",
+      ssr: {
+        check: (Component) => {
+          return typeof Component === 'string';
+        },
+        renderToStaticMarkup: async (Component, props, slots) => {
+          const propsString = Object.entries(props)
+            .map(([key, value]) => `${key}="${value}"`)
+            .join(' ');
+          return `<${Component} ${propsString}>${slots.default ?? ''}</${Component}>`
+        },
+      },
+    },
+    {
+      name: "@astrojs/react",
+      ssr: {
+        check: () => true,
+        renderToStaticMarkup: async (Component, props) => {
+          const clientRendered = props.__client_rendered;
+          delete props.__client_rendered;
+          if(clientRendered){
+            this.reactRoots.push({Component, props});
+            return { html: `<div data-react-root=${this.reactRoots.length-1}></div>` };
+          }
+  
+          const reactNode = await Component(props);
+          return { html: renderToStaticMarkup(reactNode) };
+        },
+      },
+    },
+  ];
+
   constructor(options) {
     options = {
       name: "Astro",
@@ -47,6 +53,7 @@ export class Engine {
     this.key = "astro";
     this.name = options.name;
     this.files = options.files;
+    this.reactRoots = [];
 
     // Hide our files somewhere global so that
     // the astro plugin can grab them instead of using its Vite import.
@@ -121,9 +128,9 @@ export class Engine {
       propagators: new Map(),
       extraHead: [],
       componentMetadata: new Map(),
-      renderers,
+      renderers: this.renderers,
       _metadata: {
-        renderers,
+        renderers: this.renderers,
         hasHydrationScript: false,
         hasRenderedHead: true,
         hasDirectives: new Set(),
@@ -153,6 +160,14 @@ export class Engine {
     doc.body.innerHTML = result;
     this.updateBindings(doc);
     target.innerHTML = doc.body.innerHTML;
+    target.querySelectorAll('[data-react-root]').forEach((node) => {
+      const reactRootId = Number(node.getAttribute('data-react-root'));
+      const {Component, props} = this.reactRoots[reactRootId];
+      const reactNode = createElement(Component, props, null);
+      const root = createRoot(node);
+      flushSync(() => root.render(reactNode));
+    });
+    this.reactRoots = [];
   }
 
   async eval(str, props = [{}]) {

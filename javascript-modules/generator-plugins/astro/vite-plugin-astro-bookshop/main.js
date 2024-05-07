@@ -8,7 +8,7 @@ const PAGE_REGEX = /.*src((\/|\\)|(\/|\\).*(\/|\\))(layouts|pages).*(\/|\\)(?<na
 const COMPONENT_REGEX =
   /.*src((\/|\\)|(\/|\\).*(\/|\\))(components|shared(\/|\\)astro)(\/|\\)(?<component>.*)\.(astro|jsx|tsx)$/;
 
-const process = (src, id, includeErrorBoundaries) => {
+const process = (src, id, includeErrorBoundaries, removeClientDirectives) => {
   id = id.replace(cwd().replace(/\\/g, "/"), "");
 
   const pageMatch = id.match(PAGE_REGEX);
@@ -18,7 +18,7 @@ const process = (src, id, includeErrorBoundaries) => {
 
   if (id.endsWith(".astro")) {
     try {
-      src = processAstro(src, componentName, includeErrorBoundaries);
+      src = processAstro(src, componentName, includeErrorBoundaries, removeClientDirectives);
     } catch (err) {
       err.processor = "astro";
       throw err;
@@ -68,13 +68,15 @@ const process = (src, id, includeErrorBoundaries) => {
 
 export default (options) => {
   const includeErrorBoundaries = options?.__includeErrorBoundaries ?? false
+  const removeClientDirectives = options?.__removeClientDirectives ?? false
+
   return {
     name: "vite-plugin-astro-bookshop",
     enforce: "pre",
 
     transform(src, id) {
       try {
-        return process(src, id, includeErrorBoundaries);
+        return process(src, id, includeErrorBoundaries, removeClientDirectives);
       } catch (err) {
         let prefix = "[vite-plugin-astro-bookshop]";
         if (err.processor) {
