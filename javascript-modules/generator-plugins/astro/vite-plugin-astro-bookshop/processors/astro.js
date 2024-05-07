@@ -13,7 +13,14 @@ const findComponents = createFinder(
   true
 );
 
-export default (src) => {
+const findComponentsDefs = createFinder(
+  (node) =>
+    node?.type === "CallExpression" &&
+    node.callee?.name === "$$createComponent",
+  true
+);
+
+export default (src, componentName, includeErrorBoundaries) => {
   src = src.replace(
     /const Astro2.*$/m,
     `$&
@@ -181,6 +188,24 @@ export default (src) => {
     Object.keys(node).forEach((key) => delete node[key]);
     Object.keys(template).forEach((key) => (node[key] = template[key]));
   });
+
+  if(includeErrorBoundaries){
+    findComponentsDefs(tree).forEach((node) => {
+      const handler = parse(`() => {
+        try{
+  
+        } catch (__err){
+          console.error(__err);
+          return $$render\`<div style="border: 3px solid red; border-radius: 2px; background-color: #FF9999; padding: 4px;">
+          <p style="font-size: 18px; font-weight: 600;">Error rendering ${componentName ?? 'Unknown'}!</p>
+          <p style="font-size: 16px; font-weight: normal;">\${__err.message}</p>
+          </div>\`;
+        }
+      };`).program.body[0].expression.body.body;
+      handler[0].block.body = node.arguments[0].body.body
+      node.arguments[0].body.body = handler;
+    });
+  }
 
   src = (generate.default ?? generate)(tree).code;
 

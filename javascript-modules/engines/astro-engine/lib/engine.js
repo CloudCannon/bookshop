@@ -10,6 +10,20 @@ import { flushSync } from "react-dom";
 
 const renderers = [
   {
+    name: "dynamic-tags",
+    ssr: {
+      check: (Component) => {
+        return typeof Component === 'string';
+      },
+      renderToStaticMarkup: async (Component, props, slots) => {
+        const propsString = Object.entries(props)
+          .map(([key, value]) => `${key}="${value}"`)
+          .join(' ');
+        return `<${Component} ${propsString}>${slots.default ?? ''}</${Component}>`
+      },
+    },
+  },
+  {
     name: "@astrojs/react",
     ssr: {
       check: () => true,
@@ -130,6 +144,7 @@ export class Engine {
           __proto__: astroGlobal,
           props,
           slots: astroSlots,
+          request: new Request(window.location),
         };
       },
     };
@@ -153,13 +168,14 @@ export class Engine {
           .collection ?? key;
       const collection = val.map((item) => {
         let id = item.path.replace(`src/content/${collectionKey}/`, "");
+        const slug = id.replace(/\.[^.]*$/, "");
         if (!id.match(/\.md(x|oc)?$/)) {
-          id = id.replace(/\..*$/, "");
+          id = slug;
         }
         return {
           id,
           collection: collectionKey,
-          slug: item.slug ?? id.replace(/\..*$/, ""),
+          slug: item.slug ?? slug,
           render: () => () => "Content is not available when live editing",
           body: "Content is not available when live editing",
           data: item,

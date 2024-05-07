@@ -8,15 +8,17 @@ const PAGE_REGEX = /.*src((\/|\\)|(\/|\\).*(\/|\\))(layouts|pages).*(\/|\\)(?<na
 const COMPONENT_REGEX =
   /.*src((\/|\\)|(\/|\\).*(\/|\\))(components|shared(\/|\\)astro)(\/|\\)(?<component>.*)\.(astro|jsx|tsx)$/;
 
-const process = (src, id) => {
+const process = (src, id, includeErrorBoundaries) => {
   id = id.replace(cwd().replace(/\\/g, "/"), "");
 
   const pageMatch = id.match(PAGE_REGEX);
   const componentMatch = id.match(COMPONENT_REGEX);
 
+  let componentName = componentMatch?.groups?.component;
+
   if (id.endsWith(".astro")) {
     try {
-      src = processAstro(src);
+      src = processAstro(src, componentName, includeErrorBoundaries);
     } catch (err) {
       err.processor = "astro";
       throw err;
@@ -36,7 +38,6 @@ const process = (src, id) => {
     return { code: src };
   }
 
-  let { component: componentName } = componentMatch.groups;
   let parts = componentName.replace(/\\/g, "/").split("/");
   if (
     parts.length >= 2 &&
@@ -49,7 +50,7 @@ const process = (src, id) => {
   if (id.endsWith(".jsx") || id.endsWith(".tsx")) {
     try {
       return {
-        code: processReactJSX(src, componentName),
+        code: processReactJSX(src, componentName, includeErrorBoundaries),
       };
     } catch (err) {
       err.processor = "react-jsx";
@@ -65,14 +66,15 @@ const process = (src, id) => {
   }
 };
 
-export default () => {
+export default (options) => {
+  const includeErrorBoundaries = options?.__includeErrorBoundaries ?? false
   return {
     name: "vite-plugin-astro-bookshop",
     enforce: "pre",
 
     transform(src, id) {
       try {
-        return process(src, id);
+        return process(src, id, includeErrorBoundaries);
       } catch (err) {
         let prefix = "[vite-plugin-astro-bookshop]";
         if (err.processor) {

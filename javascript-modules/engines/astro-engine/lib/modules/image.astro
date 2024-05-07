@@ -2,7 +2,7 @@
 const props = Astro.props;
 
 if (props.alt === undefined || props.alt === null) {
-  throw new Error("Image missing alt");
+  throw new Error("Image missing 'alt'");
 }
 
 // As a convenience, allow width and height to be string with a number in them, to match HTML's native `img`.
@@ -13,11 +13,21 @@ if (typeof props.width === "string") {
 if (typeof props.height === "string") {
   props.height = parseInt(props.height);
 }
+
+if (!props || typeof props !== "object") {
+  throw new Error("Image missing options");
+}
+if (typeof props.src === "undefined") {
+  throw new Error("Image missing 'src'");
+}
+
+const resolvedSrc =
+  typeof props.src === "object" && "then" in props.src
+    ? (await props.src).default ?? (await props.src)
+    : props.src;
+
+const src = typeof resolvedSrc === "object" ? resolvedSrc.src : resolvedSrc;
+delete props.src;
 ---
 
-<img
-  src={props.src}
-  alt={props.alt}
-  width={props.width}
-  height={props.height}
-/>
+<img src={src} {...props} />
