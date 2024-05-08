@@ -266,7 +266,8 @@ export const buildPlugins = [
           args.path.endsWith(".jpg") ||
           args.path.endsWith(".jpeg") ||
           args.path.endsWith(".webp") ||
-          args.path.endsWith(".json")
+          args.path.endsWith(".json") ||
+          args.path.endsWith(".ts")
         ) {
           return;
         }
@@ -299,7 +300,7 @@ export const buildPlugins = [
 
               return {
                 contents: typeof result === "string" ? result : result.code,
-                loader: "ts",
+                loader: "js",
               };
             } catch (err) {
               // Intentionally ignored
@@ -320,6 +321,7 @@ export const esbuildConfigFn = (esbuildOptions, options) => {
     ".jpg": "file",
     ".jpeg": "file",
     ".webp": "file",
+    ".ts": "ts",
     ...esbuildOptions.loader,
   };
 };
