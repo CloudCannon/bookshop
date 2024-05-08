@@ -10,7 +10,7 @@ export const extensions = [".astro", ".jsx", ".tsx"];
 
 const { transform: bookshopTransform } = AstroPluginVite({
   __includeErrorBoundaries: true,
-  __removeClientDirectives: true
+  __removeClientDirectives: true,
 });
 
 export const buildPlugins = [
@@ -132,13 +132,25 @@ export const buildPlugins = [
         };
       });
       build.onLoad({ filter: /\.astro$/ }, async (args) => {
-        let text = await fs.promises.readFile(args.path, "utf8");
-        let tsResult = await transform(text, {
+        const astroOptions = {
           internalURL: "astro/runtime/server/index.js",
           filename: args.path.replace(process.cwd(), ""),
           scopedStyleStrategy:
             astroConfig.scopedStyleStrategy ?? defaultScopedStyleStrategy,
-        });
+        };
+        let text = await fs.promises.readFile(args.path, "utf8");
+        let tsResult;
+        try {
+          tsResult = await transform(
+            text.replace(/<script(.|\n)*?>(.|\n)*?<\/script>/g, ""),
+            astroOptions
+          );
+        } catch (err) {}
+
+        if (!tsResult) {
+          tsResult = await transform(text, astroOptions);
+        }
+
         let jsResult = await esbuild.transform(tsResult.code, {
           loader: "ts",
           target: "esnext",

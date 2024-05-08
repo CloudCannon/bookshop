@@ -18,6 +18,7 @@
 * Fixes some inconsistencies in the `Image` component between Bookshop and Astro.
 * Fixes an issue where component names containing dashes would break MDX auto-imports.
 * Fixes an issue where React TSX components would fail to parse.
+* Fixes an issue where scripts in Astro components would be run multiple times when live editing.
 
 ## v3.9.0 (December 22, 2023)
 
