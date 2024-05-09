@@ -58,17 +58,15 @@ export class Engine {
     // Hide our files somewhere global so that
     // the astro plugin can grab them instead of using its Vite import.
     window.__bookshop_astro_files = options.files;
-
-    this.activeApps = [];
   }
 
-  getShared(name) {
+  getSharedKey(name) {
     const base = name.split("/").reverse()[0];
     const root = `shared/astro/${name}`;
     return (
       Object.keys(this.files).find((key) =>
-        key.startsWith(`${root}/${base}`)
-      ) ?? Object.keys(this.files).find((key) => key.startsWith(root))
+        key.startsWith(`${root}/${base}.`)
+      ) ?? Object.keys(this.files).find((key) => key.startsWith(`${root}.`))
     );
   }
 
@@ -77,29 +75,29 @@ export class Engine {
     const root = `components/${name}`;
     return (
       Object.keys(this.files).find((key) =>
-        key.startsWith(`${root}/${base}`)
-      ) ?? Object.keys(this.files).find((key) => key.startsWith(root))
+        key.startsWith(`${root}/${base}.`)
+      ) ?? Object.keys(this.files).find((key) => key.startsWith(`${root}.`))
     );
   }
 
   getComponent(name) {
-    const key = this.getComponentKey(name);
+    const key = this.getComponentKey(name) ?? this.getSharedKey(name);
     return this.files?.[key];
   }
 
   hasComponent(name) {
-    const key = this.getComponentKey(name);
+    const key = this.getComponentKey(name) ?? this.getSharedKey(name);
     return !!this.files?.[key];
   }
 
   resolveComponentType(name) {
-    if (this.getComponent(name)) return "component";
-    if (this.getShared(name)) return "shared";
+    if (this.getComponentKey(name)) return "component";
+    if (this.getSharedKey(name)) return "shared";
     return false;
   }
 
   async render(target, name, props, globals) {
-    const key = this.getComponentKey(name) ?? this.getShared(name);
+    const key = this.getComponentKey(name) ?? this.getSharedKey(name);
 
     if (key.endsWith(".astro")) {
       return this.renderAstroComponent(target, key, props, globals);

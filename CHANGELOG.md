@@ -19,6 +19,7 @@
 * Fixes an issue where component names containing dashes would break MDX auto-imports.
 * Fixes an issue where React TSX components would fail to parse.
 * Fixes an issue where scripts in Astro components would be run multiple times when live editing.
+* Fixes an issue where the Astro engine was too lenient when checking bookshop names.
 
 ## v3.9.0 (December 22, 2023)
 
