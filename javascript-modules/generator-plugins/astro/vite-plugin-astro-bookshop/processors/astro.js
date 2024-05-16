@@ -13,7 +13,14 @@ const findComponents = createFinder(
   true
 );
 
-export default (src) => {
+const findComponentsDefs = createFinder(
+  (node) =>
+    node?.type === "CallExpression" &&
+    node.callee?.name === "$$createComponent",
+  true
+);
+
+export default (src, componentName, includeErrorBoundaries, removeClientDirectives) => {
   src = src.replace(
     /const Astro2.*$/m,
     `$&
@@ -38,11 +45,35 @@ export default (src) => {
         (prop) => prop.key?.value === "bookshop:binding"
       )?.value.value ?? true;
 
+    let clientRendered = false;
+    if(removeClientDirectives){
+      clientRendered = node.arguments[3].properties.find((prop) => prop.key?.value.startsWith('client:'));
+    }
+
     node.arguments[3].properties = node.arguments[3].properties.filter(
       (prop) =>
         prop.key?.value !== "bookshop:live" &&
-        prop.key?.value !== "bookshop:binding"
+        prop.key?.value !== "bookshop:binding" &&
+        (!prop.key?.value.startsWith('client:') || !removeClientDirectives)
     );
+
+    if (clientRendered) {
+      node.arguments[3].properties.unshift({
+        type: "ObjectProperty",
+        method: false,
+        key: {
+          type: "Identifier",
+          name: "__client_rendered",
+        },
+        computed: false,
+        shorthand: false,
+        value: {
+          type: "BooleanLiteral",
+          value: true,
+        },
+      });
+    }
+
     const component = node.arguments[2].name;
     const propsString = node.arguments[3].properties
       .filter((prop) => prop.key?.value !== "class")
@@ -181,6 +212,24 @@ export default (src) => {
     Object.keys(node).forEach((key) => delete node[key]);
     Object.keys(template).forEach((key) => (node[key] = template[key]));
   });
+
+  if(includeErrorBoundaries){
+    findComponentsDefs(tree).forEach((node) => {
+      const handler = parse(`() => {
+        try{
+  
+        } catch (__err){
+          console.error(__err);
+          return $$render\`<div style="border: 3px solid red; border-radius: 2px; background-color: #FF9999; padding: 4px;">
+          <p style="font-size: 18px; font-weight: 600;">Error rendering ${componentName ?? 'Unknown'}!</p>
+          <p style="font-size: 16px; font-weight: normal;">\${__err.message}</p>
+          </div>\`;
+        }
+      };`).program.body[0].expression.body.body;
+      handler[0].block.body = node.arguments[0].body.body
+      node.arguments[0].body.body = handler;
+    });
+  }
 
   src = (generate.default ?? generate)(tree).code;
 

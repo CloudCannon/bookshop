@@ -8,7 +8,10 @@ import { sassPlugin, postcssModules } from "esbuild-sass-plugin";
 
 export const extensions = [".astro", ".jsx", ".tsx"];
 
-const { transform: bookshopTransform } = AstroPluginVite();
+const { transform: bookshopTransform } = AstroPluginVite({
+  __includeErrorBoundaries: true,
+  __removeClientDirectives: true,
+});
 
 export const buildPlugins = [
   sassPlugin({
@@ -35,8 +38,47 @@ export const buildPlugins = [
           : "attribute";
         astroConfig = (await import(join(process.cwd(), "astro.config.mjs")))
           .default;
+        astroConfig.output = astroConfig.output ?? "static";
+
+        const root = `${astroConfig.root ?? process.cwd()}/`.replace(
+          /\/+/g,
+          "/"
+        );
+        astroConfig.root = new URL(`file://${root}`);
       } catch (err) {
         astroConfig = {};
+      }
+
+      if (Array.isArray(astroConfig.integrations)) {
+        await Promise.allSettled(
+          astroConfig.integrations?.map((integration) => {
+            return integration?.hooks?.["astro:config:setup"]?.({
+              config: astroConfig,
+              logger: {
+                info: console.log,
+                warn: console.log,
+                error: console.log,
+                debug: console.log,
+              },
+              command: "build",
+              isRestart: true,
+              updateConfig: (config) => {
+                if (config?.vite?.plugins) {
+                  astroConfig.vite = astroConfig.vite ?? {};
+                  astroConfig.vite.plugins = astroConfig.vite.plugins ?? [];
+                  astroConfig.vite.plugins.push(...config.vite.plugins);
+                }
+              },
+              addRenderer: () => {},
+              addClientDirective: () => {},
+              addMiddleware: () => {},
+              addDevToolbarApp: () => {},
+              addWatchFile: () => {},
+              injectScript: () => {},
+              injectRoute: () => {},
+            });
+          })
+        );
       }
 
       build.onResolve({ filter: /^astro:.*$/ }, async (args) => {
@@ -59,6 +101,23 @@ export const buildPlugins = [
         };
       });
 
+      build.onResolve({ filter: /.*/ }, async (args) => {
+        try {
+          if (astroConfig.vite?.plugins) {
+            for (const plugin of astroConfig.vite.plugins) {
+              if (plugin.resolveId) {
+                const result = await plugin.resolveId(args.path);
+                if (result) {
+                  return { path: result, namespace: "virtual" };
+                }
+              }
+            }
+          }
+        } catch (err) {
+          // Intentionally ignored
+        }
+      });
+
       build.onLoad({ filter: /\.astro$/, namespace: "style" }, async (args) => {
         let text = await fs.promises.readFile(args.path, "utf8");
         let transformed = await transform(text, {
@@ -73,13 +132,25 @@ export const buildPlugins = [
         };
       });
       build.onLoad({ filter: /\.astro$/ }, async (args) => {
-        let text = await fs.promises.readFile(args.path, "utf8");
-        let tsResult = await transform(text, {
+        const astroOptions = {
           internalURL: "astro/runtime/server/index.js",
           filename: args.path.replace(process.cwd(), ""),
           scopedStyleStrategy:
             astroConfig.scopedStyleStrategy ?? defaultScopedStyleStrategy,
-        });
+        };
+        let text = await fs.promises.readFile(args.path, "utf8");
+        let tsResult;
+        try {
+          tsResult = await transform(
+            text.replace(/<script(.|\n)*?>(.|\n)*?<\/script>/g, ""),
+            astroOptions
+          );
+        } catch (err) {}
+
+        if (!tsResult) {
+          tsResult = await transform(text, astroOptions);
+        }
+
         let jsResult = await esbuild.transform(tsResult.code, {
           loader: "ts",
           target: "esnext",
@@ -159,36 +230,82 @@ export const buildPlugins = [
           return { path: args.importer, namespace: "style" };
         }
       );
-      build.onLoad({ filter: /.*/ }, async (args) => {
-        try{
-          if (astroConfig.vite?.plugins) {
-            const text = await fs.promises.readFile(args.path, "utf8");
-            for (const plugin of astroConfig.vite.plugins) {
-              if (!plugin.transform) {
+
+      build.onLoad({ filter: /.*/, namespace: "virtual" }, async (args) => {
+        if (astroConfig.vite?.plugins) {
+          for (const plugin of astroConfig.vite.plugins) {
+            try {
+              if (!plugin.load) {
                 continue;
               }
-  
-              const result = await plugin.transform(
-                text,
-                args.path.replace(process.cwd(), "")
-              );
-  
+
+              const result = await plugin.load(args.path);
               if (!result) {
                 continue;
               }
-  
+
               if (typeof result !== "string" && !result.code) {
-                return;
+                continue;
               }
-  
+
               return {
                 contents: typeof result === "string" ? result : result.code,
                 loader: "js",
               };
+            } catch (err) {
+              // Intentionally ignored
             }
           }
-        } catch(err){
-          // Intentionally ignored
+        }
+      });
+
+      build.onLoad({ filter: /.*/ }, async (args) => {
+        if (
+          args.path.endsWith(".png") ||
+          args.path.endsWith(".svg") ||
+          args.path.endsWith(".jpg") ||
+          args.path.endsWith(".jpeg") ||
+          args.path.endsWith(".webp") ||
+          args.path.endsWith(".json") ||
+          args.path.endsWith(".ts")
+        ) {
+          return;
+        }
+        if (astroConfig.vite?.plugins) {
+          let text;
+          try {
+            text = await fs.promises.readFile(args.path, "utf8");
+          } catch (err) {
+            return;
+          }
+
+          for (const plugin of astroConfig.vite.plugins) {
+            try {
+              if (!plugin.transform) {
+                continue;
+              }
+
+              const result = await plugin.transform(
+                text,
+                args.path.replace(process.cwd(), "")
+              );
+
+              if (!result) {
+                continue;
+              }
+
+              if (typeof result !== "string" && !result.code) {
+                continue;
+              }
+
+              return {
+                contents: typeof result === "string" ? result : result.code,
+                loader: "js",
+              };
+            } catch (err) {
+              // Intentionally ignored
+            }
+          }
         }
       });
     },
@@ -196,6 +313,7 @@ export const buildPlugins = [
 ];
 
 export const esbuildConfigFn = (esbuildOptions, options) => {
+  esbuildOptions.publicPath = "/_cloudcannon/";
   esbuildOptions.loader = esbuildOptions.loader ?? {};
   esbuildOptions.loader = {
     ".png": "file",
@@ -203,6 +321,7 @@ export const esbuildConfigFn = (esbuildOptions, options) => {
     ".jpg": "file",
     ".jpeg": "file",
     ".webp": "file",
+    ".ts": "ts",
     ...esbuildOptions.loader,
   };
 };

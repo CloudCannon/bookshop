@@ -8,21 +8,41 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server.browser";
 import { flushSync } from "react-dom";
 
-const renderers = [
-  {
-    name: "@astrojs/react",
-    ssr: {
-      check: () => true,
-      renderToStaticMarkup: async (Component, props) => {
-        const reactNode = await Component(props);
-
-        return { html: renderToStaticMarkup(reactNode) };
+export class Engine {
+  renderers = [
+    {
+      name: "dynamic-tags",
+      ssr: {
+        check: (Component) => {
+          return typeof Component === 'string';
+        },
+        renderToStaticMarkup: async (Component, props, slots) => {
+          const propsString = Object.entries(props)
+            .map(([key, value]) => `${key}="${value}"`)
+            .join(' ');
+          return `<${Component} ${propsString}>${slots.default ?? ''}</${Component}>`
+        },
       },
     },
-  },
-];
+    {
+      name: "@astrojs/react",
+      ssr: {
+        check: () => true,
+        renderToStaticMarkup: async (Component, props) => {
+          const clientRendered = props.__client_rendered;
+          delete props.__client_rendered;
+          if(clientRendered){
+            this.reactRoots.push({Component, props});
+            return { html: `<div data-react-root=${this.reactRoots.length-1}></div>` };
+          }
+  
+          const reactNode = await Component(props);
+          return { html: renderToStaticMarkup(reactNode) };
+        },
+      },
+    },
+  ];
 
-export class Engine {
   constructor(options) {
     options = {
       name: "Astro",
@@ -33,21 +53,20 @@ export class Engine {
     this.key = "astro";
     this.name = options.name;
     this.files = options.files;
+    this.reactRoots = [];
 
     // Hide our files somewhere global so that
     // the astro plugin can grab them instead of using its Vite import.
     window.__bookshop_astro_files = options.files;
-
-    this.activeApps = [];
   }
 
-  getShared(name) {
+  getSharedKey(name) {
     const base = name.split("/").reverse()[0];
     const root = `shared/astro/${name}`;
     return (
       Object.keys(this.files).find((key) =>
-        key.startsWith(`${root}/${base}`)
-      ) ?? Object.keys(this.files).find((key) => key.startsWith(root))
+        key.startsWith(`${root}/${base}.`)
+      ) ?? Object.keys(this.files).find((key) => key.startsWith(`${root}.`))
     );
   }
 
@@ -56,29 +75,29 @@ export class Engine {
     const root = `components/${name}`;
     return (
       Object.keys(this.files).find((key) =>
-        key.startsWith(`${root}/${base}`)
-      ) ?? Object.keys(this.files).find((key) => key.startsWith(root))
+        key.startsWith(`${root}/${base}.`)
+      ) ?? Object.keys(this.files).find((key) => key.startsWith(`${root}.`))
     );
   }
 
   getComponent(name) {
-    const key = this.getComponentKey(name);
+    const key = this.getComponentKey(name) ?? this.getSharedKey(name);
     return this.files?.[key];
   }
 
   hasComponent(name) {
-    const key = this.getComponentKey(name);
+    const key = this.getComponentKey(name) ?? this.getSharedKey(name);
     return !!this.files?.[key];
   }
 
   resolveComponentType(name) {
-    if (this.getComponent(name)) return "component";
-    if (this.getShared(name)) return "shared";
+    if (this.getComponentKey(name)) return "component";
+    if (this.getSharedKey(name)) return "shared";
     return false;
   }
 
   async render(target, name, props, globals) {
-    const key = this.getComponentKey(name) ?? this.getShared(name);
+    const key = this.getComponentKey(name) ?? this.getSharedKey(name);
 
     if (key.endsWith(".astro")) {
       return this.renderAstroComponent(target, key, props, globals);
@@ -107,9 +126,9 @@ export class Engine {
       propagators: new Map(),
       extraHead: [],
       componentMetadata: new Map(),
-      renderers,
+      renderers: this.renderers,
       _metadata: {
-        renderers,
+        renderers: this.renderers,
         hasHydrationScript: false,
         hasRenderedHead: true,
         hasDirectives: new Set(),
@@ -130,6 +149,7 @@ export class Engine {
           __proto__: astroGlobal,
           props,
           slots: astroSlots,
+          request: new Request(window.location),
         };
       },
     };
@@ -138,6 +158,14 @@ export class Engine {
     doc.body.innerHTML = result;
     this.updateBindings(doc);
     target.innerHTML = doc.body.innerHTML;
+    target.querySelectorAll('[data-react-root]').forEach((node) => {
+      const reactRootId = Number(node.getAttribute('data-react-root'));
+      const {Component, props} = this.reactRoots[reactRootId];
+      const reactNode = createElement(Component, props, null);
+      const root = createRoot(node);
+      flushSync(() => root.render(reactNode));
+    });
+    this.reactRoots = [];
   }
 
   async eval(str, props = [{}]) {
@@ -153,13 +181,14 @@ export class Engine {
           .collection ?? key;
       const collection = val.map((item) => {
         let id = item.path.replace(`src/content/${collectionKey}/`, "");
+        const slug = id.replace(/\.[^.]*$/, "");
         if (!id.match(/\.md(x|oc)?$/)) {
-          id = id.replace(/\..*$/, "");
+          id = slug;
         }
         return {
           id,
           collection: collectionKey,
-          slug: item.slug ?? id.replace(/\..*$/, ""),
+          slug: item.slug ?? slug,
           render: () => () => "Content is not available when live editing",
           body: "Content is not available when live editing",
           data: item,

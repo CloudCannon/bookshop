@@ -128,11 +128,11 @@ const findDefaultExportDeclaration = createFinder(
   (node) => node.type === "ExportDefaultDeclaration"
 );
 
-export default (src, componentName) => {
+export default (src, componentName, includeErrorBoundaries) => {
   const tree = parse(src, {
     sourceType: "module",
     ecmaVersion: "latest",
-    plugins: ["jsx"],
+    plugins: ["jsx", "typescript"],
   }).program;
 
   let name = src.match(
@@ -157,7 +157,7 @@ export default (src, componentName) => {
     } else if (defaultExport.declaration.type === "FunctionDeclaration") {
       name = defaultExport.declaration.id.name;
     } else {
-      name = componentName.split('/').pop();;
+      name = componentName.split("/").pop();
       defaultExport.type = "VariableDeclaration";
       defaultExport.declarations = [
         {
@@ -360,7 +360,9 @@ export default (src, componentName) => {
               );
             });
           }
-          return `{key:"${prop.name?.name ?? prop.key?.name}", values: [${identifiers
+          return `{key:"${
+            prop.name?.name ?? prop.key?.name
+          }", values: [${identifiers
             .join(",")
             .replace(".[", "[")}],  identifiers: [\`${identifiers
             .join("`,`")
@@ -463,6 +465,27 @@ export default (src, componentName) => {
     Object.keys(node).forEach((key) => delete node[key]);
     Object.keys(template).forEach((key) => (node[key] = template[key]));
   });
+
+  if (includeErrorBoundaries) {
+    functionStatements.forEach((node) => {
+      const handler = parse(`() => {
+      try{
+
+      } catch (__err){
+        console.error(__err);
+        return __React.createElement("div", {style: {border: '3px solid red', borderRadius: '2px', backgroundColor: "#F99", padding: "4px"}}, [
+          __React.createElement("p", {key: 0, style: {fontSize: "18px", "fontWeight": "600"}}, ["Error rendering ${
+            componentName ?? "Unknown"
+          }!"]),
+          __React.createElement("p", {key: 1, style: {fontSize: "16px", "fontWeight": "normal"}}, [__err.message])
+        ]);
+        
+      }
+    };`).program.body[0].expression.body.body;
+      handler[0].block.body = node.body.body;
+      node.body.body = handler;
+    });
+  }
 
   src = (generate.default ?? generate)(tree).code;
 
