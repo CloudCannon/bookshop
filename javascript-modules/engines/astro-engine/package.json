@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/astro-engine",
   "packageManager": "yarn@3.0.0",
-  "version": "3.9.0",
+  "version": "3.10.0",
   "description": "Bookshop frontend Astro renderer",
   "type": "module",
   "sideEffects": false,
@@ -25,15 +25,15 @@
     "access": "public"
   },
   "devDependencies": {
-    "@bookshop/builder": "3.9.0",
-    "@bookshop/helpers": "3.9.0",
+    "@bookshop/builder": "3.10.0",
+    "@bookshop/helpers": "3.10.0",
     "ava": "^3.15.0",
     "nyc": "^15.1.0"
   },
   "dependencies": {
     "@astrojs/compiler": "^1.0.0 || ^2.0.0",
-    "@bookshop/astro-bookshop": "3.9.0",
-    "@bookshop/vite-plugin-astro-bookshop": "3.9.0",
+    "@bookshop/astro-bookshop": "3.10.0",
+    "@bookshop/vite-plugin-astro-bookshop": "3.10.0",
     "astro": "^2.0.0 || ^3.0.0",
     "esbuild": "^0.19.1",
     "esbuild-sass-plugin": "^2.13.0",

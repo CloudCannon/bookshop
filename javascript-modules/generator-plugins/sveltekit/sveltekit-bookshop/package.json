@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/sveltekit-bookshop",
   "packageManager": "yarn@3.0.0",
-  "version": "3.9.0",
+  "version": "3.10.0",
   "type": "module",
   "description": "SvelteKit plugin for consuming Bookshop components",
   "main": "main.js",
@@ -22,7 +22,7 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/helpers": "3.9.0",
+    "@bookshop/helpers": "3.10.0",
     "svelte": "^3"
   },
   "engines": {

@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.10.0 (May 20, 2024)
+
 * Bookshop Astro Features & Fixes
   * Adds component error boundaries to the Astro engine.
   * Adds support for client rendered components inside Bookshop components.
