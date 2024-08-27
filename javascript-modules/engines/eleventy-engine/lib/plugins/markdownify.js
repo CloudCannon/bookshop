@@ -4,7 +4,7 @@ const md = new MarkdownIt({
 });
 
 /**
- * Implementation of Eleventy's jsonify filter
+ * Implementation of a common markdownify filter
  */
 export default function (Liquid) {
     this.registerFilter('markdownify', (input) => {
