@@ -177,7 +177,7 @@ export const buildPlugins = [
           loader: "js",
         };
       });
-      build.onResolve({ filter: /^\/.*\.(svg|png|jpe?g|webp)/ }, (args) => {
+      build.onResolve({ filter: /^\/.*\.(svg|png|jpe?g|webp|gif|tiff|avif)/ }, (args) => {
         return { path: join(process.cwd(), "public", args.path) };
       });
       build.onLoad({ filter: /\.(j|t)sx$/ }, async (args) => {
@@ -266,6 +266,9 @@ export const buildPlugins = [
           args.path.endsWith(".jpg") ||
           args.path.endsWith(".jpeg") ||
           args.path.endsWith(".webp") ||
+          args.path.endsWith(".gif") ||
+          args.path.endsWith(".tiff") ||
+          args.path.endsWith(".avif") ||
           args.path.endsWith(".json") ||
           args.path.endsWith(".ts")
         ) {
@@ -321,6 +324,9 @@ export const esbuildConfigFn = (esbuildOptions, options) => {
     ".jpg": "file",
     ".jpeg": "file",
     ".webp": "file",
+    ".gif": "file",
+    ".tiff": "file",
+    ".avif": "file",
     ".ts": "ts",
     ...esbuildOptions.loader,
   };
