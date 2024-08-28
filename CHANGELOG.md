@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.10.1 (August 28, 2024)
+
 * Bookshop Astro Features & Fixes
   * Add support for GIF, TIFF and AVIF image imports (PR #197 — thanks @oliverlynch !)
 
