@@ -212,6 +212,35 @@ export const buildPlugins = [
           loader: "js",
         };
       });
+      build.onLoad({ filter: /\.ts$/ }, async (args) => {
+        let text = await fs.promises.readFile(args.path, "utf8");
+        let jsResult = await esbuild.transform(text, {
+          loader: "ts",
+          target: "esnext",
+          sourcemap: false,
+          define: { ENV_BOOKSHOP_LIVE: "true" },
+        });
+
+        let result = await bookshopTransform(
+          jsResult.code,
+          args.path.replace(process.cwd(), "")
+        );
+
+        if (!result) {
+          console.warn("Bookshop transform failed:", args.path);
+          result = jsResult;
+        }
+
+        let importTransform = (await resolveConfig({}, "build")).plugins.find(
+          ({ name }) => name === "vite:import-glob"
+        ).transform;
+        let viteResult = await importTransform(result.code, args.path);
+
+        return {
+          contents: viteResult?.code ?? result.code,
+          loader: "js",
+        };
+      });
       build.onLoad(
         {
           filter: /astro(\/|\\)dist(\/|\\)runtime(\/|\\)server(\/|\\)index.js$/,
