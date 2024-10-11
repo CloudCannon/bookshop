@@ -142,6 +142,7 @@ class CustomWorld {
   serveDir(dir) {
     const fullPath = path.join(this.tmp_dir, dir);
 
+    fs.writeFileSync(path.join(fullPath, "favicon.ico"), "...");
     if (this.server) {
       throw new Error("Multiple servers!");
     }

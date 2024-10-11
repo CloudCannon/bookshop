@@ -34,8 +34,8 @@ Feature: Eleventy Bookshop Includes
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v1.0.0"
+    And stdout should contain "v3.0.0"
     And site/_site/index.html should leniently contain each row:
-      | text |
+      | text                                        |
       | Component🎉 <!--bookshop-live end--> -Block |
-      | Site🎉 <!--bookshop-live end--> -Inline |
+      | Site🎉 <!--bookshop-live end--> -Inline     |

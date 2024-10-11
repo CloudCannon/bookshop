@@ -3,7 +3,7 @@
   "private": true,
   "main": ".eleventy.js",
   "scripts": {
-    "start": "node ../../../../node_modules/@11ty/eleventy-zero/cmd.js --quiet"
+    "start": "node ../../../../node_modules/@11ty/eleventy-zero/cmd.cjs --quiet"
   },
   "devDependencies": {
     "@bookshop/eleventy-bookshop": "file:../../../../../javascript-modules/generator-plugins/eleventy/eleventy-bookshop"
