@@ -27,7 +27,7 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@astrojs/react": "^2.1.0",
+    "@astrojs/react": "^3.6.2",
     "@bookshop/helpers": "3.10.1",
     "@bookshop/vite-plugin-astro-bookshop": "3.10.1",
     "@cloudcannon/remark-auto-import": "^1.0.1"

@@ -5,7 +5,6 @@ import path from "path";
 import Builder from "@bookshop/builder";
 import { Command } from "commander";
 import sveltePlugin from "esbuild-svelte";
-import svelteFixPlugin from "./lib/build/svelteFixPlugin.js";
 import materialIconPlugin from "./lib/build/materialIconPlugin.js";
 import { __dirname } from "./lib/build/util.js";
 import BrowserServer from "./lib/build/browserServer.js";
@@ -40,8 +39,7 @@ export const runner = async (options) => {
         esbuild: {
             plugins: [
                 sveltePlugin({ compileOptions: { css: true } }),
-                materialIconPlugin(),
-                svelteFixPlugin
+                materialIconPlugin()
             ],
             loader: {
                 ".svg": "text"
