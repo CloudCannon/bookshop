@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.11.0 (October 17, 2024)
+
 * Updated Bookshop's internal Hugo version from `v0.111.3` to `v0.136.1`.
 * Updated all Bookshop dependencies to clear all `npm audit` warnings.
 * Bookshop now forwards Hugo logs to the browser console if an error occurs when rendering in the Visual Editor.
