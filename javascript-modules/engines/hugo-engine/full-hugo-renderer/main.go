@@ -90,7 +90,6 @@ func (builder *bookshopSiteBuilder) build(cfg hugolib.BuildCfg) error {
 	}
 
 	err := builder.Sites.Build(cfg, builder.changeEvents()...)
-	builder.changedFiles = []string{}
 
 	if err == nil {
 		logErrorCount := builder.Sites.NumLogErrors()
