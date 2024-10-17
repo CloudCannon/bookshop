@@ -31,12 +31,8 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@11ty/eleventy": "3.0.0",
-    "@sveltejs/adapter-static": "^0.0.17",
-    "astro": "4.15.12",
     "esbuild": "^0.13.10",
     "esbuild-svelte": "^0.8.2",
-    "express": "^4.21.0",
     "svelte": "^4.2.19"
   },
   "engines": {

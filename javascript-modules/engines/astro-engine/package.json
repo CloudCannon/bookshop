@@ -38,7 +38,6 @@
     "esbuild-sass-plugin": "^2.13.0",
     "postcss": "^8.4.29",
     "postcss-modules": "^6.0.0",
-    "svelte": "4.2.19",
     "vite": "^4.2.1"
   },
   "peerDependencies": {
