@@ -45,7 +45,7 @@ jobs:
           $WhereNode = Get-Command node | Select-Object -ExpandProperty Definition
           $NodeDirPath = Split-Path $WhereNode -Parent
           cd $NodeDirPath
-          npm install npm@10.17.0
+          npm install npm@10.7.0
       - name: Use Ruby 2.7.x
         uses: ruby/setup-ruby@v1
         with:
