@@ -34,10 +34,10 @@ jobs:
 
       - name: Enable Corepack before setting up Node
         run: corepack enable
-      - name: Use Node.js 18.x
+      - name: Use Node.js 20.x
         uses: actions/setup-node@v2
         with:
-          node-version: 18.x
+          node-version: 20.x
       # TODO: Remove when possible (https://github.com/actions/setup-node/issues/515)
       - name: Windows Node fix
         if: ${{ matrix.os == 'windows-latest' }}
@@ -45,7 +45,7 @@ jobs:
           $WhereNode = Get-Command node | Select-Object -ExpandProperty Definition
           $NodeDirPath = Split-Path $WhereNode -Parent
           cd $NodeDirPath
-          npm install npm@8.12.1
+          npm install npm@10.17.0
       - name: Use Ruby 2.7.x
         uses: ruby/setup-ruby@v1
         with:
