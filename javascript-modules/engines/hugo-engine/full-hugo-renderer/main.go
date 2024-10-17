@@ -23,6 +23,7 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gohugoio/hugo/config"
+	"github.com/gohugoio/hugo/config/allconfig"
 	"github.com/gohugoio/hugo/deps"
 	"github.com/gohugoio/hugo/hugofs"
 	"github.com/gohugoio/hugo/hugolib"
@@ -30,7 +31,8 @@ import (
 )
 
 type bookshopSiteBuilder struct {
-	Cfg          config.Provider
+	Cfg          *allconfig.Configs
+	Afs          afero.Fs
 	Fs           *hugofs.Fs
 	Sites        *hugolib.HugoSites
 	changedFiles []string
@@ -38,18 +40,21 @@ type bookshopSiteBuilder struct {
 
 // Load whatever source config file we have previously written to disk
 func (builder *bookshopSiteBuilder) LoadConfig() error {
-	cfg, _, err := hugolib.LoadConfig(hugolib.ConfigSourceDescriptor{
-		WorkingDir: "",
-		Fs:         builder.Fs.Source,
-		Filename:   "config.toml",
-	}, func(cfg config.Provider) error {
-		return nil
+	cfg, err := allconfig.LoadConfig(allconfig.ConfigSourceDescriptor{
+		Fs:       builder.Afs,
+		Flags:    config.New(),
+		Filename: "config.toml",
 	})
 	if err != nil {
 		return err
 	}
 
+	// Bookshop runs "rebuilds" rather than fresh builds to improve re-render speed
+	cfg.Base.WorkingDir = ""
+	cfg.Base.Internal.Running = true
+	cfg.Base.Internal.Watch = true
 	builder.Cfg = cfg
+	builder.Fs = hugofs.NewFrom(builder.Afs, cfg.GetFirstLanguageConfig().BaseConfig())
 
 	return nil
 }
@@ -67,8 +72,7 @@ func (builder *bookshopSiteBuilder) CreateSites() error {
 
 	sites, err := hugolib.NewHugoSites(deps.DepsCfg{
 		Fs:      builder.Fs,
-		Cfg:     builder.Cfg,
-		Running: true,
+		Configs: builder.Cfg,
 	})
 	if err != nil {
 		fmt.Println(fmt.Sprintf("failed to create sites: %s", err))
@@ -103,7 +107,7 @@ func (builder *bookshopSiteBuilder) build(cfg hugolib.BuildCfg) error {
 
 // Writes content to the given file path in the in-memory filesystem
 func (builder *bookshopSiteBuilder) writeFile(filename, content string) {
-	if err := afero.WriteFile(builder.Fs.Source, filepath.FromSlash(filename), []byte(content), 0755); err != nil {
+	if err := afero.WriteFile(builder.Afs, filepath.FromSlash(filename), []byte(content), 0755); err != nil {
 		fmt.Println(fmt.Sprintf("Failed to write file: %s", err))
 	}
 
@@ -112,7 +116,7 @@ func (builder *bookshopSiteBuilder) writeFile(filename, content string) {
 
 // Reads content from the given file path in the in-memory filesystem
 func (builder *bookshopSiteBuilder) readFile(filename string) string {
-	b, err := afero.ReadFile(builder.Fs.Source, filepath.Clean(filename))
+	b, err := afero.ReadFile(builder.Afs, filepath.Clean(filename))
 	if err != nil {
 		fmt.Println(fmt.Sprintf("Failed to read file: %s", err))
 	}
@@ -121,7 +125,7 @@ func (builder *bookshopSiteBuilder) readFile(filename string) string {
 
 // Helper method to list out any files in our virtual fs
 func (builder *bookshopSiteBuilder) debugDir(dir string) {
-	files, err := afero.ReadDir(builder.Fs.Source, dir)
+	files, err := afero.ReadDir(builder.Afs, dir)
 	if err == nil {
 		for _, file := range files {
 			fmt.Println(fmt.Sprintf("%s > %+v", dir, file.Name()))
@@ -148,9 +152,9 @@ var builder bookshopSiteBuilder
 var build_config hugolib.BuildCfg
 
 func main() {
-	fs_config := config.NewWithTestDefaults()
-	fs := hugofs.NewMem(fs_config)
-	builder = bookshopSiteBuilder{Fs: fs}
+	afs := afero.NewMemMapFs()
+	builder = bookshopSiteBuilder{Afs: afs}
+	builder.LoadConfig()
 	build_config = hugolib.BuildCfg{
 		NoBuildLock: true,
 	}

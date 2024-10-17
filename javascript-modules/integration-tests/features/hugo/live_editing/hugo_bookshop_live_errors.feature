@@ -64,7 +64,6 @@ Feature: Hugo Bookshop CloudCannon Live Editing Error Boundaries
           text: Hello World 02
       """
     Then 🌐 There should be no errors
-    *    🌐 There should be no logs
     *    🌐 The selector body>div should contain "Failed to render"
     *    🌐 The selector body>div should contain "can't divide the value by 0"
     *    🌐 The selector h1:nth-of-type(1) should contain "Hello World 01"
@@ -83,7 +82,6 @@ Feature: Hugo Bookshop CloudCannon Live Editing Error Boundaries
           text: Hello World 02
       """
     Then 🌐 There should be no errors
-    *    🌐 There should be no logs
     *    🌐 The selector body>div should contain "Failed to find"
     *    🌐 The selector h1:nth-of-type(2) should contain "Hello World 02"
 
@@ -105,7 +103,6 @@ Feature: Hugo Bookshop CloudCannon Live Editing Error Boundaries
           text: Hello World 02
       """
     Then 🌐 There should be no errors
-    *    🌐 There should be no logs
     *    🌐 The selector body>div should contain "Failed to render"
     *    🌐 The selector body>div should contain "partial \"nuffin\" not found"
     *    🌐 The selector h1:nth-of-type(2) should contain "Hello World 02"

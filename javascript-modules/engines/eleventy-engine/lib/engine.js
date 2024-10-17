@@ -48,9 +48,13 @@ export class Engine {
                 async exists() {
                     return true
                 },
+                dirname(file) {
+                    return file.replace(/\/[^\/]+$/, "")
+                },
                 resolve(root, file, ext) {
                     return `${root}${file}`
-                }
+                },
+                sep: "/"
             }
         });
     }

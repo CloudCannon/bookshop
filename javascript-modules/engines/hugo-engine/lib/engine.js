@@ -314,6 +314,7 @@ export class Engine {
         let render_attempts = 1;
         let buildError = window.buildHugo();
         while (buildError && render_attempts < 5) {
+            console.warn(`Hit a build error when rendering Hugo:\n${window.hugo_wasm_logging.map(l => `  ${l}`).join('\n')}`);
             if (this.componentQuack(buildError, window.hugo_wasm_logging) === null) {
                 // Can't find a template to overwrite and re-render
                 break;

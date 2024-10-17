@@ -25,7 +25,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v1.0.0"
+    And stdout should contain "v3.0.0"
     And site/_site/index.html should contain the text "Hello World"
 
   Scenario: Components are rendered from bookshop
@@ -41,7 +41,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v1.0.0"
+    And stdout should contain "v3.0.0"
     And site/_site/index.html should contain the text "Bookshop: Result 🤽‍♂️"
 
   Scenario: Nested components are rendered from bookshop
@@ -57,7 +57,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v1.0.0"
+    And stdout should contain "v3.0.0"
     And site/_site/index.html should contain the text "Bookshop: Result 🤽‍♂️"
 
   Scenario: Flat root components are rendered from bookshop
@@ -73,7 +73,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v1.0.0"
+    And stdout should contain "v3.0.0"
     And site/_site/index.html should contain the text "Bookshop: Result 🤽‍♂️"
 
   Scenario: Nested flat components are rendered from bookshop
@@ -89,7 +89,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v1.0.0"
+    And stdout should contain "v3.0.0"
     And site/_site/index.html should contain the text "Bookshop: Result 🤽‍♂️"
 
   Scenario: Standard components take precendence over flat components
@@ -109,7 +109,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v1.0.0"
+    And stdout should contain "v3.0.0"
     And site/_site/index.html should contain the text "Standard: Result 🤽‍♂️"
 
   Scenario: Components can use the page front matter
@@ -126,7 +126,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v1.0.0"
+    And stdout should contain "v3.0.0"
     And site/_site/index.html should contain the text "Bookshop: Result 🛗"
 
   Scenario: Components can use further components
@@ -151,7 +151,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v1.0.0"
+    And stdout should contain "v3.0.0"
     And site/_site/index.html should contain the text "<h1>🩳</h1>"
     And site/_site/index.html should contain the text "<span>🪣</span>"
 
@@ -172,7 +172,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v1.0.0"
+    And stdout should contain "v3.0.0"
     And site/_site/index.html should contain the text "<h1>🧻</h1>"
     And site/_site/index.html should contain the text "<p>⛳</p>"
 
@@ -194,7 +194,7 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v1.0.0"
+    And stdout should contain "v3.0.0"
     And site/_site/index.html should contain the text "🅰️🫀"
     And site/_site/index.html should contain the text "🅱️🫑"
 
@@ -221,6 +221,6 @@ Feature: Basic Eleventy Bookshop
       """
     When I run "npm start" in the site directory
     Then stderr should be empty
-    And stdout should contain "v1.0.0"
+    And stdout should contain "v3.0.0"
     And site/_site/index.html should contain the text "tag-contents-tag"
 
