@@ -65,7 +65,7 @@
   },
   "dependencies": {
     "esbuild-svelte": "0.8.2",
-    "express": "^2.5.11",
-    "express-ws": "^0.2.6"
+    "express": "^4.21.1",
+    "express-ws": "^5.0.2"
   }
 }
