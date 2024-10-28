@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.12.0 (October 28, 2024)
+
 * Added a `--disable-bindings` flag to the `@bookshop/generate` command.
   * This skips initializing the data panel overlays when live editing, which can significantly improve performance for complex sites.
 
