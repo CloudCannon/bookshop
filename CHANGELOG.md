@@ -1,6 +1,6 @@
 # Changelog
 
-<!-- 
+<!--
     Add changes to the Unreleased section during development.
     Do not change this header — the GitHub action that releases
     this project will edit this file and add the version header for you.
@@ -8,6 +8,9 @@
 -->
 
 ## Unreleased
+
+* Added a `--disable-bindings` flag to the `@bookshop/generate` command.
+  * This skips initializing the data panel overlays when live editing, which can significantly improve performance for complex sites.
 
 ## v3.11.0 (October 17, 2024)
 
@@ -325,9 +328,9 @@ the bookshop/generate npm package.
 See the [Bookshop 3.0 migration guide](https://github.com/CloudCannon/bookshop/blob/main/guides/migration.adoc) for more information.
 
 * **jekyll:** For data to be accessible when live editing, you will need to set
-`data_config: true` in your `cloudcannon.config.*` file. 
+`data_config: true` in your `cloudcannon.config.*` file.
 
-* **jekyll:** Some collection fields such as page.content 
+* **jekyll:** Some collection fields such as page.content
 and page.excerpt are no longer available when live editing.
 
 * **jekyll:** Data and collections are no longer accessible

@@ -24,6 +24,7 @@ async function run() {
     program.option("-d, --dot", "Look for Bookshops inside . directories");
     program.option("--skip-live", "Don't build live editing JS or add live editing scripts to HTML");
     program.option("--skip-components", "Don't build the component browser JS or add component browser scripts to HTML");
+    program.option("--disable-bindings", "Don't create data binding panels when live editing");
     program.parse(process.argv);
     const options = program.opts();
 

@@ -46,10 +46,10 @@ Feature: Bookshop Structure Generation
     And stdout should contain "Added live editing to 1 page containing Bookshop components"
     And stdout should contain "Built Bookshop live javascript to site"
     And stdout should contain "bookshop-live.js"
-    And site/public/index.html should leniently contain each row: 
+    And site/public/index.html should leniently contain each row:
       | text |
       | script.src = `/_cloudcannon/bookshop-live.js`; |
-    And site/public/_cloudcannon/bookshop-live.js should leniently contain each row: 
+    And site/public/_cloudcannon/bookshop-live.js should leniently contain each row:
       | text |
       | {{ .card_text }} |
 
@@ -59,3 +59,18 @@ Feature: Bookshop Structure Generation
     And stdout should contain "Skipping live editing generation"
     And site/public/index.html should not contain the text "_cloudcannon"
     And site/public/_cloudcannon/bookshop-live.js should not exist
+
+  Scenario: Can skip data binding
+    When I run "npm run generate-no-bindings --scripts-prepend-node-path" in the . directory
+    Then stderr should be empty
+    And stdout should contain "Added live editing to 1 page containing Bookshop components"
+    And stdout should contain "Disabled data binding panels when live editing"
+    And stdout should contain "Built Bookshop live javascript to site"
+    And stdout should contain "bookshop-live.js"
+    And site/public/index.html should leniently contain each row:
+      | text |
+      | script.src = `/_cloudcannon/bookshop-live.js`; |
+      | window.bookshopDataBindings = false; |
+    And site/public/_cloudcannon/bookshop-live.js should leniently contain each row:
+      | text |
+      | {{ .card_text }} |

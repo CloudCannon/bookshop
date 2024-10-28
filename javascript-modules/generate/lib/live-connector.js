@@ -3,11 +3,12 @@ import fs from 'fs';
 import fastGlob from 'fast-glob';
 import chalk from 'chalk';
 
-const getLiveEditingConnector = () => {
+const getLiveEditingConnector = (options) => {
   return `
 <script>
 (function(){
     const bookshopLiveSetup = (CloudCannon) => {
+      ${options.disableBindings ? `window.bookshopDataBindings = false;` : ''}
       CloudCannon.enableEvents();
       CloudCannon?.setLoading?.("Loading Bookshop Live Editing");
       let triggeredLoad = false;
@@ -23,7 +24,7 @@ const getLiveEditingConnector = () => {
           }, 2000);
         }
       }, 12000);
-  
+
       const head = document.querySelector('head');
       const script = document.createElement('script');
       script.src = \`/_cloudcannon/bookshop-live.js\`;
@@ -46,7 +47,7 @@ const getLiveEditingConnector = () => {
       }
       head.appendChild(script);
     }
-  
+
     document.addEventListener('cloudcannon:load', function (e) {
       bookshopLiveSetup(e.detail.CloudCannon);
     });
@@ -69,7 +70,7 @@ export const hydrateLiveForSite = async (siteRoot, options) => {
       continue;
     }
 
-    contents = contents.replace('</body>', `${getLiveEditingConnector()}\n</body>`);
+    contents = contents.replace('</body>', `${getLiveEditingConnector(options)}\n</body>`);
 
     fs.writeFileSync(filePath, contents);
     connected += 1;
@@ -84,6 +85,9 @@ export const hydrateLiveForSite = async (siteRoot, options) => {
   const skipped = siteHTMLFiles.length - connected;
   if (skipped) {
     console.log(chalk.gray(`Skipped ${skipped} page${skipped === 1 ? '' : 's'} that didn't contain Bookshop components.`));
+  }
+  if (options.disableBindings) {
+    console.log(chalk.green(`Disabled data binding panels when live editing`));
   }
   return true;
 }

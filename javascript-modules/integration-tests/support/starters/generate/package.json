@@ -4,6 +4,7 @@
   "scripts": {
     "start": "bookshop-generate",
     "generate-no-live": "bookshop-generate --skip-live",
+    "generate-no-bindings": "bookshop-generate --disable-bindings",
     "cc-hugo": "cloudcannon-hugo --baseURL /",
     "cc-astro": "cd site && cloudcannon-reader --output dist"
   },
