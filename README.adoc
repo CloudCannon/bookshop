@@ -16,7 +16,7 @@ https://github.com/cloudcannon/bookshop/releases/[image:https://img.shields.io/s
 image:https://img.shields.io/github/release-date/cloudcannon/bookshop?color=informational[GitHub Release Date]
 
 [.lead]
-Bookshop is a component development workflow for static websites. Bookshop currently supports Jekyll, Eleventy, Hugo, and SvelteKit, with support for more SSGs coming in the near future.
+Bookshop is a component development workflow for static websites. Bookshop currently supports Astro, Jekyll, Eleventy, Hugo, and SvelteKit, with support for more SSGs coming in the near future.
 
 image::bookshop-hero.png[Iconography representing some components that might reside in a component library. There are lines connecting some of the components to wireframed areas of two example website pages.]
 
