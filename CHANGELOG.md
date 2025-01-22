@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.13.0 (January 22, 2025)
+
 * Added support for Astro 5.
   * Added support for `astro:env` and public environment variables in Astro components.
   * Added support for the `getImage` function in Astro components.
