@@ -49,7 +49,7 @@ jobs:
         # The alternative is to pin Ubuntu 22 or to use aa-exec to disable AppArmor for commands that need Puppeteer.
         # This is also suggested by Chromium https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
         run: |
-          $echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+          echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
         shell: bash
       # TODO: Remove when possible (https://github.com/actions/setup-node/issues/515)
       - name: Windows Node fix
