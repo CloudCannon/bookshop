@@ -43,3 +43,8 @@ export const getEntries = (entries) => {
 export const getEntryBySlug = (collection, slug) => {
   return getEntry({ collection, slug });
 };
+
+export const render = async () => ({ Content: () => "Content is not available when live editing", headings: [], remarkPluginFrontmatter: {} });
+
+export const defineCollection = () => console.warn("[Bookshop] defineCollection is not supported in Bookshop. Make sure you're not importing your config in a component file by mistake.");
+export const reference = () => console.warn("[Bookshop] reference is not supported in Bookshop. Make sure you're not importing your config in a component file by mistake.");

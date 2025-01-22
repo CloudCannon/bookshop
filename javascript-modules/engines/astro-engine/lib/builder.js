@@ -13,6 +13,15 @@ const { transform: bookshopTransform } = AstroPluginVite({
   __removeClientDirectives: true,
 });
 
+const getEnvironmentDefines = () => {
+  return Object.entries(process.env ?? {}).reduce((acc, [key, value]) => {
+    if(key.startsWith("PUBLIC_")){
+      acc[`import.meta.env.${key}`] = JSON.stringify(value);
+    }
+    return acc;
+  }, {})
+}
+
 export const buildPlugins = [
   sassPlugin({
     filter: /\.module\.(s[ac]ss|css)$/,
@@ -83,7 +92,13 @@ export const buildPlugins = [
 
       build.onResolve({ filter: /^astro:.*$/ }, async (args) => {
         const type = args.path.replace("astro:", "");
-        if (type !== "content" && type !== "assets") {
+        if (type === "env/client" || type === "env"){
+          return { path: 'env', namespace: 'virtual' };
+        }
+        if (type === "transitions/client" || type === "transitions"){
+          return { path: join(dir, "modules", "transitions.js").replace("file:", "") };
+        }
+        if (!["content", "assets", "i18n", "actions", "middleware"].includes(type)) {
           console.error(
             `Error: The 'astro:${type}' module is not supported inside Bookshop components.`
           );
@@ -116,6 +131,35 @@ export const buildPlugins = [
         } catch (err) {
           // Intentionally ignored
         }
+      });
+
+      build.onLoad({ filter: /^env$/, namespace: 'virtual' }, async (args) => {
+        let contents = "";
+        Object.entries(astroConfig?.env?.schema ?? {}).forEach(([key, schema]) => {
+          if(schema.context !== "client" || schema.access !== "public"){
+            return;
+          }
+
+          try{
+            switch(schema.type){
+              case "boolean":
+                contents += `export const ${key} = ${!!process.env[key]};\n`
+                break;
+              case "number":
+                contents += `export const ${key} = ${Number(process.env[key])};\n`
+                break;
+              default:
+                contents += `export const ${key} = ${JSON.stringify(process.env[key] ?? "")};\n`
+            }
+          } catch(e){
+            //Error intentionally ignored
+          }
+        });
+        contents += "export const getSecret = () => console.warn(\"[Bookshop] getSecret is not supported in Bookshop. Please use an editing fallback instead.\");"
+        return {
+          contents,
+          loader: "js",
+        };
       });
 
       build.onLoad({ filter: /\.astro$/, namespace: "style" }, async (args) => {
@@ -155,9 +199,9 @@ export const buildPlugins = [
           loader: "ts",
           target: "esnext",
           sourcemap: false,
-          define: { ENV_BOOKSHOP_LIVE: "true" },
+          define: { ...getEnvironmentDefines(), ENV_BOOKSHOP_LIVE: "true"},
         });
-        let result = await bookshopTransform(
+        let result = bookshopTransform(
           jsResult.code,
           args.path.replace(process.cwd(), "")
         );
@@ -189,10 +233,10 @@ export const buildPlugins = [
           jsxFragment: "__React.Fragment",
           target: "esnext",
           sourcemap: false,
-          define: { ENV_BOOKSHOP_LIVE: "true" },
+          define: { ...getEnvironmentDefines(), ENV_BOOKSHOP_LIVE: "true" },
         });
 
-        let result = await bookshopTransform(
+        let result = bookshopTransform(
           jsResult.code,
           args.path.replace(process.cwd(), "")
         );
@@ -218,26 +262,16 @@ export const buildPlugins = [
           loader: "ts",
           target: "esnext",
           sourcemap: false,
-          define: { ENV_BOOKSHOP_LIVE: "true" },
+          define: { ...getEnvironmentDefines(), ENV_BOOKSHOP_LIVE: "true" },
         });
-
-        let result = await bookshopTransform(
-          jsResult.code,
-          args.path.replace(process.cwd(), "")
-        );
-
-        if (!result) {
-          console.warn("Bookshop transform failed:", args.path);
-          result = jsResult;
-        }
 
         let importTransform = (await resolveConfig({}, "build")).plugins.find(
           ({ name }) => name === "vite:import-glob"
         ).transform;
-        let viteResult = await importTransform(result.code, args.path);
+        let viteResult = await importTransform(jsResult.code, args.path);
 
         return {
-          contents: viteResult?.code ?? result.code,
+          contents: viteResult?.code ?? jsResult.code,
           loader: "js",
         };
       });

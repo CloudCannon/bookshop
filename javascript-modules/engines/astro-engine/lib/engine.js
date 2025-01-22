@@ -35,7 +35,7 @@ export class Engine {
             this.reactRoots.push({Component, props});
             return { html: `<div data-react-root=${this.reactRoots.length-1}></div>` };
           }
-  
+
           const reactNode = await Component(props);
           return { html: renderToStaticMarkup(reactNode) };
         },
@@ -118,12 +118,30 @@ export class Engine {
 
   async renderAstroComponent(target, key, props, globals) {
     const component = this.files?.[key];
+
+    let encryptionKey;
+    try{
+      encryptionKey = window.crypto.subtle.generateKey(
+        {
+          name: "AES-GCM",
+          length: 256,
+        },
+        true,
+        ["encrypt", "decrypt"],
+      )
+    } catch(err){
+      console.warn("[Bookshop] Could not generate a key for Astro component. This may cause issues with Astro components that use server-islands")
+    }
+
     const SSRResult = {
       styles: new Set(),
       scripts: new Set(),
       links: new Set(),
       propagation: new Map(),
       propagators: new Map(),
+      serverIslandNameMap: { get: () => "Bookshop" },
+      key: encryptionKey,
+      base: "/",
       extraHead: [],
       componentMetadata: new Map(),
       renderers: this.renderers,
@@ -166,6 +184,9 @@ export class Engine {
       flushSync(() => root.render(reactNode));
     });
     this.reactRoots = [];
+    target.querySelectorAll("link, [data-island-id]").forEach((node) => {
+      node.remove();
+    });
   }
 
   async eval(str, props = [{}]) {

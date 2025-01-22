@@ -9,6 +9,11 @@
 
 ## Unreleased
 
+* Added support for Astro 5.
+* Added support for `astro:env` and public environment variables in Astro components.
+* Added support for the `getImage` function in Astro components.
+* Added fallbacks for the `astro:actions`, `astro:i18n`, `astro middleware`, and `astro:transitions` virtual modules.
+
 ## v3.12.0 (October 28, 2024)
 
 * Added a `--disable-bindings` flag to the `@bookshop/generate` command.
