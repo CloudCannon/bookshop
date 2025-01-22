@@ -39,7 +39,6 @@ jobs:
         with:
           node-version: 20.x
       - name: Ubuntu AppArmor fix
-        if: ${{ matrix.os == 'ubuntu-latest' }}
         # Ubuntu >= 23 has AppArmor enabled by default, which breaks Puppeteer.
         # See https://github.com/puppeteer/puppeteer/issues/12818 "No usable sandbox!"
         # this is taken from the solution used in Puppeteer's own CI: https://github.com/puppeteer/puppeteer/pull/13196
