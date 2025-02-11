@@ -130,3 +130,46 @@ Feature: Hugo Bookshop CloudCannon Live Editing Edge Cases
     *    🌐 The selector div:nth-of-type(1)>span:nth-of-type(2) should contain 'text: Hello'
     *    🌐 The selector div:nth-of-type(2)>span:nth-of-type(1) should contain '_bookshop_name: text'
     *    🌐 The selector div:nth-of-type(2)>span:nth-of-type(2) should contain 'text: Hooray'
+
+  Scenario: Hugo Bookshop live renders unsafe Markdown
+    Given a component-lib/components/cont/cont.hugo.html file containing:
+      """
+      <div class="c-content">{{ .text | markdownify }}</div>
+      """
+    Given [front_matter]:
+      """
+      content:
+        text: |-
+          <h3 class="bolder">Heading</h3>
+
+          normal markdown
+      """
+    And a site/content/_index.md file containing:
+      """
+      ---
+      [front_matter]
+      ---
+      """
+    And a site/layouts/index.html file containing:
+      """
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `.Params.content` }}
+      {{ partial "bookshop" (slice "cont" .Params.content) }}
+      </body>
+      </html>
+      """
+    And 🌐 I have loaded my site in CloudCannon
+    When 🌐 CloudCannon pushes new yaml:
+      """
+      content:
+        text: |-
+          <h3 class="bolder">Bolder Heading</h3>
+
+          normal markdown
+      """
+    And  🌐 "window.bookshopLive?.renderCount === 2" evaluates
+    Then 🌐 There should be no errors
+    *    🌐 There should be no logs
+    *    🌐 The selector h3 should match '<h3 class="bolder">Bolder Heading</h3>'
+    *    🌐 The selector p should match '<p>normal markdown</p>'
