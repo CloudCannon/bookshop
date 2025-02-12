@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.13.1 (February 12, 2025)
+
 * Updated Hugo Bookshop's goldmark settings to allow rendering HTML through the `markdownify` function.
 
 ## v3.13.0 (January 22, 2025)
