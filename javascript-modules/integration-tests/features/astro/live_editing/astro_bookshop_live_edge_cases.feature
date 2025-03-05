@@ -119,3 +119,32 @@ Feature: Astro Bookshop CloudCannon Live Editing Edge Cases
     *    site/dist/index.html should contain each row:
       | text        |
       | <h1>👻</h1> |
+
+  Scenario: Bookshop handles ignoring custom paths
+    * a site/src/components/single.spec.jsx file containing:
+      """
+      import React from "react";
+
+      describe("Component", () => {
+        it("renders without crashing", () => {
+          React.render(<Component />, document.createElement("div"));
+        });
+      });
+      """
+    * a site/src/bookshop/bookshop.config.cjs file containing:
+      """
+      // Standard bookshop configuration
+      module.exports = {
+        ignoreFilePatterns: [
+          /spec\.jsx/
+        ],
+   	    engines: {
+          "@bookshop/astro-engine": {}
+   	    }
+      }
+      """
+    * I run "npm run build" in the site directory
+    * I run "npm run cc-astro" in the . directory
+    When I run "npm start" in the . directory
+    Then stderr should be empty
+    *    stdout should not be empty

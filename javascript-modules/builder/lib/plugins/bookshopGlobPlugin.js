@@ -28,7 +28,15 @@ export default (options) => ({
                 });
             });
             const globResults = await Promise.all(globs);
-            const files = [].concat.apply([], globResults).sort();
+
+            const files = [].concat.apply([], globResults).filter(f => {
+              if (options?.bookshopConfig?.ignoreFilePatterns?.length) {
+                for (const pattern of options.bookshopConfig.ignoreFilePatterns) {
+                  if (pattern.test(f)) return false;
+                }
+              }
+              return true
+            }).sort();
             const uniqueFiles = Array.from(new Set(files));
 
             const output = `
