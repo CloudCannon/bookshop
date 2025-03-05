@@ -27,5 +27,5 @@ export const loadConfig = async (bookshopDirectory = "") => {
         return import(`${engineName}/build`);
     });
     const engines = await Promise.all(engineImports);
-    return { engines };
+    return { engines, ignoreFilePatterns: config.default?.ignoreFilePatterns };
 }
