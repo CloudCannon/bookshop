@@ -9,6 +9,23 @@
 
 ## Unreleased
 
+Added the `ignoreFilePatterns` option to the `bookshop.config.cjs` file.
+
+Example:
+```js
+module.exports = {
+  ignoreFilePatterns: [
+    /\.test\.jsx$/
+  ],
+  engines: {
+    "@bookshop/astro-engine": {}
+  }
+}
+```
+
+This should be an array of regular expressions.
+Any filenames that match one of the provided patterns will not be processed by Bookshop.
+
 ## v3.13.1 (February 12, 2025)
 
 * Updated Hugo Bookshop's goldmark settings to allow rendering HTML through the `markdownify` function.
