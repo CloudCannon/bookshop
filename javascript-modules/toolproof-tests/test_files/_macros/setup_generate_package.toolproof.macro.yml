@@ -17,7 +17,8 @@ steps:
           "@bookshop/generate": "file:%toolproof_process_directory%/../generate",
           "@bookshop/hugo-engine": "file:%toolproof_process_directory%/../engines/hugo-engine",
           "@bookshop/eleventy-engine": "file:%toolproof_process_directory%/../engines/eleventy-engine",
-          "@bookshop/jekyll-engine": "file:%toolproof_process_directory%/../engines/jekyll-engine"
+          "@bookshop/jekyll-engine": "file:%toolproof_process_directory%/../engines/jekyll-engine",
+          "@bookshop/astro-engine": "file:%toolproof_process_directory%/../engines/astro-engine"
         }
       }
   - step: I run "npm i"

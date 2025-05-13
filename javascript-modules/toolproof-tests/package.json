@@ -6,6 +6,11 @@
     "toolproof": "latest",
     "@11ty/eleventy": "^3.0.0",
     "markdown-it": "^12.2.0",
-    "eleventy-plugin-cloudcannon": "latest"
+    "eleventy-plugin-cloudcannon": "latest",
+    "@astrojs/mdx": "^3.1.7",
+    "@astrojs/react": "3.0.0",
+    "astro": "^4.15.12",
+    "react": "^18",
+    "react-dom": "^18"
   }
 }

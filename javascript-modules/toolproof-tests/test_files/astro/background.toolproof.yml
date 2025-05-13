@@ -1,0 +1,13 @@
+name: Astro basic setup
+type: reference
+
+steps:
+  - macro: I setup an Astro site
+  - macro: I setup the generate package
+  - step: I have a "site/src/layouts/Page.astro" file with the content {astro}
+    astro: |-
+      ---
+      const { frontmatter } = Astro.props;
+      ---
+
+      <h1>{ frontmatter.title }</h1> 

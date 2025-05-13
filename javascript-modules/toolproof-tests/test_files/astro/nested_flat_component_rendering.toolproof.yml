@@ -1,0 +1,30 @@
+name: Astro nested flat component rendering test
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/src/components/nested/title.jsx" file with the content {jsx}
+    jsx: |-
+      export default function Title({ text }) {
+        return (
+          <h1>Bookshop - <span>{text}</span></h1>
+        )
+      }
+  - step: I have a "site/src/pages/index.md" file with the content {md}
+    md: |-
+      ---
+      layout: ../layouts/Page.astro
+      title: Result 🤽‍♂️
+      ---
+  - step: I have a "site/src/layouts/Page.astro" file with the content {astro}
+    astro: |-
+      ---
+      import Title from "../components/nested/title.jsx";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <Title bookshop:live text={frontmatter.title} />
+  - step: I run "cd site && npm run build"
+  - step: stderr should be empty
+  - step: stdout should contain "Complete!"
+  - step: The file "site/dist/index.html" should contain "Bookshop - <span>Result 🤽‍♂️</span>"
+  - step: The file "site/dist/index.html" should contain "bookshop-live name(nested/title)" 
