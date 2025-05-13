@@ -1,0 +1,8 @@
+{
+  "name": "bookshop-toolproof-tests",
+  "description": "Toolproof tests for Bookshop",
+  "private": true,
+  "devDependencies": {
+    "toolproof": "latest"
+  }
+}

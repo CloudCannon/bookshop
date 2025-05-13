@@ -1,0 +1,16 @@
+name: Hugo components baseline test
+
+steps:
+  - macro: I setup a Hugo site
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      {{ .Content }}
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      ---
+      # Hello World!
+  - step: I run "cd site && hugo"
+  - step: stderr should be empty
+  - step: stdout should contain "Total in"
+  - step: The file "site/public/index.html" should contain "Hello World!</h1>"

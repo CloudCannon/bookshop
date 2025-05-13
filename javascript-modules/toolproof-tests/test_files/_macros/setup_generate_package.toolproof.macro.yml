@@ -1,0 +1,21 @@
+macro: I setup the generate package
+
+steps:
+  - step: I have a "package.json" file with the content {json}
+    json: |-
+      {
+        "name": "bookshop-generate-cucumber-site",
+        "private": true,
+        "scripts": {
+          "start": "bookshop-generate",
+          "generate-no-live": "bookshop-generate --skip-live",
+          "generate-no-bindings": "bookshop-generate --disable-bindings",
+          "cc-hugo": "cloudcannon-hugo --baseURL /",
+          "cc-astro": "cd site && cloudcannon-reader --output dist"
+        },
+        "devDependencies": {
+          "@bookshop/generate": "file:%toolproof_process_directory%/../generate",
+          "@bookshop/hugo-engine": "file:%toolproof_process_directory%/../engines/hugo-engine"
+        }
+      }
+  - step: I run "npm i"

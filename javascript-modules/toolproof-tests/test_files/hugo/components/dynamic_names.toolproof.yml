@@ -1,0 +1,29 @@
+name: Hugo bookshop tags should support dynamic names
+
+steps:
+  - macro: I setup a Hugo site
+  - step: I have a "component-lib/components/a/a.hugo.html" file with the content {html}
+    html: |-
+      🅰️{{.e}}
+  - step: I have a "component-lib/components/b/b.hugo.html" file with the content {html}
+    html: |-
+      🅱️{{.e}}
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      {{ range .Params.components }}
+        {{ partial "bookshop" (slice ._name .) }}
+      {{ end }}
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      components:
+        - _name: a
+          e: 🫀
+        - _name: b
+          e: 🫑
+      ---
+  - step: I run "cd site && hugo"
+  - step: stderr should be empty
+  - step: stdout should contain "Total in"
+  - step: The file "site/public/index.html" should contain "🅰️🫀"
+  - step: The file "site/public/index.html" should contain "🅱️🫑"

@@ -1,0 +1,23 @@
+name: Hugo bookshop tags can use the bind syntax
+
+steps:
+  - macro: I setup a Hugo site
+  - step: I have a "component-lib/components/card/card.hugo.html" file with the content {html}
+    html: |-
+      <h1>{{ .title }}</h1>
+      <p>{{ .description }}</p>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      {{ partial "bookshop" (slice "card" .Params.card) }}
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      card:
+        title: "🧻"
+        description: "⛳"
+      ---
+  - step: I run "cd site && hugo"
+  - step: stderr should be empty
+  - step: stdout should contain "Total in"
+  - step: The file "site/public/index.html" should contain "<h1>🧻</h1>"
+  - step: The file "site/public/index.html" should contain "<p>⛳</p>"

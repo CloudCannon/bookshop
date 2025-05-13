@@ -1,0 +1,10 @@
+macro: CloudCannon pushes the front matter {front_matter}
+
+steps:
+  - step: In my browser, I evaluate {js}
+    js: |-
+      const renders = window.bookshopLive?.renderCount || 0;
+
+      window.CloudCannon.newData(%front_matter%);
+
+      await toolproof.waitFor(() => window.bookshopLive?.renderCount > renders, 8000);

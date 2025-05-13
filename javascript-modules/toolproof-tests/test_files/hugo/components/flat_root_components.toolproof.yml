@@ -1,0 +1,14 @@
+name: Hugo flat root components are rendered from Bookshop
+
+steps:
+  - macro: I setup a Hugo site
+  - step: I have a "component-lib/components/title.hugo.html" file with the content {html}
+    html: |-
+      <h1>Bookshop - {{ .text }}</h1>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      {{ partial "bookshop" (slice "title" (dict "text" "Result 🧄")) }}
+  - step: I run "cd site && hugo"
+  - step: stderr should be empty
+  - step: stdout should contain "Total in"
+  - step: The file "site/public/index.html" should contain "Bookshop - Result 🧄"

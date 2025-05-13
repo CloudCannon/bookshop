@@ -1,0 +1,26 @@
+name: Hugo components can use further components
+
+steps:
+  - macro: I setup a Hugo site
+  - step: I have a "component-lib/components/hero/hero.hugo.html" file with the content {html}
+    html: |-
+      <h1>{{ .text }}</h1>
+      {{ partial "bookshop" (slice "tag" (dict "tag" .tag)) }}
+  - step: I have a "component-lib/components/tag/tag.hugo.html" file with the content {html}
+    html: |-
+      <span>{{ .tag.label }}</span>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      {{ partial "bookshop" (slice "hero" (dict "text" .Params.title_text "tag" .Params.tag)) }}
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      title_text: "🩳"
+      tag:
+        label: "🪣"
+      ---
+  - step: I run "cd site && hugo"
+  - step: stderr should be empty
+  - step: stdout should contain "Total in"
+  - step: The file "site/public/index.html" should contain "<h1>🩳</h1>"
+  - step: The file "site/public/index.html" should contain "<span>🪣</span>"

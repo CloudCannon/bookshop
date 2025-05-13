@@ -1,0 +1,33 @@
+name: Hugo bookshop page building components should work
+
+steps:
+  - macro: I setup a Hugo site
+  - step: I have a "component-lib/components/page/page.hugo.html" file with the content {html}
+    html: |-
+      {{ range .column_contents }}
+        {{ partial "bookshop" . }}
+      {{ end }}
+  - step: I have a "component-lib/components/tag/tag.hugo.html" file with the content {html}
+    html: |-
+      tag-{{.tag}}-tag
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      {{ range .Params.components }}
+        {{ partial "bookshop" . }}
+      {{ end }}
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      components:
+        - _bookshop_name: page
+          column_contents:
+            - _bookshop_name: tag
+              tag: "contents"
+            - _bookshop_name: tag
+              tag: "another"
+      ---
+  - step: I run "cd site && hugo"
+  - step: stderr should be empty
+  - step: stdout should contain "Total in"
+  - step: The file "site/public/index.html" should contain "tag-contents-tag"
+  - step: The file "site/public/index.html" should contain "tag-another-tag"

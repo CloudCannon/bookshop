@@ -1,0 +1,18 @@
+name: Hugo bookshop live editing hydration
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      block:
+        title: "Hello There"
+      ---
+  - step: I run "cd site && hugo"
+  - step: I run "cd site && cloudcannon-hugo --baseurl /"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Modifying output site at ./site/public"
+  - step: stdout should contain "Added live editing to 1 page containing Bookshop components"
+  - step: The file "site/public/_cloudcannon/info.json" should contain "{"
+  - step: The file "site/public/_cloudcannon/bookshop-live.js" should contain "hugo_renderer.wasm-"

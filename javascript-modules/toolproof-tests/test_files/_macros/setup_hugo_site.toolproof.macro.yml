@@ -1,0 +1,23 @@
+macro: I setup a Hugo site
+
+steps:
+  - macro: I create "component-lib/go.mod" from "starters/hugo/components.go.mod"
+  - macro: I create "component-lib/config.toml" from "starters/hugo/components.config.toml"
+  - macro: I create "component-lib/bookshop/bookshop.config.js" from "starters/hugo/bookshop.config.js"
+  - macro: I create "site/go.mod" from "starters/hugo/site.go.mod"
+  - step: I have a "site/config.toml" file with the content {toml}
+    toml: |-
+      baseURL = "https://cloudcannon.com/"
+      languageCode = "en-us"
+      title = "Hugo Bookshop Cucumber"
+      copyright = "🎉"
+
+      [module]
+      replacements = "bookshop.test/components -> ../../component-lib,github.com/cloudcannon/bookshop/hugo/v3 -> %toolproof_process_directory%/../../hugo/v3/"
+
+      [[module.imports]]
+      path = 'bookshop.test/components'
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      ---
