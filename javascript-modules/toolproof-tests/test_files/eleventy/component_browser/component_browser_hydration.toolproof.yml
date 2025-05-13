@@ -1,0 +1,10 @@
+name: Eleventy bookshop Generate hydrates component browser
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "cd site && npm start"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Modifying output site at ./site/_site"
+  - step: stdout should contain "Built component browser into 1 page"
+  - step: The file "site/_site/index.html" should contain '<script src="/_bookshop/bookshop-browser.min.js?cb='

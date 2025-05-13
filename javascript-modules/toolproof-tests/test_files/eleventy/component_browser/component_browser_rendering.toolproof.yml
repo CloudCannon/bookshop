@@ -1,0 +1,19 @@
+name: Eleventy bookshop component browser renders a component
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "cd site && npm start"
+  - step: I run "npm start"
+  - step: I serve the directory "site/_site"
+  - step: In my browser, I load "/"
+  - step: In my browser, I evaluate {js}
+    js: await toolproof.waitFor(() => typeof window.BookshopBrowser !== 'undefined', 8000)
+  - step: In my browser, I evaluate {js}
+    js: await toolproof.waitFor(() => window.bookshopBrowser?.hasRendered === true, 8000)
+  - step: In my browser, I click the selector {string}
+    string: li:nth-of-type(2)>button
+  - step: In my browser, I evaluate {js}
+    js: await toolproof.waitFor(() => window.bookshopComponentHasRendered === true, 8000)
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Hello There, World"
+    js: return (await toolproof.querySelector("h1")).textContent

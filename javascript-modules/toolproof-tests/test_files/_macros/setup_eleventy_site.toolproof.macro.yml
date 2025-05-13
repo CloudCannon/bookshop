@@ -11,6 +11,7 @@ steps:
   - step: I have a "site/.eleventy.js" file with the content {js}
     js: |-
       const pluginBookshop = require("@bookshop/eleventy-bookshop");
+      const pluginCloudCannon = require('eleventy-plugin-cloudcannon');
       const MarkdownIt = require("markdown-it"),
         md = new MarkdownIt({
           html: true,
@@ -30,6 +31,8 @@ steps:
             pages: 'pages'
           }
         };
+
+        eleventyConfig.addPlugin(pluginCloudCannon);
       };
   - step: I have a "site/.eleventyignore" file with the content {ignore}
     ignore: |-
@@ -47,7 +50,8 @@ steps:
         },
         "devDependencies": {
           "@bookshop/eleventy-bookshop": "file:%toolproof_process_directory%/../generator-plugins/eleventy/eleventy-bookshop",
-          "markdown-it":"file:%toolproof_process_directory%/node_modules/markdown-it"
+          "markdown-it":"file:%toolproof_process_directory%/node_modules/markdown-it",
+          "eleventy-plugin-cloudcannon":"file:%toolproof_process_directory%/node_modules/eleventy-plugin-cloudcannon"
         }
       }
   - step: I run "cd site && npm i"

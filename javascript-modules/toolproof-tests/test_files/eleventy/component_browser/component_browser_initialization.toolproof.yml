@@ -1,0 +1,13 @@
+name: Eleventy bookshop component browser initialises
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "cd site && npm start"
+  - step: I run "npm start"
+  - step: I serve the directory "site/_site"
+  - step: In my browser, I load "/"
+  - step: In my browser, I evaluate {js}
+    js: await toolproof.waitFor(() => window.bookshopBrowser?.hasRendered === true, 8000)
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Select a component using the"
+    js: return (await toolproof.querySelector(".tutorial")).textContent

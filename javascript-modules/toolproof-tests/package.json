@@ -5,6 +5,7 @@
   "devDependencies": {
     "toolproof": "latest",
     "@11ty/eleventy": "^3.0.0",
-    "markdown-it": "^12.2.0"
+    "markdown-it": "^12.2.0",
+    "eleventy-plugin-cloudcannon": "latest"
   }
 }
