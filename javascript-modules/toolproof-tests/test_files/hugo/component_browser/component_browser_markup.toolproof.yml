@@ -1,0 +1,11 @@
+name: Hugo bookshop adds component browser markup
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "cd site && hugo"
+  - step: stderr should be empty
+  - step: stdout should contain "Total in"
+  - step: The file "site/public/index.html" should contain {line}
+    line: '<div data-bookshop-browser=""></div>'
+  - step: The file "site/public/index.html" should contain {line}
+    line: '<script src="http://localhost:30775/bookshop.js"></script>'

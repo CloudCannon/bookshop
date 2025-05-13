@@ -1,0 +1,12 @@
+name: Hugo bookshop component browser hydration
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "cd site && hugo"
+  - step: I run "cd site && cloudcannon-hugo --baseurl /"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Modifying output site at ./site/public"
+  - step: stdout should contain "Built component browser into 1 page"
+  - step: The file "site/public/index.html" should contain {pattern}
+    pattern: '<script src="/_bookshop/bookshop-browser.min.js?cb='
