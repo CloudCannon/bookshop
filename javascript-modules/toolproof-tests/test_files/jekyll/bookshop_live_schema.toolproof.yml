@@ -1,0 +1,48 @@
+name: Jekyll Bookshop live schema comments
+
+steps:
+  - macro: I setup a Jekyll site
+  - step: I have a "site/_config.yml" file with the content {yml}
+    yml: |
+      title: "My Site"
+      baseurl: "/documentation"
+
+      bookshop_locations:
+        - ../component-lib
+
+      plugins:
+        - jekyll-bookshop
+  - step: I have a "component-lib/components/page/page.jekyll.html" file with the content {html}
+    html: |
+      {%- for block in include.content_blocks -%}
+      {%- assign b = block -%}
+      <p>{{ b._bookshop_name }}</p>
+      {% bookshop single _bookshop_name="inner" %}
+      {%- endfor -%}
+  - step: I have a "component-lib/components/single/single.jekyll.html" file with the content {html}
+    html: |
+      <span>{{ include._bookshop_name }}</span>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |
+      ---
+      content_blocks:
+        - _bookshop_name: fake
+      ---
+      {%- bookshop page content_blocks=page.content_blocks -%}
+      {% for block in page.content_blocks -%}
+      {% bookshop single bind=block -%}
+      {%- endfor -%}
+  - step: I run "cd site && bundle exec jekyll build --trace"
+  - step: stderr should be empty
+  - step: stdout should contain "done in"
+  - step: The file "site/_site/index.html" should contain '<!--bookshop-live meta(version="'
+  - step: The file "site/_site/index.html" should contain 'baseurl="/documentation" title="My Site") -->'
+  - step: The file "site/_site/index.html" should contain '<!--bookshop-live name(page/page.jekyll.html) params(content_blocks=page.content_blocks) context() -->'
+  - step: The file "site/_site/index.html" should contain "<p>fake</p>"
+  - step: The file "site/_site/index.html" should contain '<!--bookshop-live name(single/single.jekyll.html) params(_bookshop_name="inner") context(block=content_blocks[0]) -->'
+  - step: The file "site/_site/index.html" should contain "<span>inner</span>"
+  - step: The file "site/_site/index.html" should contain "<!--bookshop-live end-->"
+  - step: The file "site/_site/index.html" should contain '<!--bookshop-live end--><!--bookshop-live meta(version="'
+  - step: The file "site/_site/index.html" should contain '<!--bookshop-live name(single/single.jekyll.html) params(bind=block) context(block=page.content_blocks[0]) -->'
+  - step: The file "site/_site/index.html" should contain "<span>fake</span>"
+  - step: The file "site/_site/index.html" should contain "<!--bookshop-live end-->"
