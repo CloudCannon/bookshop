@@ -15,7 +15,8 @@ steps:
         },
         "devDependencies": {
           "@bookshop/generate": "file:%toolproof_process_directory%/../generate",
-          "@bookshop/hugo-engine": "file:%toolproof_process_directory%/../engines/hugo-engine"
+          "@bookshop/hugo-engine": "file:%toolproof_process_directory%/../engines/hugo-engine",
+          "@bookshop/eleventy-engine": "file:%toolproof_process_directory%/../engines/eleventy-engine"
         }
       }
   - step: I run "npm i"

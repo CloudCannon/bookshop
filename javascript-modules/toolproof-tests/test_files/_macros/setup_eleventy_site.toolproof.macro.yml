@@ -1,0 +1,53 @@
+macro: I setup an Eleventy site
+
+steps:
+  - step: I have a "component-lib/bookshop/bookshop.config.js" file with the content {js}
+    js: |-
+      module.exports = {
+          engines: {
+              "@bookshop/eleventy-engine": {}
+          }
+      }
+  - step: I have a "site/.eleventy.js" file with the content {js}
+    js: |-
+      const pluginBookshop = require("@bookshop/eleventy-bookshop");
+      const MarkdownIt = require("markdown-it"),
+        md = new MarkdownIt({
+          html: true,
+        });
+
+      module.exports = function (eleventyConfig) {
+        eleventyConfig.setUseGitIgnore(false);
+        eleventyConfig.setDataDeepMerge(true);
+        eleventyConfig.addFilter("markdownify", (markdown) => md.render(markdown));
+
+        eleventyConfig.addPlugin(pluginBookshop({
+          bookshopLocations: ["../component-lib"]
+        }));
+
+        eleventyConfig.cloudcannonOptions = {
+          dir: {
+            pages: 'pages'
+          }
+        };
+      };
+  - step: I have a "site/.eleventyignore" file with the content {ignore}
+    ignore: |-
+      README.md
+      node_modules/
+      _site/
+  - step: I have a "site/package.json" file with the content {json}
+    json: |-
+      {
+        "name": "bookshop-eleventy-cucumber-site",
+        "private": true,
+        "main": ".eleventy.js",
+        "scripts": {
+          "start": "node %toolproof_process_directory%/node_modules/@11ty/eleventy/cmd.cjs --quiet"
+        },
+        "devDependencies": {
+          "@bookshop/eleventy-bookshop": "file:%toolproof_process_directory%/../generator-plugins/eleventy/eleventy-bookshop",
+          "markdown-it":"file:%toolproof_process_directory%/node_modules/markdown-it"
+        }
+      }
+  - step: I run "cd site && npm i"
