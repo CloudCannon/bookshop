@@ -29,9 +29,9 @@ steps:
         "note_html": "<p>You can also use the bookshop tag directly.</p>"
       }
   - step: In my browser, the console should be empty
-  - step: In my browser, the result of {js} should contain 'data-cms-bind="#note_html"'
+  - step: In my browser, the result of {js} should be exactly '#note_html'
     js: return (await toolproof.querySelector(".c-content--note")).getAttribute("data-cms-bind")
-  - step: In my browser, the result of {js} should contain 'data-cms-bind="#content_blocks.0"'
+  - step: In my browser, the result of {js} should be exactly '#content_blocks.0'
     js: return (await toolproof.querySelector(".c-title")).getAttribute("data-cms-bind")
-  - step: In my browser, the result of {js} should contain 'data-cms-bind="#content_blocks.0.tags.1"'
+  - step: In my browser, the result of {js} should be exactly '#content_blocks.0.tags.1'
     js: return (await toolproof.querySelector(".u-tag:nth-of-type(2)")).getAttribute("data-cms-bind") 

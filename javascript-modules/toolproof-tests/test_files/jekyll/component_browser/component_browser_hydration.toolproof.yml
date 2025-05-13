@@ -4,4 +4,4 @@ steps:
   - ref: ./background.toolproof.yml
   - step: I run "cd site && bundle exec jekyll build --trace"
   - step: I run "npm start"
-  - step: The file "site/_site/index.html" should contain "Built component browser into 1 page" 
+  - step: stdout should contain "Built component browser into 1 page" 
