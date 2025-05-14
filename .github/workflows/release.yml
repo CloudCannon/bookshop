@@ -64,6 +64,7 @@ jobs:
         with:
           go-version: "^1.21.1"
 
+      - uses: pnpm/action-setup@v4
       - name: Pnpm stuff
         run: |
           pnpm install --frozen-lockfile
