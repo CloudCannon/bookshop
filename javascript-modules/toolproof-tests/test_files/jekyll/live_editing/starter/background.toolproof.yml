@@ -1,6 +1,10 @@
 name: Jekyll live editing starter setup
 type: reference
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - macro: I setup a Jekyll site
   - macro: I setup the generate package
@@ -63,4 +67,4 @@ steps:
       <main>
         {% bookshop_include page content_blocks=page.content_blocks %}
       </main>
-      {% bookshop content content_html=page.note_html type='note' %} 
+      {% bookshop content content_html=page.note_html type='note' %}

@@ -1,5 +1,9 @@
 name: Bookshop structure generation - Object array structures get a copy of any configured settings
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/card/card.bookshop.toml" file with the content {toml}

@@ -1,5 +1,9 @@
 name: Bookshop can live edit with a custom partial
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/layouts/partials/text.html" file with the content {html}

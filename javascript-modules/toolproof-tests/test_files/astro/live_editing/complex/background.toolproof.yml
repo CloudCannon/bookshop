@@ -1,6 +1,10 @@
 name: Astro live editing complex setup
 type: reference
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - macro: I setup an Astro site
   - macro: I setup the generate package
@@ -30,4 +34,4 @@ steps:
     jsx: |-
       export default ({text}) => {
         return <span>{ text }</span>
-      } 
+      }

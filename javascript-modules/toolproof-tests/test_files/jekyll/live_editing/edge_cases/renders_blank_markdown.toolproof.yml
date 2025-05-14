@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders blank markdown
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/md/md.jekyll.html" file with the content {html}
@@ -26,4 +30,4 @@ steps:
       }
   - step: In my browser, the console should be empty
   - step: In my browser, the result of {js} should contain "md -  - md"
-    js: return (await toolproof.querySelector("div")).textContent 
+    js: return (await toolproof.querySelector("div")).textContent

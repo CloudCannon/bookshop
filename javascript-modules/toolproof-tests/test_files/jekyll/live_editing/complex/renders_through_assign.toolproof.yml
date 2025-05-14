@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders through an assign
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/assigner/assigner.jekyll.html" file with the content {html}
@@ -36,4 +40,4 @@ steps:
       }
   - step: In my browser, the console should be empty
   - step: In my browser, the result of {js} should contain "Live Love Laugh"
-    js: return (await toolproof.querySelector("h1")).textContent 
+    js: return (await toolproof.querySelector("h1")).textContent

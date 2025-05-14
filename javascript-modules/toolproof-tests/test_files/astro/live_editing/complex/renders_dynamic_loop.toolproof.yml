@@ -1,5 +1,9 @@
 name: Astro bookshop live renders a dynamic loop
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/src/components/page/page.astro" file with the content {astro}
@@ -87,4 +91,4 @@ steps:
   - step: In my browser, the result of {js} should contain "Block Three"
     js: return (await toolproof.querySelector(".page>*:nth-child(5)")).textContent
   - step: In my browser, the result of {js} should contain "Block Three"
-    js: return (await toolproof.querySelector(".page>*:nth-child(6)")).textContent 
+    js: return (await toolproof.querySelector(".page>*:nth-child(6)")).textContent

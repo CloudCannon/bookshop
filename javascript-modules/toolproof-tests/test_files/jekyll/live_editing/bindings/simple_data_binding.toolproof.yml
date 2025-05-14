@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders a simple data binding
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/index.html" file with the content {html}

@@ -1,5 +1,9 @@
 name: Hugo Bookshop live renders unsafe Markdown
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/cont/cont.hugo.html" file with the content {html}

@@ -1,5 +1,9 @@
 name: Eleventy bookshop sets a flag when live editing
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/single/single.eleventy.liquid" file with the content {liquid}

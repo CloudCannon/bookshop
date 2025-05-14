@@ -1,5 +1,9 @@
 name: Hugo bookshop live renders through an assign
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/assigner/assigner.hugo.html" file with the content {html}

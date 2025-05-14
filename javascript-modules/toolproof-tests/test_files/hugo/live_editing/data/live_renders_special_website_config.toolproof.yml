@@ -1,5 +1,9 @@
 name: Hugo bookshop live renders special website config
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/block/block.hugo.html" file with the content {html}

@@ -1,5 +1,9 @@
 name: Jekyll bookshop sets a flag when live editing
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/single/single.jekyll.html" file with the content {html}
@@ -37,4 +41,4 @@ steps:
   - step: In my browser, the result of {js} should contain "LIVE! 🫑"
     js: return (await toolproof.querySelector("h1")).textContent
   - step: In my browser, the result of {js} should contain "LIVE! 🫑"
-    js: return (await toolproof.querySelector("h2")).textContent 
+    js: return (await toolproof.querySelector("h2")).textContent

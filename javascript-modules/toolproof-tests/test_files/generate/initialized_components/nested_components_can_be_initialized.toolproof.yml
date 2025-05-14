@@ -1,5 +1,9 @@
 name: Bookshop initialized components - Nested components can be initialized
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/nested/block/block.bookshop.yml" file with the content {yml}

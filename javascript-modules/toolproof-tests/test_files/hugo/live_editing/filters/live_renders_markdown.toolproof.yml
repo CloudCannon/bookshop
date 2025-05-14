@@ -1,5 +1,9 @@
 name: Bookshop live renders markdown
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/beetroot/beetroot.hugo.html" file with the content {html}

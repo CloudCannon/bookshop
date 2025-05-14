@@ -1,5 +1,9 @@
 name: Astro bookshop handles ignoring custom paths
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/src/components/single.spec.jsx" file with the content {jsx}

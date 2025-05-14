@@ -1,5 +1,9 @@
 name: Bookshop structure generation - Generating structures for complex component keys
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/section/section--heading-and-components/section--heading-and-components.bookshop.yml" file with the content {yml}

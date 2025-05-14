@@ -1,5 +1,9 @@
 name: Bookshop structure generation - Object arrays become structures
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/card/card.bookshop.toml" file with the content {toml}

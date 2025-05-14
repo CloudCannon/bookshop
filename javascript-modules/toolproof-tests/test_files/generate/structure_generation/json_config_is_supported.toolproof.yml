@@ -1,5 +1,9 @@
 name: Bookshop structure generation - JSON config is supported
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/a/b/c/d/e/e.bookshop.json" file with the content {json}

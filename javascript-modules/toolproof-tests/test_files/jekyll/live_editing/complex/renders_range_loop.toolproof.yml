@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders a range loop
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/range/range.jekyll.html" file with the content {html}
@@ -33,4 +37,4 @@ steps:
       }
   - step: In my browser, the console should be empty
   - step: In my browser, the result of {js} should contain "5"
-    js: return (await toolproof.querySelector("h1:nth-of-type(5)")).textContent 
+    js: return (await toolproof.querySelector("h1:nth-of-type(5)")).textContent

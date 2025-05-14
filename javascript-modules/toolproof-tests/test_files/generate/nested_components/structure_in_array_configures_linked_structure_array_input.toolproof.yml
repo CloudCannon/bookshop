@@ -1,5 +1,9 @@
 name: Bookshop nested components - Structure in array configures linked-structure array input
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/tag/tag.bookshop.yml" file with the content {yml}

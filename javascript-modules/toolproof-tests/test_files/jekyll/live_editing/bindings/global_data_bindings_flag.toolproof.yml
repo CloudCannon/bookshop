@@ -1,5 +1,9 @@
 name: Jekyll bookshop live respects the global dataBindings flag
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/index.html" file with the content {html}

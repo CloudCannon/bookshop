@@ -1,5 +1,9 @@
 name: Bookshop replaces non-existent components in an error boundary
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - macro: I build my Hugo site and load it with front matter {json}

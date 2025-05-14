@@ -1,5 +1,9 @@
 name: Jekyll bookshop replaces non-existent components in an error boundary
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - macro: I build my Jekyll site and load it with front matter {json}
@@ -35,4 +39,4 @@ steps:
   - step: In my browser, the result of {js} should contain "Failed to find"
     js: return (await toolproof.querySelector(".page>div")).textContent
   - step: In my browser, the result of {js} should contain "Hello World 02"
-    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).textContent 
+    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).textContent

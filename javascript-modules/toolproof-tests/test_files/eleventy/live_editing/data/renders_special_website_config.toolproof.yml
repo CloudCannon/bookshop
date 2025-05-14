@@ -1,5 +1,9 @@
 name: Eleventy bookshop live renders special website config
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/.eleventy.js" file with the content {js}

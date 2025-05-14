@@ -1,5 +1,9 @@
 name: Astro bookshop live renders through an assign
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/src/components/assigner/assigner.astro" file with the content {astro}
@@ -67,4 +71,4 @@ steps:
   - step: In my browser, the result of {js} should contain "Live Love Laugh"
     js: return (await toolproof.querySelector("div:nth-of-type(2)>h1")).textContent
   - step: In my browser, the result of {js} should contain "Live Love Laugh"
-    js: return (await toolproof.querySelector("div:nth-of-type(3)>h1")).textContent 
+    js: return (await toolproof.querySelector("div:nth-of-type(3)>h1")).textContent

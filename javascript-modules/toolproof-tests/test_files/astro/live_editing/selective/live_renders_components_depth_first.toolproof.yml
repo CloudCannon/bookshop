@@ -1,5 +1,9 @@
 name: Astro bookshop live renders components depth first
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/src/pages/index.md" file with the content {md}

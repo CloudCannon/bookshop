@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders collection loop
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/_config.yml" file with the content {yaml}
@@ -21,7 +25,7 @@ steps:
   - step: I have a "component-lib/components/test/test.jekyll.html" file with the content {html}
     html: |-
       {% for item in include.page_links %}
-        {% assign collections = site.collection1 
+        {% assign collections = site.collection1
           | concat: site.collection2 %}
         {% assign linked_page = false %}
         {% for doc in collections %}
@@ -83,4 +87,4 @@ steps:
   - step: In my browser, the result of {js} should contain "BANANA PATH"
     js: return (await toolproof.querySelector("h1:nth-of-type(1)")).textContent
   - step: In my browser, the result of {js} should contain "APPLE PATH"
-    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).textContent 
+    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).textContent

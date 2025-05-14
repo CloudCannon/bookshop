@@ -1,6 +1,10 @@
 name: Jekyll live editing errors setup
 type: reference
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - macro: I setup a Jekyll site
   - macro: I setup the generate package
@@ -32,4 +36,4 @@ steps:
         - _bookshop_name: good
           text: Hello World 01
       ---
-      {% bookshop page content_blocks=page.components %} 
+      {% bookshop page content_blocks=page.components %}

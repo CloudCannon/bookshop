@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders a warning when using content
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/_config.yml" file with the content {yaml}
@@ -9,7 +13,7 @@ steps:
 
       plugins:
         - jekyll-bookshop
-      
+
       collections:
         - cats
   - step: I have a "site/_cats/cheeka.md" file with the content {md}
@@ -39,4 +43,4 @@ steps:
       }
   - step: In my browser, the console should be empty
   - step: In my browser, the result of {js} should contain "Cheeka (Content is not available when live editing)"
-    js: return (await toolproof.querySelector("li:nth-of-type(1)")).textContent 
+    js: return (await toolproof.querySelector("li:nth-of-type(1)")).textContent

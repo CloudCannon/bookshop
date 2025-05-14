@@ -1,38 +1,42 @@
 name: Hugo bookshop live renders a multiline component tag
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/outer/outer.hugo.html" file with the content {html}
     html: |-
-      <div> 
-        {{ partial 
-          "bookshop" 
+      <div>
+        {{ partial
+          "bookshop"
           (
-            slice 
-            "single" 
+            slice
+            "single"
             (
-              dict 
-              "title" 
+              dict
+              "title"
               .contents.title
             )
-          ) 
+          )
         }}
       </div>
   - step: I have a "site/layouts/index.html" file with the content {html}
     html: |-
       <html>
       <body>
-      {{ partial 
-        "bookshop_bindings" 
+      {{ partial
+        "bookshop_bindings"
         `(dict "contents" .Params.contents )`
       }}
-      {{ partial 
-        "bookshop" 
+      {{ partial
+        "bookshop"
         (
-          slice 
-          "outer" 
+          slice
+          "outer"
           (
-            dict 
+            dict
             "contents" .Params.contents
           )
         )

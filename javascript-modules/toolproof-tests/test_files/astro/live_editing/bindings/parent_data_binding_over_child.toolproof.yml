@@ -1,5 +1,9 @@
 name: Astro bookshop live renders a parent data binding over a child
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/src/components/loop.astro" file with the content {astro}
@@ -59,4 +63,4 @@ steps:
   - step: In my browser, the result of {js} should be exactly '<h1 data-cms-bind="#rows">Goodbye You</h1>'
     js: return (await toolproof.querySelector("h1:nth-of-type(5)")).outerHTML
   - step: In my browser, the result of {js} should be exactly '<h1 data-cms-bind="#rows">A third one.</h1>'
-    js: return (await toolproof.querySelector("h1:nth-of-type(6)")).outerHTML 
+    js: return (await toolproof.querySelector("h1:nth-of-type(6)")).outerHTML

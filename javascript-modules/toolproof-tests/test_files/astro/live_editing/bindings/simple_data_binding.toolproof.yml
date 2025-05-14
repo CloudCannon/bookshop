@@ -1,5 +1,9 @@
 name: Astro bookshop live renders a simple data binding
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/src/layouts/Page.astro" file with the content {astro}
@@ -30,4 +34,4 @@ steps:
   - step: In my browser, the result of {js} should be exactly '<h1 data-cms-bind="#hero">Hello World</h1>'
     js: return (await toolproof.querySelector("h1:nth-of-type(1)")).outerHTML
   - step: In my browser, the result of {js} should be exactly '<h1 data-cms-bind="#hero">Hello World</h1>'
-    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).outerHTML 
+    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).outerHTML

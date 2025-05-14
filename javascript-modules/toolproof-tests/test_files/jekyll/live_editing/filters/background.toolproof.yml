@@ -1,6 +1,10 @@
 name: Jekyll live editing filters setup
 type: reference
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - macro: I setup a Jekyll site
   - macro: I setup the generate package
@@ -13,4 +17,4 @@ steps:
           {{ content }}
         </main>
       </body>
-      </html> 
+      </html>

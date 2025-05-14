@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders a subinclude
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/outer/outer.jekyll.html" file with the content {html}
@@ -31,4 +35,4 @@ steps:
       }
   - step: In my browser, the console should be empty
   - step: In my browser, the result of {js} should contain "The title"
-    js: return (await toolproof.querySelector("span")).textContent 
+    js: return (await toolproof.querySelector("span")).textContent

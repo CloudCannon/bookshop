@@ -1,5 +1,9 @@
 name: Hugo bookshop live renders website data
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/cloudcannon.config.yml" file with the content {yaml}

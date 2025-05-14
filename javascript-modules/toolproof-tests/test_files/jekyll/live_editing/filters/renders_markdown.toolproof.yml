@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders markdown
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/beetroot/beetroot.jekyll.html" file with the content {html}
@@ -26,4 +30,4 @@ steps:
       }
   - step: In my browser, the console should be empty
   - step: In my browser, the result of {js} should be exactly "<p><strong>bold</strong> title</p>"
-    js: return (await toolproof.querySelector("code")).innerHTML.trim() 
+    js: return (await toolproof.querySelector("code")).innerHTML.trim()

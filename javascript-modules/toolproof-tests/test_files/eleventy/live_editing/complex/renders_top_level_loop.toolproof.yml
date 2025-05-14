@@ -1,5 +1,9 @@
 name: Eleventy bookshop live renders a top level loop
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/index.html" file with the content {html}

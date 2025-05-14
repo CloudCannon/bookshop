@@ -1,5 +1,9 @@
 name: Bookshop replaces Hugo non-existent partials in an error boundary
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/bad/bad.hugo.html" file with the content {html}

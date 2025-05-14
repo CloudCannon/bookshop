@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders special website config
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/_config.yml" file with the content {yaml}
@@ -37,4 +41,4 @@ steps:
   - step: In my browser, the result of {js} should contain "/documentation/home"
     js: return (await toolproof.querySelector("h2")).textContent
   - step: In my browser, the result of {js} should contain "My Site"
-    js: return (await toolproof.querySelector("h3")).textContent 
+    js: return (await toolproof.querySelector("h3")).textContent

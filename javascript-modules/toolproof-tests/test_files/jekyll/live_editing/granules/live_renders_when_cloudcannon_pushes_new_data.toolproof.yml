@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders when CloudCannon pushes new data
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - macro: I build my Jekyll site and load it with front matter {json}
@@ -20,4 +24,4 @@ steps:
       }
   - step: In my browser, the console should be empty
   - step: In my browser, the result of {js} should contain "Rerendered"
-    js: return (await toolproof.querySelector("h1")).textContent 
+    js: return (await toolproof.querySelector("h1")).textContent

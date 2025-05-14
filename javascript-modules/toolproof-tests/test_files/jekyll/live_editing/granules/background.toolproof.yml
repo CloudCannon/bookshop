@@ -1,6 +1,10 @@
 name: Jekyll live editing granules setup
 type: reference
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - macro: I setup a Jekyll site
   - macro: I setup the generate package
@@ -27,4 +31,4 @@ steps:
       block:
         title: "Hello There"
       ---
-      {% bookshop single bind=page.block %} 
+      {% bookshop single bind=page.block %}

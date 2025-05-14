@@ -1,6 +1,10 @@
 name: Eleventy live editing granules setup
 type: reference
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - macro: I setup an Eleventy site
   - macro: I setup the generate package

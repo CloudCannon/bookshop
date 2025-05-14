@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders filters with attributes
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/where/where.jekyll.html" file with the content {html}
@@ -59,4 +63,4 @@ steps:
   - step: In my browser, the result of {js} should contain "Item One"
     js: return (await toolproof.querySelector("p:nth-of-type(1)")).textContent
   - step: In my browser, the result of {js} should contain "Item Three"
-    js: return (await toolproof.querySelector("p:nth-of-type(2)")).textContent 
+    js: return (await toolproof.querySelector("p:nth-of-type(2)")).textContent

@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders components depth first
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/index.html" file with the content {html}
@@ -7,7 +11,7 @@ steps:
       ---
       layout: default
       data:
-        one: 
+        one:
           items:
             - title: "I"
             - title: "II"
@@ -75,4 +79,4 @@ steps:
       // Check if the span element is still the same DOM node
       // (i.e., it wasn't rerendered, only the component with the updated array was)
       const currentSpanElement = await toolproof.querySelector("span");
-      toolproof.assert(currentSpanElement === window.originalSpanElement); 
+      toolproof.assert(currentSpanElement === window.originalSpanElement);

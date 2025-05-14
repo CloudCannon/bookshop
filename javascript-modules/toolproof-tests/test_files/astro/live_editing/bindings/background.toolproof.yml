@@ -1,6 +1,10 @@
 name: Astro live editing bindings setup
 type: reference
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - macro: I setup an Astro site
   - macro: I setup the generate package
@@ -11,4 +15,4 @@ steps:
     jsx: |-
       export default ({innards}) => {
         return <h1>{innards}</h1>;
-      } 
+      }

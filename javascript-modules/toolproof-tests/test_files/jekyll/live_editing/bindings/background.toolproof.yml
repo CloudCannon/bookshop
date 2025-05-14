@@ -1,6 +1,10 @@
 name: Jekyll Bookshop CloudCannon Live Editing Automatic Data Bindings - Background
 type: reference
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - macro: I setup a Jekyll site
   - macro: I setup the generate package

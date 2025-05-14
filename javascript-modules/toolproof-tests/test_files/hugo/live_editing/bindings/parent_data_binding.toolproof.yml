@@ -1,5 +1,9 @@
 name: Hugo bookshop live renders a parent data binding over a child
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/loop/loop.hugo.html" file with the content {html}

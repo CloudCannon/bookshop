@@ -1,5 +1,9 @@
 name: Hugo bookshop live renders starter template data bindings
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - macro: I build my Hugo site and load it with front matter {json}

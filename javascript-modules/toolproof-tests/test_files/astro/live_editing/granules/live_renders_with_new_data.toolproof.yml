@@ -1,5 +1,9 @@
 name: Astro bookshop live renders when CloudCannon pushes new data
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - macro: I build my Astro site and load it with front matter {json}

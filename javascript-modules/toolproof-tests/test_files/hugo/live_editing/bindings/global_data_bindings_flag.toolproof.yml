@@ -1,5 +1,9 @@
 name: Hugo bookshop live respects the global dataBindings flag
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/content/_index.md" file with the content {md}

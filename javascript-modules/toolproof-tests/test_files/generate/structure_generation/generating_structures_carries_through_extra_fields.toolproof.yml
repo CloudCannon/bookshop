@@ -1,5 +1,9 @@
 name: Bookshop structure generation - Generating structures carries through extra fields
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/nested/card/card.bookshop.yml" file with the content {yml}

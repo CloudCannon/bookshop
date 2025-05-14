@@ -1,5 +1,9 @@
 name: Bookshop script generation - Can skip live editing
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I run "npm run generate-no-live --scripts-prepend-node-path"

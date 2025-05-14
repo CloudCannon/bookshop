@@ -1,6 +1,10 @@
 name: Astro live editing selective setup
 type: reference
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - macro: I setup an Astro site
   - macro: I setup the generate package

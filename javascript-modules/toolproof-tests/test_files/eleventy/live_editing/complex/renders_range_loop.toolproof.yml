@@ -1,5 +1,9 @@
 name: Eleventy bookshop live renders a range loop
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/range/range.eleventy.liquid" file with the content {liquid}

@@ -1,6 +1,10 @@
 name: Jekyll live editing selective setup
 type: reference
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - macro: I setup a Jekyll site
   - macro: I setup the generate package
@@ -30,4 +34,4 @@ steps:
       {% bookshop multiple bind=include.one %}
       <span>{{ include.two }}</span>
       {% bookshop single title=include.three %}
-      </div> 
+      </div>

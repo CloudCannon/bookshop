@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders starter template data bindings
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - macro: I build my Jekyll site and load it with front matter {json}
@@ -34,4 +38,4 @@ steps:
   - step: In my browser, the result of {js} should be exactly '#content_blocks.0'
     js: return (await toolproof.querySelector(".c-title")).getAttribute("data-cms-bind")
   - step: In my browser, the result of {js} should be exactly '#content_blocks.0.tags.1'
-    js: return (await toolproof.querySelector(".u-tag:nth-of-type(2)")).getAttribute("data-cms-bind") 
+    js: return (await toolproof.querySelector(".u-tag:nth-of-type(2)")).getAttribute("data-cms-bind")

@@ -1,5 +1,9 @@
 name: Jekyll bookshop wraps component errors in an error boundary
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/bad/bad.jekyll.html" file with the content {html}
@@ -42,4 +46,4 @@ steps:
   - step: In my browser, the result of {js} should contain "Hello World 01"
     js: return (await toolproof.querySelector("h1:nth-of-type(1)")).textContent
   - step: In my browser, the result of {js} should contain "Hello World 02"
-    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).textContent 
+    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).textContent

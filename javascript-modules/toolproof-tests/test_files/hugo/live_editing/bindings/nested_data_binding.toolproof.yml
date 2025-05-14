@@ -1,5 +1,9 @@
 name: Hugo bookshop live renders a nested data binding
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/outer/outer.hugo.html" file with the content {html}

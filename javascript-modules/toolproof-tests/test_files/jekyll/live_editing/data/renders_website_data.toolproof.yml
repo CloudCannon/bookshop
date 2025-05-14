@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders website data
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/_data/cat.yml" file with the content {yaml}
@@ -22,4 +26,4 @@ steps:
       }
   - step: In my browser, the console should be empty
   - step: In my browser, the result of {js} should contain "Cheeka"
-    js: return (await toolproof.querySelector("h1")).textContent 
+    js: return (await toolproof.querySelector("h1")).textContent

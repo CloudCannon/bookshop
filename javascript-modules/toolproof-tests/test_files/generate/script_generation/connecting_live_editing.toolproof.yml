@@ -1,5 +1,9 @@
 name: Bookshop script generation - Connecting live editing
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I run "npm start"

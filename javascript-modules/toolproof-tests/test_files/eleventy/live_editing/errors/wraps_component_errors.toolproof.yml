@@ -1,5 +1,9 @@
 name: Eleventy bookshop wraps component errors in an error boundary
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/bad/bad.eleventy.liquid" file with the content {liquid}

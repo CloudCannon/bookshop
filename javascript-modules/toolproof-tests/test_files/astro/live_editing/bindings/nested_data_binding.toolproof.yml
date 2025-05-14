@@ -1,5 +1,9 @@
 name: Astro bookshop live renders a nested data binding
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/src/components/outer.astro" file with the content {astro}
@@ -50,4 +54,4 @@ steps:
   - step: In my browser, the result of {js} should be exactly '<h1 data-cms-bind="#items.item">Hello There</h1>'
     js: return (await toolproof.querySelector("div:nth-of-type(2)>h1")).outerHTML
   - step: In my browser, the result of {js} should be exactly '<h1 data-cms-bind="#items.item">Hello There</h1>'
-    js: return (await toolproof.querySelector("div:nth-of-type(3)>h1")).outerHTML 
+    js: return (await toolproof.querySelector("div:nth-of-type(3)>h1")).outerHTML

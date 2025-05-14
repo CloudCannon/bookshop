@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders a top level loop
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/index.html" file with the content {html}
@@ -36,4 +40,4 @@ steps:
       }
   - step: In my browser, the console should be empty
   - step: In my browser, the result of {js} should contain "New!"
-    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).textContent 
+    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).textContent

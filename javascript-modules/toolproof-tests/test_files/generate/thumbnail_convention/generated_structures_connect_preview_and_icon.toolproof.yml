@@ -1,5 +1,9 @@
 name: Bookshop thumbnail convention - Generated structures connect the preview and icon
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/nested/card/card.preview.png" file with the content {png}

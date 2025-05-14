@@ -1,5 +1,9 @@
 name: Astro bookshop live renders flat components with new data
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "site/src/layouts/Page.astro" file with the content {astro}

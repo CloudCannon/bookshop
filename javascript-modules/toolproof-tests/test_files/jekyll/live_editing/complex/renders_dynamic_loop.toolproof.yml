@@ -1,5 +1,9 @@
 name: Jekyll bookshop live renders a dynamic loop
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I have a "component-lib/components/page/page.jekyll.html" file with the content {html}
@@ -69,4 +73,4 @@ steps:
   - step: In my browser, the result of {js} should contain "New Tag"
     js: return (await toolproof.querySelector("span")).textContent
   - step: In my browser, the result of {js} should contain "Block Three"
-    js: return (await toolproof.querySelector(".page>*:nth-child(3)")).textContent 
+    js: return (await toolproof.querySelector(".page>*:nth-child(3)")).textContent
