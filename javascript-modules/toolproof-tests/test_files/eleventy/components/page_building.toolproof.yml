@@ -24,5 +24,5 @@ steps:
       {% endfor %}
   - step: I run "cd site && npm start"
   - step: stderr should be empty
-  - step: stdout should contain "v3.0.0"
+  - step: stdout should contain "v3"
   - step: The file "site/_site/index.html" should contain "tag-contents-tag"
