@@ -1,5 +1,9 @@
 name: Eleventy bookshop component browser initialises
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I run "cd site && npm start"

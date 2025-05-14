@@ -1,5 +1,9 @@
 name: Jekyll bookshop component browser renders a flat component
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./flat_background.toolproof.yml
   - step: I run "cd site && bundle exec jekyll build --trace"
@@ -16,4 +20,4 @@ steps:
     js: await toolproof.waitFor(() => window.bookshopComponentHasRendered === true, 8000)
   - step: In my browser, the console should be empty
   - step: In my browser, the result of {js} should contain "Hello There, World"
-    js: return (await toolproof.querySelector("h1")).textContent 
+    js: return (await toolproof.querySelector("h1")).textContent

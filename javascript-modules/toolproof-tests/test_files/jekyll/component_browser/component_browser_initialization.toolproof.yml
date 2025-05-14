@@ -1,5 +1,9 @@
 name: Jekyll bookshop component browser initialises
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./background.toolproof.yml
   - step: I run "cd site && bundle exec jekyll build --trace"
@@ -10,4 +14,4 @@ steps:
     js: await toolproof.waitFor(() => window.bookshopBrowser?.hasRendered === true, 8000)
   - step: In my browser, the console should be empty
   - step: In my browser, the result of {js} should contain "Select a component using the"
-    js: return (await toolproof.querySelector(".tutorial")).textContent 
+    js: return (await toolproof.querySelector(".tutorial")).textContent
