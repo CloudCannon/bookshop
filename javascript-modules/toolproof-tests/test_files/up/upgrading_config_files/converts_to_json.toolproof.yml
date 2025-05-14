@@ -1,0 +1,25 @@
+name: Converts to json
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/test/test.bookshop.toml" file with the content {toml}
+    toml: |-
+      [props]
+      text.default = "Hello World"
+  - step: I run "npm start -- --yes --version 3.0.0 --format json --skip-commands"
+  - step: stderr should be empty
+  - step: stdout should contain "🌟 component-lib/components/test/test.bookshop.toml @ 2.0 → json @ 3.0"
+  - step: I run "ls component-lib/components/test"
+  - snapshot: stdout
+    snapshot_content: |-
+      ╎test.bookshop.json
+  - snapshot: The file "component-lib/components/test/test.bookshop.json"
+    snapshot_content: |-
+      ╎{
+      ╎  "spec": {},
+      ╎  "blueprint": {
+      ╎    "text": "Hello World"
+      ╎  },
+      ╎  "preview": {},
+      ╎  "_inputs": {}
+      ╎}

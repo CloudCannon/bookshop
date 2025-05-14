@@ -1,0 +1,37 @@
+name: Converts to js
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/test/test.bookshop.toml" file with the content {toml}
+    toml: |-
+      [props]
+      text.default = "Hello World"
+  - step: I run "npm start -- --yes --version 3.0.0 --format js --skip-commands"
+  - step: stderr should be empty
+  - step: stdout should contain "🌟 component-lib/components/test/test.bookshop.toml @ 2.0 → js @ 3.0"
+  - step: I run "ls component-lib/components/test"
+  - snapshot: stdout
+    snapshot_content: |-
+      ╎test.bookshop.js
+  - snapshot: The file "component-lib/components/test/test.bookshop.js"
+    snapshot_content: |-
+      ╎module.exports = () => {
+      ╎  // Metadata about this component, to be used in the CMS
+      ╎  const spec = {};
+      ╎
+      ╎  // Defines the structure of this component, as well as the default values
+      ╎  const blueprint = { text: 'Hello World' };
+      ╎
+      ╎  // Overrides any fields in the blueprint when viewing this component in the component browser
+      ╎  const preview = {};
+      ╎
+      ╎  // Any extra CloudCannon inputs configuration to apply to the blueprint
+      ╎  const _inputs = {};
+      ╎
+      ╎  return {
+      ╎    spec,
+      ╎    blueprint,
+      ╎    preview,
+      ╎    _inputs,
+      ╎  }
+      ╎}

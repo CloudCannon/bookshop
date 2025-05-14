@@ -1,0 +1,10 @@
+name: Ignores existing 3.0 syntax
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/test/test.bookshop.toml" file with the content {toml}
+    toml: |-
+      [spec]
+  - step: I run "npm start -- --yes --version 3.0.0 --skip-commands"
+  - step: stderr should be empty
+  - step: stdout should contain "✅ 1 Bookshop config file matches 3.0 syntax"

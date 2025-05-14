@@ -1,0 +1,19 @@
+name: Bookshop Config File Upgrades background
+type: reference
+
+steps:
+  - macro: I setup the up package
+  - macro: I setup a Jekyll site
+  - step: I have a "component-lib/components/test/test.bookshop.toml" file with the content {toml}
+    toml: |-
+      [component]
+      structures = [ "content_blocks" ]
+      label = "Card"
+      description = "Card component"
+      icon = "nature_people"
+      tags = ["Card"]
+
+      [props]
+      card_text = "This is the card"
+      color.select = ["Red", "Blue"]
+      color.default = "Blue" #: Comment

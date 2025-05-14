@@ -1,0 +1,133 @@
+name: Migrates extra keys between formats
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/test/test.bookshop.toml" file with the content {toml}
+    toml: |-
+      something_else = false
+
+      # Metadata about this component, to be used in the CMS
+      [spec]
+      structures = ['content_blocks']
+      label = 'Hero'
+      description = 'Main page hero block'
+      icon = 'title'
+      tags = ['Hero', 'WYSIWYG']
+
+      # Defines the structure of this component, as well as the default values
+      [blueprint]
+      text = 'Hello World'
+
+      # Overrides any fields in the blueprint when viewing this component in the component browser
+      [preview]
+
+      # Any extra CloudCannon inputs configuration to apply to the blueprint
+      [_inputs]
+
+      [_select_data]
+      superfluous = [ 'a', 'b' ]
+  - step: I run "npm start -- --yes --version 3.0.0 --format yml --skip-commands"
+  - step: stderr should be empty
+  - step: stdout should contain "🌟 component-lib/components/test/test.bookshop.toml @ 3.0 → yml @ 3.0"
+  - snapshot: The file "component-lib/components/test/test.bookshop.yml"
+    snapshot_content: |-
+      ╎# Metadata about this component, to be used in the CMS
+      ╎spec:
+      ╎  structures:
+      ╎    - content_blocks
+      ╎  label: Hero
+      ╎  description: Main page hero block
+      ╎  icon: title
+      ╎  tags:
+      ╎    - Hero
+      ╎    - WYSIWYG
+      ╎
+      ╎# Defines the structure of this component, as well as the default values
+      ╎blueprint:
+      ╎  text: Hello World
+      ╎
+      ╎# Overrides any fields in the blueprint when viewing this component in the component browser
+      ╎preview: {}
+      ╎
+      ╎# Any extra CloudCannon inputs configuration to apply to the blueprint
+      ╎_inputs: {}
+      ╎
+      ╎something_else: false
+      ╎
+      ╎_select_data:
+      ╎  superfluous:
+      ╎    - a
+      ╎    - b
+  - step: I run "npm start -- --yes --version 3.0.0 --format js --skip-commands"
+  - step: stderr should be empty
+  - step: stdout should contain "🌟 component-lib/components/test/test.bookshop.yml @ 3.0 → js @ 3.0"
+  - snapshot: The file "component-lib/components/test/test.bookshop.js"
+    snapshot_content: |-
+      ╎module.exports = () => {
+      ╎  // Metadata about this component, to be used in the CMS
+      ╎  const spec = {
+      ╎    structures: [ 'content_blocks' ],
+      ╎    label: 'Hero',
+      ╎    description: 'Main page hero block',
+      ╎    icon: 'title',
+      ╎    tags: [ 'Hero', 'WYSIWYG' ]
+      ╎  };
+      ╎
+      ╎  // Defines the structure of this component, as well as the default values
+      ╎  const blueprint = { text: 'Hello World' };
+      ╎
+      ╎  // Overrides any fields in the blueprint when viewing this component in the component browser
+      ╎  const preview = {};
+      ╎
+      ╎  // Any extra CloudCannon inputs configuration to apply to the blueprint
+      ╎  const _inputs = {};
+      ╎
+      ╎  const extra_fields = {
+      ╎    something_else: false,
+      ╎    _select_data: {
+      ╎      superfluous: [
+      ╎        'a',
+      ╎        'b'
+      ╎      ]
+      ╎    }
+      ╎  };
+      ╎
+      ╎  return {
+      ╎    spec,
+      ╎    blueprint,
+      ╎    preview,
+      ╎    _inputs,
+      ╎    ...extra_fields,
+      ╎  }
+      ╎}
+  - step: I run "npm start -- --yes --version 3.0.0 --format json --skip-commands"
+  - step: stderr should be empty
+  - step: stdout should contain "🌟 component-lib/components/test/test.bookshop.js @ 3.0 → json @ 3.0"
+  - snapshot: The file "component-lib/components/test/test.bookshop.json"
+    snapshot_content: |-
+      ╎{
+      ╎  "spec": {
+      ╎    "structures": [
+      ╎      "content_blocks"
+      ╎    ],
+      ╎    "label": "Hero",
+      ╎    "description": "Main page hero block",
+      ╎    "icon": "title",
+      ╎    "tags": [
+      ╎      "Hero",
+      ╎      "WYSIWYG"
+      ╎    ]
+      ╎  },
+      ╎  "blueprint": {
+      ╎    "text": "Hello World"
+      ╎  },
+      ╎  "preview": {},
+      ╎  "_inputs": {},
+      ╎  "something_else": false,
+      ╎  "_select_data": {
+      ╎    "superfluous": [
+      ╎      "a",
+      ╎      "b"
+      ╎    ]
+      ╎  }
+      ╎}

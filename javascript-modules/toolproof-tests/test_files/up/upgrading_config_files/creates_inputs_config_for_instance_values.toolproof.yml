@@ -1,0 +1,27 @@
+name: Creates _inputs config for instance values
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/test/test.bookshop.toml" file with the content {toml}
+    toml: |-
+      [props]
+      a.instance = "NOW"
+      a.default = "0"
+  - step: I run "npm start -- --yes --version 3.0.0 --format toml --skip-commands"
+  - step: stderr should be empty
+  - step: stdout should contain "🌟 component-lib/components/test/test.bookshop.toml @ 2.0 → toml @ 3.0"
+  - snapshot: The file "component-lib/components/test/test.bookshop.toml"
+    snapshot_content: |-
+      ╎# Metadata about this component, to be used in the CMS
+      ╎[spec]
+      ╎
+      ╎# Defines the structure of this component, as well as the default values
+      ╎[blueprint]
+      ╎a = '0'
+      ╎
+      ╎# Overrides any fields in the blueprint when viewing this component in the component browser
+      ╎[preview]
+      ╎
+      ╎# Any extra CloudCannon inputs configuration to apply to the blueprint
+      ╎[_inputs]
+      ╎a.instance_value = 'NOW'
