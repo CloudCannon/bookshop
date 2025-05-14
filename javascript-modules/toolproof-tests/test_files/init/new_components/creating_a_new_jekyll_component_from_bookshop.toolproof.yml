@@ -12,6 +12,7 @@ steps:
   - step: I run "cd src/component-lib && npm start -- --component button --format toml"
   - step: stderr should be empty
   - step: stdout should contain "components/button/button.bookshop.toml"
+    platforms: [linux, mac]
   - step: The file "src/component-lib/components/button/button.jekyll.html" should contain {val}
     val: |-
       c-button

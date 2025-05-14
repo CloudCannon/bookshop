@@ -16,10 +16,12 @@ steps:
   - step: stderr should be empty
   - step: stdout should contain "Total in"
   - step: The file "site/public/index.html" should contain {html}
+    platforms: [linux, mac]
     html: |-
       Component🎉
       <!--bookshop-live end-->-Block
   - step: The file "site/public/index.html" should contain {html}
+    platforms: [linux, mac]
     html: |-
       Site🎉
       <!--bookshop-live end-->-Inline

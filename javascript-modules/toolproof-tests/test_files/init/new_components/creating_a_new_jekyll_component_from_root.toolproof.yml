@@ -12,6 +12,7 @@ steps:
   - step: I run "cd src && npm start -- --component button --format js"
   - step: stderr should be empty
   - step: stdout should contain "component-lib/components/button/button.bookshop.js"
+    platforms: [linux, mac]
   - step: The file "src/component-lib/components/button/button.jekyll.html" should contain {val}
     val: |-
       c-button

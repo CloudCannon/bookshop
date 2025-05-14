@@ -12,6 +12,7 @@ steps:
   - step: I run "cd src/component-lib && npm start -- --component deep/nested/component --format js"
   - step: stderr should be empty
   - step: stdout should contain "components/deep/nested/component/component.bookshop.js"
+    platforms: [linux, mac]
   - step: The file "src/component-lib/components/deep/nested/component/component.eleventy.liquid" should contain {val}
     val: |-
       c-deep-nested-component

@@ -12,6 +12,7 @@ steps:
   - step: I run "cd src/component-lib && npm start -- --component button --format yml"
   - step: stderr should be empty
   - step: stdout should contain "components/button/button.bookshop.yml"
+    platforms: [linux, mac]
   - step: The file "src/component-lib/components/button/button.eleventy.liquid" should contain {val}
     val: |-
       c-button

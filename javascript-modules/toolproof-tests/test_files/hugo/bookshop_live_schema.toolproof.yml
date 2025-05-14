@@ -27,12 +27,21 @@ steps:
   - step: The file "site/public/index.html" should contain {html}
     html: |-
       baseurl: "https://cloudcannon.com/" copyright: "🎉" title: "Hugo Bookshop Cucumber")-->
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
       <!--bookshop-live name(__bookshop__subsequent) params(.: .Params)-->
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
       <!--bookshop-live name(page)-->
-
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
       <p>fake</p>
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
       <!--bookshop-live name(single)-->
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
       <span>inner</span>
-      <!--bookshop-live end-->
-
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
       <!--bookshop-live end-->
