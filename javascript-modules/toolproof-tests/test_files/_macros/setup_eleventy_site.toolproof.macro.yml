@@ -46,12 +46,12 @@ steps:
         "private": true,
         "main": ".eleventy.js",
         "scripts": {
-          "start": "node %toolproof_process_directory%/node_modules/@11ty/eleventy/cmd.cjs --quiet"
+          "start": "node %toolproof_process_directory_unix%/node_modules/@11ty/eleventy/cmd.cjs --quiet"
         },
         "devDependencies": {
-          "@bookshop/eleventy-bookshop": "file:%toolproof_process_directory%/../generator-plugins/eleventy/eleventy-bookshop",
-          "markdown-it":"file:%toolproof_process_directory%/node_modules/markdown-it",
-          "eleventy-plugin-cloudcannon":"file:%toolproof_process_directory%/node_modules/eleventy-plugin-cloudcannon"
+          "@bookshop/eleventy-bookshop": "file:%toolproof_process_directory_unix%/../generator-plugins/eleventy/eleventy-bookshop",
+          "markdown-it":"file:%toolproof_process_directory_unix%/node_modules/markdown-it",
+          "eleventy-plugin-cloudcannon":"file:%toolproof_process_directory_unix%/node_modules/eleventy-plugin-cloudcannon"
         }
       }
   - step: I run "cd site && npm i"

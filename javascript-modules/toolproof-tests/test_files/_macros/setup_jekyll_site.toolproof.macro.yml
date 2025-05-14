@@ -27,7 +27,7 @@ steps:
 
       group :jekyll_plugins do
         gem 'cloudcannon-jekyll', "~> 3"
-        gem "jekyll-bookshop", :path => "%toolproof_process_directory%/../../generator-plugins/jekyll/jekyll-bookshop"
+        gem "jekyll-bookshop", :path => "%toolproof_process_directory_unix%/../../generator-plugins/jekyll/jekyll-bookshop"
       end
   - step: I run "cd site && bundle install --local"
   - step: I have a "site/_layouts/default.html" file with the content {html}

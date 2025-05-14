@@ -10,8 +10,8 @@ steps:
           "start": "bookshop-sass -b ./component-lib -o site/assets/css/bookshop.css"
         },
         "devDependencies": {
-          "@bookshop/sass": "file:%toolproof_process_directory%/../sass",
-          "@bookshop/jekyll-engine": "file:%toolproof_process_directory%/../engines/jekyll-engine"
+          "@bookshop/sass": "file:%toolproof_process_directory_unix%/../sass",
+          "@bookshop/jekyll-engine": "file:%toolproof_process_directory_unix%/../engines/jekyll-engine"
         }
       }
   - step: I run "npm i"

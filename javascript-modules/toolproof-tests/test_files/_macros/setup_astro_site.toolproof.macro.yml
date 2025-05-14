@@ -37,15 +37,15 @@ steps:
           "build": "astro build"
         },
         "devDependencies": {
-          "@bookshop/astro-bookshop": "file:%toolproof_process_directory%/../generator-plugins/astro/astro-bookshop",
-          "@bookshop/vite-plugin-astro-bookshop": "file:%toolproof_process_directory%/../javascript-modules/generator-plugins/astro/vite-plugin-astro-bookshop"
+          "@bookshop/astro-bookshop": "file:%toolproof_process_directory_unix%/../generator-plugins/astro/astro-bookshop",
+          "@bookshop/vite-plugin-astro-bookshop": "file:%toolproof_process_directory_unix%/../javascript-modules/generator-plugins/astro/vite-plugin-astro-bookshop"
         },
         "dependencies": {
-          "@astrojs/react": "file:%toolproof_process_directory%/node_modules/@astrojs/react",
-          "@astrojs/mdx": "file:%toolproof_process_directory%/node_modules/@astrojs/mdx",
-          "astro": "file:%toolproof_process_directory%/node_modules/astro",
-          "react": "file:%toolproof_process_directory%/node_modules/react",
-          "react-dom": "file:%toolproof_process_directory%/node_modules/react-dom"
+          "@astrojs/react": "file:%toolproof_process_directory_unix%/node_modules/@astrojs/react",
+          "@astrojs/mdx": "file:%toolproof_process_directory_unix%/node_modules/@astrojs/mdx",
+          "astro": "file:%toolproof_process_directory_unix%/node_modules/astro",
+          "react": "file:%toolproof_process_directory_unix%/node_modules/react",
+          "react-dom": "file:%toolproof_process_directory_unix%/node_modules/react-dom"
         }
       }
   - step: I run "cd site && npm i"

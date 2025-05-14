@@ -14,13 +14,13 @@ steps:
           "cc-astro": "cd site && cloudcannon-reader --output dist"
         },
         "devDependencies": {
-          "cloudcannon-hugo": "file:%toolproof_process_directory%/node_modules/cloudcannon-hugo",
-          "@cloudcannon/reader": "file:%toolproof_process_directory%/node_modules/@cloudcannon/reader",
-          "@bookshop/generate": "file:%toolproof_process_directory%/../generate",
-          "@bookshop/hugo-engine": "file:%toolproof_process_directory%/../engines/hugo-engine",
-          "@bookshop/eleventy-engine": "file:%toolproof_process_directory%/../engines/eleventy-engine",
-          "@bookshop/jekyll-engine": "file:%toolproof_process_directory%/../engines/jekyll-engine",
-          "@bookshop/astro-engine": "file:%toolproof_process_directory%/../engines/astro-engine"
+          "cloudcannon-hugo": "file:%toolproof_process_directory_unix%/node_modules/cloudcannon-hugo",
+          "@cloudcannon/reader": "file:%toolproof_process_directory_unix%/node_modules/@cloudcannon/reader",
+          "@bookshop/generate": "file:%toolproof_process_directory_unix%/../generate",
+          "@bookshop/hugo-engine": "file:%toolproof_process_directory_unix%/../engines/hugo-engine",
+          "@bookshop/eleventy-engine": "file:%toolproof_process_directory_unix%/../engines/eleventy-engine",
+          "@bookshop/jekyll-engine": "file:%toolproof_process_directory_unix%/../engines/jekyll-engine",
+          "@bookshop/astro-engine": "file:%toolproof_process_directory_unix%/../engines/astro-engine"
         }
       }
   - step: I run "npm i"
