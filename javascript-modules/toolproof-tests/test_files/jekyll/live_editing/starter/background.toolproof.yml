@@ -1,0 +1,70 @@
+name: Jekyll live editing starter setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Jekyll site
+  - macro: I setup the generate package
+  - step: I have a "site/_layouts/default.html" file with the content {html}
+    html: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <main>
+          {{ content }}
+        </main>
+      </body>
+      </html>
+  - step: I have a "component-lib/shared/jekyll/page.jekyll.html" file with the content {html}
+    html: |-
+      {% for block in include.content_blocks %}
+        {% bookshop {{block._bookshop_name}} bind=block %}
+      {% endfor %}
+  - step: I have a "component-lib/components/tag/tag.jekyll.html" file with the content {html}
+    html: |-
+      <span class="u-tag">{{ include.text }}</span>
+  - step: I have a "component-lib/components/content/content.jekyll.html" file with the content {html}
+    html: |-
+      <div class="c-content c-content--{{ include.type }}">
+        {% if include.type == "note" %}{% bookshop tag text="Note" %}{% endif %}
+        {{ include.content_html }}
+      </div>
+  - step: I have a "component-lib/components/hero/hero.jekyll.html" file with the content {html}
+    html: |-
+      <div class="c-title">
+        {% for tag in include.tags %}
+          {% bookshop tag bind=tag %}
+        {% endfor %}
+        <h1 class="c-title__title">
+          {{ include.title }}
+        </h1>
+        {% if include.content_html %}
+          {% bookshop content content_html=include.content_html %}
+        {% endif %}
+      </div>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: default
+      content_blocks:
+        - _bookshop_name: hero
+          title: Bookshop Hugo Starter
+          content_html: >-
+            <p>A skeleton for getting started with your component journey using Bookshop and Hugo.</p>
+          tags:
+            - text: "bookshop"
+            - text: "hugo"
+        - _bookshop_name: content
+          content_html: >-
+            <p>For more info, check out the <a href="https://github.com/CloudCannon/hugo-bookshop-starter#readme" target="_blank">readme</a></p>
+          type: standard
+      note_html: >-
+        <p>You can also use the bookshop tag directly.</p>
+      ---
+      <main>
+        {% bookshop_include page content_blocks=page.content_blocks %}
+      </main>
+      {% bookshop content content_html=page.note_html type='note' %}

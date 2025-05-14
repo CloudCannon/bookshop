@@ -1,0 +1,27 @@
+name: Eleventy bookshop live renders when CloudCannon initialises
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: layouts/default.liquid
+      block:
+        title: "Gidday"
+      ---
+      {% bookshop "single" bind: block %}
+  - macro: I build my Eleventy site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "block": {
+          "title": "Gidday"
+        }
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Gidday"
+    js: return (await toolproof.querySelector("h1")).textContent

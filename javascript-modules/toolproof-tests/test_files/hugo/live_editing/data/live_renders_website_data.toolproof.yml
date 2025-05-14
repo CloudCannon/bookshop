@@ -1,0 +1,26 @@
+name: Hugo bookshop live renders website data
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/cloudcannon.config.yml" file with the content {yaml}
+    yaml: |-
+      data_config: true
+  - step: I have a "site/data/cat.yml" file with the content {yaml}
+    yaml: |-
+      name: Cheeka
+  - step: I have a "component-lib/components/block/block.hugo.html" file with the content {html}
+    html: |-
+      <h1>{{ if .show }}{{ site.Data.cat.name }}{{ end }}</h1>
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "show": false }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "show": true }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly "Cheeka"
+    js: return (await toolproof.querySelector("h1")).innerText

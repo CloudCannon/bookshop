@@ -1,0 +1,22 @@
+name: Bookshop thumbnail convention background
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      </body>
+      </html>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      ---
+  - step: I run "cd site && hugo"
+  - step: I have a "site/public/_cloudcannon/info.json" file with the content "{}"

@@ -1,0 +1,5 @@
+name: Bookshop new components background
+type: reference
+
+steps:
+  - macro: I setup the init package

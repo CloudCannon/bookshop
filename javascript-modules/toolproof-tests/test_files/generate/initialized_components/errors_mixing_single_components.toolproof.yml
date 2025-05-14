@@ -1,0 +1,17 @@
+name: Bookshop initialized components - Errors mixing single components
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/test/test.bookshop.yml" file with the content {yml}
+    yml: |-
+      blueprint:
+        two_tags:
+          - bookshop:generic/tag!
+          - bookshop:interactive/button!
+  - step: I run "npm start" and expect it to fail
+  - step: stderr should contain "Component test contains an array that starts with bookshop:generic/tag!, but the following items do not match"
+  - step: stderr should contain "Any subsequent array entries must be of the form bookshop:generic/tag!"

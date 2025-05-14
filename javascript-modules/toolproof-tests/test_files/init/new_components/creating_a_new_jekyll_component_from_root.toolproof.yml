@@ -1,0 +1,24 @@
+name: Bookshop init - Creating a new Jekyll component from the root
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "src/component-lib/bookshop/bookshop.config.js" file with the content {js}
+    js: |
+      module.exports = {
+          engines: {
+              "@bookshop/jekyll-engine": {}
+          }
+      }
+  - step: I run "cd src && npm start -- --component button --format js"
+  - step: stderr should be empty
+  - step: stdout should contain "component-lib/components/button/button.bookshop.js"
+    platforms: [linux, mac]
+  - step: The file "src/component-lib/components/button/button.jekyll.html" should contain {val}
+    val: |-
+      c-button
+  - step: The file "src/component-lib/components/button/button.scss" should contain {val}
+    val: |-
+      .c-button
+  - step: The file "src/component-lib/components/button/button.bookshop.js" should contain {val}
+    val: |-
+      content_blocks

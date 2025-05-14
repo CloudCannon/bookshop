@@ -1,0 +1,13 @@
+name: Building Bookshop Sass - Compiling simple component Sass
+
+steps:
+  - macro: I setup a Jekyll site
+  - macro: I setup the sass package
+  - step: I have a "component-lib/components/title/title.scss" file with the content {scss}
+    scss: |-
+      .c-title { &__text { color: red; } }
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Compiled Bookshop Sass with 0 errors and 0 warnings."
+  - step: stdout should contain "📚 Writing styles to bookshop.css"
+  - step: The file "site/assets/css/bookshop.css" should contain ".c-title__text"

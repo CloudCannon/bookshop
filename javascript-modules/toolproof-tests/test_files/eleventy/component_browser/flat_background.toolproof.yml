@@ -1,0 +1,35 @@
+name: Eleventy component browser flat setup
+type: reference
+
+steps:
+  - macro: I setup an Eleventy site
+  - macro: I setup the generate package
+  - step: I have a "component-lib/components/single.bookshop.toml" file with the content {toml}
+    toml: |-
+      [spec]
+      structures = [ "content_blocks" ]
+      label = "Single"
+      description = "Single component"
+      icon = "nature_people"
+      tags = ["Basic"]
+
+      [blueprint]
+      title = "Hello There, World"
+  - step: I have a "component-lib/components/single.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <h1>{{ title }}</h1>
+  - step: I have a "site/_includes/layouts/default.liquid" file with the content {liquid}
+    liquid: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <main>
+          {{ content }}
+        </main>
+      </body>
+      </html>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      ---
+      {% bookshop_component_browser %}

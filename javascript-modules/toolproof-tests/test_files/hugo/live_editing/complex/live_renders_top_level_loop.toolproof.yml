@@ -1,0 +1,35 @@
+name: Hugo bookshop live renders a top level loop
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ range $index, $element := .Params.titles }}
+      {{ partial "bookshop_bindings" (printf "(dict \"title\" (index .Params.titles %d) )" $index) }}
+      {{ partial "bookshop" (slice "single" (dict "title" $element )) }}
+      {{ end }}
+      </body>
+      </html>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      titles:
+        - "First"
+        - "Second"
+        - "Third"
+      ---
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "titles": ["First", "Second", "Third"] }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "titles": ["First", "New!", "Third"] }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly "New!"
+    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).innerText

@@ -1,0 +1,53 @@
+macro: I setup a Jekyll site
+
+steps:
+  - step: I have a "component-lib/bookshop/bookshop.config.js" file with the content {js}
+    js: |
+      // Bookshop configuration
+      module.exports = {
+          engines: {
+              "@bookshop/jekyll-engine": {}
+          }
+      }
+  - step: I have a "site/.ruby-version" file with the content "2.7.5"
+  - step: I have a "site/_config.yml" file with the content {yml}
+    yml: |
+      bookshop_locations:
+        - ../component-lib
+
+      include:
+        - _cloudcannon
+
+      plugins:
+        - jekyll-bookshop
+  - step: I have a "site/Gemfile" file with the content {text}
+    text: |-
+      source "https://rubygems.org"
+      gem "jekyll", "~> 4.2.0"
+
+      group :jekyll_plugins do
+        gem 'cloudcannon-jekyll', "~> 3"
+        gem "jekyll-bookshop", :path => "%toolproof_process_directory_unix%/../../generator-plugins/jekyll/jekyll-bookshop"
+      end
+  - step: I run "cd site && bundle install --local"
+  - step: I have a "site/_layouts/default.html" file with the content {html}
+    html: |
+      ---
+      ---
+      <!DOCTYPE html>
+      <html lang="en">
+
+      <head>
+          <meta charset="UTF-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Jekyll Bookshop (Ephemeral Toolproof Test Site)</title>
+      </head>
+
+      <body>
+          <main>
+          {{ content }}
+          </main>
+      </body>
+
+      </html>

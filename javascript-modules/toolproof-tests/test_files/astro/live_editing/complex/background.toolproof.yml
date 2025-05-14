@@ -1,0 +1,37 @@
+name: Astro live editing complex setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup an Astro site
+  - macro: I setup the generate package
+  - step: I have a "site/src/components/single/single.astro" file with the content {astro}
+    astro: |-
+      <h1>{ Astro.props.title }</h1>
+  - step: I have a "site/src/components/tag/tag.astro" file with the content {astro}
+    astro: |-
+      ---
+      const { inner } = Astro.props;
+      ---
+      <span>{ inner.text }</span>
+  - step: I have a "site/src/shared/astro/span.astro" file with the content {astro}
+    astro: |-
+      <span>{ Astro.props.text }</span>
+  - step: I have a "site/src/components/single/single_react.jsx" file with the content {jsx}
+    jsx: |-
+      export default ({title}) => {
+        return <h1>{ title }</h1>
+      }
+  - step: I have a "site/src/components/tag/tag_react.jsx" file with the content {jsx}
+    jsx: |-
+      export default ({inner}) => {
+        return <span>{ inner.text }</span>
+      }
+  - step: I have a "site/src/shared/astro/span_react.jsx" file with the content {jsx}
+    jsx: |-
+      export default ({text}) => {
+        return <span>{ text }</span>
+      }

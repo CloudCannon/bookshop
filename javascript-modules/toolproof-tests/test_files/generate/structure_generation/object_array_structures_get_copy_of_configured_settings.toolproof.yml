@@ -1,0 +1,79 @@
+name: Bookshop structure generation - Object array structures get a copy of any configured settings
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/card/card.bookshop.toml" file with the content {toml}
+    toml: |-
+      [spec]
+      structures = ["blocks"]
+
+      [blueprint]
+      title = "Hello World"
+      [[blueprint.nested.my_links]]
+      text = "My link"
+
+      [_inputs]
+      text.comment = "Text comment"
+
+      [_misc]
+      something_else = true
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
+  - snapshot: The file "site/public/_cloudcannon/info.json"
+    snapshot_content: |-
+      ╎{
+      ╎  "_structures": {
+      ╎    "blocks": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "card",
+      ╎            "title": "Hello World",
+      ╎            "nested": {
+      ╎              "my_links": []
+      ╎            }
+      ╎          },
+      ╎          "label": "Card",
+      ╎          "_inputs": {
+      ╎            "text": {
+      ╎              "comment": "Text comment"
+      ╎            },
+      ╎            "my_links": {
+      ╎              "options": {
+      ╎                "structures": {
+      ╎                  "values": [
+      ╎                    {
+      ╎                      "label": "My Link",
+      ╎                      "icon": "add_box",
+      ╎                      "value": {
+      ╎                        "text": "My link"
+      ╎                      },
+      ╎                      "_inputs": {
+      ╎                        "text": {
+      ╎                          "comment": "Text comment"
+      ╎                        }
+      ╎                      },
+      ╎                      "_misc": {
+      ╎                        "something_else": true
+      ╎                      }
+      ╎                    }
+      ╎                  ]
+      ╎                }
+      ╎              },
+      ╎              "type": "array"
+      ╎            }
+      ╎          },
+      ╎          "_misc": {
+      ╎            "something_else": true
+      ╎          }
+      ╎        }
+      ╎      ]
+      ╎    }
+      ╎  }
+      ╎}

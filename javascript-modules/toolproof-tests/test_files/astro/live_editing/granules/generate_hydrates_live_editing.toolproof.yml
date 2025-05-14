@@ -1,0 +1,14 @@
+name: Astro bookshop generate hydrates live editing
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "cd site && npm run build"
+  - step: I run "npm run cc-astro"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Modifying output site at ./site/dist"
+  - step: stdout should contain "Added live editing to 1 page containing Bookshop components"

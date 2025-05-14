@@ -1,0 +1,31 @@
+name: Jekyll bookshop live renders a nested loop data binding
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/loop/loop.jekyll.html" file with the content {html}
+    html: |-
+      <div>{% for row in include.rows %}{% bookshop title innards=row %}{% endfor %}</div>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: default
+      rows:
+        - "Hello There"
+        - "Goodbye You"
+        - "A third one."
+      ---
+      {% bookshop loop rows=page.rows %}
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      { "layout": "default", "rows": ["Hello There", "Goodbye You", "A third one."] }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly '<h1 data-cms-bind="#rows.0">Hello There</h1>'
+    js: return (await toolproof.querySelector("h1:nth-of-type(1)")).outerHTML
+  - step: In my browser, the result of {js} should be exactly '<h1 data-cms-bind="#rows.1">Goodbye You</h1>'
+    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).outerHTML
+  - step: In my browser, the result of {js} should be exactly '<h1 data-cms-bind="#rows.2">A third one.</h1>'
+    js: return (await toolproof.querySelector("h1:nth-of-type(3)")).outerHTML

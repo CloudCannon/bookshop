@@ -1,0 +1,37 @@
+name: Eleventy live editing selective setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup an Eleventy site
+  - macro: I setup the generate package
+  - step: I have a "site/_includes/layouts/default.liquid" file with the content {liquid}
+    liquid: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <main>
+          {{ content }}
+        </main>
+      </body>
+      </html>
+  - step: I have a "component-lib/components/single/single.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <h1>{{ title }}</h1>
+  - step: I have a "component-lib/components/multiple/multiple.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <div>
+      {% for item in items %}
+      {% bookshop "single" bind: item %}
+      {% endfor %}
+      </div>
+  - step: I have a "component-lib/components/uppermost/uppermost.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <div>
+      {% bookshop "multiple" bind: one %}
+      <span>{{ two }}</span>
+      {% bookshop "single" title: three %}
+      </div>

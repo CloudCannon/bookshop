@@ -1,0 +1,28 @@
+name: Hugo bookshop live renders special website config
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/block/block.hugo.html" file with the content {html}
+    html: |-
+      {{ if .show }}
+        <h1>{{ site.BaseURL }}</h1>
+        <h2>{{ site.Copyright }}</h2>
+        <h3>{{ site.Title }}</h3>
+      {{ end }}
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "show": false }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "show": true }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly "https://cloudcannon.com/"
+    js: return (await toolproof.querySelector("h1")).innerText
+  - step: In my browser, the result of {js} should be exactly "🎉"
+    js: return (await toolproof.querySelector("h2")).innerText
+  - step: In my browser, the result of {js} should be exactly "Hugo Bookshop Cucumber"
+    js: return (await toolproof.querySelector("h3")).innerText

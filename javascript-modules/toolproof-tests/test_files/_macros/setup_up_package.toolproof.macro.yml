@@ -1,0 +1,20 @@
+macro: I setup the up package
+
+steps:
+  - step: I have a "package.json" file with the content {json}
+    json: |-
+      {
+        "name": "bookshop-up-toolproof-site",
+        "private": true,
+        "scripts": {
+          "start": "bookshop-up"
+        },
+        "devDependencies": {
+          "@bookshop/up": "file:%toolproof_process_directory_unix%/../up",
+          "@bookshop/hugo-engine": "file:%toolproof_process_directory_unix%/../engines/hugo-engine",
+          "@bookshop/eleventy-engine": "file:%toolproof_process_directory_unix%/../engines/eleventy-engine",
+          "@bookshop/jekyll-engine": "file:%toolproof_process_directory_unix%/../engines/jekyll-engine",
+          "@bookshop/astro-engine": "file:%toolproof_process_directory_unix%/../engines/astro-engine"
+        }
+      }
+  - step: I run "npm i"

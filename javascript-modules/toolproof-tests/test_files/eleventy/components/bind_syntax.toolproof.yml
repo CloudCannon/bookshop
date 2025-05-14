@@ -1,0 +1,21 @@
+name: Eleventy Bookshop tags can use the bind syntax
+
+steps:
+  - macro: I setup an Eleventy site
+  - step: I have a "component-lib/components/card/card.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <h1>{{ title }}</h1>
+      <p>{{ description }}</p>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      card:
+        title: "🧻"
+        description: "⛳"
+      ---
+      {% bookshop "card" bind: card %}
+  - step: I run "cd site && npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "v3"
+  - step: The file "site/_site/index.html" should contain "<h1>🧻</h1>"
+  - step: The file "site/_site/index.html" should contain "<p>⛳</p>"

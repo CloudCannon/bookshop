@@ -1,0 +1,29 @@
+name: Jekyll bookshop live renders website data
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/_data/cat.yml" file with the content {yaml}
+    yaml: |-
+      name: Cheeka
+  - step: I have a "component-lib/components/block/block.jekyll.html" file with the content {html}
+    html: |-
+      <h1>{% if include.show %}{{ site.data.cat.name }}{% endif %}</h1>
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "show": false
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "show": true
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Cheeka"
+    js: return (await toolproof.querySelector("h1")).textContent

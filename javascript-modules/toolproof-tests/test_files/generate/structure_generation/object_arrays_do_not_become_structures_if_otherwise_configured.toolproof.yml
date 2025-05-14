@@ -1,0 +1,51 @@
+name: Bookshop structure generation - Object arrays do not become structures if otherwise configured
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/card/card.bookshop.toml" file with the content {toml}
+    toml: |-
+      [spec]
+      structures = ["blocks"]
+
+      [blueprint]
+      title = "Hello World"
+      [[blueprint.my_links]]
+      text = "My link"
+
+      [_inputs]
+      my_links.type = "array"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
+  - snapshot: The file "site/public/_cloudcannon/info.json"
+    snapshot_content: |-
+      ╎{
+      ╎  "_structures": {
+      ╎    "blocks": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "card",
+      ╎            "title": "Hello World",
+      ╎            "my_links": [
+      ╎              {
+      ╎                "text": "My link"
+      ╎              }
+      ╎            ]
+      ╎          },
+      ╎          "label": "Card",
+      ╎          "_inputs": {
+      ╎            "my_links": {
+      ╎              "type": "array"
+      ╎            }
+      ╎          }
+      ╎        }
+      ╎      ]
+      ╎    }
+      ╎  }
+      ╎}

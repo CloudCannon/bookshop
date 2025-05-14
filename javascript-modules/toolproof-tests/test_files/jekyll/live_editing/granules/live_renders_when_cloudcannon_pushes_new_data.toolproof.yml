@@ -1,0 +1,27 @@
+name: Jekyll bookshop live renders when CloudCannon pushes new data
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "block": {
+          "title": "Hello There"
+        }
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "block": {
+          "title": "Rerendered"
+        }
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Rerendered"
+    js: return (await toolproof.querySelector("h1")).textContent

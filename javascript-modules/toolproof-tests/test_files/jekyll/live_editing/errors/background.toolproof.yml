@@ -1,0 +1,39 @@
+name: Jekyll live editing errors setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Jekyll site
+  - macro: I setup the generate package
+  - step: I have a "site/_layouts/default.html" file with the content {html}
+    html: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <main>
+          {{ content }}
+        </main>
+      </body>
+      </html>
+  - step: I have a "component-lib/components/page/page.jekyll.html" file with the content {html}
+    html: |-
+      <div class="page">
+      {% for component in include.content_blocks %}
+        {% bookshop {{component._bookshop_name}} bind=component %}
+      {% endfor %}
+      </div>
+  - step: I have a "component-lib/components/good/good.jekyll.html" file with the content {html}
+    html: |-
+      <h1>{{ include.text }}</h1>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: default
+      components:
+        - _bookshop_name: good
+          text: Hello World 01
+      ---
+      {% bookshop page content_blocks=page.components %}

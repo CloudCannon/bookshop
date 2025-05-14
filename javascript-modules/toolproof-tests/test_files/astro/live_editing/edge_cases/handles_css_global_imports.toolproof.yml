@@ -1,0 +1,18 @@
+name: Astro bookshop handles css global imports
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "cd site && npm run build"
+  - step: I run "npm run cc-astro"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should not be empty
+  - step: The file "site/dist/_cloudcannon/bookshop-live.css" should contain {css}
+    css: |-
+      * {
+        background: red;
+      }

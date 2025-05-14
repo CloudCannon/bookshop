@@ -1,0 +1,10 @@
+name: Hugo live editing edge cases setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package

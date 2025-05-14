@@ -1,0 +1,17 @@
+name: Bookshop script generation - Can skip data binding
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "npm run generate-no-bindings --scripts-prepend-node-path"
+  - step: stderr should be empty
+  - step: stdout should contain "Added live editing to 1 page containing Bookshop components"
+  - step: stdout should contain "Disabled data binding panels when live editing"
+  - step: stdout should contain "Built Bookshop live javascript to site"
+  - step: stdout should contain "bookshop-live.js"
+  - step: The file "site/public/index.html" should contain "script.src = `/_cloudcannon/bookshop-live.js`;"
+  - step: The file "site/public/index.html" should contain "window.bookshopDataBindings = false;"
+  - step: The file "site/public/_cloudcannon/bookshop-live.js" should contain "{{ .card_text }}"

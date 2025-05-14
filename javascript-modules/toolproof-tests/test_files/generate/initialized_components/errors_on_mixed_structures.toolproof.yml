@@ -1,0 +1,17 @@
+name: Bookshop initialized components - Errors on mixed structures
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/test/test.bookshop.yml" file with the content {yml}
+    yml: |-
+      blueprint:
+        inner:
+          - bookshop:structure:blocks!(test)
+          - bookshop:structure:subcomponents!(generic/tag)
+  - step: I run "npm start" and expect it to fail
+  - step: stderr should contain "Component test contains an array that starts with bookshop:structure:blocks!(test), but the following items do not match"
+  - step: stderr should contain "Any subsequent array entries must be of the form bookshop:structure:blocks!(<component_name>)"

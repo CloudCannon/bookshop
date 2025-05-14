@@ -1,0 +1,44 @@
+name: Eleventy bookshop sets a flag when live editing
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/single/single.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      {% if env_bookshop_live %}
+        <h1>LIVE! {{ title }}</h1>
+      {% else %}
+        <h1>DEAD? {{ title }}</h1>
+      {% endif %}
+      {% bookshop "nested" title: title %}
+  - step: I have a "component-lib/components/nested/nested.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      {% if env_bookshop_live %}
+        <h2>LIVE! {{ title }}</h2>
+      {% else %}
+        <h2>DEAD? {{ title }}</h2>
+      {% endif %}
+  - macro: I build my Eleventy site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "block": {
+          "title": "Hello There"
+        }
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "block": {
+          "title": "🫑"
+        }
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "LIVE! 🫑"
+    js: return (await toolproof.querySelector("h1")).textContent
+  - step: In my browser, the result of {js} should contain "LIVE! 🫑"
+    js: return (await toolproof.querySelector("h2")).textContent

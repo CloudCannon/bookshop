@@ -1,0 +1,19 @@
+name: Hugo live editing complex setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+  - step: I have a "component-lib/components/single/single.hugo.html" file with the content {html}
+    html: |-
+      <h1>{{ .title }}</h1>
+  - step: I have a "component-lib/components/tag/tag.hugo.html" file with the content {html}
+    html: |-
+      <span>{{ .inner.text }}</span>
+  - step: I have a "component-lib/shared/hugo/span.hugo.html" file with the content {html}
+    html: |-
+      <span>{{ .text }}</span>

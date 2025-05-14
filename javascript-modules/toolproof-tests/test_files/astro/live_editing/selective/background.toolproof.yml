@@ -1,0 +1,35 @@
+name: Astro live editing selective setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup an Astro site
+  - macro: I setup the generate package
+  - step: I have a "site/src/components/single/single.astro" file with the content {astro}
+    astro: |-
+      <h1>{ Astro.props.title }</h1>
+  - step: I have a "site/src/components/multiple/multiple.astro" file with the content {astro}
+    astro: |-
+      ---
+      import Single from '../single/single.astro'
+      const { items } = Astro.props;
+      ---
+      <div>
+      {items.map((item) => <Single {...item} />)}
+      </div>
+  - step: I have a "site/src/components/uppermost/uppermost.astro" file with the content {astro}
+    astro: |-
+      ---
+      import Single from '../single/single.astro'
+      import Multiple from '../multiple/multiple.astro'
+
+      const { one, two, three } = Astro.props;
+      ---
+      <div>
+      <Multiple {...one} />
+      <span>{ two }</span>
+      <Single title={three} />
+      </div>

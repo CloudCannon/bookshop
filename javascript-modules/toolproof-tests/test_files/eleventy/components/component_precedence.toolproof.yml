@@ -1,0 +1,19 @@
+name: Eleventy standard components take precedence over flat components
+
+steps:
+  - macro: I setup an Eleventy site
+  - step: I have a "component-lib/components/nested/title.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <h1>Flat: {{ text }}</h1>
+  - step: I have a "component-lib/components/nested/title/title.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <h1>Standard - {{ text }}</h1>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      ---
+      {% bookshop "nested/title" text: "Result 🤽‍♂️" %}
+  - step: I run "cd site && npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "v3"
+  - step: The file "site/_site/index.html" should contain "Standard - Result 🤽‍♂️"

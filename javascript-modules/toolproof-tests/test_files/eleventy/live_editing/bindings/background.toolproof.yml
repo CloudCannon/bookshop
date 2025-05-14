@@ -1,0 +1,23 @@
+name: Eleventy live editing bindings setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup an Eleventy site
+  - macro: I setup the generate package
+  - step: I have a "site/_includes/layouts/default.liquid" file with the content {liquid}
+    liquid: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <main>
+          {{ content }}
+        </main>
+      </body>
+      </html>
+  - step: I have a "component-lib/components/title/title.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <h1>{{ innards }}</h1>

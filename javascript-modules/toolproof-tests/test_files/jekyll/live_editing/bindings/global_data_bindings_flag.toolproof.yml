@@ -1,0 +1,22 @@
+name: Jekyll bookshop live respects the global dataBindings flag
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: default
+      hero: "Hello World"
+      ---
+      <script>window.bookshopDataBindings = false;</script>
+      {% bookshop title innards=page.hero %}
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      { "layout": "default", "hero": "Hello World" }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly '<h1>Hello World</h1>'
+    js: return (await toolproof.querySelector("h1")).outerHTML

@@ -1,0 +1,82 @@
+name: Eleventy bookshop live renders components depth first
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: layouts/default.liquid
+      data:
+        one:
+          items:
+            - title: "I"
+            - title: "II"
+            - title: "III"
+        two: "two"
+        three: "three"
+      ---
+      {% bookshop "uppermost" bind: data %}
+  - macro: I build my Eleventy site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "data": {
+          "one": {
+            "items": [
+              {
+                "title": "I"
+              },
+              {
+                "title": "II"
+              },
+              {
+                "title": "III"
+              }
+            ]
+          },
+          "two": "two",
+          "three": "three"
+        }
+      }
+  - step: In my browser, I evaluate {js}
+    js: |-
+      const spanElement = await toolproof.querySelector("span");
+      window.originalSpanElement = spanElement;
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "data": {
+          "one": {
+            "items": [
+              {
+                "title": "I"
+              },
+              {
+                "title": "II"
+              },
+              {
+                "title": "III"
+              },
+              {
+                "title": "IV"
+              }
+            ]
+          },
+          "two": "two",
+          "three": "tres"
+        }
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "IV"
+    js: return (await toolproof.querySelector("h1:nth-of-type(4)")).textContent
+  - step: In my browser, I evaluate {js}
+    js: |-
+      // Check if the span element is still the same DOM node
+      // (i.e., it wasn't rerendered, only the component with the updated array was)
+      const currentSpanElement = await toolproof.querySelector("span");
+      toolproof.assert(currentSpanElement === window.originalSpanElement);

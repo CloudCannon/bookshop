@@ -1,0 +1,14 @@
+name: Bookshop script generation - Can skip live editing
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "npm run generate-no-live --scripts-prepend-node-path"
+  - step: stderr should be empty
+  - step: stdout should contain "Skipping live editing generation"
+  - step: The file "site/public/index.html" should not contain "_cloudcannon"
+  - step: I run "ls site/public/_cloudcannon"
+  - step: stdout should not contain "bookshop-live.js"

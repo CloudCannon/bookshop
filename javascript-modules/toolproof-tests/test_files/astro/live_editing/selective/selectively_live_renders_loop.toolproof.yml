@@ -1,0 +1,74 @@
+name: Astro bookshop selectively live renders a loop
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/src/pages/index.md" file with the content {md}
+    md: |-
+      ---
+      layout: ../layouts/Page.astro
+      items:
+        - title: "One"
+        - title: "Two"
+        - title: "Three"
+      ---
+  - step: I have a "site/src/layouts/Page.astro" file with the content {astro}
+    astro: |-
+      ---
+      import Multiple from "../components/multiple/multiple.astro";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <html lang="en"> <body>
+      <Multiple bookshop:live items={frontmatter.items} />
+      </body> </html>
+  - macro: I build my Astro site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "../layouts/Page.astro",
+        "items": [
+          {
+            "title": "One"
+          },
+          {
+            "title": "Two"
+          },
+          {
+            "title": "Three"
+          }
+        ]
+      }
+  - step: In my browser, I evaluate {js}
+    js: |-
+      const secondHeader = await toolproof.querySelector("h1:nth-of-type(2)");
+      window.originalSecondHeader = secondHeader;
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "../layouts/Page.astro",
+        "items": [
+          {
+            "title": "A"
+          },
+          {
+            "title": "Two"
+          },
+          {
+            "title": "C"
+          }
+        ]
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "A"
+    js: return (await toolproof.querySelector("h1:nth-of-type(1)")).textContent
+  - step: In my browser, the result of {js} should contain "C"
+    js: return (await toolproof.querySelector("h1:nth-of-type(3)")).textContent
+  - step: In my browser, I evaluate {js}
+    js: |-
+      // Check if the second h1 element is still the same DOM node
+      // (i.e., it wasn't rerendered, only the 1st and 3rd were)
+      const currentSecondHeader = await toolproof.querySelector("h1:nth-of-type(2)");
+      toolproof.assert(currentSecondHeader === window.originalSecondHeader);

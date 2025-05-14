@@ -1,0 +1,59 @@
+name: Astro page building components test
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/src/components/blocks.jsx" file with the content {jsx}
+    jsx: |-
+      const components = import.meta.glob("./**/*.jsx", {
+        eager: true,
+      });
+
+      export default function Blocks({blocks}) {
+        return <>
+          {blocks.map(({name, block}) => {
+            const Component = components[`./${name}.jsx`].default
+            return <Component {...block} />
+          })}
+        </>
+      }
+  - step: I have a "site/src/components/a.jsx" file with the content {jsx}
+    jsx: |-
+      export default function A({ text }) {
+        return (
+          <h1>🅰️{text}</h1>
+        )
+      }
+  - step: I have a "site/src/components/b.jsx" file with the content {jsx}
+    jsx: |-
+      export default function B({ text }) {
+        return (
+          <h1>🅱️{text}</h1>
+        )
+      }
+  - step: I have a "site/src/pages/index.md" file with the content {md}
+    md: |-
+      ---
+      layout: ../layouts/Page.astro
+      blocks:
+        - name: a
+          block:
+            text: 🫀
+        - name: b
+          block:
+            text: 🫑
+      ---
+  - step: I have a "site/src/layouts/Page.astro" file with the content {astro}
+    astro: |-
+      ---
+      import Blocks from '../components/blocks.jsx';
+      const { frontmatter } = Astro.props;
+      ---
+      <main>
+        <Blocks bookshop:live blocks={frontmatter.blocks}/>
+      </main>
+  - step: I run "cd site && npm run build"
+  - step: stderr should be empty
+  - step: stdout should contain "Complete!"
+  - step: The file "site/dist/index.html" should contain "🅰️<!-- -->🫀"
+  - step: The file "site/dist/index.html" should contain "🅱️<!-- -->🫑"
+  - step: The file "site/dist/index.html" should contain "bookshop-live name(blocks)" 

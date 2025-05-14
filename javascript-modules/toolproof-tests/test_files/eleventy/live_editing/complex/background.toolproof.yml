@@ -1,0 +1,29 @@
+name: Eleventy live editing complex setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup an Eleventy site
+  - macro: I setup the generate package
+  - step: I have a "site/_includes/layouts/default.liquid" file with the content {liquid}
+    liquid: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <main>
+          {{ content }}
+        </main>
+      </body>
+      </html>
+  - step: I have a "component-lib/components/single/single.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <h1>{{ title }}</h1>
+  - step: I have a "component-lib/components/tag/tag.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <span>{{ inner.text }}</span>
+  - step: I have a "component-lib/shared/eleventy/span.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <span>{{ text }}</span>

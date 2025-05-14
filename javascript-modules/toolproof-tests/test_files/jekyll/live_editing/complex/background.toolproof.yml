@@ -1,0 +1,29 @@
+name: Jekyll live editing complex setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Jekyll site
+  - macro: I setup the generate package
+  - step: I have a "site/_layouts/default.html" file with the content {html}
+    html: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <main>
+          {{ content }}
+        </main>
+      </body>
+      </html>
+  - step: I have a "component-lib/components/single/single.jekyll.html" file with the content {html}
+    html: |-
+      <h1>{{ include.title }}</h1>
+  - step: I have a "component-lib/components/tag/tag.jekyll.html" file with the content {html}
+    html: |-
+      <span>{{ include.inner.text }}</span>
+  - step: I have a "component-lib/shared/jekyll/span.jekyll.html" file with the content {html}
+    html: |-
+      <span>{{ include.text }}</span>

@@ -1,0 +1,43 @@
+name: Jekyll bookshop live renders a top level loop
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: default
+      titles:
+        - "First"
+        - "Second"
+        - "Third"
+      ---
+      {% for t in page.titles %}
+      {% bookshop single title=t %}
+      {% endfor %}
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "titles": [
+          "First",
+          "Second",
+          "Third"
+        ]
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "titles": [
+          "First",
+          "New!",
+          "Third"
+        ]
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "New!"
+    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).textContent

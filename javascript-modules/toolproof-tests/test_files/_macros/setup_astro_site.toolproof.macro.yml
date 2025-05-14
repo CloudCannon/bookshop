@@ -1,0 +1,51 @@
+macro: I setup an Astro site
+
+steps:
+  - step: I have a "site/src/bookshop/bookshop.config.cjs" file with the content {js}
+    js: |-
+      module.exports = {
+          engines: {
+              "@bookshop/astro-engine": {}
+          }
+      }
+  - step: I have a "cloudcannon.config.yml" file with the content {yml}
+    yml: |-
+      collections_config:
+        pages:
+          path: content/pages
+  - step: I have a "site/astro.config.mjs" file with the content {js}
+    js: |-
+      import { defineConfig } from 'astro/config';
+      import react from "@astrojs/react";
+      import bookshop from '@bookshop/astro-bookshop';
+
+      // https://astro.build/config
+      import mdx from "@astrojs/mdx";
+
+      // https://astro.build/config
+      export default defineConfig({
+        site: "https://example.com/",
+        integrations: [bookshop(), react(), mdx()]
+      });
+  - step: I have a "site/package.json" file with the content {json}
+    json: |-
+      {
+        "name": "bookshop-astro-toolproof-site",
+        "type": "module",
+        "private": true,
+        "scripts": {
+          "build": "astro build"
+        },
+        "devDependencies": {
+          "@bookshop/astro-bookshop": "file:%toolproof_process_directory_unix%/../generator-plugins/astro/astro-bookshop",
+          "@bookshop/vite-plugin-astro-bookshop": "file:%toolproof_process_directory_unix%/../javascript-modules/generator-plugins/astro/vite-plugin-astro-bookshop"
+        },
+        "dependencies": {
+          "@astrojs/react": "file:%toolproof_process_directory_unix%/node_modules/@astrojs/react",
+          "@astrojs/mdx": "file:%toolproof_process_directory_unix%/node_modules/@astrojs/mdx",
+          "astro": "file:%toolproof_process_directory_unix%/node_modules/astro",
+          "react": "file:%toolproof_process_directory_unix%/node_modules/react",
+          "react-dom": "file:%toolproof_process_directory_unix%/node_modules/react-dom"
+        }
+      }
+  - step: I run "cd site && npm i"

@@ -1,0 +1,17 @@
+macro: I setup the sass package
+
+steps:
+  - step: I have a "package.json" file with the content {json}
+    json: |-
+      {
+        "name": "bookshop-sass-toolproof-site",
+        "private": true,
+        "scripts": {
+          "start": "bookshop-sass -b ./component-lib -o site/assets/css/bookshop.css"
+        },
+        "devDependencies": {
+          "@bookshop/sass": "file:%toolproof_process_directory_unix%/../sass",
+          "@bookshop/jekyll-engine": "file:%toolproof_process_directory_unix%/../engines/jekyll-engine"
+        }
+      }
+  - step: I run "npm i"

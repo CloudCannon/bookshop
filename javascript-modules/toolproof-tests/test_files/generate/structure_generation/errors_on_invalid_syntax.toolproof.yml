@@ -1,0 +1,13 @@
+name: Bookshop structure generation - Errors on invalid syntax
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/nested/card/card.bookshop.js" file with the content {js}
+    js: |-
+      garbage
+  - step: I run "npm start" and expect it to fail
+  - step: stderr should contain "Encountered an error loading"

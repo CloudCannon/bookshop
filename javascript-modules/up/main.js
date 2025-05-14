@@ -27,6 +27,7 @@ async function run() {
     program.option("--dot", "Look for Bookshops inside . directories");
     program.option("--yes", "Proceed with operations");
     program.option("--dry-run", "Print operations but do not perform them");
+    program.option("--skip-commands", "Modify files but do not run commands");
     program.addOption(new Option('--format <filetype>', 'Convert Bookshop files to another format').choices(['yml', 'toml', 'json', 'js']));
     program.option("--skip-migrations", "Only bump versions, do not run migrations");
     program.option("--version <version>", "Version to upgrade to if not latest");
@@ -126,6 +127,10 @@ async function run() {
 
         if (u.commands && u.commands.length) {
             u.commands.forEach(command => {
+                if (options.skipCommands) {
+                  console.log(chalk.yellow(`$: skipping ${command} in ${suppressCwd(u.dir)}`));
+                  return;
+                }
                 console.log(chalk.greenBright(`$: ${command} in ${suppressCwd(u.dir)}`));
                 try {
                     execSync(command, {

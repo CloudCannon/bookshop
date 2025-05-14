@@ -1,0 +1,35 @@
+name: Eleventy bookshop live renders website data
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/cloudcannon.config.yml" file with the content {yml}
+    yml: |-
+      data_config:
+        cat: true
+  - step: I have a "site/_data/cat.json" file with the content {json}
+    json: |-
+      {
+        "name": "Cheeka"
+      }
+  - step: I have a "component-lib/components/block/block.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <h1>{% if show %}{{ cat.name }}{% endif %}</h1>
+  - macro: I build my Eleventy site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "show": false
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "show": true
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Cheeka"
+    js: return (await toolproof.querySelector("h1")).textContent

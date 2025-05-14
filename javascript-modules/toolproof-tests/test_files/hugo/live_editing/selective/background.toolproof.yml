@@ -1,0 +1,27 @@
+name: Hugo live editing selective setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+  - step: I have a "component-lib/components/single/single.hugo.html" file with the content {html}
+    html: |-
+      <h1>{{ .title }}</h1>
+  - step: I have a "component-lib/components/multiple/multiple.hugo.html" file with the content {html}
+    html: |-
+      <div>
+      {{ range .items }}
+        {{ partial "bookshop" (slice "single" .) }}
+      {{ end }}
+      </div>
+  - step: I have a "component-lib/components/uppermost/uppermost.hugo.html" file with the content {html}
+    html: |-
+      <div>
+      {{ partial "bookshop" (slice "multiple" .one) }}
+      <span>{{ .two }}</span>
+      {{ partial "bookshop" (slice "single" (dict "title" .three)) }}
+      </div>

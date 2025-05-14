@@ -1,0 +1,28 @@
+name: Eleventy Bookshop page building components should work
+
+steps:
+  - macro: I setup an Eleventy site
+  - step: I have a "component-lib/components/page/page.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      {% for props in column_contents %}
+        {% bookshop {{props._bookshop_name}} bind: props %}
+      {% endfor %}
+  - step: I have a "component-lib/components/tag/tag.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      tag-{{tag}}-tag
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      components:
+        - _bookshop_name: page
+          column_contents:
+            - _bookshop_name: tag
+              tag: "contents"
+      ---
+      {% for component in components %}
+      {% bookshop {{component._bookshop_name}} bind: component %}
+      {% endfor %}
+  - step: I run "cd site && npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "v3"
+  - step: The file "site/_site/index.html" should contain "tag-contents-tag"

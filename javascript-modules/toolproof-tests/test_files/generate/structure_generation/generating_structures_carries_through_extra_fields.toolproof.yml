@@ -1,0 +1,44 @@
+name: Bookshop structure generation - Generating structures carries through extra fields
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/nested/card/card.bookshop.yml" file with the content {yml}
+    yml: |-
+      spec:
+        structures:
+          - blocks
+
+      blueprint:
+        color: "#034AD8"
+
+      _comments:
+        color: "Woo"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
+  - snapshot: The file "site/public/_cloudcannon/info.json"
+    snapshot_content: |-
+      ╎{
+      ╎  "_structures": {
+      ╎    "blocks": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "nested/card",
+      ╎            "color": "#034AD8"
+      ╎          },
+      ╎          "label": "Nested / Card",
+      ╎          "_comments": {
+      ╎            "color": "Woo"
+      ╎          },
+      ╎          "_inputs": {}
+      ╎        }
+      ╎      ]
+      ╎    }
+      ╎  }
+      ╎}

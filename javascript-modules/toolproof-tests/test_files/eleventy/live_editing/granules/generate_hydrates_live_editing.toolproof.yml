@@ -1,0 +1,13 @@
+name: Eleventy bookshop Generate hydrates live editing
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "cd site && npm start"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Modifying output site at ./site/_site"
+  - step: stdout should contain "Added live editing to 1 page containing Bookshop components"

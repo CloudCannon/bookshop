@@ -1,0 +1,46 @@
+name: Bookshop can live edit with a custom shortcode
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/test_component/test_component.hugo.html" file with the content {html}
+    html: |-
+      <p class="label">{{ .label }}</p>
+      <div class="content">
+        {{ .body_markdown | markdownify }}
+      </div>
+  - step: I have a "component-lib/bookshop/bookshop.config.js" file with the content {js}
+    js: |-
+      module.exports = {
+        engines: {
+          "@bookshop/hugo-engine": {
+            extraFiles: {
+              "layouts/shortcodes/name.html": "Alan"
+            }
+          }
+        }
+      }
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      component_data:
+        label: "Statement~"
+        body_markdown: >-
+          # Hello World
+      ---
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "component_data": { "label": "Statement~", "body_markdown": "# Hello World" } }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "component_data": { "label": "Statement~", "body_markdown": "# Hello {{% name %}}!" } }
+  - step: In my browser, I evaluate {js}
+    js: await toolproof.waitFor(() => window.bookshopLive?.renderCount === 2, 8000)
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Statement~"
+    js: return (await toolproof.querySelector(".label")).innerText
+  - step: In my browser, the result of {js} should contain "Hello Alan!"
+    js: return (await toolproof.querySelector(".content>h1")).innerText

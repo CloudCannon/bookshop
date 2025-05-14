@@ -1,0 +1,43 @@
+name: Astro nested component usage test
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/src/components/title/title.jsx" file with the content {jsx}
+    jsx: |-
+      import Subtitle from './subtitle.jsx'
+      export default function Title({ title, subtitle }) {
+        return (
+          <>
+            <h1>Bookshop - <span>{title}</span></h1>
+            <Subtitle subtitle={subtitle} />
+          </>
+        )
+      }
+  - step: I have a "site/src/components/title/subtitle.jsx" file with the content {jsx}
+    jsx: |-
+      export default function Subtitle({ subtitle }) {
+        return (
+          <h2><em>{subtitle}</em></h2>
+        )
+      }
+  - step: I have a "site/src/pages/index.md" file with the content {md}
+    md: |-
+      ---
+      layout: ../layouts/Page.astro
+      title: Result 🤽‍♂️
+      subtitle: Meow 🐈
+      ---
+  - step: I have a "site/src/layouts/Page.astro" file with the content {astro}
+    astro: |-
+      ---
+      import Title from "../components/title/title.jsx";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <Title bookshop:live title={frontmatter.title} subtitle={frontmatter.subtitle} />
+  - step: I run "cd site && npm run build"
+  - step: stderr should be empty
+  - step: stdout should contain "Complete!"
+  - step: The file "site/dist/index.html" should contain "Bookshop - <span>Result 🤽‍♂️</span>"
+  - step: The file "site/dist/index.html" should contain "bookshop-live name(title)"
+  - step: The file "site/dist/index.html" should contain "<em>Meow 🐈</em>" 

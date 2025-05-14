@@ -1,0 +1,33 @@
+name: Jekyll bookshop live renders blank markdown
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/md/md.jekyll.html" file with the content {html}
+    html: |-
+      <div> md - {{ include.md | markdownify }} - md </div>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: default
+      md: Hello
+      ---
+      {% bookshop md md=page.md %}
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "md": "Hello"
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "md": null
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "md -  - md"
+    js: return (await toolproof.querySelector("div")).textContent

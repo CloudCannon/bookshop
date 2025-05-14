@@ -1,0 +1,28 @@
+name: Hugo bookshop live respects the global dataBindings flag
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      hero: "Hello World"
+      ---
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      <script>window.bookshopDataBindings = false;</script>
+      {{ partial "bookshop_bindings" `(dict "innards" .Params.hero)` }}
+      {{ partial "bookshop" (slice "title" (dict "innards" .Params.hero)) }}
+      </body>
+      </html>
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "hero": "Hello World" }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly '<h1>Hello World</h1>'
+    js: return (await toolproof.querySelector("h1")).outerHTML

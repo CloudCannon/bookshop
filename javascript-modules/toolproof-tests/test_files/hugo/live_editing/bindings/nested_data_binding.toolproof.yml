@@ -1,0 +1,31 @@
+name: Hugo bookshop live renders a nested data binding
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/outer/outer.hugo.html" file with the content {html}
+    html: |-
+      <div>{{ partial "bookshop" (slice "title" (dict "innards" .title.item)) }}</div>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      items:
+        item: "Hello There"
+      ---
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `(dict "title" .Params.items)` }}
+      {{ partial "bookshop" (slice "outer" (dict "title" .Params.items)) }}
+      </body>
+      </html>
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "items": { "item": "Hello There" } }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly '<h1 data-cms-bind="#items.item">Hello There</h1>'
+    js: return (await toolproof.querySelector("h1")).outerHTML

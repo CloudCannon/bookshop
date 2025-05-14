@@ -1,0 +1,34 @@
+name: Eleventy bookshop live renders 11ty collection loop
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/tag/tag.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <p>{{ name }}</p>
+  - step: I have a "site/collection/file.md" file with the content {md}
+    md: |-
+      ---
+      tags: 'collection'
+      layout: 'layouts/default.liquid'
+      name: Hey World
+      ---
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: layouts/default.liquid
+      ---
+      {% for item in collections.collection %}
+        {% bookshop "tag" bind: item.data %}
+      {% endfor %}
+  - macro: I build my Eleventy site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid"
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Hey World"
+    js: return (await toolproof.querySelector("p")).textContent

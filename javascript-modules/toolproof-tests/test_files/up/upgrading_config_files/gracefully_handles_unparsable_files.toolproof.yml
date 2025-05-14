@@ -1,0 +1,16 @@
+name: Gracefully handles unparsable files
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/test/test.bookshop.toml" file with the content {toml}
+    toml: |-
+      mystery_key = Hello World
+      [props
+  - step: I run "npm start -- --yes --version 3.0.0 --format yml --skip-commands" and expect it to fail
+  - step: stderr should contain {err}
+    err: |-
+      ERROR: Couldn't parse component-lib/components/test/test.bookshop.toml
+  - snapshot: The file "component-lib/components/test/test.bookshop.toml"
+    snapshot_content: |-
+      ╎mystery_key = Hello World
+      ╎[props

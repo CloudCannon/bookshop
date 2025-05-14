@@ -1,0 +1,26 @@
+name: Astro bookshop live renders when CloudCannon initialises
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/src/pages/index.md" file with the content {md}
+    md: |-
+      ---
+      layout: ../layouts/Page.astro
+      block:
+        title: "Gidday"
+      ---
+  - macro: I build my Astro site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "../layouts/Page.astro",
+        "block": {
+          "title": "Gidday"
+        }
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Gidday"
+    js: return (await toolproof.querySelector("h1")).textContent

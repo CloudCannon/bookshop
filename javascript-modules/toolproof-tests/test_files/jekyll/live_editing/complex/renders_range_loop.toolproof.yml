@@ -1,0 +1,40 @@
+name: Jekyll bookshop live renders a range loop
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/range/range.jekyll.html" file with the content {html}
+    html: |-
+      <div>
+      {% for item in (include.min..include.max) %}
+      {% bookshop single title=item %}
+      {% endfor %}
+      </div>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: default
+      min: 0
+      max: 1
+      ---
+      {% bookshop range min=page.min max=page.max %}
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "min": 0,
+        "max": 1
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "min": 1,
+        "max": 5
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "5"
+    js: return (await toolproof.querySelector("h1:nth-of-type(5)")).textContent

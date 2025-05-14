@@ -1,0 +1,34 @@
+name: Jekyll live editing granules setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Jekyll site
+  - macro: I setup the generate package
+  - step: I have a "site/_layouts/default.html" file with the content {html}
+    html: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <main>
+          {{ content }}
+        </main>
+      </body>
+      </html>
+  - step: I have a "component-lib/components/single/single.jekyll.html" file with the content {html}
+    html: |-
+      <h1>{{ include.title }}</h1>
+  - step: I have a "component-lib/components/flat_single.jekyll.html" file with the content {html}
+    html: |-
+      <h1>{{ include.title }}</h1>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: default
+      block:
+        title: "Hello There"
+      ---
+      {% bookshop single bind=page.block %}

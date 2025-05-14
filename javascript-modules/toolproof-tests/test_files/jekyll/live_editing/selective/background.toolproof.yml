@@ -1,0 +1,37 @@
+name: Jekyll live editing selective setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Jekyll site
+  - macro: I setup the generate package
+  - step: I have a "site/_layouts/default.html" file with the content {html}
+    html: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <main>
+          {{ content }}
+        </main>
+      </body>
+      </html>
+  - step: I have a "component-lib/components/single/single.jekyll.html" file with the content {html}
+    html: |-
+      <h1>{{ include.title }}</h1>
+  - step: I have a "component-lib/components/multiple/multiple.jekyll.html" file with the content {html}
+    html: |-
+      <div>
+      {% for item in include.items %}
+      {% bookshop single bind=item %}
+      {% endfor %}
+      </div>
+  - step: I have a "component-lib/components/uppermost/uppermost.jekyll.html" file with the content {html}
+    html: |-
+      <div>
+      {% bookshop multiple bind=include.one %}
+      <span>{{ include.two }}</span>
+      {% bookshop single title=include.three %}
+      </div>

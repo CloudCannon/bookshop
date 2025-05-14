@@ -1,0 +1,40 @@
+name: Bookshop structure generation - JS object config is supported
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/a/b/c/d/e/e.bookshop.js" file with the content {js}
+    js: |-
+      module.exports = {
+        spec: {
+          structures: ["anything"]
+        },
+        blueprint: {
+          title: `Hello`
+        }
+      }
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
+  - snapshot: The file "site/public/_cloudcannon/info.json"
+    snapshot_content: |-
+      ╎{
+      ╎  "_structures": {
+      ╎    "anything": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "a/b/c/d/e",
+      ╎            "title": "Hello"
+      ╎          },
+      ╎          "label": "A / B / C / D / E",
+      ╎          "_inputs": {}
+      ╎        }
+      ╎      ]
+      ╎    }
+      ╎  }
+      ╎}

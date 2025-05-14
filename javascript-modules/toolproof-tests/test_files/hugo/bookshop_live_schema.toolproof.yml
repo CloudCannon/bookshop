@@ -1,0 +1,47 @@
+name: Hugo Bookshop Live schema comments
+
+steps:
+  - macro: I setup a Hugo site
+  - step: I have a "component-lib/components/page/page.hugo.html" file with the content {html}
+    html: |-
+      {{ range .content_blocks }}
+      <p>{{ ._bookshop_name }}</p>
+      {{ partial "bookshop" (slice "single" (dict "_bookshop_name" "inner")) }}
+      {{ end }}
+  - step: I have a "component-lib/components/single/single.hugo.html" file with the content {html}
+    html: |-
+      <span>{{ ._bookshop_name }}</span>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      content_blocks:
+        - _bookshop_name: fake
+      ---
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      {{ partial "bookshop_bindings" `.Params` }}
+      {{ partial "bookshop" (slice "page" .Params) }}
+  - step: I run "cd site && hugo"
+  - step: stderr should be empty
+  - step: stdout should contain "Total in"
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
+      baseurl: "https://cloudcannon.com/" copyright: "🎉" title: "Hugo Bookshop Cucumber")-->
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
+      <!--bookshop-live name(__bookshop__subsequent) params(.: .Params)-->
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
+      <!--bookshop-live name(page)-->
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
+      <p>fake</p>
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
+      <!--bookshop-live name(single)-->
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
+      <span>inner</span>
+  - step: The file "site/public/index.html" should contain {html}
+    html: |-
+      <!--bookshop-live end-->

@@ -1,0 +1,70 @@
+name: Hugo live editing starter setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+  - step: I have a "component-lib/shared/hugo/page.hugo.html" file with the content {html}
+    html: |-
+      <div>
+      {{ range . }}
+        {{ partial "bookshop" . }}
+      {{ end }}
+      </div>
+  - step: I have a "component-lib/components/tag/tag.hugo.html" file with the content {html}
+    html: |-
+      <span class="u-tag">{{ .text }}</span>
+  - step: I have a "component-lib/components/content/content.hugo.html" file with the content {html}
+    html: |-
+      <div class="c-content c-content--{{ .type }}">
+          {{ if eq .type "note" }}
+              {{ partial "bookshop" (slice "tag" (dict "text" "Note")) }}
+          {{ end }}
+          {{ .content_html | safeHTML }}
+      </div>
+  - step: I have a "component-lib/components/hero/hero.hugo.html" file with the content {html}
+    html: |-
+      <div class="c-title">
+          {{ range .tags }}
+              {{ partial "bookshop" (slice "tag" (dict "text" .text)) }}
+          {{ end }}
+          <h1 class="c-title__title">
+              {{ .title }}
+          </h1>
+          {{ if .content_html }}
+              {{ partial "bookshop" (slice "content" (dict "content_html" .content_html)) }}
+          {{ end }}
+      </div>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      content_blocks:
+        - _bookshop_name: hero
+          title: Bookshop Hugo Starter
+          content_html: >-
+            <p>A skeleton for getting started with your component journey using Bookshop and Hugo.</p>
+          tags:
+            - text: "bookshop"
+            - text: "hugo"
+        - _bookshop_name: content
+          content_html: >-
+            <p>For more info, check out the <a href="https://github.com/CloudCannon/hugo-bookshop-starter#readme" target="_blank">readme</a></p>
+          type: standard
+      note_html: >-
+        <p>You can also use the bookshop tag directly.</p>
+      ---
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+        {{ partial "bookshop_bindings" `.Params.content_blocks` }}
+        {{ partial "bookshop_partial" (slice "page" .Params.content_blocks) }}
+
+        {{ partial "bookshop_bindings" `(dict "content_html" .Params.note_html "type" "note")` }}
+        {{ partial "bookshop" (slice "content" (dict "content_html" .Params.note_html "type" "note")) }}
+      </body>
+      </html>

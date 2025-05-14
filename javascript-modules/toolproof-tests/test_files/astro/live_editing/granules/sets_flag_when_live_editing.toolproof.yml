@@ -1,0 +1,69 @@
+name: Astro bookshop sets a flag when live editing
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/src/layouts/Page.astro" file with the content {astro}
+    astro: |-
+      ---
+      import Single from "../components/single.astro";
+      import SingleReact from "../components/single_react.jsx";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <html lang="en"> <body>
+      <Single bookshop:live {...frontmatter.block} />
+      <SingleReact bookshop:live {...frontmatter.block} />
+      </body> </html>
+  - step: I have a "site/src/components/single.astro" file with the content {astro}
+    astro: |-
+      ---
+      import Nested from './nested/nested.astro';
+      ---
+      <h1>{ENV_BOOKSHOP_LIVE?"LIVE!":"DEAD?"} {Astro.props.title}</h1>
+      <Nested title={Astro.props.title} />
+  - step: I have a "site/src/components/nested/nested.astro" file with the content {astro}
+    astro: |-
+      <h2>{ENV_BOOKSHOP_LIVE?"LIVE!":"DEAD?"} {Astro.props.title}</h2>
+  - step: I have a "site/src/components/single_react.jsx" file with the content {jsx}
+    jsx: |-
+      import Nested from './nested/nested_react.jsx';
+
+      export default function Single({ title }) {
+        return <>
+          <h1>{ENV_BOOKSHOP_LIVE?"LIVE!":"DEAD?"} {title}</h1>
+          <Nested title={title} />
+        </>
+      }
+  - step: I have a "site/src/components/nested/nested_react.jsx" file with the content {jsx}
+    jsx: |-
+      export default function Nested({ title }) {
+        return <h2>{ENV_BOOKSHOP_LIVE?"LIVE!":"DEAD?"} {title}</h2>
+      }
+  - macro: I build my Astro site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "../layouts/Page.astro",
+        "block": {
+          "title": "Hello There"
+        }
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "block": {
+          "title": "🫑"
+        }
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "LIVE! 🫑"
+    js: return (await toolproof.querySelector("h1:nth-of-type(1)")).textContent
+  - step: In my browser, the result of {js} should contain "LIVE! 🫑"
+    js: return (await toolproof.querySelector("h2:nth-of-type(1)")).textContent
+  - step: In my browser, the result of {js} should contain "LIVE! 🫑"
+    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).textContent
+  - step: In my browser, the result of {js} should contain "LIVE! 🫑"
+    js: return (await toolproof.querySelector("h2:nth-of-type(2)")).textContent

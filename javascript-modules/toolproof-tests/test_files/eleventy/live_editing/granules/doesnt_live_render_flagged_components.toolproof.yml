@@ -1,0 +1,35 @@
+name: Eleventy bookshop doesn't live render flagged components
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: layouts/default.liquid
+      block:
+        title: "Hello There"
+      ---
+      {% bookshop "single" live_render: false bind: block %}
+  - macro: I build my Eleventy site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "block": {
+          "title": "Hello There"
+        }
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "block": {
+          "title": "Rerendered"
+        }
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Hello There"
+    js: return (await toolproof.querySelector("h1")).textContent

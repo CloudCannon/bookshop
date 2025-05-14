@@ -1,0 +1,43 @@
+name: Jekyll bookshop live renders through an assign
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/assigner/assigner.jekyll.html" file with the content {html}
+    html: |-
+      {% assign test_var=include.component._bookshop_name %}
+      {% assign title_var=include.component.title %}
+      <div> {% bookshop {{test_var}} title=title_var %} </div>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: default
+      component:
+        _bookshop_name: single
+        title: My title
+      ---
+      {% bookshop assigner component=page.component %}
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "component": {
+          "_bookshop_name": "single",
+          "title": "My title"
+        }
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "component": {
+          "_bookshop_name": "single",
+          "title": "Live Love Laugh"
+        }
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Live Love Laugh"
+    js: return (await toolproof.querySelector("h1")).textContent

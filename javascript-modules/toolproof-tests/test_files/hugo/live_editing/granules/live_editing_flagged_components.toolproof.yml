@@ -1,0 +1,31 @@
+name: Hugo bookshop doesn't live render flagged components
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `(dict "title" .Params.block.title "_live_render" false)` }}
+      {{ partial "bookshop" (slice "single" (dict "title" .Params.block.title "_live_render" false)) }}
+      </body>
+      </html>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      block:
+        title: "Hello There"
+      ---
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "block": { "title": "Hello There" }}
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "block": { "title": "Rerendered" }}
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly "Hello There"
+    js: return (await toolproof.querySelector("h1")).innerText

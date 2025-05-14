@@ -1,0 +1,49 @@
+name: Jekyll bookshop wraps component errors in an error boundary
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/bad/bad.jekyll.html" file with the content {html}
+    html: |-
+      <h1>{% mystery_tag %}</h1>
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "components": [
+          {
+            "_bookshop_name": "good",
+            "text": "Hello World 01"
+          }
+        ]
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "components": [
+          {
+            "_bookshop_name": "good",
+            "text": "Hello World 01"
+          },
+          {
+            "_bookshop_name": "bad"
+          },
+          {
+            "_bookshop_name": "good",
+            "text": "Hello World 02"
+          }
+        ]
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Failed to render"
+    js: return (await toolproof.querySelector(".page>div")).textContent
+  - step: In my browser, the result of {js} should contain "mystery_tag"
+    js: return (await toolproof.querySelector(".page>div")).textContent
+  - step: In my browser, the result of {js} should contain "Hello World 01"
+    js: return (await toolproof.querySelector("h1:nth-of-type(1)")).textContent
+  - step: In my browser, the result of {js} should contain "Hello World 02"
+    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).textContent

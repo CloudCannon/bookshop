@@ -1,0 +1,22 @@
+name: Upgrades old gems in other files and installs
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/Gemfile.something.rb" file with the content {content}
+    content: |-
+      source "https://rubygems.org"
+
+      group :jekyll_plugins do
+        gem "jekyll-bookshop", ">= 2.2.2"
+      end
+  - step: I have a "site/Gemfile.something.rb.lock" file with the content {content}
+    content: |-
+      .
+  - step: I run "npm start -- --dry-run --version 9.9.9 --skip-commands"
+  - step: stderr should be empty
+  - step: stdout should contain {content}
+    content: |-
+      gem "jekyll-bookshop", ">= 2.2.2" → 9.9.9
+  - step: stdout should contain {content}
+    content: |-
+      Running BUNDLE_GEMFILE="Gemfile.something.rb" bundle install

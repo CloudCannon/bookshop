@@ -1,0 +1,17 @@
+name: Bookshop initialized components - Errors on a single component with a parameter
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/test/test.bookshop.yml" file with the content {yml}
+    yml: |-
+      blueprint:
+        tag: bookshop:generic/tag!(huh)
+  - step: I run "npm start" and expect it to fail
+  - step: stderr should contain "Component test referenced bookshop:generic/tag!(huh)"
+  - step: stderr should contain {msg}
+    msg: |-
+      Single component shorthands cannot have parameters, did you mean to use the bookshop:structure: shorthand?

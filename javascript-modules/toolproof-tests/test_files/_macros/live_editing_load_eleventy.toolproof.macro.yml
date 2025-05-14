@@ -1,0 +1,8 @@
+macro: I build my Eleventy site and load it with front matter {front_matter}
+
+steps:
+  - step: I run "cd site && npm start"
+  - step: I run "npm start"
+  - step: I serve the directory "site/_site"
+  - step: In my browser, I load "/"
+  - macro: I initialize the CloudCannon Visual Editor with the front matter "%front_matter%"

@@ -1,0 +1,15 @@
+name: Hugo bookshop component browser initialization
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "cd site && hugo"
+  - step: I run "cd site && cloudcannon-hugo --baseurl /"
+  - step: I run "npm start"
+  - step: I serve the directory "site/public"
+  - step: In my browser, I load "/"
+  - step: In my browser, I evaluate {js}
+    js: |-
+      await toolproof.waitFor(() => window.bookshopBrowser?.hasRendered === true, 8000)
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Select a component using the"
+    js: return (await toolproof.querySelector(".tutorial")).innerText

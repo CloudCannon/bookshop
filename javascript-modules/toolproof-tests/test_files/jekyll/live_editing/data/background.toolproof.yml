@@ -1,0 +1,30 @@
+name: Jekyll live editing data setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Jekyll site
+  - macro: I setup the generate package
+  - step: I have a "site/_layouts/default.html" file with the content {html}
+    html: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <main>
+          {{ content }}
+        </main>
+      </body>
+      </html>
+  - step: I have a "site/cloudcannon.config.yml" file with the content {yaml}
+    yaml: |-
+      data_config: true
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: default
+      show: false
+      ---
+      {% bookshop block show=page.show %}

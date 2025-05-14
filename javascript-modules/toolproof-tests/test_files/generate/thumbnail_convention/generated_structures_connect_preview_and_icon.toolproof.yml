@@ -1,0 +1,48 @@
+name: Bookshop thumbnail convention - Generated structures connect the preview and icon
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/nested/card/card.preview.png" file with the content {png}
+    png: |-
+      I am a thumbnail
+  - step: I have a "component-lib/components/nested/card/card.icon.anything" file with the content {icon}
+    icon: |-
+      I am an icon
+  - step: I have a "component-lib/components/nested/card/card.bookshop.yml" file with the content {yml}
+    yml: |-
+      spec:
+        structures:
+          - blocks
+
+      blueprint:
+        title: "Hello World"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
+  - step: The file "site/public/_cloudcannon/bookshop_thumbs/nested/card/card.preview.png" should contain "I am a thumbnail"
+  - step: The file "site/public/_cloudcannon/bookshop_thumbs/nested/card/card.icon.anything" should contain "I am an icon"
+  - snapshot: The file "site/public/_cloudcannon/info.json"
+    snapshot_content: |-
+      ╎{
+      ╎  "_structures": {
+      ╎    "blocks": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "nested/card",
+      ╎            "title": "Hello World"
+      ╎          },
+      ╎          "label": "Nested / Card",
+      ╎          "_inputs": {},
+      ╎          "image": "/_cloudcannon/bookshop_thumbs/nested/card/card.icon.anything",
+      ╎          "preview_image": "/_cloudcannon/bookshop_thumbs/nested/card/card.preview.png"
+      ╎        }
+      ╎      ]
+      ╎    }
+      ╎  }
+      ╎}

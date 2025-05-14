@@ -1,0 +1,29 @@
+name: Bookshop script generation background
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+  - step: I have a "component-lib/components/card/card.hugo.html" file with the content {html}
+    html: |-
+      <p class="{{ .card_color }}">{{ .card_text }}</p>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `(dict "card_text" .Params.card_text "card_color" .Params.card_color)` }}
+      {{ partial "bookshop" (slice "card" (dict "card_text" .Params.card_text "card_color" .Params.card_color)) }}
+      </body>
+      </html>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      card_text: "Hello Card"
+      card_color: "Red"
+      ---
+  - step: I run "cd site && hugo"
+  - step: I have a "site/public/_cloudcannon/info.json" file with the content "{}"

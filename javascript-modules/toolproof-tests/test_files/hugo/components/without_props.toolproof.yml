@@ -1,0 +1,22 @@
+name: Hugo bookshop components without props
+
+steps:
+  - macro: I setup a Hugo site
+  - step: I have a "component-lib/components/outer/outer.hugo.html" file with the content {html}
+    html: |-
+      <div> {{ partial "bookshop" "inner" }} </div>
+  - step: I have a "component-lib/components/inner/inner.hugo.html" file with the content {html}
+    html: |-
+      <h1>Hello :)</h1>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" "" }}
+      {{ partial "bookshop" "outer" }}
+      </body>
+      </html>
+  - step: I run "cd site && hugo"
+  - step: stderr should be empty
+  - step: stdout should contain "Total in"
+  - step: The file "site/public/index.html" should contain "Hello :)"

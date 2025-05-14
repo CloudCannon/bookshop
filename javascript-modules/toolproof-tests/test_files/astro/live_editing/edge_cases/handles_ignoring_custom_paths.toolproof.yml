@@ -1,0 +1,33 @@
+name: Astro bookshop handles ignoring custom paths
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/src/components/single.spec.jsx" file with the content {jsx}
+    jsx: |-
+      import React from "react";
+
+      describe("Component", () => {
+        it("renders without crashing", () => {
+          React.render(<Component />, document.createElement("div"));
+        });
+      });
+  - step: I have a "site/src/bookshop/bookshop.config.cjs" file with the content {js}
+    js: |-
+      // Standard bookshop configuration
+      module.exports = {
+        ignoreFilePatterns: [
+          /spec\.jsx/
+        ],
+        engines: {
+          "@bookshop/astro-engine": {}
+        }
+      }
+  - step: I run "cd site && npm run build"
+  - step: I run "npm run cc-astro"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should not be empty

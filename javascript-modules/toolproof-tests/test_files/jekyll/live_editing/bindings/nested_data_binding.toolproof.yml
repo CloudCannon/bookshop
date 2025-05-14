@@ -1,0 +1,25 @@
+name: Jekyll bookshop live renders a nested data binding
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/outer/outer.jekyll.html" file with the content {html}
+    html: |-
+      <div>{% bookshop title innards=include.title.item %}</div>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: default
+      items:
+        item: "Hello There"
+      ---
+      {% bookshop outer title=page.items %}
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      { "layout": "default", "items": { "item": "Hello There" } }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly '<h1 data-cms-bind="#items.item">Hello There</h1>'
+    js: return (await toolproof.querySelector("h1")).outerHTML

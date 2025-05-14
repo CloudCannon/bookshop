@@ -1,0 +1,13 @@
+name: Hugo live editing bindings setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+  - step: I have a "component-lib/components/title/title.hugo.html" file with the content {html}
+    html: |-
+      <h1>{{ .innards }}</h1>

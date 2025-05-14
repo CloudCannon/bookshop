@@ -1,0 +1,35 @@
+name: Hugo live editing errors setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+  - step: I have a "component-lib/components/page/page.hugo.html" file with the content {html}
+    html: |-
+      <div class="page">
+      {{ range .content_blocks }}
+        {{ partial "bookshop" . }}
+      {{ end }}
+      </div>
+  - step: I have a "component-lib/components/good/good.hugo.html" file with the content {html}
+    html: |-
+      <h1>{{ .text }}</h1>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `(dict "content_blocks" .Params.components)` }}
+      {{ partial "bookshop" (slice "page" (dict "content_blocks" .Params.components)) }}
+      </body>
+      </html>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      components:
+        - _bookshop_name: good
+          text: Hello World 01
+      ---

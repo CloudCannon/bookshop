@@ -1,0 +1,37 @@
+name: Astro live editing granules setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup an Astro site
+  - macro: I setup the generate package
+  - step: I have a "site/src/components/single.jsx" file with the content {jsx}
+    jsx: |-
+      export default function Single({ title }) {
+        return (
+          <h1>{title}</h1>
+        )
+      }
+  - step: I have a "site/src/components/flat_single.astro" file with the content {astro}
+    astro: |-
+      <h1>{Astro.props.title}</h1>
+  - step: I have a "site/src/pages/index.md" file with the content {md}
+    md: |-
+      ---
+      layout: ../layouts/Page.astro
+      block:
+        title: "Hello There"
+      ---
+  - step: I have a "site/src/layouts/Page.astro" file with the content {astro}
+    astro: |-
+      ---
+      import Single from "../components/single.jsx";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <html lang="en"> <body>
+      <Single bookshop:live {...frontmatter.block} />
+      </body> </html>

@@ -1,0 +1,37 @@
+name: Hugo bookshop live renders a range loop
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/range/range.hugo.html" file with the content {html}
+    html: |-
+      <div>
+      {{ range seq .max }}
+      {{ partial "bookshop" (slice "single" (dict "title" . )) }}
+      {{ end }}
+      </div>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `(dict "max" .Params.max )` }}
+      {{ partial "bookshop" (slice "range" (dict "max" .Params.max )) }}
+      </body>
+      </html>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      max: 1
+      ---
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "max": 1 }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "max": 5 }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly "5"
+    js: return (await toolproof.querySelector("h1:nth-of-type(5)")).innerText

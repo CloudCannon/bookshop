@@ -1,0 +1,7 @@
+name: Jekyll bookshop component browser hydrates
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "cd site && bundle exec jekyll build --trace"
+  - step: I run "npm start"
+  - step: stdout should contain "Built component browser into 1 page" 

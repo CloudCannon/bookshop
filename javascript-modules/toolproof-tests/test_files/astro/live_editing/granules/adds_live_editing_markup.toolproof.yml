@@ -1,0 +1,12 @@
+name: Astro bookshop adds live editing markup
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "cd site && npm run build"
+  - step: stderr should be empty
+  - step: stdout should not be empty
+  - step: The file "site/dist/index.html" should contain "<!--bookshop-live name(single) params(bind:block)-->"

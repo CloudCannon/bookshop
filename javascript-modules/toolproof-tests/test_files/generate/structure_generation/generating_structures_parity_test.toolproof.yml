@@ -1,0 +1,73 @@
+name: Bookshop structure generation - Generating structures parity test
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/card/card.bookshop.yml" file with the content {yml}
+    yml: |-
+      spec:
+        structures:
+          - content_blocks
+        label: Card
+        description: Card component
+        icon: nature_people
+        tags:
+          - Card
+
+      blueprint:
+        card_text: ""
+        color: Blue
+
+      preview:
+        card_text: This is the card
+
+      _inputs:
+        color:
+          type: select
+          comment: Comment
+          options:
+            values:
+              - Red
+              - Blue
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
+  - snapshot: The file "site/public/_cloudcannon/info.json"
+    snapshot_content: |-
+      ╎{
+      ╎  "_structures": {
+      ╎    "content_blocks": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "card",
+      ╎            "card_text": "",
+      ╎            "color": "Blue"
+      ╎          },
+      ╎          "label": "Card",
+      ╎          "description": "Card component",
+      ╎          "icon": "nature_people",
+      ╎          "tags": [
+      ╎            "Card"
+      ╎          ],
+      ╎          "_inputs": {
+      ╎            "color": {
+      ╎              "type": "select",
+      ╎              "comment": "Comment",
+      ╎              "options": {
+      ╎                "values": [
+      ╎                  "Red",
+      ╎                  "Blue"
+      ╎                ]
+      ╎              }
+      ╎            }
+      ╎          }
+      ╎        }
+      ╎      ]
+      ╎    }
+      ╎  }
+      ╎}

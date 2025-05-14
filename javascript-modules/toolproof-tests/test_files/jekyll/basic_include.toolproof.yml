@@ -1,0 +1,27 @@
+name: Jekyll basic bookshop include
+
+steps:
+  - macro: I setup a Jekyll site
+  - step: I have a "component-lib/shared/jekyll/basic.jekyll.html" file with the content {html}
+    html: |-
+      {{include.label}}🎉
+  - step: I have a "component-lib/components/block/block.jekyll.html" file with the content {html}
+    html: |-
+      <div>{% bookshop_include basic label=include.title %}-Block</div>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      ---
+      {% bookshop block title="Component" %}
+      <span>{% bookshop_include basic label="Site" %}-Inline</span>
+  - step: I run "cd site && bundle exec jekyll build --trace"
+  - step: stderr should be empty
+  - step: stdout should contain "done in"
+  - step: The file "site/_site/index.html" should contain {text}
+    text: |-
+      Component🎉
+      <!--bookshop-live end-->-Block
+  - step: The file "site/_site/index.html" should contain {text}
+    text: |-
+      Site🎉
+      <!--bookshop-live end-->-Inline

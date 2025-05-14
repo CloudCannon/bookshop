@@ -1,0 +1,40 @@
+name: Astro bookshop handles React components with no props
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/src/layouts/Page.astro" file with the content {astro}
+    astro: |-
+      ---
+      import EmptySingle from "../components/empty_single.jsx";
+      const { frontmatter } = Astro.props;
+      ---
+
+      <html lang="en"> <body>
+      <EmptySingle bookshop:live />
+      </body> </html>
+  - step: I have a "site/src/components/empty_single.jsx" file with the content {jsx}
+    jsx: |-
+      import Inner from './empty_inner.jsx'
+
+      export default function Single() {
+        return (
+          <Inner>
+            <h1>👻</h1>
+          </Inner>
+        )
+      }
+  - step: I have a "site/src/components/empty_inner.jsx" file with the content {jsx}
+    jsx: |-
+      export default function Inner({ children }) {
+        return children
+      }
+  - step: I run "cd site && npm run build"
+  - step: I run "npm run cc-astro"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should not be empty
+  - step: The file "site/dist/index.html" should contain "<h1>👻</h1>"

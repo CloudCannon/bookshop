@@ -1,0 +1,53 @@
+name: Bookshop can live edit with a custom partial
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/layouts/partials/text.html" file with the content {html}
+    html: |-
+      <p class="text">Text - ={{ .text }}=</p>
+  - step: I have a "component-lib/components/test_component/test_component.hugo.html" file with the content {html}
+    html: |-
+      <p class="component">Inside the Bookshop component!</p>
+      {{ partial "text.html" . }}
+  - step: I have a "component-lib/bookshop/bookshop.config.js" file with the content {js}
+    js: |-
+      const fs = require("fs");
+      const path = require("path");
+
+      module.exports = {
+        engines: {
+          "@bookshop/hugo-engine": {
+            extraFiles: {
+              "layouts/partials/text.html": fs.readFileSync(
+                path.join(__dirname, "../../site/layouts/partials/text.html"),
+                { encoding: "utf8" }
+              )
+            }
+          }
+        }
+      }
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      component_data:
+        text: "Hello World"
+      ---
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "component_data": { "text": "Hello World" } }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "component_data": { "text": "Hello CloudCannon!" } }
+  - step: In my browser, I evaluate {js}
+    js: await toolproof.waitFor(() => window.bookshopLive?.renderCount === 2, 8000)
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Inside the Bookshop component!"
+    js: return (await toolproof.querySelector(".component")).innerText
+  - step: In my browser, the result of {js} should contain {value}
+    js: return (await toolproof.querySelector(".text")).innerText
+    value: |-
+      Text - =Hello CloudCannon!=

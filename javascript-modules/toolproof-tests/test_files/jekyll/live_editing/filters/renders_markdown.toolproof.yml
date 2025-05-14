@@ -1,0 +1,33 @@
+name: Jekyll bookshop live renders markdown
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/beetroot/beetroot.jekyll.html" file with the content {html}
+    html: |-
+      <div><code> {{ include.md | markdownify }} </code></div>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: default
+      md: title
+      ---
+      {% bookshop beetroot md=page.md %}
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "md": "title"
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "md": "**bold** title"
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly "<p><strong>bold</strong> title</p>"
+    js: return (await toolproof.querySelector("code")).innerHTML.trim()

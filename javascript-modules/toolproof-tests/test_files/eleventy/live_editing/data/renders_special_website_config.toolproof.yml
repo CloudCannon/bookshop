@@ -1,0 +1,54 @@
+name: Eleventy bookshop live renders special website config
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/.eleventy.js" file with the content {js}
+    js: |-
+      const pluginBookshop = require("@bookshop/eleventy-bookshop");
+      const pluginCloudCannon = require('eleventy-plugin-cloudcannon');
+
+      module.exports = function (eleventyConfig) {
+        eleventyConfig.setUseGitIgnore(false);
+        eleventyConfig.setDataDeepMerge(true);
+
+        eleventyConfig.addPlugin(pluginBookshop({
+          bookshopLocations: ["../component-lib"],
+          pathPrefix: "/documentation/"
+        }));
+
+        eleventyConfig.cloudcannonOptions = {
+          dir: {
+            pages: 'pages'
+          }
+        };
+
+        eleventyConfig.addPlugin(pluginCloudCannon);
+
+        return {
+          pathPrefix: "/documentation/"
+        }
+      };
+  - step: I have a "component-lib/components/block/block.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      {% if show %}
+      <h1>{{ "/page/" | url }}</h1>
+      {% endif %}
+  - macro: I build my Eleventy site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "show": false
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "show": true
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "/documentation/page/"
+    js: return (await toolproof.querySelector("h1")).textContent

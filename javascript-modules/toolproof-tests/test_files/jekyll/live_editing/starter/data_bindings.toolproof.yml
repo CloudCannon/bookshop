@@ -1,0 +1,41 @@
+name: Jekyll bookshop live renders starter template data bindings
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "content_blocks": [
+          {
+            "_bookshop_name": "hero",
+            "title": "Bookshop Hugo Starter",
+            "content_html": "<p>A skeleton for getting started with your component journey using Bookshop and Hugo.</p>",
+            "tags": [
+              {
+                "text": "bookshop"
+              },
+              {
+                "text": "hugo"
+              }
+            ]
+          },
+          {
+            "_bookshop_name": "content",
+            "content_html": "<p>For more info, check out the <a href=\"https://github.com/CloudCannon/hugo-bookshop-starter#readme\" target=\"_blank\">readme</a></p>",
+            "type": "standard"
+          }
+        ],
+        "note_html": "<p>You can also use the bookshop tag directly.</p>"
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly '#note_html'
+    js: return (await toolproof.querySelector(".c-content--note")).getAttribute("data-cms-bind")
+  - step: In my browser, the result of {js} should be exactly '#content_blocks.0'
+    js: return (await toolproof.querySelector(".c-title")).getAttribute("data-cms-bind")
+  - step: In my browser, the result of {js} should be exactly '#content_blocks.0.tags.1'
+    js: return (await toolproof.querySelector(".u-tag:nth-of-type(2)")).getAttribute("data-cms-bind")

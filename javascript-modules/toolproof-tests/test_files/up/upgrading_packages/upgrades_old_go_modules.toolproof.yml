@@ -1,0 +1,28 @@
+name: Upgrades old go modules
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/go.mod" file with the content {content}
+    content: |-
+      module a.b.c
+
+      go 1.17
+
+      require github.com/cloudcannon/bookshop/hugo/v2 v2.6.0 // indirect
+  - step: I have a "site/config.toml" file with the content {content}
+    content: |-
+      [[module.imports]]
+      path = 'github.com/cloudcannon/bookshop/hugo/v2'
+  - step: I have a "site/config/_default/module.yaml" file with the content {content}
+    content: |-
+      [[module.imports]]
+      path = 'github.com/cloudcannon/bookshop/hugo/v4'
+  - step: I run "npm start -- --dry-run --version 9.9.9 --skip-commands"
+  - step: stderr should be empty
+  - step: stdout should contain "github.com/cloudcannon/bookshop/hugo/v2 → v9"
+  - step: stdout should contain "github.com/cloudcannon/bookshop/hugo/v4 → v9"
+  - step: stdout should contain "github.com/cloudcannon/bookshop/hugo/v2 v2.6.0 → v9.9.9"
+  - step: stdout should contain "Running hugo mod clean"
+  - step: stdout should contain "Running hugo mod tidy"
+  - step: stdout should contain "Running hugo mod get github.com/cloudcannon/bookshop/hugo/v9@v9.9.9"
+  - step: stdout should contain "Running hugo mod tidy"

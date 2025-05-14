@@ -1,0 +1,5 @@
+name: Bookshop Package Upgrades background
+type: reference
+
+steps:
+  - macro: I setup the up package

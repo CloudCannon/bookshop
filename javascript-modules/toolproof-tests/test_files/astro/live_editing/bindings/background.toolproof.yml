@@ -1,0 +1,18 @@
+name: Astro live editing bindings setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup an Astro site
+  - macro: I setup the generate package
+  - step: I have a "site/src/components/title.astro" file with the content {astro}
+    astro: |-
+      <h1>{Astro.props.innards}</h1>
+  - step: I have a "site/src/components/title_react.jsx" file with the content {jsx}
+    jsx: |-
+      export default ({innards}) => {
+        return <h1>{innards}</h1>;
+      }

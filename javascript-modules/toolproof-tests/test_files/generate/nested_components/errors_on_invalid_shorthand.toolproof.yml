@@ -1,0 +1,14 @@
+name: Bookshop nested components - Errors on invalid shorthand
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/test/test.bookshop.yml" file with the content {yml}
+    yml: |-
+      blueprint:
+        inner: [bookshop:inner, bookshop:structure:something]
+  - step: I run "npm start" and expect it to fail
+  - step: stderr should contain "Component test contains an array that starts with bookshop:inner, but the following items do not match"

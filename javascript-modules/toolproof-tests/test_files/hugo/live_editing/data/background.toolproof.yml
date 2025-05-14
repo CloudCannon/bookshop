@@ -1,0 +1,23 @@
+name: Hugo live editing data setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      show: false
+      ---
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `(dict "show" .Params.show)` }}
+      {{ partial "bookshop" (slice "block" (dict "show" .Params.show)) }}
+      </body>
+      </html>

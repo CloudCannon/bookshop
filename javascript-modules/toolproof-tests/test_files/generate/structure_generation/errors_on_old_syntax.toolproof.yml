@@ -1,0 +1,13 @@
+name: Bookshop structure generation - Errors on old syntax
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/nested/card/card.bookshop.toml" file with the content {toml}
+    toml: |-
+      [props]
+  - step: I run "npm start" and expect it to fail
+  - step: stderr should contain "contains old (2.0) syntax"

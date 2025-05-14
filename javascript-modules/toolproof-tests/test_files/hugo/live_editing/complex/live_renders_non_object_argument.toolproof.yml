@@ -1,0 +1,54 @@
+name: Hugo bookshop live renders a non-object argument
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/page/page.hugo.html" file with the content {html}
+    html: |-
+      <div class="page">
+      {{ range . }}
+        {{ partial "bookshop" . }}
+      {{ end }}
+      </div>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `.Params.components` }}
+      {{ partial "bookshop" (slice "page" .Params.components) }}
+      </body>
+      </html>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      components:
+        - _bookshop_name: single
+          title: Block One
+        - _bookshop_name: tag
+          inner:
+            text: Block Two
+        - _bookshop_name: single
+          title: Block Three
+      ---
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "components": [
+        { "_bookshop_name": "single", "title": "Block One" },
+        { "_bookshop_name": "tag", "inner": { "text": "Block Two" } },
+        { "_bookshop_name": "single", "title": "Block Three" }
+      ]}
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "components": [
+        { "_bookshop_name": "single", "title": "Block One" },
+        { "_bookshop_name": "tag", "inner": { "text": "New Tag" } },
+        { "_bookshop_name": "single", "title": "Block Three" }
+      ]}
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly "New Tag"
+    js: return (await toolproof.querySelector("span")).innerText
+  - step: In my browser, the result of {js} should be exactly "Block Three"
+    js: return (await toolproof.querySelector(".page>*:nth-child(3)")).innerText

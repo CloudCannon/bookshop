@@ -1,0 +1,61 @@
+name: Hugo Bookshop live renders a complex component
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/heading/heading.hugo.html" file with the content {html}
+    html: |-
+      {{ $level := default 2 .level }}
+      {{ $level = string
+          $level }}
+      {{ $level_classes := dict
+          "1" "class-one"
+          "2" "class-two"
+          "3" "class-three"
+          "4" "class-four"
+      }}
+      {{ $level_class := "lg" }}
+      {{ with index $level_classes $level }}
+          {{ $level_class = . }}
+      {{ end }}
+      {{ $open := printf `<h%s class="%s">` $level $level_class }}
+      {{ $close := printf `</h%s>` $level }}
+      {{ with .copy }}
+          {{ safeHTML $open -}}
+          {{ partial "bookshop" (slice "text" .) }}
+          {{- safeHTML $close }}
+      {{ end }}
+  - step: I have a "component-lib/components/text/text.hugo.html" file with the content {html}
+    html: |-
+      <span>{{ markdownify . }}</span>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      heading:
+        copy: The delicious aroma from the kitchen was ruined by cigarette smoke.
+        level: 5
+      ---
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `.Params.heading` }}
+      {{ partial "bookshop" (slice "heading" .Params.heading) }}
+      </body>
+      </html>
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "heading": { "copy": "The delicious aroma from the kitchen was ruined by cigarette smoke.", "level": 5 } }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "heading": { "copy": "New heading.", "level": 2 } }
+  - step: In my browser, I evaluate {js}
+    js: await toolproof.waitFor(() => window.bookshopLive?.renderCount === 2, 8000)
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly {result}
+    js: return (await toolproof.querySelector("h2")).outerHTML
+    result: |-
+      <h2 class="class-two" data-cms-bind="#heading"><!--bookshop-live name(text) params(.: (.))--><span data-cms-bind="#heading.copy">New heading.</span><!--bookshop-live end--></h2>

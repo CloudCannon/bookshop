@@ -1,0 +1,14 @@
+name: Eleventy bookshop adds live editing markup
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "cd site && npm start"
+  - step: stderr should be empty
+  - step: stdout should not be empty
+  - step: The file "site/_site/index.html" should contain {html}
+    html: |-
+      <!--bookshop-live name(single) params(bind: block) context() -->

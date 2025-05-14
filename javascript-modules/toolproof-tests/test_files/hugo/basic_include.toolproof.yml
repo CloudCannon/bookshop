@@ -1,0 +1,27 @@
+name: Hugo basic bookshop include
+
+steps:
+  - macro: I setup a Hugo site
+  - step: I have a "component-lib/shared/hugo/basic.hugo.html" file with the content {html}
+    html: |-
+      {{.label}}🎉
+  - step: I have a "component-lib/components/block/block.hugo.html" file with the content {html}
+    html: |-
+      <div>{{ partial "bookshop_partial" (slice "basic" (dict "label" .title)) }}-Block</div>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      {{ partial "bookshop" (slice "block" (dict "title" "Component")) }}
+      <span>{{ partial "bookshop_partial" (slice "basic" (dict "label" "Site")) }}-Inline</span>
+  - step: I run "cd site && hugo"
+  - step: stderr should be empty
+  - step: stdout should contain "Total in"
+  - step: The file "site/public/index.html" should contain {html}
+    platforms: [linux, mac]
+    html: |-
+      Component🎉
+      <!--bookshop-live end-->-Block
+  - step: The file "site/public/index.html" should contain {html}
+    platforms: [linux, mac]
+    html: |-
+      Site🎉
+      <!--bookshop-live end-->-Inline

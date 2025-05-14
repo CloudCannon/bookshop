@@ -1,0 +1,20 @@
+name: Bookshop prefetch generation - info.json includes prefetchFiles
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/nested/card/card.bookshop.yml" file with the content {yml}
+    yml: |-
+      spec:
+        structures:
+          - blocks
+
+      blueprint:
+        color: "#034AD8"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
+  - step: The file "site/public/_cloudcannon/info.json" should contain "/_cloudcannon/hugo_renderer.wasm-"

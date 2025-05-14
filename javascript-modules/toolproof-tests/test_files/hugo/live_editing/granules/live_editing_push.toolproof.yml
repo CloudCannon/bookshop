@@ -1,0 +1,23 @@
+name: Hugo bookshop live editing renders when CloudCannon pushes new data
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      block:
+        title: "Hello There"
+      ---
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "block": { "title": "Gidday" }}
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "block": { "title": "Rerendered" }}
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly "Rerendered"
+    js: return (await toolproof.querySelector("h1")).innerText

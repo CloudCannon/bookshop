@@ -1,0 +1,140 @@
+name: Bookshop initialized components - Nested components can be initialized
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/nested/block/block.bookshop.yml" file with the content {yml}
+    yml: |-
+      spec:
+        structures:
+          - blocks
+
+      blueprint:
+        inner: bookshop:nested/card!
+  - step: I have a "component-lib/components/nested/card/card.bookshop.yml" file with the content {yml}
+    yml: |-
+      spec:
+        structures:
+          - blocks
+
+      blueprint:
+        tag: bookshop:generic/tag!
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Added 6 structures from 1 Bookshop to 1 site."
+  - snapshot: The file "site/public/_cloudcannon/info.json"
+    snapshot_content: |-
+      ╎{
+      ╎  "_structures": {
+      ╎    "subcomponents": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "generic/tag",
+      ╎            "text": "My tag text",
+      ╎            "size": "Medium"
+      ╎          },
+      ╎          "label": "Generic / Tag",
+      ╎          "_inputs": {}
+      ╎        },
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "interactive/button",
+      ╎            "label": "My button label",
+      ╎            "href": "#"
+      ╎          },
+      ╎          "label": "Interactive / Button",
+      ╎          "_inputs": {}
+      ╎        }
+      ╎      ]
+      ╎    },
+      ╎    "blocks": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "nested/block",
+      ╎            "inner": {
+      ╎              "_bookshop_name": "nested/card",
+      ╎              "tag": {
+      ╎                "_bookshop_name": "generic/tag",
+      ╎                "text": "My tag text",
+      ╎                "size": "Medium"
+      ╎              }
+      ╎            }
+      ╎          },
+      ╎          "label": "Nested / Block",
+      ╎          "_inputs": {
+      ╎            "inner": {
+      ╎              "options": {
+      ╎                "structures": "_structures._bookshop_single_component_nested_card"
+      ╎              },
+      ╎              "type": "object"
+      ╎            }
+      ╎          }
+      ╎        },
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "nested/card",
+      ╎            "tag": {
+      ╎              "_bookshop_name": "generic/tag",
+      ╎              "text": "My tag text",
+      ╎              "size": "Medium"
+      ╎            }
+      ╎          },
+      ╎          "label": "Nested / Card",
+      ╎          "_inputs": {
+      ╎            "tag": {
+      ╎              "options": {
+      ╎                "structures": "_structures._bookshop_single_component_generic_tag"
+      ╎              },
+      ╎              "type": "object"
+      ╎            }
+      ╎          }
+      ╎        }
+      ╎      ]
+      ╎    },
+      ╎    "_bookshop_single_component_generic_tag": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "generic/tag",
+      ╎            "text": "My tag text",
+      ╎            "size": "Medium"
+      ╎          },
+      ╎          "label": "Generic / Tag",
+      ╎          "_inputs": {}
+      ╎        }
+      ╎      ]
+      ╎    },
+      ╎    "_bookshop_single_component_nested_card": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "nested/card",
+      ╎            "tag": {
+      ╎              "_bookshop_name": "generic/tag",
+      ╎              "text": "My tag text",
+      ╎              "size": "Medium"
+      ╎            }
+      ╎          },
+      ╎          "label": "Nested / Card",
+      ╎          "_inputs": {
+      ╎            "tag": {
+      ╎              "options": {
+      ╎                "structures": "_structures._bookshop_single_component_generic_tag"
+      ╎              },
+      ╎              "type": "object"
+      ╎            }
+      ╎          }
+      ╎        }
+      ╎      ]
+      ╎    }
+      ╎  }
+      ╎}

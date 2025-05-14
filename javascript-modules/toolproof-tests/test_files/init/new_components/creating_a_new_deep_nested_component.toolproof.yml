@@ -1,0 +1,24 @@
+name: Bookshop init - Creating a new deep nested component
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "src/component-lib/bookshop/bookshop.config.js" file with the content {js}
+    js: |
+      module.exports = {
+          engines: {
+              "@bookshop/eleventy-engine": {}
+          }
+      }
+  - step: I run "cd src/component-lib && npm start -- --component deep/nested/component --format js"
+  - step: stderr should be empty
+  - step: stdout should contain "components/deep/nested/component/component.bookshop.js"
+    platforms: [linux, mac]
+  - step: The file "src/component-lib/components/deep/nested/component/component.eleventy.liquid" should contain {val}
+    val: |-
+      c-deep-nested-component
+  - step: The file "src/component-lib/components/deep/nested/component/component.scss" should contain {val}
+    val: |-
+      .c-deep-nested-component
+  - step: The file "src/component-lib/components/deep/nested/component/component.bookshop.js" should contain {val}
+    val: |-
+      content_blocks

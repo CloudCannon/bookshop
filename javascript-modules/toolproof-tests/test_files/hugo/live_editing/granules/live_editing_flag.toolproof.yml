@@ -1,0 +1,40 @@
+name: Hugo bookshop sets a flag when live editing
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/single/single.hugo.html" file with the content {html}
+    html: |-
+      {{ if site.Params.env_bookshop_live }}
+        <h1>LIVE! {{ .title }}</h1>
+      {{ else }}
+        <h1>DEAD? {{ .title }}</h1>
+      {{ end }}
+      {{ partial "bookshop" (slice "nested" (dict "title" .title)) }}
+  - step: I have a "component-lib/components/nested/nested.hugo.html" file with the content {html}
+    html: |-
+      {{ if site.Params.env_bookshop_live }}
+        <h2>LIVE! {{ .title }}</h2>
+      {{ else }}
+        <h2>DEAD? {{ .title }}</h2>
+      {{ end }}
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      block:
+        title: "Hello There"
+      ---
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "block": { "title": "Hello There" }}
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "block": { "title": "🫑" }}
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly "LIVE! 🫑"
+    js: return (await toolproof.querySelector("h1")).innerText
+  - step: In my browser, the result of {js} should be exactly "LIVE! 🫑"
+    js: return (await toolproof.querySelector("h2")).innerText

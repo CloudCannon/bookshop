@@ -1,28 +1,33 @@
 {
-    "private": true,
-    "packageManager": "yarn@3.6.3",
-    "workspaces": [
-        "bookshop-sass",
-        "browser",
-        "builder",
-        "engines/astro-engine",
-        "engines/jekyll-engine",
-        "engines/eleventy-engine",
-        "engines/svelte-engine",
-        "engines/hugo-engine",
-        "generate",
-        "generator-plugins/eleventy/eleventy-bookshop",
-        "generator-plugins/sveltekit/sveltekit-bookshop",
-        "generator-plugins/astro/astro-bookshop",
-        "generator-plugins/astro/vite-plugin-astro-bookshop",
-        "helpers",
-        "init",
-        "integration-tests",
-        "live",
-        "styles",
-        "up"
-    ],
-    "engines": {
-        "npm": "please-use-yarn"
-    }
+  "private": true,
+  "packageManager": "yarn@3.6.3",
+  "workspaces": [
+    "bookshop-sass",
+    "browser",
+    "builder",
+    "engines/astro-engine",
+    "engines/jekyll-engine",
+    "engines/eleventy-engine",
+    "engines/svelte-engine",
+    "engines/hugo-engine",
+    "generate",
+    "generator-plugins/eleventy/eleventy-bookshop",
+    "generator-plugins/sveltekit/sveltekit-bookshop",
+    "generator-plugins/astro/astro-bookshop",
+    "generator-plugins/astro/vite-plugin-astro-bookshop",
+    "helpers",
+    "init",
+    "integration-tests",
+    "live",
+    "styles",
+    "up"
+  ],
+  "engines": {
+    "npm": "please-use-yarn"
+  },
+  "devDependencies": {
+    "astro": "^5",
+    "react": "^18",
+    "react-dom": "^18"
+  }
 }

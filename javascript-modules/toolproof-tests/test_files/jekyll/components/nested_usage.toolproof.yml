@@ -1,0 +1,24 @@
+name: Jekyll components can use further components
+
+steps:
+  - macro: I setup a Jekyll site
+  - step: I have a "component-lib/components/hero/hero.jekyll.html" file with the content {html}
+    html: |
+      <h1>{{ include.text }}</h1>
+      {% bookshop tag tag=include.tag %}
+  - step: I have a "component-lib/components/tag/tag.jekyll.html" file with the content {html}
+    html: |
+      <span>{{ include.tag.label }}</span>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |
+      ---
+      title_text: "🩳"
+      tag:
+        label: "🪣"
+      ---
+      {% bookshop hero text=page.title_text tag=page.tag %}
+  - step: I run "cd site && bundle exec jekyll build --trace"
+  - step: stderr should be empty
+  - step: stdout should contain "done in"
+  - step: The file "site/_site/index.html" should contain "<h1>🩳</h1>"
+  - step: The file "site/_site/index.html" should contain "<span>🪣</span>"

@@ -1,0 +1,101 @@
+name: Bookshop structure generation - Nested object arrays become nested structures
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/card/card.bookshop.yml" file with the content {yml}
+    yml: |-
+      spec:
+        structures:
+          - blocks
+
+      blueprint:
+        title: Hello World
+        nested:
+          - title: "Nested Object #1"
+            double_nested:
+              - title: "Nested Object #2"
+                triple_nested:
+                  - title: "Nested Object #3"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Added 1 structure from 1 Bookshop to 1 site."
+  - snapshot: The file "site/public/_cloudcannon/info.json"
+    snapshot_content: |-
+      ╎{
+      ╎  "_structures": {
+      ╎    "blocks": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "card",
+      ╎            "title": "Hello World",
+      ╎            "nested": []
+      ╎          },
+      ╎          "label": "Card",
+      ╎          "_inputs": {
+      ╎            "nested": {
+      ╎              "options": {
+      ╎                "structures": {
+      ╎                  "values": [
+      ╎                    {
+      ╎                      "label": "Nested",
+      ╎                      "icon": "add_box",
+      ╎                      "value": {
+      ╎                        "title": "Nested Object #1",
+      ╎                        "double_nested": []
+      ╎                      },
+      ╎                      "_inputs": {
+      ╎                        "double_nested": {
+      ╎                          "options": {
+      ╎                            "structures": {
+      ╎                              "values": [
+      ╎                                {
+      ╎                                  "label": "Double Nested",
+      ╎                                  "icon": "add_box",
+      ╎                                  "value": {
+      ╎                                    "title": "Nested Object #2",
+      ╎                                    "triple_nested": []
+      ╎                                  },
+      ╎                                  "_inputs": {
+      ╎                                    "triple_nested": {
+      ╎                                      "options": {
+      ╎                                        "structures": {
+      ╎                                          "values": [
+      ╎                                            {
+      ╎                                              "label": "Triple Nested",
+      ╎                                              "icon": "add_box",
+      ╎                                              "value": {
+      ╎                                                "title": "Nested Object #3"
+      ╎                                              },
+      ╎                                              "_inputs": {}
+      ╎                                            }
+      ╎                                          ]
+      ╎                                        }
+      ╎                                      },
+      ╎                                      "type": "array"
+      ╎                                    }
+      ╎                                  }
+      ╎                                }
+      ╎                              ]
+      ╎                            }
+      ╎                          },
+      ╎                          "type": "array"
+      ╎                        }
+      ╎                      }
+      ╎                    }
+      ╎                  ]
+      ╎                }
+      ╎              },
+      ╎              "type": "array"
+      ╎            }
+      ╎          }
+      ╎        }
+      ╎      ]
+      ╎    }
+      ╎  }
+      ╎}

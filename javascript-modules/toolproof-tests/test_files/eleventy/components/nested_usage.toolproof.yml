@@ -1,0 +1,25 @@
+name: Eleventy components can use further components
+
+steps:
+  - macro: I setup an Eleventy site
+  - step: I have a "component-lib/components/hero/hero.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <h1>{{ text }}</h1>
+      {% bookshop "tag" tagprop: herotag %}
+  - step: I have a "component-lib/components/tag/tag.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <span>{{ tagprop.label }}</span>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      title_text: "🩳"
+      hero:
+        tag:
+          label: "🪣"
+      ---
+      {% bookshop "hero" text: title_text herotag: hero.tag %}
+  - step: I run "cd site && npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "v3"
+  - step: The file "site/_site/index.html" should contain "<h1>🩳</h1>"
+  - step: The file "site/_site/index.html" should contain "<span>🪣</span>"

@@ -1,0 +1,52 @@
+macro: I setup a Hugo site
+
+steps:
+  - step: I have a "component-lib/go.mod" file with the content {mod}
+    mod: |-
+      module bookshop.test/components
+
+      go 1.16
+  - step: I have a "component-lib/config.toml" file with the content {toml}
+    toml: |-
+      [module]
+      hugoVersion.extended = true
+      hugoVersion.min = "0.86.1"
+
+      [[module.imports]]
+      path = 'github.com/cloudcannon/bookshop/hugo/v3'
+
+      [[module.mounts]]
+      source = "."
+      target = "layouts/partials/bookshop"
+
+      [[module.mounts]]
+      source = "."
+      target = "assets/bookshop"
+  - step: I have a "component-lib/bookshop/bookshop.config.js" file with the content {js}
+    js: |-
+      module.exports = {
+          engines: {
+              "@bookshop/hugo-engine": {}
+          }
+      }
+  - step: I have a "site/go.mod" file with the content {mod}
+    mod: |-
+      module bookshop.test/site
+
+      go 1.16
+  - step: I have a "site/config.toml" file with the content {toml}
+    toml: |-
+      baseURL = "https://cloudcannon.com/"
+      languageCode = "en-us"
+      title = "Hugo Bookshop Cucumber"
+      copyright = "🎉"
+
+      [module]
+      replacements = "bookshop.test/components -> ../../component-lib,github.com/cloudcannon/bookshop/hugo/v3 -> %toolproof_process_directory_unix%/../../hugo/v3/"
+
+      [[module.imports]]
+      path = 'bookshop.test/components'
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      ---

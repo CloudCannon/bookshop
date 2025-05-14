@@ -1,0 +1,41 @@
+name: Hugo Bookshop live renders unsafe Markdown
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/cont/cont.hugo.html" file with the content {html}
+    html: |-
+      <div class="c-content">{{ .text | markdownify }}</div>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      content:
+        text: |-
+          <h3 class="bolder">Heading</h3>
+
+          normal markdown
+      ---
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `.Params.content` }}
+      {{ partial "bookshop" (slice "cont" .Params.content) }}
+      </body>
+      </html>
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "content": { "text": "<h3 class=\"bolder\">Heading</h3>\n\nnormal markdown" } }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "content": { "text": "<h3 class=\"bolder\">Bolder Heading</h3>\n\nnormal markdown" } }
+  - step: In my browser, I evaluate {js}
+    js: await toolproof.waitFor(() => window.bookshopLive?.renderCount === 2, 8000)
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should be exactly '<h3 class="bolder">Bolder Heading</h3>'
+    js: return (await toolproof.querySelector("h3")).outerHTML
+  - step: In my browser, the result of {js} should be exactly '<p>normal markdown</p>'
+    js: return (await toolproof.querySelector("p")).outerHTML

@@ -1,0 +1,21 @@
+name: Hugo bookshop live editing markup
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      block:
+        title: "Hello There"
+      ---
+  - step: I run "cd site && hugo"
+  - step: stderr should be empty
+  - step: stdout should contain "Total in"
+  - step: The file "site/public/index.html" should contain {line}
+    line: '<!--bookshop-live name(__bookshop__subsequent) params(.: (dict "title" .Params.block.title))-->'
+  - step: The file "site/public/index.html" should contain {line}
+    line: "<!--bookshop-live name(single)-->"

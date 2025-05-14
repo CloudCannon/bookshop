@@ -1,0 +1,25 @@
+name: Eleventy basic bookshop include
+
+steps:
+  - macro: I setup an Eleventy site
+  - step: I have a "component-lib/shared/eleventy/basic.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      {{label}}🎉
+  - step: I have a "component-lib/components/block/block.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <div>{% bookshop_include "basic" label: title %}-Block</div>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      ---
+      {% bookshop "block" title: "Component" %}
+      <span>{% bookshop_include "basic" label: "Site" %}-Inline</span>
+  - step: I run "cd site && npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "v3"
+  - step: The file "site/_site/index.html" should contain {html}
+    html: |-
+      Component🎉<!--bookshop-live end-->-Block
+  - step: The file "site/_site/index.html" should contain {html}
+    html: |-
+      Site🎉<!--bookshop-live end-->-Inline

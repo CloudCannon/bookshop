@@ -1,0 +1,25 @@
+name: Bookshop replaces Hugo non-existent partials in an error boundary
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/bad/bad.hugo.html" file with the content {html}
+    html: |-
+      <h1>{{ partial "nuffin" }}</h1>
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "components": [{ "_bookshop_name": "good", "text": "Hello World 01" }] }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      { "components": [{ "_bookshop_name": "good", "text": "Hello World 01" }, { "_bookshop_name": "bad" }, { "_bookshop_name": "good", "text": "Hello World 02" }] }
+  - step: In my browser, I evaluate {js}
+    js: await toolproof.waitFor(() => window.bookshopLive?.renderCount === 2, 8000)
+  - step: In my browser, the result of {js} should contain "Failed to render"
+    js: return (await toolproof.querySelector("body>div")).innerText
+  - step: In my browser, the result of {js} should contain 'partial "nuffin" not found'
+    js: return (await toolproof.querySelector("body>div")).innerText
+  - step: In my browser, the result of {js} should be exactly "Hello World 02"
+    js: return (await toolproof.querySelector("h1:nth-of-type(2)")).innerText

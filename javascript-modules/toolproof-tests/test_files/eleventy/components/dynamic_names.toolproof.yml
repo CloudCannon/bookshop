@@ -1,0 +1,27 @@
+name: Eleventy Bookshop tags should support dynamic names
+
+steps:
+  - macro: I setup an Eleventy site
+  - step: I have a "component-lib/components/a/a.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      🅰️{{e}}
+  - step: I have a "component-lib/components/b/b.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      🅱️{{e}}
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      components:
+        - _name: a
+          e: 🫀
+        - _name: b
+          e: 🫑
+      ---
+      {% for component in components %}
+      {% bookshop {{component._name}} bind: component %}
+      {% endfor %}
+  - step: I run "cd site && npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "v3"
+  - step: The file "site/_site/index.html" should contain "🅰️🫀"
+  - step: The file "site/_site/index.html" should contain "🅱️🫑"

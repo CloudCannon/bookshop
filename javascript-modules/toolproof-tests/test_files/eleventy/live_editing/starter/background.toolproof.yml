@@ -1,0 +1,70 @@
+name: Eleventy live editing starter setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup an Eleventy site
+  - macro: I setup the generate package
+  - step: I have a "site/_includes/layouts/default.liquid" file with the content {liquid}
+    liquid: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <main>
+          {{ content }}
+        </main>
+      </body>
+      </html>
+  - step: I have a "component-lib/shared/eleventy/page.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      {% for block in content_blocks %}
+        {% bookshop "{{block._bookshop_name}}" bind: block %}
+      {% endfor %}
+  - step: I have a "component-lib/components/tag/tag.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <span class="u-tag">{{ text }}</span>
+  - step: I have a "component-lib/components/content/content.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <div class="c-content c-content--{{ type }}">
+        {% if type == "note" %}{% bookshop "tag" text: "Note" %}{% endif %}
+        {{ content_html }}
+      </div>
+  - step: I have a "component-lib/components/hero/hero.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <div class="c-title">
+        {% for tag in tags %}
+          {% bookshop "tag" bind: tag %}
+        {% endfor %}
+        <h1 class="c-title__title">
+          {{ title }}
+        </h1>
+        {% if content_html %}
+          {% bookshop "content" content_html: content_html %}
+        {% endif %}
+      </div>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: layouts/default.liquid
+      content_blocks:
+        - _bookshop_name: hero
+          title: Bookshop Hugo Starter
+          content_html: >-
+            <p>A skeleton for getting started with your component journey using Bookshop and Hugo.</p>
+          tags:
+            - text: "bookshop"
+            - text: "hugo"
+        - _bookshop_name: content
+          content_html: >-
+            <p>For more info, check out the <a href="https://github.com/CloudCannon/hugo-bookshop-starter#readme" target="_blank">readme</a></p>
+          type: standard
+      note_html: >-
+        <p>You can also use the bookshop tag directly.</p>
+      ---
+      <main>
+        {% bookshop_include "page" content_blocks: content_blocks %}
+      </main>
+      {% bookshop "content" content_html: note_html type: 'note' %}

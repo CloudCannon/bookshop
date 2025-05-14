@@ -1,0 +1,31 @@
+name: Hugo component browser setup
+type: reference
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+  - step: I have a "component-lib/components/single/single.bookshop.toml" file with the content {toml}
+    toml: |-
+      [spec]
+      structures = [ "content_blocks" ]
+      label = "Single"
+      description = "Single component"
+      icon = "nature_people"
+      tags = ["Basic"]
+
+      [blueprint]
+      title = "Hello There, World"
+  - step: I have a "component-lib/components/single/single.hugo.html" file with the content {html}
+    html: |-
+      <h1>{{ .title }}</h1>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_component_browser" }}
+      </body>
+      </html>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      ---

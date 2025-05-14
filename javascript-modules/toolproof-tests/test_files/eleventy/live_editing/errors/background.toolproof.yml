@@ -1,0 +1,39 @@
+name: Eleventy live editing errors setup
+type: reference
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup an Eleventy site
+  - macro: I setup the generate package
+  - step: I have a "site/_includes/layouts/default.liquid" file with the content {liquid}
+    liquid: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+        <main>
+          {{ content }}
+        </main>
+      </body>
+      </html>
+  - step: I have a "component-lib/components/page/page.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <div class="page">
+      {% for component in content_blocks %}
+        {% bookshop '{{component._bookshop_name}}' bind: component %}
+      {% endfor %}
+      </div>
+  - step: I have a "component-lib/components/good/good.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <h1>{{ text }}</h1>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: layouts/default.liquid
+      components:
+        - _bookshop_name: good
+          text: Hello World 01
+      ---
+      {% bookshop "page" content_blocks: components %}

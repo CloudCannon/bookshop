@@ -1,0 +1,44 @@
+name: Jekyll bookshop sets a flag when live editing
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/single/single.jekyll.html" file with the content {html}
+    html: |-
+      {% if env_bookshop_live %}
+        <h1>LIVE! {{ include.title }}</h1>
+      {% else %}
+        <h1>DEAD? {{ include.title }}</h1>
+      {% endif %}
+      {% bookshop nested title=include.title %}
+  - step: I have a "component-lib/components/nested/nested.jekyll.html" file with the content {html}
+    html: |-
+      {% if env_bookshop_live %}
+        <h2>LIVE! {{ include.title }}</h2>
+      {% else %}
+        <h2>DEAD? {{ include.title }}</h2>
+      {% endif %}
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "block": {
+          "title": "Hello There"
+        }
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "block": {
+          "title": "🫑"
+        }
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "LIVE! 🫑"
+    js: return (await toolproof.querySelector("h1")).textContent
+  - step: In my browser, the result of {js} should contain "LIVE! 🫑"
+    js: return (await toolproof.querySelector("h2")).textContent

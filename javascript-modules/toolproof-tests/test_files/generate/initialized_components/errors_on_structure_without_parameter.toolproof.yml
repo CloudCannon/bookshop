@@ -1,0 +1,15 @@
+name: Bookshop initialized components - Errors on a structure without a parameter
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/test/test.bookshop.yml" file with the content {yml}
+    yml: |-
+      blueprint:
+        tag: bookshop:structure:blocks!
+  - step: I run "npm start" and expect it to fail
+  - step: stderr should contain "Component test referenced bookshop:structure:blocks! but did not provide a component name as a parameter"
+  - step: stderr should contain "Expected bookshop:structure:blocks or bookshop:structure:blocks!(<component_name>)"

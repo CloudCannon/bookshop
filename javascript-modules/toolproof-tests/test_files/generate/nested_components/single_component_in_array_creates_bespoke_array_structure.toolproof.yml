@@ -1,0 +1,124 @@
+name: Bookshop nested components - Single component in array creates bespoke array structure
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/tag/tag.bookshop.yml" file with the content {yml}
+    yml: |-
+      spec:
+        label: "Little Tag"
+        structures:
+          - subcomponents
+
+      blueprint:
+        text: "My tag text"
+        size: "Medium"
+
+      _inputs:
+        size:
+          type: select
+          options:
+            values:
+              - Small
+              - Medium
+              - Large
+  - step: I have a "component-lib/components/nested/card/card.bookshop.yml" file with the content {yml}
+    yml: |-
+      spec:
+        structures:
+          - blocks
+
+      blueprint:
+        color: "#034AD8"
+        tag:
+          - bookshop:tag
+
+      _inputs:
+        color:
+          type: "color"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Added 3 structures from 1 Bookshop to 1 site."
+  - snapshot: The file "site/public/_cloudcannon/info.json"
+    snapshot_content: |-
+      ╎{
+      ╎  "_structures": {
+      ╎    "blocks": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "nested/card",
+      ╎            "color": "#034AD8",
+      ╎            "tag": []
+      ╎          },
+      ╎          "label": "Nested / Card",
+      ╎          "_inputs": {
+      ╎            "color": {
+      ╎              "type": "color"
+      ╎            },
+      ╎            "tag": {
+      ╎              "options": {
+      ╎                "structures": "_structures._bookshop_single_component_tag"
+      ╎              },
+      ╎              "type": "array"
+      ╎            }
+      ╎          }
+      ╎        }
+      ╎      ]
+      ╎    },
+      ╎    "subcomponents": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "tag",
+      ╎            "text": "My tag text",
+      ╎            "size": "Medium"
+      ╎          },
+      ╎          "label": "Little Tag",
+      ╎          "_inputs": {
+      ╎            "size": {
+      ╎              "type": "select",
+      ╎              "options": {
+      ╎                "values": [
+      ╎                  "Small",
+      ╎                  "Medium",
+      ╎                  "Large"
+      ╎                ]
+      ╎              }
+      ╎            }
+      ╎          }
+      ╎        }
+      ╎      ]
+      ╎    },
+      ╎    "_bookshop_single_component_tag": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "tag",
+      ╎            "text": "My tag text",
+      ╎            "size": "Medium"
+      ╎          },
+      ╎          "label": "Little Tag",
+      ╎          "_inputs": {
+      ╎            "size": {
+      ╎              "type": "select",
+      ╎              "options": {
+      ╎                "values": [
+      ╎                  "Small",
+      ╎                  "Medium",
+      ╎                  "Large"
+      ╎                ]
+      ╎              }
+      ╎            }
+      ╎          }
+      ╎        }
+      ╎      ]
+      ╎    }
+      ╎  }
+      ╎}

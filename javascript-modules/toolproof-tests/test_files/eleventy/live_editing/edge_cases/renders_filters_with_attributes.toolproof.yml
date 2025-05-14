@@ -1,0 +1,66 @@
+name: Eleventy bookshop live renders filters with attributes
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/where/where.eleventy.liquid" file with the content {liquid}
+    liquid: |-
+      <div>
+      {% assign featured = featured_items | where: "featured", true %}
+      {% for item in featured %}
+      <p>{{ item.name }}</p>
+      {% endfor %}
+      </div>
+  - step: I have a "site/index.html" file with the content {html}
+    html: |-
+      ---
+      layout: layouts/default.liquid
+      featured_items:
+        - name: "Item One"
+          featured: true
+        - name: "Item Two"
+          featured: false
+      ---
+      {% bookshop "where" featured_items: featured_items %}
+  - macro: I build my Eleventy site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "featured_items": [
+          {
+            "name": "Item One",
+            "featured": true
+          },
+          {
+            "name": "Item Two",
+            "featured": false
+          }
+        ]
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "layouts/default.liquid",
+        "featured_items": [
+          {
+            "name": "Item One",
+            "featured": true
+          },
+          {
+            "name": "Item Two",
+            "featured": false
+          },
+          {
+            "name": "Item Three",
+            "featured": true
+          }
+        ]
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Item One"
+    js: return (await toolproof.querySelector("p:nth-of-type(1)")).textContent
+  - step: In my browser, the result of {js} should contain "Item Three"
+    js: return (await toolproof.querySelector("p:nth-of-type(2)")).textContent

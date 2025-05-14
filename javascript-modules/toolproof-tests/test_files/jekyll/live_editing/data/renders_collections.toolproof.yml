@@ -1,0 +1,53 @@
+name: Jekyll bookshop live renders collections
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/_config.yml" file with the content {yaml}
+    yaml: |-
+      bookshop_locations:
+        - ../component-lib
+
+      plugins:
+        - jekyll-bookshop
+
+      collections:
+        - cats
+  - step: I have a "site/_cats/cheeka.md" file with the content {md}
+    md: |-
+      ---
+      name: Cheeka
+      status: cute
+      ---
+  - step: I have a "site/_cats/crumpet.md" file with the content {md}
+    md: |-
+      ---
+      name: Crumpet
+      status: adorable
+      ---
+  - step: I have a "component-lib/components/block/block.jekyll.html" file with the content {html}
+    html: |-
+      <ul>{% if include.show %}{% for cat in site.cats %}{% bookshop cat bind=cat %}{% endfor %}{% endif %}</ul>
+  - step: I have a "component-lib/components/cat/cat.jekyll.html" file with the content {html}
+    html: |-
+      <li>{{ cat.name }} ({{ cat.status }})</li>
+  - macro: I build my Jekyll site and load it with front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "show": false
+      }
+  - macro: CloudCannon pushes the front matter {json}
+    json: |-
+      {
+        "layout": "default",
+        "show": true
+      }
+  - step: In my browser, the console should be empty
+  - step: In my browser, the result of {js} should contain "Cheeka (cute)"
+    js: return (await toolproof.querySelector("li:nth-of-type(1)")).textContent
+  - step: In my browser, the result of {js} should contain "Crumpet (adorable)"
+    js: return (await toolproof.querySelector("li:nth-of-type(2)")).textContent

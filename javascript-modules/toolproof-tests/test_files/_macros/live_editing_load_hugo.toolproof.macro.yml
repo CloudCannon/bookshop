@@ -1,0 +1,9 @@
+macro: I build my Hugo site and load it with front matter {front_matter}
+
+steps:
+  - step: I run "cd site && hugo"
+  - step: I run "cd site && cloudcannon-hugo --baseurl /"
+  - step: I run "npm start"
+  - step: I serve the directory "site/public"
+  - step: In my browser, I load "/"
+  - macro: I initialize the CloudCannon Visual Editor with the front matter "%front_matter%"

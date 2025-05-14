@@ -1,0 +1,81 @@
+name: Bookshop initialized components - Structure component arrays can be initialized
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "component-lib/components/nested/card/card.bookshop.yml" file with the content {yml}
+    yml: |-
+      spec:
+        structures:
+          - blocks
+
+      blueprint:
+        blocks:
+          - "bookshop:structure:subcomponents!(generic/tag)"
+          - "bookshop:structure:subcomponents!(interactive/button)"
+  - step: I run "npm start"
+  - step: stderr should be empty
+  - step: stdout should contain "Added 3 structures from 1 Bookshop to 1 site."
+  - snapshot: The file "site/public/_cloudcannon/info.json"
+    snapshot_content: |-
+      ╎{
+      ╎  "_structures": {
+      ╎    "subcomponents": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "generic/tag",
+      ╎            "text": "My tag text",
+      ╎            "size": "Medium"
+      ╎          },
+      ╎          "label": "Generic / Tag",
+      ╎          "_inputs": {}
+      ╎        },
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "interactive/button",
+      ╎            "label": "My button label",
+      ╎            "href": "#"
+      ╎          },
+      ╎          "label": "Interactive / Button",
+      ╎          "_inputs": {}
+      ╎        }
+      ╎      ]
+      ╎    },
+      ╎    "blocks": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "nested/card",
+      ╎            "blocks": [
+      ╎              {
+      ╎                "_bookshop_name": "generic/tag",
+      ╎                "text": "My tag text",
+      ╎                "size": "Medium"
+      ╎              },
+      ╎              {
+      ╎                "_bookshop_name": "interactive/button",
+      ╎                "label": "My button label",
+      ╎                "href": "#"
+      ╎              }
+      ╎            ]
+      ╎          },
+      ╎          "label": "Nested / Card",
+      ╎          "_inputs": {
+      ╎            "blocks": {
+      ╎              "options": {
+      ╎                "structures": "_structures.subcomponents"
+      ╎              },
+      ╎              "type": "array"
+      ╎            }
+      ╎          }
+      ╎        }
+      ╎      ]
+      ╎    }
+      ╎  }
+      ╎}
