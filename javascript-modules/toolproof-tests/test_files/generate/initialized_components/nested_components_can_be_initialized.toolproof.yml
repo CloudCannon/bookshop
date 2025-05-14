@@ -94,6 +94,20 @@ steps:
       ╎        }
       ╎      ]
       ╎    },
+      ╎    "_bookshop_single_component_generic_tag": {
+      ╎      "id_key": "_bookshop_name",
+      ╎      "values": [
+      ╎        {
+      ╎          "value": {
+      ╎            "_bookshop_name": "generic/tag",
+      ╎            "text": "My tag text",
+      ╎            "size": "Medium"
+      ╎          },
+      ╎          "label": "Generic / Tag",
+      ╎          "_inputs": {}
+      ╎        }
+      ╎      ]
+      ╎    },
       ╎    "_bookshop_single_component_nested_card": {
       ╎      "id_key": "_bookshop_name",
       ╎      "values": [
@@ -115,20 +129,6 @@ steps:
       ╎              "type": "object"
       ╎            }
       ╎          }
-      ╎        }
-      ╎      ]
-      ╎    },
-      ╎    "_bookshop_single_component_generic_tag": {
-      ╎      "id_key": "_bookshop_name",
-      ╎      "values": [
-      ╎        {
-      ╎          "value": {
-      ╎            "_bookshop_name": "generic/tag",
-      ╎            "text": "My tag text",
-      ╎            "size": "Medium"
-      ╎          },
-      ╎          "label": "Generic / Tag",
-      ╎          "_inputs": {}
       ╎        }
       ╎      ]
       ╎    }
