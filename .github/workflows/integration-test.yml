@@ -68,7 +68,7 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: "^1.21.1"
-      - run: yarn install --immutable
+      - run: pnpm install --frozen-lockfile
         working-directory: ${{ env.cwd }}
       - name: Build Hugo wasm module
         run: go build -tags nodeploy -o hugo_renderer.wasm

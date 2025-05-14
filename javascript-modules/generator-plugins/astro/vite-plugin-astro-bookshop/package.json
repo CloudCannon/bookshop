@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/vite-plugin-astro-bookshop",
-  "packageManager": "yarn@3.0.0",
+  "packageManager": "pnpm@10.11.0",
   "version": "3.14.0",
   "type": "module",
   "description": "Astro plugin for consuming Bookshop components",

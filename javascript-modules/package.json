@@ -1,6 +1,6 @@
 {
   "private": true,
-  "packageManager": "yarn@3.6.3",
+  "packageManager": "pnpm@10.11.0",
   "workspaces": [
     "bookshop-sass",
     "browser",
@@ -17,13 +17,17 @@
     "generator-plugins/astro/vite-plugin-astro-bookshop",
     "helpers",
     "init",
-    "integration-tests",
+    "toolproof-tests",
     "live",
     "styles",
     "up"
   ],
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  },
   "engines": {
-    "npm": "please-use-yarn"
+    "npm": "please-use-pnpm",
+    "yarn": "please-use-pnpm"
   },
   "devDependencies": {
     "astro": "^5",

@@ -1,5 +1,6 @@
 {
   "name": "bookshop-toolproof-tests",
+  "packageManager": "pnpm@10.11.0",
   "description": "Toolproof tests for Bookshop",
   "private": true,
   "devDependencies": {
