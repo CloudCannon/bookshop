@@ -1,0 +1,20 @@
+name: Upgrades old node packages and installs
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/package.json" file with the content {json}
+    json: |-
+      {
+        "devDependencies": {
+          "@bookshop/browser": "1.2.3",
+          "@bookshop/live": "9.9.0"
+        }
+      }
+  - step: I have a "site/package-lock.json" file with the content {content}
+    content: |-
+      .
+  - step: I run "npm start -- --dry-run --version 9.9.9.pre-rc.1 --skip-commands"
+  - step: stderr should be empty
+  - step: stdout should contain "@bookshop/browser 1.2.3 → 9.9.9.pre-rc.1"
+  - step: stdout should contain "@bookshop/live 9.9.0 → 9.9.9.pre-rc.1"
+  - step: stdout should contain "Running npm i"

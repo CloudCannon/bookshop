@@ -1,0 +1,15 @@
+name: Upgrades old node packages
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I have a "site/package.json" file with the content {json}
+    json: |-
+      {
+        "devDependencies": {
+          "@bookshop/browser": "1.2.3"
+        }
+      }
+  - step: I run "npm start -- --dry-run --version 9.9.9 --skip-commands"
+  - step: stderr should be empty
+  - step: stdout should contain "@bookshop/browser 1.2.3 → 9.9.9"
+  - step: stdout should contain "Didn't detect yarn or npm locks"
