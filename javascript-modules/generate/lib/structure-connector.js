@@ -41,7 +41,7 @@ export const hydrateStructures = (infoJson, allStructures, options) => {
         let obj = infoJson["_structures"];
         let { structures, ...fields } = structure;
 
-        structures?.forEach(structure_key => {
+        structures?.sort()?.forEach(structure_key => {
             obj[structure_key] = obj[structure_key] || {};
             obj[structure_key]["id_key"] = "_bookshop_name"
             obj[structure_key]["values"] = obj[structure_key]["values"] || [];
