@@ -24,7 +24,7 @@ jobs:
         with:
           application_id: ${{ secrets.CC_OSS_BOT_ID }}
           application_private_key: ${{ secrets.CC_OSS_BOT_PEM }}
-      
+
       - name: Install hugo
         uses: supplypike/setup-bin@v1
         with:
@@ -68,7 +68,7 @@ jobs:
         run: |
           yarn install --immutable
         working-directory: ./javascript-modules
-      
+
       - name: Get Version
         run: echo GIT_VERSION="$(git describe --tags | sed 's/^v\(.*\)$/\1/')" >> $GITHUB_ENV
       - name: Verify Changelog
@@ -77,7 +77,7 @@ jobs:
       - name: Ensure main / tag parity
         run: |
           [[ $(git tag --points-at HEAD) = "v$GIT_VERSION" ]] && echo "Main is at v$GIT_VERSION"
-      
+
       - name: Update versions
         run: |
           node ./.backstage/version.js $GIT_VERSION
@@ -91,11 +91,19 @@ jobs:
       - name: Run tests
         run: |
           node ./.backstage/test.js
+
       - name: Run integration tests
-        run : |
-          yarn run itest-slow
-        working-directory: ./javascript-modules/integration-tests
-      
+        run: npx toolproof -c 1
+        working-directory: ./javascript-modules/toolproof-tests
+
+      - name: Upload failure screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: failure-screenshots
+          path: ./javascript-modules/toolproof-tests/_failure-screenshots
+          if-no-files-found: ignore
+
       - name: Publish
         run: |
           node ./.backstage/publish.js $GIT_VERSION seriously
@@ -109,7 +117,7 @@ jobs:
           if test -f "RELEASE.md"; then
             echo HAS_RELEASE="true" >> $GITHUB_ENV
           fi
-      
+
       - name: Update git
         run: |
           git config --global user.name "cloudcannon-oss[bot]"
