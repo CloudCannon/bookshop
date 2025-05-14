@@ -17,6 +17,7 @@ jobs:
       cwd: ./javascript-modules
 
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
