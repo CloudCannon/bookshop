@@ -11,6 +11,8 @@
     "@astrojs/react": "3.0.0",
     "astro": "^4.15.12",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "@cloudcannon/reader": "latest",
+    "cloudcannon-hugo": "latest"
   }
 }

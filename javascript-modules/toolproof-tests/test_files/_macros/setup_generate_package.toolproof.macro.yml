@@ -14,6 +14,8 @@ steps:
           "cc-astro": "cd site && cloudcannon-reader --output dist"
         },
         "devDependencies": {
+          "cloudcannon-hugo": "file:%toolproof_process_directory%/node_modules/cloudcannon-hugo",
+          "@cloudcannon/reader": "file:%toolproof_process_directory%/node_modules/@cloudcannon/reader",
           "@bookshop/generate": "file:%toolproof_process_directory%/../generate",
           "@bookshop/hugo-engine": "file:%toolproof_process_directory%/../engines/hugo-engine",
           "@bookshop/eleventy-engine": "file:%toolproof_process_directory%/../engines/eleventy-engine",
