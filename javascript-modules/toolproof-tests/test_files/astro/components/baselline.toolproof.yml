@@ -1,4 +1,4 @@
-name: Astro basic functionality test
+name: Astro baseline test
 
 steps:
   - ref: ./background.toolproof.yml
@@ -11,4 +11,4 @@ steps:
   - step: I run "cd site && npm run build"
   - step: stderr should be empty
   - step: stdout should contain "Complete!"
-  - step: The file "site/dist/index.html" should contain "Hello World" 
+  - step: The file "site/dist/index.html" should contain "Hello World"
