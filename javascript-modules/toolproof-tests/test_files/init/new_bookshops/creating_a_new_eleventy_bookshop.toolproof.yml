@@ -1,0 +1,25 @@
+name: Bookshop init - Creating a new Eleventy Bookshop
+
+steps:
+  - ref: ./background.toolproof.yml
+  - step: I run "npm start -- --new test --framework eleventy --format yml"
+  - step: stderr should be empty
+  - step: stdout should contain "Creating a Bookshop project at test"
+  - step: The file "test/bookshop/bookshop.config.cjs" should contain {val}
+    val: |-
+      @bookshop/eleventy-engine
+  - step: The file "test/components/sample/sample.eleventy.liquid" should contain {val}
+    val: |-
+      c-sample
+  - step: The file "test/components/sample/sample.scss" should contain {val}
+    val: |-
+      .c-sample
+  - step: The file "test/components/sample/sample.bookshop.yml" should contain {val}
+    val: |-
+      content_blocks
+  - step: The file "test/shared/eleventy/page.eleventy.liquid" should contain {val}
+    val: |-
+      for block in content_blocks
+  - step: The file "test/shared/styles/global.scss" should contain {val}
+    val: |-
+      body

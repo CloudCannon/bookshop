@@ -1,0 +1,20 @@
+macro: I setup the init package
+
+steps:
+  - step: I have a "package.json" file with the content {json}
+    json: |-
+      {
+        "name": "bookshop-init-toolproof-site",
+        "private": true,
+        "scripts": {
+          "start": "bookshop-init"
+        },
+        "devDependencies": {
+          "@bookshop/init": "file:%toolproof_process_directory%/../init",
+          "@bookshop/hugo-engine": "file:%toolproof_process_directory%/../engines/hugo-engine",
+          "@bookshop/eleventy-engine": "file:%toolproof_process_directory%/../engines/eleventy-engine",
+          "@bookshop/jekyll-engine": "file:%toolproof_process_directory%/../engines/jekyll-engine",
+          "@bookshop/astro-engine": "file:%toolproof_process_directory%/../engines/astro-engine"
+        }
+      }
+  - step: I run "npm i"
