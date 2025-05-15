@@ -1,1 +1,0 @@
-yarn --modules-folder ../node_modules

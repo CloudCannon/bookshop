@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/jekyll-engine",
-  "packageManager": "yarn@3.0.0",
+  "packageManager": "pnpm@10.11.0",
   "version": "3.14.0",
   "description": "Bookshop frontend Jekyll renderer",
   "type": "module",
@@ -27,7 +27,7 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/helpers": "3.14.0",
+    "@bookshop/helpers": "workspace:*",
     "esbuild": "^0.13.10",
     "js-base64": "^3.6.1",
     "kramed": "^0.5.6",

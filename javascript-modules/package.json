@@ -1,29 +1,12 @@
 {
   "private": true,
-  "packageManager": "yarn@3.6.3",
-  "workspaces": [
-    "bookshop-sass",
-    "browser",
-    "builder",
-    "engines/astro-engine",
-    "engines/jekyll-engine",
-    "engines/eleventy-engine",
-    "engines/svelte-engine",
-    "engines/hugo-engine",
-    "generate",
-    "generator-plugins/eleventy/eleventy-bookshop",
-    "generator-plugins/sveltekit/sveltekit-bookshop",
-    "generator-plugins/astro/astro-bookshop",
-    "generator-plugins/astro/vite-plugin-astro-bookshop",
-    "helpers",
-    "init",
-    "integration-tests",
-    "live",
-    "styles",
-    "up"
-  ],
+  "packageManager": "pnpm@10.11.0",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  },
   "engines": {
-    "npm": "please-use-yarn"
+    "npm": "please-use-pnpm",
+    "yarn": "please-use-pnpm"
   },
   "devDependencies": {
     "astro": "^5",

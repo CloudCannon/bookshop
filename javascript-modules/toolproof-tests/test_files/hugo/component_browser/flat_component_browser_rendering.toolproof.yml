@@ -1,5 +1,9 @@
 name: Hugo bookshop component browser rendering flat component
 
+platforms:
+  - linux
+  - mac
+
 steps:
   - ref: ./flat_background.toolproof.yml
   - step: I run "cd site && hugo"

@@ -64,9 +64,12 @@ jobs:
         with:
           go-version: "^1.21.1"
 
-      - name: Yarn stuff
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Pnpm stuff
         run: |
-          yarn install --immutable
+          pnpm install --frozen-lockfile
         working-directory: ./javascript-modules
 
       - name: Get Version
@@ -85,12 +88,13 @@ jobs:
         run: |
           node ./.backstage/vendor.js
 
-      - run: yarn install
+      - run: pnpm install
         working-directory: ./javascript-modules
 
       - name: Run tests
+        working-directory: ./javascript-modules
         run: |
-          node ./.backstage/test.js
+          pnpm -r test
 
       - name: Run integration tests
         run: npx toolproof -c 1

@@ -1,6 +1,6 @@
 {
   "name": "@bookshop/builder",
-  "packageManager": "yarn@3.0.0",
+  "packageManager": "pnpm@10.11.0",
   "version": "3.14.0",
   "description": "esbuild wrapper for bringing bookshop components and engines throught to a frontend",
   "type": "module",
@@ -19,13 +19,16 @@
     "access": "public"
   },
   "devDependencies": {
-    "@bookshop/jekyll-engine": "3.14.0",
+    "@bookshop/jekyll-engine": "workspace:*",
+    "@bookshop/hugo-engine": "workspace:*",
+    "@bookshop/astro-engine": "workspace:*",
+    "@bookshop/eleventy-engine": "workspace:*",
     "ava": "^6.1.3",
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "@bookshop/helpers": "3.14.0",
-    "@bookshop/styles": "3.14.0",
+    "@bookshop/helpers": "workspace:*",
+    "@bookshop/styles": "workspace:*",
     "esbuild": "^0.13.10",
     "fast-glob": "^3.2.7",
     "normalize-path": "^3.0.0",

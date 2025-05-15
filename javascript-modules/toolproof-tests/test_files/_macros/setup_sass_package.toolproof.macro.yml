@@ -10,7 +10,7 @@ steps:
           "start": "bookshop-sass -b ./component-lib -o site/assets/css/bookshop.css"
         },
         "devDependencies": {
-          "@bookshop/sass": "file:%toolproof_process_directory_unix%/../sass",
+          "@bookshop/sass": "file:%toolproof_process_directory_unix%/../bookshop-sass",
           "@bookshop/jekyll-engine": "file:%toolproof_process_directory_unix%/../engines/jekyll-engine"
         }
       }
