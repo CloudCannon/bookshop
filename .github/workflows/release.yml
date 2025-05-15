@@ -122,6 +122,11 @@ jobs:
           git add -A && git commit -m "build: releasing $GIT_VERSION"
           git tag -a hugo/v$GIT_VERSION -m "build: releasing $GIT_VERSION"
 
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
       - name: Publish
         run: |
           node ./.backstage/publish.js $GIT_VERSION seriously

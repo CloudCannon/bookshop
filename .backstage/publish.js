@@ -15,7 +15,7 @@ const publishNPM = async (pkgs, version) => {
   const npmTag = getPrereleaseTag(version)
     ? ` --tag ${getPrereleaseTag(version)}`
     : "";
-  const cmd = `pnpm -r publish${npmTag} --access public`;
+  const cmd = `pnpm -r publish${npmTag} --access public --no-git-checks`;
   console.log(`* ${cmd}`);
   if (wet === "seriously") execSync(cmd, { stdio: "inherit", env });
 };
