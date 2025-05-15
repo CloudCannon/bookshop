@@ -6,7 +6,7 @@
 :toc:
 :toclevels: 3
 :toc-placement!:
-:version: 3.14.0
+:version: 3.15.0-alpha.3
 
 ifdef::env-github[]
 :tip-caption: :bulb:
