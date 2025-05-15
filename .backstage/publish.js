@@ -11,13 +11,18 @@ const getPrereleaseTag = (ver) =>
   ver.match(/^\d+\.\d+\.\d+(?:-([a-z]+)\.\d+)$/)?.[1];
 const formatGemVersion = (ver) => ver.replace(/-/, ".pre.");
 
-const publishNPM = async (pkgs, version) => {
-  const npmTag = getPrereleaseTag(version)
-    ? ` --tag ${getPrereleaseTag(version)}`
-    : "";
-  const cmd = `pnpm -r publish${npmTag} --access public --no-git-checks`;
-  console.log(`* ${cmd}`);
-  if (wet === "seriously") execSync(cmd, { stdio: "inherit", env });
+const publishNPM = (version) => {
+  try {
+    const npmTag = getPrereleaseTag(version)
+      ? ` --tag ${getPrereleaseTag(version)}`
+      : "";
+    const cmd = `pnpm -r publish${npmTag} --access public --no-git-checks`;
+    console.log(`* ${cmd}`);
+    if (wet === "seriously") execSync(cmd, { stdio: "inherit", env });
+    return { pkg: "all_npm", version, err: null };
+  } catch (err) {
+    return { pkg: "all_npm", err };
+  }
 };
 
 const publishGems = async (pkgs, version) => {
@@ -57,15 +62,15 @@ if (wet === "true") {
 }
 
 const publish = async () => {
-  const npmPublishResults = await publishNPM(Object.keys(packages.npm), ver);
+  const npmPublishResult = publishNPM(ver);
   const gemPublishResults = await publishGems(
     Object.keys(packages.rubygems),
     ver,
   );
-  const publishFailures = [...npmPublishResults, ...gemPublishResults]
+  const publishFailures = [npmPublishResult, ...gemPublishResults]
     .filter((r) => r.err)
     .map((r) => r.pkg);
-  const publishSuccesses = [...npmPublishResults, ...gemPublishResults]
+  const publishSuccesses = [npmPublishResult, ...gemPublishResults]
     .filter((r) => !r.err)
     .map((r) => `${r.version} ${r.pkg}`);
 
