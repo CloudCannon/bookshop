@@ -108,13 +108,6 @@ jobs:
           path: ./javascript-modules/toolproof-tests/_failure-screenshots
           if-no-files-found: ignore
 
-      - name: Publish
-        run: |
-          node ./.backstage/publish.js $GIT_VERSION seriously
-        env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
-
       - name: Build CHANGELOG
         run: |
           node ./.backstage/changelog.cjs write
@@ -128,6 +121,16 @@ jobs:
           git config --global user.email "115603236+cloudcannon-oss[bot]@users.noreply.github.com"
           git add -A && git commit -m "build: releasing $GIT_VERSION"
           git tag -a hugo/v$GIT_VERSION -m "build: releasing $GIT_VERSION"
+
+      - name: Publish
+        run: |
+          node ./.backstage/publish.js $GIT_VERSION seriously
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
+
+      - name: Push git
+        run: |
           git push && git push --tags
 
       - name: Publish GitHub Release
