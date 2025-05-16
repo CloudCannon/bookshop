@@ -49,7 +49,9 @@ steps:
           "start": "node %toolproof_process_directory_unix%/node_modules/@11ty/eleventy/cmd.cjs --quiet"
         },
         "devDependencies": {
-          "@bookshop/eleventy-bookshop": "file:%toolproof_process_directory_unix%/../generator-plugins/eleventy/eleventy-bookshop"
+          "@bookshop/eleventy-bookshop": "file:%toolproof_process_directory_unix%/../generator-plugins/eleventy/eleventy-bookshop",
+          "markdown-it":"file:%toolproof_process_directory_unix%/node_modules/markdown-it",
+          "eleventy-plugin-cloudcannon":"file:%toolproof_process_directory_unix%/node_modules/eleventy-plugin-cloudcannon"
         }
       }
   # Explicitly _only_ use the test's node modules, and the toolproof-test directory's node modules
