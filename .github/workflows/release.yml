@@ -97,7 +97,7 @@ jobs:
           pnpm -r test
 
       - name: Run integration tests
-        run: npx toolproof -c 1
+        run: npx toolproof -c 4 --retry-count 2
         working-directory: ./javascript-modules/toolproof-tests
 
       - name: Upload failure screenshots

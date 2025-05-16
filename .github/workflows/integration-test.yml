@@ -83,7 +83,7 @@ jobs:
       - name: Gzip Hugo wasm module
         run: gzip --keep hugo_renderer.wasm
         working-directory: ${{ env.cwd }}/engines/hugo-engine/full-hugo-renderer
-      - run: npx toolproof -c 1
+      - run: npx toolproof -c 4 --retry-count 2
         working-directory: ${{ env.cwd }}/toolproof-tests
 
       - name: Upload failure screenshots

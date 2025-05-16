@@ -1,4 +1,4 @@
-supported_versions: ">=0.14.0"
+supported_versions: ">=0.15.0"
 browser: chrome
 concurrency: 4
 timeout: 20
