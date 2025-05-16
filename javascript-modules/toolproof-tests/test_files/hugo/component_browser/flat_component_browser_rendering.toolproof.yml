@@ -7,7 +7,7 @@ platforms:
 steps:
   - ref: ./flat_background.toolproof.yml
   - step: I run "cd site && hugo"
-  - step: I run "cd site && cloudcannon-hugo --baseurl /"
+  - step: I run "npm run cc-hugo"
   - step: I run "npm start"
   - step: I serve the directory "site/public"
   - step: In my browser, I load "/"
@@ -27,7 +27,7 @@ steps:
         return result;
       };
   - step: In my browser, I click the selector {selector}
-    selector: 'li:nth-of-type(2)>button'
+    selector: "li:nth-of-type(2)>button"
   - step: In my browser, I evaluate {js}
     js: |-
       await toolproof.waitFor(() => window.bookshopComponentHasRendered === true, 8000);

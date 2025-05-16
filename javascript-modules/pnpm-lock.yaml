@@ -536,6 +536,9 @@ importers:
       eleventy-plugin-cloudcannon:
         specifier: latest
         version: 1.2.1
+      liquidjs:
+        specifier: ^10
+        version: 10.17.0
       markdown-it:
         specifier: ^12.2.0
         version: 12.3.2
@@ -546,8 +549,8 @@ importers:
         specifier: ^18
         version: 18.3.1(react@18.3.1)
       toolproof:
-        specifier: latest
-        version: 0.14.0
+        specifier: ^0.15.0
+        version: 0.15.0
 
   up:
     dependencies:
@@ -1772,28 +1775,28 @@ packages:
   '@swc/helpers@0.5.17':
     resolution: {integrity: sha512-5IKx/Y13RsYd+sauPb2x+U/xZikHjolzfuDgTAl/Tdf3Q8rslRvC19NKDLgAJQ6wsqADk10ntlv08nPFw/gO/A==}
 
-  '@toolproof/darwin-arm64@0.14.0':
-    resolution: {integrity: sha512-XOUd/3DObxO9w8mM06DgBbUT9wamEaXH/Gy9H82YrFMFoNthYUu9se6LgZP5VfWsF+O6x1txr7TfXtGqF8XszQ==}
+  '@toolproof/darwin-arm64@0.15.0':
+    resolution: {integrity: sha512-X3tk9fz3d4PzbgqrsSE/9FyoHzHqA57SddHNxTDzx+D2qIvTI3a5DCvn0yfxz9CYFL9v6EH+/0MQZ08Z/FR3nQ==}
     cpu: [arm64]
     os: [darwin]
 
-  '@toolproof/darwin-x64@0.14.0':
-    resolution: {integrity: sha512-N2o1FxifvcZDLjCIPfxkZxLLqERCzqVJMHQ4Qlv5+Nl4HJmgFvXJdCYiwNRtBBq3iB8Cy0AErwCe3+GFO2Fxzg==}
+  '@toolproof/darwin-x64@0.15.0':
+    resolution: {integrity: sha512-OmiNZKt9oGEdUy4t9qqQa1gKpiDqIumeufJQNDgp5k4zE6GjIlWJxnFPoNFTI2oJWCiK/FI+yoEV8ag8ve19rQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@toolproof/linux-arm64@0.14.0':
-    resolution: {integrity: sha512-eFzjVTAA0grkDhM0hS8wZAt9ssujzusVgdK7CP8D3xG4jjJS4cieCHTN3kgCZssIDKmPCye6dzyW2oKaMrD29g==}
+  '@toolproof/linux-arm64@0.15.0':
+    resolution: {integrity: sha512-SHqtFXsgbKvcUfwg4np4TTz5f/5JnSfitRfKRWV0FioV3ECOXIPiP2Zohq9Yp8oceKzYsvDXanU0LVlFb/Vtcw==}
     cpu: [arm64]
     os: [linux]
 
-  '@toolproof/linux-x64@0.14.0':
-    resolution: {integrity: sha512-WLj/EquOEbhBBB5H3qCzFxwGNsoQX0XlrSEsgLuXtMafGU5eGObyju2hYtWB4OFqo7DC/7JIpe0T0d6UTTIpUA==}
+  '@toolproof/linux-x64@0.15.0':
+    resolution: {integrity: sha512-kY3+ulUnYhIkojGol32mX6PL/4AAlcJafYWlEO/ROIiG6k9Y6xAu8kkaUZPNcx09viJmD7v2IG5/VKRhSqYTtw==}
     cpu: [x64]
     os: [linux]
 
-  '@toolproof/windows-x64@0.14.0':
-    resolution: {integrity: sha512-Ec5VvY44w9JPBCm/KAqGqG2zO5OXnrDThGyfGeRoKmqI+MdYyUWqu/YdBuIl5dxhFrOwJ7VRQT1mOVpr1uUwfw==}
+  '@toolproof/windows-x64@0.15.0':
+    resolution: {integrity: sha512-wopT+rtb/CKlvs0Pf1tRx0OzXA6ts8aKhWRBNUpRF7qUBSXFgX91xqe6lsXv5Y09cJ+CCIztgTyALCBBVuwV1A==}
     cpu: [x64]
     os: [win32]
 
@@ -4822,8 +4825,8 @@ packages:
   toml@3.0.0:
     resolution: {integrity: sha512-y/mWCZinnvxjTKYhJ+pYxwD0mRLVvOtdS2Awbgxln6iEnt4rk0yBxeSBHkGJcPucRiG0e55mwWp+g/05rsrd6w==}
 
-  toolproof@0.14.0:
-    resolution: {integrity: sha512-PHeiV6qp+BWFZlNCe6K3tCyEXpvU2zaCD6+W14YC9XQYH1w8O66hjdpl3ZZ6aQtDZHLSOg7SSHetCJ7tuUrXDQ==}
+  toolproof@0.15.0:
+    resolution: {integrity: sha512-vWVgH7KUxMyFhekrfxXz/EIz1mDQk/z41foO2q8rDCd9HotPUycLuVPdOugSDwBj+m5RVueK7ZCy2otHsoRlyg==}
     hasBin: true
 
   tough-cookie@4.1.4:
@@ -6546,19 +6549,19 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@toolproof/darwin-arm64@0.14.0':
+  '@toolproof/darwin-arm64@0.15.0':
     optional: true
 
-  '@toolproof/darwin-x64@0.14.0':
+  '@toolproof/darwin-x64@0.15.0':
     optional: true
 
-  '@toolproof/linux-arm64@0.14.0':
+  '@toolproof/linux-arm64@0.15.0':
     optional: true
 
-  '@toolproof/linux-x64@0.14.0':
+  '@toolproof/linux-x64@0.15.0':
     optional: true
 
-  '@toolproof/windows-x64@0.14.0':
+  '@toolproof/windows-x64@0.15.0':
     optional: true
 
   '@tootallnate/once@2.0.0': {}
@@ -10385,13 +10388,13 @@ snapshots:
 
   toml@3.0.0: {}
 
-  toolproof@0.14.0:
+  toolproof@0.15.0:
     optionalDependencies:
-      '@toolproof/darwin-arm64': 0.14.0
-      '@toolproof/darwin-x64': 0.14.0
-      '@toolproof/linux-arm64': 0.14.0
-      '@toolproof/linux-x64': 0.14.0
-      '@toolproof/windows-x64': 0.14.0
+      '@toolproof/darwin-arm64': 0.15.0
+      '@toolproof/darwin-x64': 0.15.0
+      '@toolproof/linux-arm64': 0.15.0
+      '@toolproof/linux-x64': 0.15.0
+      '@toolproof/windows-x64': 0.15.0
 
   tough-cookie@4.1.4:
     dependencies:

@@ -10,7 +10,7 @@ steps:
           "start": "bookshop-generate",
           "generate-no-live": "bookshop-generate --skip-live",
           "generate-no-bindings": "bookshop-generate --disable-bindings",
-          "cc-hugo": "cloudcannon-hugo --baseURL /",
+          "cc-hugo": "cd site && cloudcannon-hugo --baseURL /",
           "cc-astro": "cd site && cloudcannon-reader --output dist"
         },
         "devDependencies": {
@@ -23,4 +23,6 @@ steps:
           "@bookshop/astro-engine": "file:%toolproof_process_directory_unix%/../engines/astro-engine"
         }
       }
+  # Explicitly _only_ use the test's node modules, and the toolproof-test directory's node modules
+  - step: I have the environment variable "NODE_PATH" set to "%toolproof_process_directory%/node_modules:%toolproof_test_directory%/node_modules"
   - step: I run "npm i"
