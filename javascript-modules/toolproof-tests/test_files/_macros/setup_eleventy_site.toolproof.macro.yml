@@ -51,6 +51,7 @@ steps:
         "devDependencies": {
           "@bookshop/eleventy-bookshop": "file:%toolproof_process_directory_unix%/../generator-plugins/eleventy/eleventy-bookshop",
           "markdown-it":"file:%toolproof_process_directory_unix%/node_modules/markdown-it",
+          "liquidjs":"file:%toolproof_process_directory_unix%/node_modules/liquidjs",
           "eleventy-plugin-cloudcannon":"file:%toolproof_process_directory_unix%/node_modules/eleventy-plugin-cloudcannon"
         }
       }
