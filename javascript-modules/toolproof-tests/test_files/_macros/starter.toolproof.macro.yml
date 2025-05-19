@@ -1,4 +1,0 @@
-macro: I create {output} from {input}
-steps:
-  - step: I run "mkdir -p $(dirname %output%)"
-  - step: I run "cp %toolproof_process_directory_unix%/%input% %output%"

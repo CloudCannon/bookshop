@@ -48,4 +48,9 @@ steps:
           "react-dom": "file:%toolproof_process_directory_unix%/node_modules/react-dom"
         }
       }
+  # Explicitly _only_ use the test's node modules, and the toolproof-test directory's node modules
+  - step: I have the environment variable "NODE_PATH" set to "%toolproof_process_directory_unix%/node_modules:%toolproof_test_directory_unix%/site/node_modules"
+    platforms: [mac, linux]
+  - step: I have the environment variable "NODE_PATH" set to "%toolproof_process_directory%\node_modules;%toolproof_test_directory%\site\node_modules"
+    platforms: [windows]
   - step: I run "cd site && npm i"
