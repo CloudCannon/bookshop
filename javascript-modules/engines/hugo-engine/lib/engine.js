@@ -241,7 +241,13 @@ export class Engine {
             const component_regex = /execute of template failed: template: ([^:]+):\d/ig;
             let file_stack = [...error_string.matchAll(component_regex)].map(([, file]) => `layouts/${file}`);
             if (file_stack.length) {
-                const deepest_errored_component = file_stack[file_stack.length - 1];
+                const raw_deepest_errored_component = file_stack[file_stack.length - 1];
+                // For some reason, in the Hugo bump to v0.147.6, the errors now log as:
+                // _partials/bookshop/components/bad/bad.hugo.html:1:7
+                // instead of the previous:
+                // partials/bookshop/components/bad/bad.hugo.html:1:7
+                // So, we now strip that off if it is present.
+                const deepest_errored_component = raw_deepest_errored_component.replace(/layouts\/_partials/, 'layouts/partials')
                 const error_chunks = error_string.split("execute of template failed:");
                 const error_msg = error_chunks[error_chunks.length - 1] ?? "template error";
                 window.writeHugoFiles(JSON.stringify({

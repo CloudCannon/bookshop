@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Updated Bookshop's internal Hugo version to `v0.147.6`
+
 ## v3.14.0 (March 5, 2025)
 
 Added the `ignoreFilePatterns` option to the `bookshop.config.cjs` file.
