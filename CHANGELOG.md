@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.15.0 (May 28, 2025)
+
 * Updated Bookshop's internal Hugo version to `v0.147.6`
 
 ## v3.14.0 (March 5, 2025)
