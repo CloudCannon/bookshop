@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.16.0 (May 29, 2025)
+
 * Resolved a missing file in the Hugo Bookshop Engine
 
 ## v3.15.0 (May 28, 2025)

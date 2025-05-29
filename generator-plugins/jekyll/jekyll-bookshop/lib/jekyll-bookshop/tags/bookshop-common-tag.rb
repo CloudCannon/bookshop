@@ -43,7 +43,7 @@ module JekyllBookshop
 
       # If this component is not a subcomponent,
       # we also drop in some site metadata here so that it can be used in the render.
-      version = "3.15.0"
+      version = "3.16.0"
       meta_comment = context["__bookshop__nested"] ? "" : "<!--bookshop-live meta(version=\"#{version}\" baseurl=\"#{site.baseurl}\" title=\"#{site.config["title"]&.gsub('"', '\"') || ""}\") -->\n"
 
       context.stack do

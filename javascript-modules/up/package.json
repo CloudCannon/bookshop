@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/up",
   "packageManager": "pnpm@10.11.0",
-  "version": "3.15.0",
+  "version": "3.16.0",
   "description": "Bookshop up allows you to upgrade Bookshop versions and file syntax automatically",
   "type": "module",
   "main": "main.js",
