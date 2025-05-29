@@ -16,6 +16,7 @@
     "!**/*.test.js",
     "!**/*__test__.js",
     "full-hugo-renderer/hugo_renderer.wasm.gz",
+    "full-hugo-renderer/wasm_exec.js",
     "bookshop-hugo-templates/**/*"
   ],
   "scripts": {
