@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Resolved a missing file in the Hugo Bookshop Engine
+
 ## v3.15.0 (May 28, 2025)
 
 * Updated Bookshop's internal Hugo version to `v0.147.6`
