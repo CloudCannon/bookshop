@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Resolved missing files in the Astro Bookshop engine
+
 ## v3.16.0 (May 29, 2025)
 
 * Resolved a missing file in the Hugo Bookshop Engine
