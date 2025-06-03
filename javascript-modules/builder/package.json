@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/builder",
   "packageManager": "pnpm@10.11.0",
-  "version": "3.16.0",
+  "version": "3.16.1",
   "description": "esbuild wrapper for bringing bookshop components and engines throught to a frontend",
   "type": "module",
   "main": "main.js",

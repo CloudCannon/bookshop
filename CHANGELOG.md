@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.16.1 (June 3, 2025)
+
 * Resolved missing files in the Astro Bookshop engine
 
 ## v3.16.0 (May 29, 2025)

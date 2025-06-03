@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/hugo-engine",
   "packageManager": "pnpm@10.11.0",
-  "version": "3.16.0",
+  "version": "3.16.1",
   "description": "Bookshop frontend Hugo renderer",
   "type": "module",
   "sideEffects": false,
