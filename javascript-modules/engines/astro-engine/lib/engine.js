@@ -151,6 +151,7 @@ export class Engine {
         hasRenderedHead: true,
         hasDirectives: new Set(),
       },
+      clientDirectives: new Map(),
       slots: null,
       props,
       createAstro(astroGlobal, props, slots) {
