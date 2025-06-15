@@ -151,6 +151,12 @@ export class Engine {
         hasRenderedHead: true,
         hasDirectives: new Set(),
       },
+      clientDirectives: new Map([
+	["load", "bookshop-placeholder"],
+	["idle", "bookshop-placeholder"],
+	["visible", "bookshop-placeholder"],
+	["media", "bookshop-placeholder"],
+      ]),
       slots: null,
       props,
       createAstro(astroGlobal, props, slots) {
