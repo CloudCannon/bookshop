@@ -49,6 +49,10 @@ export const scss = {
 	render: ejs.compile(readFileSync(join(__dirname, "scss.ejs.t"), 'utf8')),
 };
 
+export const css = {
+	render: ejs.compile(readFileSync(join(__dirname, "css.ejs.t"), 'utf8')),
+};
+
 export const bookshop_toml = {
 	render: ejs.compile(readFileSync(join(__dirname, "bookshop-toml.ejs.t"), 'utf8')),
 	extension: 'bookshop.toml'
