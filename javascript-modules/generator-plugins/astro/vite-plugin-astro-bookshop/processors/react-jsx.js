@@ -464,6 +464,8 @@ export default (src, componentName, includeErrorBoundaries) => {
 
     Object.keys(node).forEach((key) => delete node[key]);
     Object.keys(template).forEach((key) => (node[key] = template[key]));
+    // You have to reparse the tree to ensure that the parent links are updated
+    addParentLinks(tree);
   });
 
   if (includeErrorBoundaries) {
