@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/astro-bookshop",
   "packageManager": "pnpm@10.11.0",
-  "version": "3.16.1",
+  "version": "3.16.2",
   "type": "module",
   "description": "Astro plugin for consuming Bookshop components",
   "exports": {

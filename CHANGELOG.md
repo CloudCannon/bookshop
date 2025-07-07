@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.16.2 (July 7, 2025)
+
 * Fixed an error with Astro Bookshop live rendering for Astro versions >= 5.8.1 (PR #220 — thanks @oliverlynch)
 * Fixed an error with nested React components in Astro Bookshop (PR #221 — thanks @CodyWilson)
 
