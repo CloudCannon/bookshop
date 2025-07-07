@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.16.3 (July 7, 2025)
+
 * Resolved configuration error in the release pipeline
 
 ## v3.16.2 (July 7, 2025)
