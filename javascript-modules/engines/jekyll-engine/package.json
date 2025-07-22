@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@bookshop/helpers": "workspace:*",
-    "esbuild": "^0.13.10",
+    "esbuild": "^0.25.0",
     "js-base64": "^3.6.1",
     "kramed": "^0.5.6",
     "liquidjs": "10.17.0",
