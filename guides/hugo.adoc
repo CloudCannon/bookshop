@@ -1793,6 +1793,8 @@ endif::sveltekit[]
 
 NOTE: This flag only applies to the component directly and doesn't cascade down. Any subcomponents will follow the standard rules, or can also specify their own Data Binding flag.
 
+To disable all data bindings on your site, you can add the flag `--disable-bindings` to your `@bookshop/generate` command in your site's `postbuild`.
+
 ////
 //
 //
