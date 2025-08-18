@@ -6,7 +6,7 @@
 :toc:
 :toclevels: 3
 :toc-placement!:
-:version: 3.16.2
+:version: 3.16.3
 
 ifdef::env-github[]
 :tip-caption: :bulb:
@@ -1792,6 +1792,8 @@ ifdef::sveltekit[]
 endif::sveltekit[]
 
 NOTE: This flag only applies to the component directly and doesn't cascade down. Any subcomponents will follow the standard rules, or can also specify their own Data Binding flag.
+
+To disable all data bindings on your site, you can add the flag `--disable-bindings` to your `@bookshop/generate` command in your site's `postbuild`. This can significantly improve rendering performance for complex sites.
 
 ////
 //
