@@ -40,10 +40,16 @@ const componentBrowserTagHandler = (liquidEngine) => {
     };
 }
 
-module.exports = (bookshopConfig) => {
+module.exports = (bookshopConfig = {}) => {
     const locations = bookshopConfig.bookshopLocations || [];
-    // This should be the path of the site .eleventy.js
-    const baseLocation = path.dirname(module.parent.filename);
+    const baseLocation = 
+      typeof bookshopConfig.baseLocation === 'string' 
+        ? bookshopConfig.baseLocation 
+        : typeof module?.parent?.filename === 'string' 
+          // This should be the path of the site .eleventy.js
+          ? path.dirname(module.parent.filename) 
+          : process.cwd();
+    
     return function (eleventyConfig) {
         // TODO: Better way to check 11ty version
         const isEleventyOne = !!eleventyConfig.ignores;
