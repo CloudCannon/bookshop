@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/sass",
   "packageManager": "pnpm@10.11.0",
-  "version": "3.16.3",
+  "version": "3.16.4",
   "description": "Standalone sass compiler for Bookshop",
   "type": "module",
   "main": "main.js",

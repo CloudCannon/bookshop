@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/generate",
   "packageManager": "pnpm@10.11.0",
-  "version": "3.16.3",
+  "version": "3.16.4",
   "description": "Bookshop generate powers rich editing experiences on your Bookshop website",
   "type": "module",
   "main": "main.js",

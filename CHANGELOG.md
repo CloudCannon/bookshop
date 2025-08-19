@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.16.4 (August 19, 2025)
+
 * Fixed an error when using 11ty Bookshop in an ESM project. (#210)
 
 ## v3.16.3 (July 7, 2025)
