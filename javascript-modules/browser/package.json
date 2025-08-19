@@ -40,7 +40,7 @@
     "@ltd/j-toml": "^1.30.0",
     "@material-design-icons/svg": "^0.2.7",
     "commander": "^8.1.0",
-    "esbuild": "^0.13.10",
+    "esbuild": "^0.25.0",
     "esbuild-svelte": "^0.8.2",
     "express": "^4.21.0",
     "express-ws": "^5.0.2",
