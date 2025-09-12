@@ -150,6 +150,7 @@ export class Engine {
         hasHydrationScript: false,
         hasRenderedHead: true,
         hasDirectives: new Set(),
+        propagators: new Set(),
       },
       clientDirectives: new Map([
 	["load", "bookshop-placeholder"],
