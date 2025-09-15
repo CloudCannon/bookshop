@@ -11,7 +11,7 @@
     "eleventy-plugin-cloudcannon": "latest",
     "@astrojs/mdx": "^3.1.7",
     "@astrojs/react": "3.0.0",
-    "astro": "^4.15.12",
+    "astro": "^5.13.7",
     "react": "^18",
     "react-dom": "^18",
     "@cloudcannon/reader": "latest",
