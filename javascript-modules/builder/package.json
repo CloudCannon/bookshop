@@ -23,8 +23,8 @@
     "@bookshop/hugo-engine": "workspace:*",
     "@bookshop/astro-engine": "workspace:*",
     "@bookshop/eleventy-engine": "workspace:*",
-    "ava": "^6.1.3",
-    "nyc": "^15.1.0"
+    "ava": "^6.4.1",
+    "nyc": "^17.1.0"
   },
   "dependencies": {
     "@bookshop/helpers": "workspace:*",

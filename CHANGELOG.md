@@ -9,6 +9,9 @@
 
 ## Unreleased
 
+* Fixed an error with Astro Bookshop where propagating components could fail to render. 
+* Updated Bookshop dependencies to clear `npm audit` warnings.
+
 ## v3.16.4 (August 19, 2025)
 
 * Fixed an error when using 11ty Bookshop in an ESM project. (#210)

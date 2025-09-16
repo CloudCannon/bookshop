@@ -22,3 +22,8 @@ ignoredBuiltDependencies:
   - sharp
 onlyBuiltDependencies:
   - esbuild
+overrides:
+  devalue@<5.3.2: '>=5.3.2'
+  brace-expansion@>=1.0.0 <=1.1.11: '>=1.1.12'
+  brace-expansion@>=2.0.0 <=2.0.1: '>=2.0.2'
+  tmp@<=0.2.3: '>=0.2.4'

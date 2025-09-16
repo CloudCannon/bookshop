@@ -25,9 +25,9 @@
   "devDependencies": {
     "@bookshop/eleventy-engine": "workspace:*",
     "@bookshop/jekyll-engine": "workspace:*",
-    "ava": "^6.1.3",
-    "jsdom": "^18.0.0",
-    "nyc": "^15.1.0"
+    "ava": "^6.4.1",
+    "jsdom": "^27.0.0",
+    "nyc": "^17.1.0"
   },
   "dependencies": {
     "@bookshop/builder": "workspace:*",
