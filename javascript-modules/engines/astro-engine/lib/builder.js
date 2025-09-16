@@ -15,12 +15,21 @@ const { transform: bookshopTransform } = AstroPluginVite({
 
 const getEnvironmentDefines = () => {
   return Object.entries(process.env ?? {}).reduce((acc, [key, value]) => {
-    if(key.startsWith("PUBLIC_")){
+    if (key.startsWith("PUBLIC_")) {
       acc[`import.meta.env.${key}`] = JSON.stringify(value);
     }
     return acc;
-  }, {})
-}
+  }, {});
+};
+
+const getImportTransform = async () => {
+  const config = await resolveConfig({}, "build");
+  const environment = config.environments?.client ?? {};
+  const plugins = config.environments?.client?.plugins ?? config.plugins;
+  let importPlugin = plugins.find(({ name }) => name === "vite:import-glob");
+  const fn = importPlugin.transform.handler ?? importPlugin.transform;
+  return fn.bind({ environment });
+};
 
 export const buildPlugins = [
   sassPlugin({
@@ -39,8 +48,8 @@ export const buildPlugins = [
         const astroPackageJSON = JSON.parse(
           await fs.promises.readFile(
             join(process.cwd(), "node_modules", "astro", "package.json"),
-            "utf8"
-          )
+            "utf8",
+          ),
         );
         defaultScopedStyleStrategy = astroPackageJSON.version.startsWith("2")
           ? "where"
@@ -51,7 +60,7 @@ export const buildPlugins = [
 
         const root = `${astroConfig.root ?? process.cwd()}/`.replace(
           /\/+/g,
-          "/"
+          "/",
         );
         astroConfig.root = new URL(`file://${root}`);
       } catch (err) {
@@ -86,21 +95,25 @@ export const buildPlugins = [
               injectScript: () => {},
               injectRoute: () => {},
             });
-          })
+          }),
         );
       }
 
       build.onResolve({ filter: /^astro:.*$/ }, async (args) => {
         const type = args.path.replace("astro:", "");
-        if (type === "env/client" || type === "env"){
-          return { path: 'env', namespace: 'virtual' };
+        if (type === "env/client" || type === "env") {
+          return { path: "env", namespace: "virtual" };
         }
-        if (type === "transitions/client" || type === "transitions"){
-          return { path: join(dir, "modules", "transitions.js").replace("file:", "") };
+        if (type === "transitions/client" || type === "transitions") {
+          return {
+            path: join(dir, "modules", "transitions.js").replace("file:", ""),
+          };
         }
-        if (!["content", "assets", "i18n", "actions", "middleware"].includes(type)) {
+        if (
+          !["content", "assets", "i18n", "actions", "middleware"].includes(type)
+        ) {
           console.error(
-            `Error: The 'astro:${type}' module is not supported inside Bookshop components.`
+            `Error: The 'astro:${type}' module is not supported inside Bookshop components.`,
           );
           throw new Error("Unsupported virtual module");
         }
@@ -133,29 +146,32 @@ export const buildPlugins = [
         }
       });
 
-      build.onLoad({ filter: /^env$/, namespace: 'virtual' }, async (args) => {
+      build.onLoad({ filter: /^env$/, namespace: "virtual" }, async (args) => {
         let contents = "";
-        Object.entries(astroConfig?.env?.schema ?? {}).forEach(([key, schema]) => {
-          if(schema.context !== "client" || schema.access !== "public"){
-            return;
-          }
-
-          try{
-            switch(schema.type){
-              case "boolean":
-                contents += `export const ${key} = ${!!process.env[key]};\n`
-                break;
-              case "number":
-                contents += `export const ${key} = ${Number(process.env[key])};\n`
-                break;
-              default:
-                contents += `export const ${key} = ${JSON.stringify(process.env[key] ?? "")};\n`
+        Object.entries(astroConfig?.env?.schema ?? {}).forEach(
+          ([key, schema]) => {
+            if (schema.context !== "client" || schema.access !== "public") {
+              return;
             }
-          } catch(e){
-            //Error intentionally ignored
-          }
-        });
-        contents += "export const getSecret = () => console.warn(\"[Bookshop] getSecret is not supported in Bookshop. Please use an editing fallback instead.\");"
+
+            try {
+              switch (schema.type) {
+                case "boolean":
+                  contents += `export const ${key} = ${!!process.env[key]};\n`;
+                  break;
+                case "number":
+                  contents += `export const ${key} = ${Number(process.env[key])};\n`;
+                  break;
+                default:
+                  contents += `export const ${key} = ${JSON.stringify(process.env[key] ?? "")};\n`;
+              }
+            } catch (e) {
+              //Error intentionally ignored
+            }
+          },
+        );
+        contents +=
+          'export const getSecret = () => console.warn("[Bookshop] getSecret is not supported in Bookshop. Please use an editing fallback instead.");';
         return {
           contents,
           loader: "js",
@@ -187,7 +203,7 @@ export const buildPlugins = [
         try {
           tsResult = await transform(
             text.replace(/<script(.|\n)*?>(.|\n)*?<\/script>/g, ""),
-            astroOptions
+            astroOptions,
           );
         } catch (err) {}
 
@@ -199,11 +215,11 @@ export const buildPlugins = [
           loader: "ts",
           target: "esnext",
           sourcemap: false,
-          define: { ...getEnvironmentDefines(), ENV_BOOKSHOP_LIVE: "true"},
+          define: { ...getEnvironmentDefines(), ENV_BOOKSHOP_LIVE: "true" },
         });
         let result = bookshopTransform(
           jsResult.code,
-          args.path.replace(process.cwd(), "")
+          args.path.replace(process.cwd(), ""),
         );
 
         if (!result) {
@@ -211,9 +227,7 @@ export const buildPlugins = [
           result = jsResult;
         }
 
-        let importTransform = (await resolveConfig({}, "build")).plugins.find(
-          ({ name }) => name === "vite:import-glob"
-        ).transform;
+        const importTransform = await getImportTransform();
         let viteResult = await importTransform(result.code, args.path);
 
         return {
@@ -221,9 +235,12 @@ export const buildPlugins = [
           loader: "js",
         };
       });
-      build.onResolve({ filter: /^\/.*\.(svg|png|jpe?g|webp|gif|tiff|avif)/ }, (args) => {
-        return { path: join(process.cwd(), "public", args.path) };
-      });
+      build.onResolve(
+        { filter: /^\/.*\.(svg|png|jpe?g|webp|gif|tiff|avif)/ },
+        (args) => {
+          return { path: join(process.cwd(), "public", args.path) };
+        },
+      );
       build.onLoad({ filter: /\.(j|t)sx$/ }, async (args) => {
         let text = await fs.promises.readFile(args.path, "utf8");
         text = `import __React from 'react';\n${text}`;
@@ -238,7 +255,7 @@ export const buildPlugins = [
 
         let result = bookshopTransform(
           jsResult.code,
-          args.path.replace(process.cwd(), "")
+          args.path.replace(process.cwd(), ""),
         );
 
         if (!result) {
@@ -246,9 +263,7 @@ export const buildPlugins = [
           result = jsResult;
         }
 
-        let importTransform = (await resolveConfig({}, "build")).plugins.find(
-          ({ name }) => name === "vite:import-glob"
-        ).transform;
+        const importTransform = await getImportTransform();
         let viteResult = await importTransform(result.code, args.path);
 
         return {
@@ -265,9 +280,7 @@ export const buildPlugins = [
           define: { ...getEnvironmentDefines(), ENV_BOOKSHOP_LIVE: "true" },
         });
 
-        let importTransform = (await resolveConfig({}, "build")).plugins.find(
-          ({ name }) => name === "vite:import-glob"
-        ).transform;
+        const importTransform = await getImportTransform();
         let viteResult = await importTransform(jsResult.code, args.path);
 
         return {
@@ -285,13 +298,13 @@ export const buildPlugins = [
             contents: text + "export function createMetadata(){};",
             loader: "js",
           };
-        }
+        },
       );
       build.onResolve(
         { filter: /\?astro&type=style/, namespace: "file" },
         async (args) => {
           return { path: args.importer, namespace: "style" };
-        }
+        },
       );
 
       build.onLoad({ filter: /.*/, namespace: "virtual" }, async (args) => {
@@ -353,7 +366,7 @@ export const buildPlugins = [
 
               const result = await plugin.transform(
                 text,
-                args.path.replace(process.cwd(), "")
+                args.path.replace(process.cwd(), ""),
               );
 
               if (!result) {
