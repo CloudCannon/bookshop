@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.16.5 (September 16, 2025)
+
 * Fixed an error with Astro Bookshop where propagating components could fail to render. 
 * Updated Bookshop dependencies to clear `npm audit` warnings.
 

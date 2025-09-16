@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/live",
   "packageManager": "pnpm@10.11.0",
-  "version": "3.16.4",
+  "version": "3.16.5",
   "description": "Live component renderer for editing from a CMS",
   "type": "module",
   "main": "main.js",
