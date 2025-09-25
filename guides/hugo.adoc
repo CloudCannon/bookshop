@@ -751,7 +751,7 @@ To include all of your Bookshop styles in Hugo, you can use the `bookshop_scss` 
 {{ $bookshop_scss_files := partial "bookshop_scss" . }}
 {{ $scss := $bookshop_scss_files | resources.Concat "css/bookshop.css" | resources.ToCSS | resources.Minify |
     resources.Fingerprint }}
-<link rel="stylesheet" href="{{ $scss.Permalink }}">
+<link rel="stylesheet" href="{{ $scss.RelPermalink }}">
 ```
 
 endif::hugo[]
