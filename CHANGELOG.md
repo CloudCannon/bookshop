@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Fixed an error preventing the component browser from opening for Astro sites.
+
 ## v3.16.5 (September 16, 2025)
 
 * Fixed an error with Astro Bookshop where propagating components could fail to render. 
