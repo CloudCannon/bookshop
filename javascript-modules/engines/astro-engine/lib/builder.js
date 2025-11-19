@@ -346,7 +346,10 @@ export const buildPlugins = [
           args.path.endsWith(".tiff") ||
           args.path.endsWith(".avif") ||
           args.path.endsWith(".json") ||
-          args.path.endsWith(".ts")
+          args.path.endsWith(".ts") ||
+          args.path.endsWith(".bookshop.toml") ||
+          args.path.endsWith(".bookshop.yml") ||
+          args.path.endsWith(".bookshop.json")
         ) {
           return;
         }
