@@ -1697,6 +1697,51 @@ endif::sveltekit[]
 //
 ////
 
+=== Using Editable Regions for Live Editing
+
+ifndef::sveltekit[]
+
+Bookshop supports integration with link:https://cloudcannon.com/documentation/guides/set-up-visual-editing/visual-editing-for-arrays/[CloudCannon's Editable Regions] as an alternative approach to live editing. This integration provides a more streamlined editing experience that relies on CloudCannon's native visual editing capabilities.
+
+To enable this mode, add the `--editable-regions` flag to your postbuild script:
+
+.*.cloudcannon/postbuild*
+[source,bash,subs="attributes"]
+----
+npm i
+npx @bookshop/generate --editable-regions
+----
+
+When using this flag, Bookshop will inject a reduced live editing script that works with Editable Regions for rendering components. This also automatically disables data binding panels, as Editable Regions handle editing through CloudCannon's visual interface.
+
+==== Updating Your Page Helper
+
+When using Editable Regions mode, you'll need to update your shared page helper to include the appropriate Editable Region attributes. Here's an example of what the updated `page.{ssgext}` helper should look like:
+
+.*component-library/shared/eleventy/page.eleventy.html*
+```liquid
+<main data-editable="array" data-prop="" data-id-key="_bookshop_name" data-component-key="_bookshop_name">
+  {% for block in content_blocks %}
+    <editable-array-item data-component="{{block._bookshop_name}}" data-id="{{block._bookshop_name}}">
+      {% bookshop "{{block._bookshop_name}}" bind: block %}
+    </editable-array-item>
+  {% endfor %}
+</main>
+```
+
+The key additions are:
+
+* `data-editable="array"` on the container element defines an Array Editable Region
+* `data-id-key="_bookshop_name"` identifies the field used as a unique identifier for each array item
+* `data-component-key="_bookshop_name"` tells CloudCannon which field contains the component name for each item
+* `<editable-array-item>` wraps each component with the appropriate Editable Region attributes
+
+For more information on configuring Editable Regions for different use cases, see the link:https://cloudcannon.com/documentation/guides/set-up-visual-editing/visual-editing-for-arrays/[CloudCannon Editable Regions documentation] and the link:https://cloudcannon.com/documentation/guides/set-up-visual-editing/visual-editing-for-components/[Visual Editing for Components guide].
+
+NOTE: When using Editable Regions mode, you cannot use Bookshop's standard data bindings. The two approaches are mutually exclusive.
+
+endif::sveltekit[]
+
 === Data Bindings
 
 ifndef::sveltekit[]

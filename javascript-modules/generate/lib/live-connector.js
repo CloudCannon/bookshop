@@ -55,11 +55,93 @@ const getLiveEditingConnector = (options) => {
 </script>`;
 }
 
+const getEditableRegionsConnector = () => {
+  return `
+<script>
+(function(){
+    const bookshopLiveSetup = (CloudCannon) => {
+      window.bookshopDataBindings = false;
+      CloudCannon?.setLoading?.("Loading Bookshop Live Editing");
+      let triggeredLoad = false;
+      const whenLoaded = () => {
+        triggeredLoad = true;
+        CloudCannon?.setLoading?.(false);
+      }
+      setTimeout(() => {
+        if (!triggeredLoad) {
+          CloudCannon?.setLoading?.("Error Loading Bookshop Live Editing");
+          setTimeout(() => {
+            if (!triggeredLoad) { whenLoaded() }
+          }, 2000);
+        }
+      }, 12000);
+
+      const head = document.querySelector('head');
+      const script = document.createElement('script');
+      script.src = \`/_cloudcannon/bookshop-live.js\`;
+      script.onload = function() {
+        window.bookshopLive = new window.BookshopLive({
+          remoteGlobals: [],
+          loadedFn: whenLoaded,
+        });
+
+        window.cc_components = window.cc_components || {};
+        window.cc_components = new Proxy(window.cc_components, {
+          get(target, key) {
+            if (typeof key !== "string") {
+              return undefined;
+            }
+
+            if (key in target) {
+              return target[key];
+            }
+
+            /**
+             * Wrapper function that renders the Bookshop Live component to an HTMLElement.
+             *
+             * @param {any} props - Props to pass to the Bookshop Live component
+             * @returns {Promise<HTMLElement>} The rendered component as an HTMLElement
+             */
+            const wrappedComponent = async (props) => {
+              const rootEl = document.createElement("div");
+
+              if (!window.bookshopLive) {
+                throw new Error("Bookshop Live is not initialized");
+              }
+
+              await window.bookshopLive.renderElement(
+                key,
+                props,
+                rootEl,
+              )
+
+              return rootEl;
+            };
+
+            return wrappedComponent;
+          }
+        });
+        document.dispatchEvent(new CustomEvent('editable-regions:registered-proxy'));
+      }
+      head.appendChild(script);
+    }
+
+    document.addEventListener('cloudcannon:load', function (e) {
+      bookshopLiveSetup(e.detail.CloudCannon);
+    });
+  })();
+</script>`;
+}
+
+
+
 export const hydrateLiveForSite = async (siteRoot, options) => {
   const siteHTMLFiles = await fastGlob(`**/*.html`, {
     cwd: siteRoot,
     dot: !!options.dot
   });
+
+  const injectedHTML = options.editableRegions ? getEditableRegionsConnector() : getLiveEditingConnector(options);
 
   let connected = 0;
   for (const file of siteHTMLFiles) {
@@ -70,7 +152,7 @@ export const hydrateLiveForSite = async (siteRoot, options) => {
       continue;
     }
 
-    contents = contents.replace('</body>', `${getLiveEditingConnector(options)}\n</body>`);
+    contents = contents.replace('</body>', `${injectedHTML}\n</body>`);
 
     fs.writeFileSync(filePath, contents);
     connected += 1;

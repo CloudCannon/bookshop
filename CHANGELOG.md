@@ -9,6 +9,9 @@
 
 ## Unreleased
 
+* Added `--editable-regions` flag to `@bookshop/generate` for injecting a live editing script that relies on editable regions for rendering. This also disables data binding panels.
+* Cleaned up unused parameters in the Bookshop component plugin.
+
 ## v3.16.5 (September 16, 2025)
 
 * Fixed an error with Astro Bookshop where propagating components could fail to render. 
