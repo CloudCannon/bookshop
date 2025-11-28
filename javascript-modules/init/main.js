@@ -107,8 +107,9 @@ const initComponent = async (options, bookshopConfigFiles) => {
     process.exit(1);
   }
 
-  let targetFormat = options.format;
-  if (!targetFormat) {
+  const allowed_formats = ["yml", "toml", "js", "json"]
+  let targetFormat = options.format || bookshopConfig.format || "";
+  if (!targetFormat || !allowed_formats.includes(targetFormat)) {
     const resp = await inquirer.prompt([{
       type: 'list',
       name: 'format',
@@ -119,6 +120,22 @@ const initComponent = async (options, bookshopConfigFiles) => {
       },
     }]);
     targetFormat = resp.format;
+  }
+  console.log('');
+
+  const allowed_style_formats = ["css", "scss"]
+  let targetStyle = options.style || bookshopConfig.style || "";
+  if (!targetStyle || !allowed_style_formats.includes(targetStyle)) {
+    const resp = await inquirer.prompt([{
+      type: 'list',
+      name: 'style',
+      message: 'What flavor of CSS would you like for components?',
+      choices: ['SCSS (Recommended)', 'CSS'],
+      filter(val) {
+        return val.split(' ')[0].toLowerCase();
+      },
+    }]);
+    targetStyle = resp.style;
   }
   console.log('');
 
@@ -145,9 +162,9 @@ const initComponent = async (options, bookshopConfigFiles) => {
 
   if (frameworks[0] !== "svelte") {
     renderFile(
-      templates["scss"],
+      templates[targetStyle],
       { componentName },
-      join(componentDirPath, `${componentFileName}.scss`)
+      join(componentDirPath, `${componentFileName}.${targetStyle}`)
     );
   }
 
@@ -173,7 +190,12 @@ const initBookshop = async (options) => {
 
   renderFile(
     templates["bookshop_config"],
-    { ssg: options.framework[0] },
+    { 
+      component_directory: options.new,
+      ssg: options.framework[0],
+      format: options.format,
+      style: options.style
+    },
     join(options.new, `bookshop`, `bookshop.config.cjs`)
   );
 
@@ -188,7 +210,7 @@ const initBookshop = async (options) => {
     renderFile(
       templates["global_style"],
       {},
-      join(options.new, `shared`, `styles`, `global.scss`)
+      join(options.new, `shared`, `styles`, `global.${options.style ?? "css"}`)
     );
   }
 
@@ -201,18 +223,21 @@ const initBookshop = async (options) => {
   }
 
   options.component = "sample";
+  console.log(chalk.magenta(`\nCreating a sample component in ${options.new}`));
   await initComponent(options);
 }
 
 async function run() {
-  program.option("-n, --new <project name>", "Create a new Bookshop in the given directory");
-  program.option("-c, --component <component>", "Create a new component with the given name");
+  program.option("-n, --new [project name]", "Create a new Bookshop in the given directory");
+  program.option("-c, --component [component]", "Create a new component with the given name");
   program.option("-f, --framework <frameworks...>", "Optional: Space separated list of frameworks to use. Will be auto-detected if not supplied");
-  program.addOption(new Option('--format <filetype>', 'Convert Bookshop files to another format').choices(['yml', 'toml', 'json', 'js']));
+  program.addOption(new Option("--format <format>", "Optional: The configuration format you would like to use for components"))
+  program.option("-s, --style <style>", "Optional: The flavor of CSS you would like for components")
+  program.addOption(new Option('--reformat <filetype>', 'Convert Bookshop files to another format').choices(['yml', 'toml', 'json', 'js']));
   program.option("-d, --dot", "Look for Bookshops inside . directories");
   program.parse(process.argv);
   const options = program.opts() ?? {};
-
+  
   if (options.component && options.new) {
     console.error(chalk.red("--component and --new cannot be passed together"));
     process.exit(1);
@@ -252,7 +277,7 @@ async function run() {
   }
 
   if (action === 'component') {
-    if (!options.component) {
+    if (!options.component || options.component === true) {
       console.log(chalk.magenta("What is the name of your new component?"));
       console.log(chalk.magenta(`You can use a path here, i.e. ${chalk.cyan(`blocks/hero/large`)}`));
       const resp = await inquirer.prompt([{
@@ -276,7 +301,7 @@ async function run() {
       return;
     }
   } else if (action === 'new') {
-    if (!options.new) {
+    if (!options.new || options.new === true) {
       console.log(chalk.magenta("What directory would you like to create your Bookshop in?"));
       console.log(chalk.magenta("This will be relative to to the directory you're running this command in"));
       const resp = await inquirer.prompt([{
@@ -310,7 +335,37 @@ async function run() {
       process.exit(1);
     }
 
-    if (options.new && options.framework) {
+    if (!options.format || !options.format.length) {
+      const resp = await inquirer.prompt([{
+        type: 'list',
+        name: 'format',
+        message: 'What configuration format would you like to use for components?',
+        choices: ['YAML (Recommended)', 'TOML', 'JS', 'JSON', `I'll decide later`],
+        filter(val) {
+          if(val === `I'll decide later`)
+            val = ""
+          return val.split(' ')[0].toLowerCase().replace(/yaml/, 'yml');
+        }
+      }]);
+      options.format = resp.format;
+    }
+
+    if (!options.style || !options.style.length) {
+      const resp = await inquirer.prompt([{
+        type: 'list',
+        name: 'style',
+        message: 'What flavor of CSS would you like for components?',
+        choices: ['SCSS (Recommended)','CSS',`I'll decide later`],
+        filter(val) {
+          if(val === `I'll decide later`)
+            val = ""
+          return val.split(' ')[0].toLowerCase();
+        }
+      }]);
+      options.style = resp.style;
+    }
+
+    if (options.new && options.framework && options.format && options.style) {
       await initBookshop(options);
       console.log(chalk.bold.green(`\nAll done.`));
       return;
