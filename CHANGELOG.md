@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.17.1 (November 28, 2025)
+
 * Fixed visual editor loading state to correctly hide after loading.
 
 ## v3.17.0 (November 28, 2025)
