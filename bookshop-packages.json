@@ -1,5 +1,5 @@
 {
-  "version": "3.16.5",
+  "version": "3.17.0",
   "custom": {
     "javascript-modules/engines/hugo-engine/full-hugo-renderer": {
       "versionFile": null,

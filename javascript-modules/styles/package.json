@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/styles",
   "packageManager": "pnpm@10.11.0",
-  "version": "3.16.5",
+  "version": "3.17.0",
   "description": "Bookshop style importer for esbuild",
   "type": "module",
   "main": "bookshopStylePlugin.js",

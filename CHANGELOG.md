@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.17.0 (November 28, 2025)
+
 * Added `--editable-regions` flag to `@bookshop/generate` for injecting a live editing script that relies on editable regions for rendering. This also disables data binding panels.
 * Cleaned up unused parameters in the Bookshop component plugin.
 
