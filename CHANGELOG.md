@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Fixed visual editor loading state to correctly hide after loading.
+
 ## v3.17.0 (November 28, 2025)
 
 * Added `--editable-regions` flag to `@bookshop/generate` for injecting a live editing script that relies on editable regions for rendering. This also disables data binding panels.

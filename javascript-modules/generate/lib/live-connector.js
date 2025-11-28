@@ -29,10 +29,8 @@ const getLiveEditingConnector = (options) => {
       const script = document.createElement('script');
       script.src = \`/_cloudcannon/bookshop-live.js\`;
       script.onload = function() {
-        window.bookshopLive = new window.BookshopLive({
-          remoteGlobals: [],
-          loadedFn: whenLoaded,
-        });
+        window.bookshopLive = new window.BookshopLive({ remoteGlobals: [] });
+        whenLoaded();
         const updateBookshopLive = async () => {
           const frontMatter = await CloudCannon.value({
             keepMarkdownAsHTML: false,
