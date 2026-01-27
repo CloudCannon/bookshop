@@ -9,6 +9,43 @@ const verboseLog = (message, ...args) => {
     }
 };
 
+// Unified layout template that handles both single component and batch render modes.
+// Uses script tags as markers since Hugo won't modify them (HTML comments can be stripped).
+const UNIFIED_LAYOUT = [
+    // Batch mode: render array of components with markers
+    `{{ if .Params.components }}`,
+        `{{ range $i, $c := .Params.components }}`,
+            `<script type="bookshop/batch" data-id="{{ $i }}" data-pos="start"></script>`,
+            `{{ if eq $c.type "component" }}`,
+                `{{ partial "bookshop" (slice $c.name $c.props) }}`,
+            `{{ else }}`,
+                `{{ partial "bookshop_partial" (slice $c.name $c.props) }}`,
+            `{{ end }}`,
+            `<script type="bookshop/batch" data-id="{{ $i }}" data-pos="end"></script>`,
+        `{{ end }}`,
+    // Single mode: render one component
+    `{{ else if .Params.bookshop_name }}`,
+        `{{ if eq .Params.bookshop_type "shared" }}`,
+            `{{ partial "bookshop_partial" (slice .Params.bookshop_name .Params.component) }}`,
+        `{{ else }}`,
+            `{{ partial "bookshop" (slice .Params.bookshop_name .Params.component) }}`,
+        `{{ end }}`,
+    `{{ end }}`
+].join('');
+
+/**
+ * Installs the unified layout if not already installed.
+ * Returns files object with layout if it needs to be written.
+ */
+const ensureUnifiedLayoutInstalled = () => {
+    if (typeof window === 'undefined') return {};
+    if (window.__bookshop_unified_layout_installed) return {};
+    
+    window.__bookshop_unified_layout_installed = true;
+    verboseLog('[hugo-engine] Installing unified static layout');
+    return { "layouts/index.html": UNIFIED_LAYOUT };
+};
+
 const sleep = (ms = 0) => {
     return new Promise(r => setTimeout(r, ms));
 }
@@ -309,20 +346,8 @@ export class Engine {
             return "";
         }
 
-        // OPTIMIZATION: Use a unified static layout template that handles both single and batch renders
-        // This avoids template reloads when switching between modes
-        // The layout checks for .Params.components (batch mode) or .Params.bookshop_name (single mode)
-        // Use script tags as markers since Hugo won't modify them (HTML comments can be problematic)
-        const unifiedLayout = `{{ if .Params.components }}{{ range $i, $c := .Params.components }}<script type="bookshop/batch" data-id="{{ $i }}" data-pos="start"></script>{{ if eq $c.type "component" }}{{ partial "bookshop" (slice $c.name $c.props) }}{{ else }}{{ partial "bookshop_partial" (slice $c.name $c.props) }}{{ end }}<script type="bookshop/batch" data-id="{{ $i }}" data-pos="end"></script>{{ end }}{{ else if .Params.bookshop_name }}{{ if .Params.bookshop_type }}{{ if eq .Params.bookshop_type "shared" }}{{ partial "bookshop_partial" (slice .Params.bookshop_name .Params.component) }}{{ else }}{{ partial "bookshop" (slice .Params.bookshop_name .Params.component) }}{{ end }}{{ else }}{{ partial "bookshop" (slice .Params.bookshop_name .Params.component) }}{{ end }}{{ end }}`;
-        
-        // Only write the layout once - it handles both single and batch modes
-        if (!window.__bookshop_unified_layout_installed) {
-            writeFiles["layouts/index.html"] = unifiedLayout;
-            window.__bookshop_unified_layout_installed = true;
-            verboseLog('[hugo-engine] Installing unified static layout');
-        }
-        
-        logger?.log?.(`Going to render ${name}, with unified layout`);
+        Object.assign(writeFiles, ensureUnifiedLayoutInstalled());
+        logger?.log?.(`Going to render ${name}`);
 
         if (!globals || typeof globals !== "object") globals = {};
         props = {
@@ -413,23 +438,12 @@ export class Engine {
         
         if (componentData.length === 0) return;
         
-        // Use the unified layout that handles both single and batch modes
-        // The layout checks for .Params.components to determine batch mode
-        // Use script tags as markers since Hugo won't modify them
-        const unifiedLayout = `{{ if .Params.components }}{{ range $i, $c := .Params.components }}<script type="bookshop/batch" data-id="{{ $i }}" data-pos="start"></script>{{ if eq $c.type "component" }}{{ partial "bookshop" (slice $c.name $c.props) }}{{ else }}{{ partial "bookshop_partial" (slice $c.name $c.props) }}{{ end }}<script type="bookshop/batch" data-id="{{ $i }}" data-pos="end"></script>{{ end }}{{ else if .Params.bookshop_name }}{{ if .Params.bookshop_type }}{{ if eq .Params.bookshop_type "shared" }}{{ partial "bookshop_partial" (slice .Params.bookshop_name .Params.component) }}{{ else }}{{ partial "bookshop" (slice .Params.bookshop_name .Params.component) }}{{ end }}{{ else }}{{ partial "bookshop" (slice .Params.bookshop_name .Params.component) }}{{ end }}{{ end }}`;
-        
         let writeFiles = {
             "content/_index.md": JSON.stringify({
                 components: componentData.map(c => ({ name: c.name, type: c.type, props: c.props }))
-            }, null, 2) + "\n"
+            }, null, 2) + "\n",
+            ...ensureUnifiedLayoutInstalled()
         };
-        
-        // Only write the layout if it's not already installed (unified layout handles both modes)
-        if (!window.__bookshop_unified_layout_installed) {
-            writeFiles["layouts/index.html"] = unifiedLayout;
-            window.__bookshop_unified_layout_installed = true;
-            verboseLog('[hugo-engine] Installing unified static layout');
-        }
         
         window.writeHugoFiles(JSON.stringify(writeFiles));
         
