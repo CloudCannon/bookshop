@@ -551,6 +551,9 @@ export class Engine {
         // This is the SLOW PATH - we're hitting Hugo WASM because no short-circuit worked
         verboseLog(`[hugo-engine] eval requires Hugo WASM: "${str.substring(0, 80)}${str.length > 80 ? '...' : ''}"`);
 
+        // Reset the unified layout flag since we're about to overwrite the layout
+        window.__bookshop_unified_layout_installed = false;
+        
         window.writeHugoFiles(JSON.stringify({
             "layouts/index.html": eval_str,
             "content/_index.md": JSON.stringify({ props: props_obj, full_props: full_props }, null, 2)
