@@ -430,7 +430,19 @@ export class Engine {
         window.writeHugoFiles(JSON.stringify(writeFiles));
         
         window.hugo_wasm_logging = [];
+        let render_attempts = 1;
         let buildError = window.buildHugo();
+        while (buildError && render_attempts < 5) {
+            console.warn(`Hit a build error when batch rendering Hugo:\n${window.hugo_wasm_logging.map(l => `  ${l}`).join('\n')}`);
+            if (this.componentQuack(buildError, window.hugo_wasm_logging) === null) {
+                // Can't find a template to overwrite and re-render
+                break;
+            }
+            // Try render again with the problem template stubbed out
+            window.hugo_wasm_logging = [];
+            buildError = window.buildHugo();
+            render_attempts += 1;
+        }
         
         if (buildError) {
             console.error(`Batch render error: ${buildError}`);
@@ -445,6 +457,7 @@ export class Engine {
         const html = output["public/index.html"];
         
         for (let i = 0; i < componentData.length; i++) {
+            const originalIndex = componentData[i].index;
             const startMarker = `<script type="bookshop/batch" data-id="${i}" data-pos="start"></script>`;
             const endMarker = `<script type="bookshop/batch" data-id="${i}" data-pos="end"></script>`;
             const startIdx = html.indexOf(startMarker);
@@ -452,10 +465,11 @@ export class Engine {
             
             if (startIdx !== -1 && endIdx !== -1) {
                 const componentHtml = html.substring(startIdx + startMarker.length, endIdx);
-                components[i].target.innerHTML = componentHtml;
+                components[originalIndex].target.innerHTML = componentHtml;
             } else {
                 verboseLog(`[hugo-engine] Could not find markers for component ${i}, falling back to individual render`);
-                await this.render(components[i].target, components[i].name, components[i].props, components[i].globals, logger);
+                const original = components[originalIndex];
+                await this.render(original.target, original.name, original.props, original.globals, logger);
             }
         }
     }

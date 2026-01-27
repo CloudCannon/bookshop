@@ -178,9 +178,6 @@ export const hydrateLiveForSite = async (siteRoot, options) => {
 
     // Check if there's an existing connector to replace
     const hadExisting = EXISTING_CONNECTOR_REGEX.test(contents) || LEGACY_CONNECTOR_REGEX.test(contents);
-    // Reset regex lastIndex after test
-    EXISTING_CONNECTOR_REGEX.lastIndex = 0;
-    LEGACY_CONNECTOR_REGEX.lastIndex = 0;
     
     // Remove any existing connectors first (idempotency)
     contents = removeExistingConnectors(contents);
