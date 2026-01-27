@@ -3,39 +3,11 @@ import { gunzipSync } from 'fflate';
 import translateTextTemplate from './translateTextTemplate.js';
 import { IdentifierParser } from './hugoIdentifierParser.js';
 
-// ============ INSTRUMENTATION ============
-const INSTRUMENTATION = {
-    enabled: true,
-    buildHugoCalls: 0,
-    buildHugoTotalMs: 0,
-    evalCalls: 0,
-    evalTotalMs: 0,
-    evalHugoWasmCalls: 0,  // evals that actually hit Hugo WASM
-    renderCalls: 0,
-    renderTotalMs: 0,
-    reset() {
-        this.buildHugoCalls = 0;
-        this.buildHugoTotalMs = 0;
-        this.evalCalls = 0;
-        this.evalTotalMs = 0;
-        this.evalHugoWasmCalls = 0;
-        this.renderCalls = 0;
-        this.renderTotalMs = 0;
-    },
-    report() {
-        if (!this.enabled) return;
-        console.log('%c[Hugo Engine Instrumentation]', 'color: #ff6600; font-weight: bold');
-        console.log(`  buildHugo() calls: ${this.buildHugoCalls} (total: ${this.buildHugoTotalMs.toFixed(1)}ms, avg: ${(this.buildHugoTotalMs / Math.max(1, this.buildHugoCalls)).toFixed(1)}ms)`);
-        console.log(`  eval() calls: ${this.evalCalls} (hit Hugo WASM: ${this.evalHugoWasmCalls})`);
-        console.log(`  render() calls: ${this.renderCalls} (total: ${this.renderTotalMs.toFixed(1)}ms)`);
+const verboseLog = (message, ...args) => {
+    if (typeof window !== 'undefined' && window?.bookshopLiveVerbose) {
+        console.log(message, ...args);
     }
 };
-
-// Expose globally for testing
-if (typeof window !== 'undefined') {
-    window.__BOOKSHOP_INSTRUMENTATION__ = INSTRUMENTATION;
-}
-// ============ END INSTRUMENTATION ============
 
 const sleep = (ms = 0) => {
     return new Promise(r => setTimeout(r, ms));
@@ -320,9 +292,6 @@ export class Engine {
     }
 
     async render(target, name, props, globals, logger) {
-        const renderStart = performance.now();
-        INSTRUMENTATION.renderCalls++;
-        
         while (!window.buildHugo) {
             logger?.log?.(`Waiting for the Hugo WASM to be available...`);
             await sleep(100);
@@ -350,9 +319,7 @@ export class Engine {
         if (!window.__bookshop_unified_layout_installed) {
             writeFiles["layouts/index.html"] = unifiedLayout;
             window.__bookshop_unified_layout_installed = true;
-            if (INSTRUMENTATION.enabled) {
-                console.log('%c[render] Installing unified static layout', 'color: #ff9900');
-            }
+            verboseLog('[hugo-engine] Installing unified static layout');
         }
         
         logger?.log?.(`Going to render ${name}, with unified layout`);
@@ -374,10 +341,7 @@ export class Engine {
 
         window.hugo_wasm_logging = [];
         let render_attempts = 1;
-        let buildStart = performance.now();
-        INSTRUMENTATION.buildHugoCalls++;
         let buildError = window.buildHugo();
-        INSTRUMENTATION.buildHugoTotalMs += performance.now() - buildStart;
         while (buildError && render_attempts < 5) {
             console.warn(`Hit a build error when rendering Hugo:\n${window.hugo_wasm_logging.map(l => `  ${l}`).join('\n')}`);
             if (this.componentQuack(buildError, window.hugo_wasm_logging) === null) {
@@ -386,10 +350,7 @@ export class Engine {
             }
             // Try render again with the problem template stubbed out
             window.hugo_wasm_logging = [];
-            buildStart = performance.now();
-            INSTRUMENTATION.buildHugoCalls++;
             buildError = window.buildHugo();
-            INSTRUMENTATION.buildHugoTotalMs += performance.now() - buildStart;
             render_attempts += 1;
         }
 
@@ -403,15 +364,6 @@ export class Engine {
         ]));
 
         target.innerHTML = output["public/index.html"];
-        INSTRUMENTATION.renderTotalMs += performance.now() - renderStart;
-        
-        // Auto-report after each render
-        if (INSTRUMENTATION.enabled) {
-            console.log('%c[Render Complete]', 'color: #00cc00; font-weight: bold', 
-                `render took ${(performance.now() - renderStart).toFixed(1)}ms`);
-            INSTRUMENTATION.report();
-        }
-        return;
     }
 
     /**
@@ -431,18 +383,12 @@ export class Engine {
             return this.render(c.target, c.name, c.props, c.globals, logger);
         }
         
-        const batchStart = performance.now();
-        INSTRUMENTATION.renderCalls += components.length;
-        
         while (!window.buildHugo) {
             logger?.log?.(`Waiting for the Hugo WASM to be available...`);
             await sleep(100);
         }
         
-        if (INSTRUMENTATION.enabled) {
-            console.log('%c[renderBatch] Starting batch render', 'color: #ff00ff; font-weight: bold', 
-                `${components.length} components`);
-        }
+        verboseLog(`[hugo-engine] Batch rendering ${components.length} components`);
         
         // Build data for all components
         const componentData = components.map((c, index) => {
@@ -482,26 +428,19 @@ export class Engine {
         if (!window.__bookshop_unified_layout_installed) {
             writeFiles["layouts/index.html"] = unifiedLayout;
             window.__bookshop_unified_layout_installed = true;
-            if (INSTRUMENTATION.enabled) {
-                console.log('%c[renderBatch] Installing unified static layout', 'color: #ff9900');
-            }
+            verboseLog('[hugo-engine] Installing unified static layout');
         }
         
         window.writeHugoFiles(JSON.stringify(writeFiles));
         
         // Single buildHugo call for all components
         window.hugo_wasm_logging = [];
-        const buildStart = performance.now();
-        INSTRUMENTATION.buildHugoCalls++;
         let buildError = window.buildHugo();
-        INSTRUMENTATION.buildHugoTotalMs += performance.now() - buildStart;
         
         if (buildError) {
             console.error(`Batch render error: ${buildError}`);
             // Fall back to individual renders
-            if (INSTRUMENTATION.enabled) {
-                console.log('%c[renderBatch] Falling back to individual renders', 'color: #ff9900');
-            }
+            verboseLog('[hugo-engine] Falling back to individual renders');
             for (const c of components) {
                 await this.render(c.target, c.name, c.props, c.globals, logger);
             }
@@ -522,29 +461,14 @@ export class Engine {
                 const componentHtml = html.substring(startIdx + startMarker.length, endIdx);
                 components[i].target.innerHTML = componentHtml;
             } else {
-                console.warn(`[renderBatch] Could not find markers for component ${i}. Looking for: ${startMarker}`);
+                verboseLog(`[hugo-engine] Could not find markers for component ${i}, falling back to individual render`);
                 // Fall back to individual render for this component
                 await this.render(components[i].target, components[i].name, components[i].props, components[i].globals, logger);
             }
         }
-        
-        INSTRUMENTATION.renderTotalMs += performance.now() - batchStart;
-        
-        if (INSTRUMENTATION.enabled) {
-            console.log('%c[renderBatch Complete]', 'color: #00cc00; font-weight: bold', 
-                `${components.length} components in ${(performance.now() - batchStart).toFixed(1)}ms (1 buildHugo call)`);
-            INSTRUMENTATION.report();
-        }
     }
 
     async eval(str, props = [{}], logger) {
-        INSTRUMENTATION.evalCalls++;
-        
-        // Log every eval call for debugging
-        if (INSTRUMENTATION.enabled) {
-            console.log('%c[eval]', 'color: #9900ff', str.substring(0, 100) + (str.length > 100 ? '...' : ''));
-        }
-        
         if (!this.synthetic) {
             while (!window.buildHugo) await sleep(10);
         }
@@ -633,21 +557,14 @@ export class Engine {
         }
 
         // This is the SLOW PATH - we're hitting Hugo WASM because no short-circuit worked
-        INSTRUMENTATION.evalHugoWasmCalls++;
-        if (INSTRUMENTATION.enabled) {
-            console.log('%c[eval -> Hugo WASM]', 'color: #ff0000; font-weight: bold', 
-                `Expression requires Hugo WASM: "${str.substring(0, 80)}${str.length > 80 ? '...' : ''}"`);
-        }
+        verboseLog(`[hugo-engine] eval requires Hugo WASM: "${str.substring(0, 80)}${str.length > 80 ? '...' : ''}"`);
 
         window.writeHugoFiles(JSON.stringify({
             "layouts/index.html": eval_str,
             "content/_index.md": JSON.stringify({ props: props_obj, full_props: full_props }, null, 2)
         }));
 
-        const buildStart = performance.now();
-        INSTRUMENTATION.buildHugoCalls++;
         const buildError = window.buildHugo();
-        INSTRUMENTATION.buildHugoTotalMs += performance.now() - buildStart;
         if (buildError) {
             console.warn(buildError);
             return;
