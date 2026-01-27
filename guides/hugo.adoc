@@ -1699,6 +1699,7 @@ endif::sveltekit[]
 //
 ////
 
+ifndef::sveltekit[]
 === Using Editable Regions for Live Editing
 
 Bookshop supports integration with link:https://cloudcannon.com/documentation/guides/set-up-visual-editing/visual-editing-for-arrays/[CloudCannon's Editable Regions] as an alternative approach to live editing. This integration provides a more streamlined editing experience that relies on CloudCannon's native visual editing capabilities.
@@ -1714,9 +1715,17 @@ npx @bookshop/generate --editable-regions
 
 When using this flag, Bookshop will inject a reduced live editing script that works with Editable Regions for rendering components. This also automatically disables data binding panels, as Editable Regions handle editing through CloudCannon's visual interface.
 
-==== Updating Your Page Helper
+==== Updating Your Page Component
 
 When using Editable Regions mode, you'll need to update your shared page helper to include the appropriate Editable Region attributes. Here's an example of what the updated `page.{ssgext}` helper should look like:
+
+ifdef::hugo[]
+.*layouts/base.html*
+```go
+<editable-component data-prop="content_blocks" data-component="page">
+  {{ partial "bookshop" (slice "page" (dict "content_blocks" .Params.content_blocks)) }}
+</editable-component>
+```
 
 .*component-library/shared/hugo/page.hugo.html*
 ```go
@@ -1728,6 +1737,45 @@ When using Editable Regions mode, you'll need to update your shared page helper 
   {{ end }}
 </main>
 ```
+endif::hugo[]
+ifdef::jekyll[]
+.*layouts/base.html*
+```liquid
+<editable-component data-prop="content_blocks" data-component="page">
+  {% bookshop_include page content_blocks=page.content_blocks %}
+</editable-component>
+```
+
+.*component-library/shared/jekyll/page.jekyll.html*
+```liquid
+<main data-editable="array" data-prop="" data-id-key="_bookshop_name" data-component-key="_bookshop_name">
+  {% for block in include.content_blocks %}
+    <editable-array-item data-component="{{block._bookshop_name}}" data-id="{{block._bookshop_name}}">
+      {% bookshop {{block._bookshop_name}} bind=block %}
+    </editable-array-item>
+  {% endfor %}
+</main>
+```
+endif::jekyll[]
+ifdef::eleventy[]
+.*layouts/base.html*
+```liquid
+<editable-component data-prop="content_blocks" data-component="page">
+  {% bookshop_include "page" content_blocks: content_blocks %}
+</editable-component>
+```
+
+.*component-library/shared/eleventy/page.eleventy.liquid*
+```liquid
+<main data-editable="array" data-prop="" data-id-key="_bookshop_name" data-component-key="_bookshop_name">
+  {% for block in content_blocks %}
+    <editable-array-item data-component="{{block._bookshop_name}}" data-id="{{block._bookshop_name}}">
+      {% bookshop "{{block._bookshop_name}}" bind: block %}
+    </editable-array-item>
+  {% endfor %}
+</main>
+```
+endif::eleventy[]
 
 The key additions are:
 
