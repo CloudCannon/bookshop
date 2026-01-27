@@ -15,6 +15,7 @@ jobs:
 
     env:
       cwd: ./javascript-modules
+      RUBYOPT: '-W0'
 
     strategy:
       fail-fast: false
