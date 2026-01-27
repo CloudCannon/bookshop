@@ -32,10 +32,34 @@ const UNIFIED_LAYOUT = [
 const ensureUnifiedLayoutInstalled = () => {
     if (typeof window === 'undefined') return {};
     if (window.__bookshop_unified_layout_installed) return {};
-    
+
     window.__bookshop_unified_layout_installed = true;
     verboseLog('[hugo-engine] Installing unified static layout');
     return { "layouts/index.html": UNIFIED_LAYOUT };
+};
+
+/**
+ * Build Hugo with retry logic using componentQuack for error recovery.
+ * @param {Engine} engine - The engine instance for componentQuack access
+ * @param {string} context - Description for logging (e.g., "rendering" or "batch rendering")
+ * @returns {string|null} - The build error if unrecoverable, or null on success
+ */
+const buildHugoWithRetry = (engine, context = "rendering") => {
+    window.hugo_wasm_logging = [];
+    let render_attempts = 1;
+    let buildError = window.buildHugo();
+    while (buildError && render_attempts < 5) {
+        console.warn(`Hit a build error when ${context} Hugo:\n${window.hugo_wasm_logging.map(l => `  ${l}`).join('\n')}`);
+        if (engine.componentQuack(buildError, window.hugo_wasm_logging) === null) {
+            // Can't find a template to overwrite and re-render
+            break;
+        }
+        // Try render again with the problem template stubbed out
+        window.hugo_wasm_logging = [];
+        buildError = window.buildHugo();
+        render_attempts += 1;
+    }
+    return buildError;
 };
 
 const sleep = (ms = 0) => {
@@ -356,21 +380,7 @@ export class Engine {
         }, null, 2) + "\n";
         window.writeHugoFiles(JSON.stringify(writeFiles));
 
-        window.hugo_wasm_logging = [];
-        let render_attempts = 1;
-        let buildError = window.buildHugo();
-        while (buildError && render_attempts < 5) {
-            console.warn(`Hit a build error when rendering Hugo:\n${window.hugo_wasm_logging.map(l => `  ${l}`).join('\n')}`);
-            if (this.componentQuack(buildError, window.hugo_wasm_logging) === null) {
-                // Can't find a template to overwrite and re-render
-                break;
-            }
-            // Try render again with the problem template stubbed out
-            window.hugo_wasm_logging = [];
-            buildError = window.buildHugo();
-            render_attempts += 1;
-        }
-
+        const buildError = buildHugoWithRetry(this, "rendering");
         if (buildError) {
             console.error(buildError);
             return;
@@ -429,21 +439,7 @@ export class Engine {
         
         window.writeHugoFiles(JSON.stringify(writeFiles));
         
-        window.hugo_wasm_logging = [];
-        let render_attempts = 1;
-        let buildError = window.buildHugo();
-        while (buildError && render_attempts < 5) {
-            console.warn(`Hit a build error when batch rendering Hugo:\n${window.hugo_wasm_logging.map(l => `  ${l}`).join('\n')}`);
-            if (this.componentQuack(buildError, window.hugo_wasm_logging) === null) {
-                // Can't find a template to overwrite and re-render
-                break;
-            }
-            // Try render again with the problem template stubbed out
-            window.hugo_wasm_logging = [];
-            buildError = window.buildHugo();
-            render_attempts += 1;
-        }
-        
+        const buildError = buildHugoWithRetry(this, "batch rendering");
         if (buildError) {
             console.error(`Batch render error: ${buildError}`);
             verboseLog('[hugo-engine] Falling back to individual renders');
