@@ -9,6 +9,10 @@
 
 ## Unreleased
 
+* Significantly improved Hugo live editing performance by batching multiple component renders into a single Hugo WASM build call
+* Added a unified static layout template that avoids Hugo template reloads when switching between render modes
+* Fixed `@bookshop/generate` to be idempotent - running it multiple times no longer adds duplicate live editing scripts
+
 ## v3.17.1 (November 28, 2025)
 
 * Fixed visual editor loading state to correctly hide after loading.

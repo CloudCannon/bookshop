@@ -303,6 +303,7 @@ const evaluateTemplate = async (opts) => {
 export const renderComponentUpdates = async (liveInstance, documentNode, logger) => {
     const vDom = document.implementation.createHTMLDocument();
     const updates = [];     // Rendered elements and their DOM locations
+    const pendingComponents = []; // Components to batch render
 
     const templateBlockHandler = async ({ startNode, endNode, name, scope, pathStack, depth, stashedNodes }, logger) => {
         // We only need to render the outermost component
@@ -323,14 +324,18 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
         };
 
         const output = vDom.createElement('div');
-        await liveInstance.renderElement(
+        
+        // Collect components for batch rendering instead of rendering immediately
+        pendingComponents.push({
             name,
             scope,
-            output,
-            logger?.nested?.(),
-        )
-        logger?.log?.(`Rendered ${name} block into an update`);
-        updates.push({ startNode, endNode, output, pathStack, scope, name, stashedNodes });
+            dom: output,
+            startNode,
+            endNode,
+            pathStack,
+            stashedNodes
+        });
+        logger?.log?.(`Queued ${name} for batch rendering`);
     }
 
     logger?.log?.(`Evaluating templates found in a document`);
@@ -342,6 +347,29 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
         logger: logger?.nested?.(),
         processDeepComponents: false
     });
+
+    // Batch render all collected components
+    if (pendingComponents.length > 0) {
+        logger?.log?.(`Batch rendering ${pendingComponents.length} components`);
+        await liveInstance.renderElements(
+            pendingComponents.map(c => ({ name: c.name, scope: c.scope, dom: c.dom })),
+            logger?.nested?.()
+        );
+        
+        // Build updates array from rendered components
+        for (const c of pendingComponents) {
+            logger?.log?.(`Rendered ${c.name} block into an update`);
+            updates.push({
+                startNode: c.startNode,
+                endNode: c.endNode,
+                output: c.dom,
+                pathStack: c.pathStack,
+                scope: c.scope,
+                name: c.name,
+                stashedNodes: c.stashedNodes
+            });
+        }
+    }
 
     logger?.log?.(`Completed evaluating the document`);
     return updates;

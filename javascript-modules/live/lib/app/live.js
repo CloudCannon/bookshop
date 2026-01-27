@@ -106,6 +106,41 @@ export const getLive = (engines) => class BookshopLive {
         }
     }
 
+    /**
+     * Render multiple components in a single batch for better performance.
+     * Falls back to individual renders if the engine doesn't support batching.
+     * 
+     * @param {Array} components - Array of {name, scope, dom} objects
+     * @param {Object} logger - Optional logger
+     */
+    async renderElements(components, logger) {
+        if (!components || components.length === 0) return;
+        
+        // Check if engine supports batch rendering
+        if (typeof this.engines[0].renderBatch === 'function') {
+            try {
+                logger?.log?.(`Batch rendering ${components.length} components`);
+                const batchInput = components.map(c => ({
+                    name: c.name,
+                    props: c.scope,
+                    globals: { ...this.globalData },
+                    target: c.dom
+                }));
+                await this.engines[0].renderBatch(batchInput, logger?.nested?.());
+                logger?.log?.(`Batch render complete`);
+                return;
+            } catch (e) {
+                logger?.log?.(`Batch render failed, falling back to individual renders`);
+                console.warn(`Batch render failed:`, e.toString());
+            }
+        }
+        
+        // Fall back to individual renders
+        for (const c of components) {
+            await this.renderElement(c.name, c.scope, c.dom, logger);
+        }
+    }
+
     async eval(identifier, scope, logger) {
         logger?.log?.(`Evaluating ${identifier} in ${JSON.stringify(scope)}`);
         const result = await this.engines[0].eval(identifier, scope, logger);

@@ -3,6 +3,40 @@ import { gunzipSync } from 'fflate';
 import translateTextTemplate from './translateTextTemplate.js';
 import { IdentifierParser } from './hugoIdentifierParser.js';
 
+// ============ INSTRUMENTATION ============
+const INSTRUMENTATION = {
+    enabled: true,
+    buildHugoCalls: 0,
+    buildHugoTotalMs: 0,
+    evalCalls: 0,
+    evalTotalMs: 0,
+    evalHugoWasmCalls: 0,  // evals that actually hit Hugo WASM
+    renderCalls: 0,
+    renderTotalMs: 0,
+    reset() {
+        this.buildHugoCalls = 0;
+        this.buildHugoTotalMs = 0;
+        this.evalCalls = 0;
+        this.evalTotalMs = 0;
+        this.evalHugoWasmCalls = 0;
+        this.renderCalls = 0;
+        this.renderTotalMs = 0;
+    },
+    report() {
+        if (!this.enabled) return;
+        console.log('%c[Hugo Engine Instrumentation]', 'color: #ff6600; font-weight: bold');
+        console.log(`  buildHugo() calls: ${this.buildHugoCalls} (total: ${this.buildHugoTotalMs.toFixed(1)}ms, avg: ${(this.buildHugoTotalMs / Math.max(1, this.buildHugoCalls)).toFixed(1)}ms)`);
+        console.log(`  eval() calls: ${this.evalCalls} (hit Hugo WASM: ${this.evalHugoWasmCalls})`);
+        console.log(`  render() calls: ${this.renderCalls} (total: ${this.renderTotalMs.toFixed(1)}ms)`);
+    }
+};
+
+// Expose globally for testing
+if (typeof window !== 'undefined') {
+    window.__BOOKSHOP_INSTRUMENTATION__ = INSTRUMENTATION;
+}
+// ============ END INSTRUMENTATION ============
+
 const sleep = (ms = 0) => {
     return new Promise(r => setTimeout(r, ms));
 }
@@ -286,23 +320,42 @@ export class Engine {
     }
 
     async render(target, name, props, globals, logger) {
+        const renderStart = performance.now();
+        INSTRUMENTATION.renderCalls++;
+        
         while (!window.buildHugo) {
             logger?.log?.(`Waiting for the Hugo WASM to be available...`);
             await sleep(100);
         };
 
         let writeFiles = {};
+        let componentType = null;
 
         if (this.hasComponent(name)) {
-            writeFiles["layouts/index.html"] = `{{ partial "bookshop" (slice "${name}" .Params.component) }}`
+            componentType = "component";
         } else if (this.hasShared(name)) {
-            writeFiles["layouts/index.html"] = `{{ partial "bookshop_partial" (slice "${name}" .Params.component) }}`
+            componentType = "shared";
         } else {
             console.warn(`[hugo-engine] No component found for ${name}`);
             return "";
         }
-        logger?.log?.(`Going to render ${name}, with layout:`);
-        logger?.log?.(writeFiles["layouts/index.html"]);
+
+        // OPTIMIZATION: Use a unified static layout template that handles both single and batch renders
+        // This avoids template reloads when switching between modes
+        // The layout checks for .Params.components (batch mode) or .Params.bookshop_name (single mode)
+        // Use script tags as markers since Hugo won't modify them (HTML comments can be problematic)
+        const unifiedLayout = `{{ if .Params.components }}{{ range $i, $c := .Params.components }}<script type="bookshop/batch" data-id="{{ $i }}" data-pos="start"></script>{{ if eq $c.type "component" }}{{ partial "bookshop" (slice $c.name $c.props) }}{{ else }}{{ partial "bookshop_partial" (slice $c.name $c.props) }}{{ end }}<script type="bookshop/batch" data-id="{{ $i }}" data-pos="end"></script>{{ end }}{{ else if .Params.bookshop_name }}{{ if .Params.bookshop_type }}{{ if eq .Params.bookshop_type "shared" }}{{ partial "bookshop_partial" (slice .Params.bookshop_name .Params.component) }}{{ else }}{{ partial "bookshop" (slice .Params.bookshop_name .Params.component) }}{{ end }}{{ else }}{{ partial "bookshop" (slice .Params.bookshop_name .Params.component) }}{{ end }}{{ end }}`;
+        
+        // Only write the layout once - it handles both single and batch modes
+        if (!window.__bookshop_unified_layout_installed) {
+            writeFiles["layouts/index.html"] = unifiedLayout;
+            window.__bookshop_unified_layout_installed = true;
+            if (INSTRUMENTATION.enabled) {
+                console.log('%c[render] Installing unified static layout', 'color: #ff9900');
+            }
+        }
+        
+        logger?.log?.(`Going to render ${name}, with unified layout`);
 
         if (!globals || typeof globals !== "object") globals = {};
         props = {
@@ -313,13 +366,18 @@ export class Engine {
         // If we have assigned a root scope we need to pass that in as the context
         if (props["."]) props = props["."];
         writeFiles["content/_index.md"] = JSON.stringify({
+            bookshop_name: name,
+            bookshop_type: componentType,
             component: props
         }, null, 2) + "\n";
         window.writeHugoFiles(JSON.stringify(writeFiles));
 
         window.hugo_wasm_logging = [];
         let render_attempts = 1;
+        let buildStart = performance.now();
+        INSTRUMENTATION.buildHugoCalls++;
         let buildError = window.buildHugo();
+        INSTRUMENTATION.buildHugoTotalMs += performance.now() - buildStart;
         while (buildError && render_attempts < 5) {
             console.warn(`Hit a build error when rendering Hugo:\n${window.hugo_wasm_logging.map(l => `  ${l}`).join('\n')}`);
             if (this.componentQuack(buildError, window.hugo_wasm_logging) === null) {
@@ -328,7 +386,10 @@ export class Engine {
             }
             // Try render again with the problem template stubbed out
             window.hugo_wasm_logging = [];
+            buildStart = performance.now();
+            INSTRUMENTATION.buildHugoCalls++;
             buildError = window.buildHugo();
+            INSTRUMENTATION.buildHugoTotalMs += performance.now() - buildStart;
             render_attempts += 1;
         }
 
@@ -342,10 +403,148 @@ export class Engine {
         ]));
 
         target.innerHTML = output["public/index.html"];
+        INSTRUMENTATION.renderTotalMs += performance.now() - renderStart;
+        
+        // Auto-report after each render
+        if (INSTRUMENTATION.enabled) {
+            console.log('%c[Render Complete]', 'color: #00cc00; font-weight: bold', 
+                `render took ${(performance.now() - renderStart).toFixed(1)}ms`);
+            INSTRUMENTATION.report();
+        }
         return;
     }
 
+    /**
+     * Render multiple components in a single buildHugo() call.
+     * This is much faster than rendering each component separately.
+     * 
+     * @param {Array} components - Array of {name, props, globals, target} objects
+     * @param {Object} logger - Optional logger
+     * @returns {Promise<void>}
+     */
+    async renderBatch(components, logger) {
+        if (!components || components.length === 0) return;
+        
+        // If only one component, use regular render
+        if (components.length === 1) {
+            const c = components[0];
+            return this.render(c.target, c.name, c.props, c.globals, logger);
+        }
+        
+        const batchStart = performance.now();
+        INSTRUMENTATION.renderCalls += components.length;
+        
+        while (!window.buildHugo) {
+            logger?.log?.(`Waiting for the Hugo WASM to be available...`);
+            await sleep(100);
+        }
+        
+        if (INSTRUMENTATION.enabled) {
+            console.log('%c[renderBatch] Starting batch render', 'color: #ff00ff; font-weight: bold', 
+                `${components.length} components`);
+        }
+        
+        // Build data for all components
+        const componentData = components.map((c, index) => {
+            const isComponent = this.hasComponent(c.name);
+            const isShared = this.hasShared(c.name);
+            
+            if (!isComponent && !isShared) {
+                console.warn(`[hugo-engine] No component found for ${c.name}`);
+                return null;
+            }
+            
+            let props = { ...(c.globals || {}), ...(c.props || {}), env_bookshop_live: true };
+            if (props["."]) props = props["."];
+            
+            return {
+                index,
+                name: c.name,
+                type: isComponent ? 'component' : 'shared',
+                props
+            };
+        }).filter(Boolean);
+        
+        if (componentData.length === 0) return;
+        
+        // Use the unified layout that handles both single and batch modes
+        // The layout checks for .Params.components to determine batch mode
+        // Use script tags as markers since Hugo won't modify them
+        const unifiedLayout = `{{ if .Params.components }}{{ range $i, $c := .Params.components }}<script type="bookshop/batch" data-id="{{ $i }}" data-pos="start"></script>{{ if eq $c.type "component" }}{{ partial "bookshop" (slice $c.name $c.props) }}{{ else }}{{ partial "bookshop_partial" (slice $c.name $c.props) }}{{ end }}<script type="bookshop/batch" data-id="{{ $i }}" data-pos="end"></script>{{ end }}{{ else if .Params.bookshop_name }}{{ if .Params.bookshop_type }}{{ if eq .Params.bookshop_type "shared" }}{{ partial "bookshop_partial" (slice .Params.bookshop_name .Params.component) }}{{ else }}{{ partial "bookshop" (slice .Params.bookshop_name .Params.component) }}{{ end }}{{ else }}{{ partial "bookshop" (slice .Params.bookshop_name .Params.component) }}{{ end }}{{ end }}`;
+        
+        let writeFiles = {
+            "content/_index.md": JSON.stringify({
+                components: componentData.map(c => ({ name: c.name, type: c.type, props: c.props }))
+            }, null, 2) + "\n"
+        };
+        
+        // Only write the layout if it's not already installed (unified layout handles both modes)
+        if (!window.__bookshop_unified_layout_installed) {
+            writeFiles["layouts/index.html"] = unifiedLayout;
+            window.__bookshop_unified_layout_installed = true;
+            if (INSTRUMENTATION.enabled) {
+                console.log('%c[renderBatch] Installing unified static layout', 'color: #ff9900');
+            }
+        }
+        
+        window.writeHugoFiles(JSON.stringify(writeFiles));
+        
+        // Single buildHugo call for all components
+        window.hugo_wasm_logging = [];
+        const buildStart = performance.now();
+        INSTRUMENTATION.buildHugoCalls++;
+        let buildError = window.buildHugo();
+        INSTRUMENTATION.buildHugoTotalMs += performance.now() - buildStart;
+        
+        if (buildError) {
+            console.error(`Batch render error: ${buildError}`);
+            // Fall back to individual renders
+            if (INSTRUMENTATION.enabled) {
+                console.log('%c[renderBatch] Falling back to individual renders', 'color: #ff9900');
+            }
+            for (const c of components) {
+                await this.render(c.target, c.name, c.props, c.globals, logger);
+            }
+            return;
+        }
+        
+        const output = window.readHugoFiles(JSON.stringify(["public/index.html"]));
+        const html = output["public/index.html"];
+        
+        // Parse output to extract each component's HTML using script tag markers
+        for (let i = 0; i < componentData.length; i++) {
+            const startMarker = `<script type="bookshop/batch" data-id="${i}" data-pos="start"></script>`;
+            const endMarker = `<script type="bookshop/batch" data-id="${i}" data-pos="end"></script>`;
+            const startIdx = html.indexOf(startMarker);
+            const endIdx = html.indexOf(endMarker);
+            
+            if (startIdx !== -1 && endIdx !== -1) {
+                const componentHtml = html.substring(startIdx + startMarker.length, endIdx);
+                components[i].target.innerHTML = componentHtml;
+            } else {
+                console.warn(`[renderBatch] Could not find markers for component ${i}. Looking for: ${startMarker}`);
+                // Fall back to individual render for this component
+                await this.render(components[i].target, components[i].name, components[i].props, components[i].globals, logger);
+            }
+        }
+        
+        INSTRUMENTATION.renderTotalMs += performance.now() - batchStart;
+        
+        if (INSTRUMENTATION.enabled) {
+            console.log('%c[renderBatch Complete]', 'color: #00cc00; font-weight: bold', 
+                `${components.length} components in ${(performance.now() - batchStart).toFixed(1)}ms (1 buildHugo call)`);
+            INSTRUMENTATION.report();
+        }
+    }
+
     async eval(str, props = [{}], logger) {
+        INSTRUMENTATION.evalCalls++;
+        
+        // Log every eval call for debugging
+        if (INSTRUMENTATION.enabled) {
+            console.log('%c[eval]', 'color: #9900ff', str.substring(0, 100) + (str.length > 100 ? '...' : ''));
+        }
+        
         if (!this.synthetic) {
             while (!window.buildHugo) await sleep(10);
         }
@@ -433,12 +632,22 @@ export class Engine {
             return null;
         }
 
+        // This is the SLOW PATH - we're hitting Hugo WASM because no short-circuit worked
+        INSTRUMENTATION.evalHugoWasmCalls++;
+        if (INSTRUMENTATION.enabled) {
+            console.log('%c[eval -> Hugo WASM]', 'color: #ff0000; font-weight: bold', 
+                `Expression requires Hugo WASM: "${str.substring(0, 80)}${str.length > 80 ? '...' : ''}"`);
+        }
+
         window.writeHugoFiles(JSON.stringify({
             "layouts/index.html": eval_str,
             "content/_index.md": JSON.stringify({ props: props_obj, full_props: full_props }, null, 2)
         }));
 
+        const buildStart = performance.now();
+        INSTRUMENTATION.buildHugoCalls++;
         const buildError = window.buildHugo();
+        INSTRUMENTATION.buildHugoTotalMs += performance.now() - buildStart;
         if (buildError) {
             console.warn(buildError);
             return;
