@@ -9,10 +9,7 @@ const verboseLog = (message, ...args) => {
     }
 };
 
-// Unified layout template that handles both single component and batch render modes.
-// Uses script tags as markers since Hugo won't modify them (HTML comments can be stripped).
 const UNIFIED_LAYOUT = [
-    // Batch mode: render array of components with markers
     `{{ if .Params.components }}`,
         `{{ range $i, $c := .Params.components }}`,
             `<script type="bookshop/batch" data-id="{{ $i }}" data-pos="start"></script>`,
@@ -23,7 +20,6 @@ const UNIFIED_LAYOUT = [
             `{{ end }}`,
             `<script type="bookshop/batch" data-id="{{ $i }}" data-pos="end"></script>`,
         `{{ end }}`,
-    // Single mode: render one component
     `{{ else if .Params.bookshop_name }}`,
         `{{ if eq .Params.bookshop_type "shared" }}`,
             `{{ partial "bookshop_partial" (slice .Params.bookshop_name .Params.component) }}`,
@@ -33,10 +29,6 @@ const UNIFIED_LAYOUT = [
     `{{ end }}`
 ].join('');
 
-/**
- * Installs the unified layout if not already installed.
- * Returns files object with layout if it needs to be written.
- */
 const ensureUnifiedLayoutInstalled = () => {
     if (typeof window === 'undefined') return {};
     if (window.__bookshop_unified_layout_installed) return {};
@@ -391,18 +383,9 @@ export class Engine {
         target.innerHTML = output["public/index.html"];
     }
 
-    /**
-     * Render multiple components in a single buildHugo() call.
-     * This is much faster than rendering each component separately.
-     * 
-     * @param {Array} components - Array of {name, props, globals, target} objects
-     * @param {Object} logger - Optional logger
-     * @returns {Promise<void>}
-     */
     async renderBatch(components, logger) {
         if (!components || components.length === 0) return;
         
-        // If only one component, use regular render
         if (components.length === 1) {
             const c = components[0];
             return this.render(c.target, c.name, c.props, c.globals, logger);
@@ -415,7 +398,6 @@ export class Engine {
         
         verboseLog(`[hugo-engine] Batch rendering ${components.length} components`);
         
-        // Build data for all components
         const componentData = components.map((c, index) => {
             const isComponent = this.hasComponent(c.name);
             const isShared = this.hasShared(c.name);
@@ -447,13 +429,11 @@ export class Engine {
         
         window.writeHugoFiles(JSON.stringify(writeFiles));
         
-        // Single buildHugo call for all components
         window.hugo_wasm_logging = [];
         let buildError = window.buildHugo();
         
         if (buildError) {
             console.error(`Batch render error: ${buildError}`);
-            // Fall back to individual renders
             verboseLog('[hugo-engine] Falling back to individual renders');
             for (const c of components) {
                 await this.render(c.target, c.name, c.props, c.globals, logger);
@@ -464,7 +444,6 @@ export class Engine {
         const output = window.readHugoFiles(JSON.stringify(["public/index.html"]));
         const html = output["public/index.html"];
         
-        // Parse output to extract each component's HTML using script tag markers
         for (let i = 0; i < componentData.length; i++) {
             const startMarker = `<script type="bookshop/batch" data-id="${i}" data-pos="start"></script>`;
             const endMarker = `<script type="bookshop/batch" data-id="${i}" data-pos="end"></script>`;
@@ -476,7 +455,6 @@ export class Engine {
                 components[i].target.innerHTML = componentHtml;
             } else {
                 verboseLog(`[hugo-engine] Could not find markers for component ${i}, falling back to individual render`);
-                // Fall back to individual render for this component
                 await this.render(components[i].target, components[i].name, components[i].props, components[i].globals, logger);
             }
         }
