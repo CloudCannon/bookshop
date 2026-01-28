@@ -1672,6 +1672,8 @@ If you're using other components in your layouts, add the `bookshop_bindings` pa
 {{ partial "bookshop_bindings" `(dict hero_text .Params.hero_text)` }}
 {{ partial "bookshop" (slice "hero" (dict hero_text .Params.hero_text)) }}
 ----
+
+WARNING: Hugo has a built-in option to minify output files, which is enabled by adding the `--minify` flag to the `hugo` command. Be sure to keep the HTML comments though (`keepComments = true`), or else Bookshop will not be able to generate the correct page bindings. Refer to the link:https://gohugo.io/getting-started/configuration/#configure-minify[Hugo documentation] for more information.
 endif::hugo[]
 
 ifndef::sveltekit[]
@@ -1696,6 +1698,97 @@ endif::sveltekit[]
 //
 //
 ////
+
+ifndef::sveltekit[]
+=== Using Editable Regions for Live Editing
+
+Bookshop supports integration with link:https://cloudcannon.com/documentation/guides/set-up-visual-editing/visual-editing-for-arrays/[CloudCannon's Editable Regions] as an alternative approach to live editing. This integration provides a more streamlined editing experience that relies on CloudCannon's native visual editing capabilities.
+
+To enable this mode, add the `--editable-regions` flag to your postbuild script:
+
+.*.cloudcannon/postbuild*
+[source,bash,subs="attributes"]
+----
+npm i
+npx @bookshop/generate --editable-regions
+----
+
+When using this flag, Bookshop will inject a reduced live editing script that works with Editable Regions for rendering components. This also automatically disables data binding panels, as Editable Regions handle editing through CloudCannon's visual interface.
+
+==== Updating Your Page Component
+
+When using Editable Regions mode, you'll need to update your shared page helper to include the appropriate Editable Region attributes. Here's an example of what the updated `page.{ssgext}` helper should look like:
+
+ifdef::hugo[]
+.*layouts/base.html*
+```go
+<editable-component data-prop="content_blocks" data-component="page">
+  {{ partial "bookshop" (slice "page" (dict "content_blocks" .Params.content_blocks)) }}
+</editable-component>
+```
+
+.*component-library/shared/hugo/page.hugo.html*
+```go
+<main data-editable="array" data-prop="" data-id-key="_bookshop_name" data-component-key="_bookshop_name">
+  {{ range .content_blocks }}
+    <editable-array-item data-component="{{._bookshop_name}}" data-id="{{._bookshop_name}}">
+      {{ partial "bookshop" . }}
+    </editable-array-item>
+  {{ end }}
+</main>
+```
+endif::hugo[]
+ifdef::jekyll[]
+.*layouts/base.html*
+```liquid
+<editable-component data-prop="content_blocks" data-component="page">
+  {% bookshop_include page content_blocks=page.content_blocks %}
+</editable-component>
+```
+
+.*component-library/shared/jekyll/page.jekyll.html*
+```liquid
+<main data-editable="array" data-prop="" data-id-key="_bookshop_name" data-component-key="_bookshop_name">
+  {% for block in include.content_blocks %}
+    <editable-array-item data-component="{{block._bookshop_name}}" data-id="{{block._bookshop_name}}">
+      {% bookshop {{block._bookshop_name}} bind=block %}
+    </editable-array-item>
+  {% endfor %}
+</main>
+```
+endif::jekyll[]
+ifdef::eleventy[]
+.*layouts/base.html*
+```liquid
+<editable-component data-prop="content_blocks" data-component="page">
+  {% bookshop_include "page" content_blocks: content_blocks %}
+</editable-component>
+```
+
+.*component-library/shared/eleventy/page.eleventy.liquid*
+```liquid
+<main data-editable="array" data-prop="" data-id-key="_bookshop_name" data-component-key="_bookshop_name">
+  {% for block in content_blocks %}
+    <editable-array-item data-component="{{block._bookshop_name}}" data-id="{{block._bookshop_name}}">
+      {% bookshop "{{block._bookshop_name}}" bind: block %}
+    </editable-array-item>
+  {% endfor %}
+</main>
+```
+endif::eleventy[]
+
+The key additions are:
+
+* `data-editable="array"` on the container element defines an Array Editable Region
+* `data-id-key="_bookshop_name"` identifies the field used as a unique identifier for each array item
+* `data-component-key="_bookshop_name"` tells CloudCannon which field contains the component name for each item
+* `<editable-array-item>` wraps each component with the appropriate Editable Region attributes
+
+For more information on configuring Editable Regions for different use cases, see the link:https://cloudcannon.com/documentation/guides/set-up-visual-editing/visual-editing-for-arrays/[CloudCannon Editable Regions documentation] and the link:https://cloudcannon.com/documentation/guides/set-up-visual-editing/visual-editing-for-components/[Visual Editing for Components guide].
+
+NOTE: When using Editable Regions mode, you cannot use Bookshop's standard data bindings. The two approaches are mutually exclusive.
+
+endif::sveltekit[]
 
 === Data Bindings
 
@@ -1790,6 +1883,8 @@ ifdef::sveltekit[]
 endif::sveltekit[]
 
 NOTE: This flag only applies to the component directly and doesn't cascade down. Any subcomponents will follow the standard rules, or can also specify their own Data Binding flag.
+
+To disable all data bindings on your site, you can add the flag `--disable-bindings` to your `@bookshop/generate` command in your site's `postbuild`. This can significantly improve rendering performance for complex sites.
 
 ////
 //
@@ -2013,204 +2108,12 @@ Bookshop's Eleventy live editing is built on top of the liquidjs package. As suc
 endif::Eleventy[]
 
 ifdef::hugo[]
-Bookshop's Hugo live editing is built on top of the core Go text/template package. As such, not all Hugo features are supported within Bookshop components. Generally, functions that interact with Hugo or the site as a whole are unavailable. The following tables describe the features and functions currently supported in live-edited Bookshop components.
 
-NOTE: Work is underway to expand support for many of the functions below. Open a GitHub issue if there is a specific function you need for your workflow. 
+Bookshop's Hugo editing is based upon a subset of Hugo running in the browser. As such, not all Hugo features will be available within Bookshop components.
 
-++++
-<details><summary>Bookshop Hugo Support Matrix</summary>
-++++
+As a general rule: Functions that access files directly (such as `resources.Get`), or access other parts of the site (such as `site.GetPage`), will not return anything useful in the visual editor.
 
-[cols="1,1"]
-|===
-|Hugo Feature |Supported in Bookshop 
-
-|link:https://gohugo.io/templates/partials/#returning-a-value-from-a-partial[Partial return values]
-|❌
-
-|link:https://gohugo.io/functions/scratch/[.Scratch and newScratch]
-|❌
-|===
-
-For unsupported functions, see <<Rendering Different Content When Live Editing>>
-
-[cols="1,1"]
-|===
-|Template Function |Supported in Bookshop 
-
-|templates.*
-|❌
-|os.*
-|❌
-|urls.*
-|❌
-|lang / i18n
-|❌
-|hugo
-|❌
-|apply
-|❌
-|anchorize
-|❌
-|absURL / absLangURL
-|❌
-|humanize
-|❌
-|now
-|❌
-|Image Filters
-|❌
-|partialCached
-|❌
-|getenv
-|❌
-|fileExists / readDir / readFile
-|❌
-|ref / relref
-|❌
-|relURL / relLangURL
-|❌
-|site.BaseURL / site.Title / site.Copyright 
-|✅
-|Other site.* functions
-|❌
-|highlight
-|ℹ️ Will pass through the input string unchanged (i.e. it won't work, but it won't error)
-|markdownify
-|ℹ️ Uses a different markdown implementation. Output isn't guaranteed to match Hugo 1:1
-|strings.*
-|✅
-|reflect.*
-|✅
-|plainify
-|✅
-|emojify
-|✅
-|htmlEscape/htmlUnescape
-|✅
-|merge
-|✅
-|symdiff
-|✅
-|complement
-|✅
-|append
-|✅
-|group
-|✅
-|hmac
-|✅
-|transform.Unmarshal
-|✅
-|errorf and warnf
-|✅
-|float
-|✅
-|cond
-|✅
-|ge/gt/le/lt/ne
-|✅
-|after
-|✅
-|base64
-|✅
-|chomp
-|✅
-|countrunes
-|✅
-|countwords
-|✅
-|default
-|✅
-|delimit
-|✅
-|dict
-|✅
-|echoParam
-|✅
-|eq
-|✅
-|findRE
-|✅
-|first
-|✅
-|hasPrefix
-|✅
-|in
-|✅
-|index
-|✅
-|int
-|✅
-|intersect
-|✅
-|isset
-|✅
-|jsonify
-|✅
-|last
-|✅
-|len
-|✅
-|lower
-|✅
-|Math
-|✅
-|md5
-|✅
-|path.*
-|✅
-|pluralize
-|✅
-|print
-|✅
-|printf
-|✅
-|println
-|✅
-|querify
-|✅
-|range
-|✅
-|replace
-|✅
-|replaceRE
-|✅
-
-|===
-
-[cols="1,1"]
-|===
-|Page Function |Supported in Bookshop 
-
-|.AddDate
-|❌
-|.Format
-|❌
-|.Get
-|❌
-|.GetPage
-|❌
-|.HasMenuCurrent
-|❌
-|.IsMenuCurrent
-|❌
-|.Param
-|❌
-|.Render
-|❌
-|.RenderString
-|❌
-|.Scratch
-|❌
-|.Unix
-|❌
-
-|===
-
-++++
-</details>
-++++
+If you're encountering an unsupported function, such as finding that `resources.Get` returns `nil`, see <<Rendering Different Content When Live Editing>>
 
 endif::hugo[]
 

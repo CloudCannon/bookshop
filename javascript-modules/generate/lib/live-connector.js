@@ -3,8 +3,22 @@ import fs from 'fs';
 import fastGlob from 'fast-glob';
 import chalk from 'chalk';
 
+// Marker used to identify and replace existing bookshop live scripts (safe to re-run)
+const BOOKSHOP_LIVE_MARKER = '<!--bookshop-live-connector-->';
+const BOOKSHOP_LIVE_END_MARKER = '<!--/bookshop-live-connector-->';
+
+// Regex to match existing bookshop live connector scripts (including marker comments)
+const EXISTING_CONNECTOR_REGEX = new RegExp(
+  `${BOOKSHOP_LIVE_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?${BOOKSHOP_LIVE_END_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\n?`,
+  'g'
+);
+
+// Also match legacy scripts without markers (for backwards compatibility)
+// Use \r?\n to handle both Unix (\n) and Windows (\r\n) line endings
+const LEGACY_CONNECTOR_REGEX = /<script>(?:\r?\n)?\(function\(\)\{(?:\r?\n)\s*const bookshopLiveSetup[\s\S]*?cloudcannon:load[\s\S]*?\}\)\(\);(?:\r?\n)?<\/script>(?:\r?\n)?/g;
+
 const getLiveEditingConnector = (options) => {
-  return `
+  return `${BOOKSHOP_LIVE_MARKER}
 <script>
 (function(){
     const bookshopLiveSetup = (CloudCannon) => {
@@ -50,11 +64,12 @@ const getLiveEditingConnector = (options) => {
       bookshopLiveSetup(e.detail.CloudCannon);
     });
   })();
-</script>`;
+</script>
+${BOOKSHOP_LIVE_END_MARKER}`;
 }
 
 const getEditableRegionsConnector = () => {
-  return `
+  return `${BOOKSHOP_LIVE_MARKER}
 <script>
 (function(){
     const bookshopLiveSetup = (CloudCannon) => {
@@ -128,10 +143,21 @@ const getEditableRegionsConnector = () => {
       bookshopLiveSetup(e.detail.CloudCannon);
     });
   })();
-</script>`;
+</script>
+${BOOKSHOP_LIVE_END_MARKER}`;
 }
 
-
+/**
+ * Remove any existing bookshop live connector scripts from the content.
+ * This prevents duplicates - running generate multiple times won't add duplicate scripts.
+ */
+const removeExistingConnectors = (contents) => {
+  // Remove scripts with markers (new format)
+  let result = contents.replace(EXISTING_CONNECTOR_REGEX, '');
+  // Remove legacy scripts without markers (backwards compatibility)
+  result = result.replace(LEGACY_CONNECTOR_REGEX, '');
+  return result;
+};
 
 export const hydrateLiveForSite = async (siteRoot, options) => {
   const siteHTMLFiles = await fastGlob(`**/*.html`, {
@@ -142,6 +168,7 @@ export const hydrateLiveForSite = async (siteRoot, options) => {
   const injectedHTML = options.editableRegions ? getEditableRegionsConnector() : getLiveEditingConnector(options);
 
   let connected = 0;
+  let updated = 0;
   for (const file of siteHTMLFiles) {
     const filePath = path.join(siteRoot, file);
     let contents = fs.readFileSync(filePath, "utf8");
@@ -150,10 +177,20 @@ export const hydrateLiveForSite = async (siteRoot, options) => {
       continue;
     }
 
+    // Check if there's an existing connector to replace
+    const hadExisting = EXISTING_CONNECTOR_REGEX.test(contents) || LEGACY_CONNECTOR_REGEX.test(contents);
+    
+    // Remove any existing connectors first (prevents duplicates)
+    contents = removeExistingConnectors(contents);
+    
+    // Inject the new connector
     contents = contents.replace('</body>', `${injectedHTML}\n</body>`);
 
     fs.writeFileSync(filePath, contents);
     connected += 1;
+    if (hadExisting) {
+      updated += 1;
+    }
   }
 
   if (!connected) {
@@ -162,6 +199,9 @@ export const hydrateLiveForSite = async (siteRoot, options) => {
   }
 
   console.log(chalk.green(`Added live editing to ${connected} page${connected === 1 ? '' : 's'} containing Bookshop components`));
+  if (updated) {
+    console.log(chalk.gray(`(${updated} page${updated === 1 ? '' : 's'} had existing connectors that were replaced)`));
+  }
   const skipped = siteHTMLFiles.length - connected;
   if (skipped) {
     console.log(chalk.gray(`Skipped ${skipped} page${skipped === 1 ? '' : 's'} that didn't contain Bookshop components.`));
