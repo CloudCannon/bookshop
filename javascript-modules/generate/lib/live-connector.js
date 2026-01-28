@@ -14,7 +14,8 @@ const EXISTING_CONNECTOR_REGEX = new RegExp(
 );
 
 // Also match legacy scripts without markers (for backwards compatibility)
-const LEGACY_CONNECTOR_REGEX = /<script>\n?\(function\(\)\{\n\s*const bookshopLiveSetup[\s\S]*?cloudcannon:load[\s\S]*?\}\)\(\);\n?<\/script>\n?/g;
+// Use \r?\n to handle both Unix (\n) and Windows (\r\n) line endings
+const LEGACY_CONNECTOR_REGEX = /<script>(?:\r?\n)?\(function\(\)\{(?:\r?\n)\s*const bookshopLiveSetup[\s\S]*?cloudcannon:load[\s\S]*?\}\)\(\);(?:\r?\n)?<\/script>(?:\r?\n)?/g;
 
 const getLiveEditingConnector = (options) => {
   return `${BOOKSHOP_LIVE_MARKER}

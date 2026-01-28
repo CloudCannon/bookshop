@@ -12,13 +12,13 @@ const verboseLog = (message, ...args) => {
 const UNIFIED_LAYOUT = [
     `{{ if .Params.components }}`,
         `{{ range $i, $c := .Params.components }}`,
-            `<script type="bookshop/batch" data-id="{{ $i }}" data-pos="start"></script>`,
+            `<script type="bookshop/batch" data-batch="{{ $.Params.batch_id }}" data-id="{{ $i }}" data-pos="start"></script>`,
             `{{ if eq $c.type "component" }}`,
                 `{{ partial "bookshop" (slice $c.name $c.props) }}`,
             `{{ else }}`,
                 `{{ partial "bookshop_partial" (slice $c.name $c.props) }}`,
             `{{ end }}`,
-            `<script type="bookshop/batch" data-id="{{ $i }}" data-pos="end"></script>`,
+            `<script type="bookshop/batch" data-batch="{{ $.Params.batch_id }}" data-id="{{ $i }}" data-pos="end"></script>`,
         `{{ end }}`,
     `{{ else if .Params.bookshop_name }}`,
         `{{ if eq .Params.bookshop_type "shared" }}`,
@@ -408,6 +408,9 @@ export class Engine {
         
         verboseLog(`[hugo-engine] Batch rendering ${components.length} components`);
         
+        // Generate a unique batch ID to prevent marker collisions with component content
+        const batchId = `b${Date.now()}`;
+        
         const componentData = components.map((c, index) => {
             const isComponent = this.hasComponent(c.name);
             const isShared = this.hasShared(c.name);
@@ -432,6 +435,7 @@ export class Engine {
         
         let writeFiles = {
             "content/_index.md": JSON.stringify({
+                batch_id: batchId,
                 components: componentData.map(c => ({ name: c.name, type: c.type, props: c.props }))
             }, null, 2) + "\n",
             ...ensureUnifiedLayoutInstalled()
@@ -454,8 +458,8 @@ export class Engine {
         
         for (let i = 0; i < componentData.length; i++) {
             const originalIndex = componentData[i].index;
-            const startMarker = `<script type="bookshop/batch" data-id="${i}" data-pos="start"></script>`;
-            const endMarker = `<script type="bookshop/batch" data-id="${i}" data-pos="end"></script>`;
+            const startMarker = `<script type="bookshop/batch" data-batch="${batchId}" data-id="${i}" data-pos="start"></script>`;
+            const endMarker = `<script type="bookshop/batch" data-batch="${batchId}" data-id="${i}" data-pos="end"></script>`;
             const startIdx = html.indexOf(startMarker);
             const endIdx = html.indexOf(endMarker);
             
