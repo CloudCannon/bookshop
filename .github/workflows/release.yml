@@ -7,6 +7,7 @@ on:
 
 env:
   HUGO_VERSION: 0.118.2
+  RUBYOPT: '-W0'
 
 jobs:
   publish:
