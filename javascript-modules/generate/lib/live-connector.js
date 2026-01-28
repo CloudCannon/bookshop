@@ -3,7 +3,7 @@ import fs from 'fs';
 import fastGlob from 'fast-glob';
 import chalk from 'chalk';
 
-// Marker used to identify and replace existing bookshop live scripts (for idempotency)
+// Marker used to identify and replace existing bookshop live scripts (safe to re-run)
 const BOOKSHOP_LIVE_MARKER = '<!--bookshop-live-connector-->';
 const BOOKSHOP_LIVE_END_MARKER = '<!--/bookshop-live-connector-->';
 
@@ -149,7 +149,7 @@ ${BOOKSHOP_LIVE_END_MARKER}`;
 
 /**
  * Remove any existing bookshop live connector scripts from the content.
- * This ensures idempotency - running generate multiple times won't add duplicate scripts.
+ * This prevents duplicates - running generate multiple times won't add duplicate scripts.
  */
 const removeExistingConnectors = (contents) => {
   // Remove scripts with markers (new format)
@@ -180,7 +180,7 @@ export const hydrateLiveForSite = async (siteRoot, options) => {
     // Check if there's an existing connector to replace
     const hadExisting = EXISTING_CONNECTOR_REGEX.test(contents) || LEGACY_CONNECTOR_REGEX.test(contents);
     
-    // Remove any existing connectors first (idempotency)
+    // Remove any existing connectors first (prevents duplicates)
     contents = removeExistingConnectors(contents);
     
     // Inject the new connector
