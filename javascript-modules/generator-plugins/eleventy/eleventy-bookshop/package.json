@@ -1,7 +1,7 @@
 {
   "name": "@bookshop/eleventy-bookshop",
   "packageManager": "pnpm@10.11.0",
-  "version": "3.17.1",
+  "version": "3.18.0-alpha.1",
   "description": "Eleventy plugin for consuming Bookshop components",
   "main": "main.js",
   "scripts": {
