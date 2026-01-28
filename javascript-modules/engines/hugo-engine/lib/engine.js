@@ -42,15 +42,15 @@ const ensureUnifiedLayoutInstalled = () => {
  * Build Hugo with retry logic using componentQuack for error recovery.
  * @param {Engine} engine - The engine instance for componentQuack access
  * @param {string} context - Description for logging (e.g., "rendering" or "batch rendering")
- * @returns {string|null} - The build error if unrecoverable, or null on success
+ * @returns {Promise<string|null>} - The build error if unrecoverable, or null on success
  */
-const buildHugoWithRetry = (engine, context = "rendering") => {
+const buildHugoWithRetry = async (engine, context = "rendering") => {
     window.hugo_wasm_logging = [];
     let render_attempts = 1;
     let buildError = window.buildHugo();
     while (buildError && render_attempts < 5) {
         console.warn(`Hit a build error when ${context} Hugo:\n${window.hugo_wasm_logging.map(l => `  ${l}`).join('\n')}`);
-        if (engine.componentQuack(buildError, window.hugo_wasm_logging) === null) {
+        if (await engine.componentQuack(buildError, window.hugo_wasm_logging) === null) {
             // Can't find a template to overwrite and re-render
             break;
         }
@@ -380,7 +380,7 @@ export class Engine {
         }, null, 2) + "\n";
         window.writeHugoFiles(JSON.stringify(writeFiles));
 
-        const buildError = buildHugoWithRetry(this, "rendering");
+        const buildError = await buildHugoWithRetry(this, "rendering");
         if (buildError) {
             console.error(buildError);
             return;
@@ -409,7 +409,7 @@ export class Engine {
         verboseLog(`[hugo-engine] Batch rendering ${components.length} components`);
         
         // Generate a unique batch ID to prevent marker collisions with component content
-        const batchId = `b${Date.now()}`;
+        const batchId = `b${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
         
         const componentData = components.map((c, index) => {
             const isComponent = this.hasComponent(c.name);
@@ -443,7 +443,7 @@ export class Engine {
         
         window.writeHugoFiles(JSON.stringify(writeFiles));
         
-        const buildError = buildHugoWithRetry(this, "batch rendering");
+        const buildError = await buildHugoWithRetry(this, "batch rendering");
         if (buildError) {
             console.error(`Batch render error: ${buildError}`);
             verboseLog('[hugo-engine] Falling back to individual renders');
