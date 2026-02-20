@@ -40,14 +40,14 @@
     "@ltd/j-toml": "^1.30.0",
     "@material-design-icons/svg": "^0.2.7",
     "commander": "^8.1.0",
-    "esbuild": "^0.13.10",
+    "esbuild": "^0.25.0",
     "esbuild-svelte": "^0.8.2",
     "express": "^4.21.0",
     "express-ws": "^5.0.2",
     "fast-glob": "^3.2.7",
     "js-yaml": "^4.1.0",
     "normalize-path": "^3.0.0",
-    "svelte": "^4.2.19"
+    "svelte": "^5.51.5"
   },
   "engines": {
     "node": ">=14.16"

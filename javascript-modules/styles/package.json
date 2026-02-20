@@ -20,7 +20,7 @@
   ],
   "devDependencies": {
     "ava": "^6.4.1",
-    "esbuild": "^0.13.10",
+    "esbuild": "^0.25.0",
     "nyc": "^17.1.0",
     "postcss-fluidvars": "^1.1.2"
   },
