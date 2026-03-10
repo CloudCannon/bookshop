@@ -34,7 +34,7 @@
     "@astrojs/compiler": "^1.0.0 || ^2.0.0",
     "@bookshop/astro-bookshop": "workspace:*",
     "@bookshop/vite-plugin-astro-bookshop": "workspace:*",
-    "esbuild": "^0.19.1",
+    "esbuild": "^0.25.0",
     "esbuild-sass-plugin": "^2.13.0",
     "postcss": "^8.4.29",
     "postcss-modules": "^6.0.0",

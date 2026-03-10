@@ -31,9 +31,9 @@
     "nyc": "^17.1.0"
   },
   "dependencies": {
-    "esbuild": "^0.13.10",
+    "esbuild": "^0.25.0",
     "esbuild-svelte": "^0.8.2",
-    "svelte": "^4.2.19"
+    "svelte": "^5.53.5"
   },
   "engines": {
     "node": ">=14.16"

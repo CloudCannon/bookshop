@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@bookshop/helpers": "workspace:*",
-    "svelte": "^4.2.19"
+    "svelte": "^5.53.5"
   },
   "engines": {
     "node": ">=14.16"
