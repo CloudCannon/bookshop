@@ -93,10 +93,7 @@ const getEditableRegionsConnector = () => {
       const script = document.createElement('script');
       script.src = \`/_cloudcannon/bookshop-live.js\`;
       script.onload = function() {
-        window.bookshopLive = new window.BookshopLive({
-          remoteGlobals: [],
-          loadedFn: whenLoaded,
-        });
+        window.bookshopLive = new window.BookshopLive({ remoteGlobals: [] });
 
         window.cc_components = window.cc_components || {};
         window.cc_components = new Proxy(window.cc_components, {
@@ -135,6 +132,7 @@ const getEditableRegionsConnector = () => {
           }
         });
         document.dispatchEvent(new CustomEvent('editable-regions:registered-proxy'));
+        whenLoaded();
       }
       head.appendChild(script);
     }
