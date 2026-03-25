@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Resolve an issue preventing release to NPM.
+
 ## v3.18.0 (March 24, 2026)
 
 * Significantly improved Hugo live editing performance by batching multiple component renders into a single Hugo WASM build call
