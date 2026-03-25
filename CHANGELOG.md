@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.18.2 (March 25, 2026)
+
 * Resolve an issue preventing release to NPM.
 
 ## v3.18.0 (March 24, 2026)
