@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "ava": "^6.4.1",
-    "liquidjs": "10.17.0",
+    "liquidjs": "10.25.0",
     "nyc": "^17.1.0"
   },
   "engines": {
