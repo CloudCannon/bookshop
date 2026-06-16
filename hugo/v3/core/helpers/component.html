@@ -15,11 +15,17 @@
 {{- $component_path := partial "_bookshop/helpers/component_key" $component_name -}}
 {{- $flat_component_path := partial "_bookshop/helpers/flat_component_key" $component_name -}}
 
+{{- $component_path_lower := lower $component_path -}}
+{{- $flat_component_path_lower := lower $flat_component_path -}}
 {{- $resolved_component := false -}}
 {{- if templates.Exists ( printf "partials/%s" $component_path ) -}}
     {{- $resolved_component = $component_path -}}
+{{- else if templates.Exists ( printf "partials/%s" $component_path_lower ) -}}
+    {{- $resolved_component = $component_path_lower -}}
 {{- else if templates.Exists ( printf "partials/%s" $flat_component_path ) -}}
     {{- $resolved_component = $flat_component_path -}}
+{{- else if templates.Exists ( printf "partials/%s" $flat_component_path_lower ) -}}
+    {{- $resolved_component = $flat_component_path_lower -}}
 {{- end -}}
 
 {{- if $resolved_component -}}
