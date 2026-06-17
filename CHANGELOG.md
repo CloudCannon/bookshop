@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.18.3 (June 17, 2026)
+
 * Adds a lowercase fallback as Hugo 0.146 normalises template names to lowercase.
 
 ## v3.18.2 (March 25, 2026)
