@@ -143,20 +143,6 @@ export class Engine {
         const componentSuccess = window["writeHugoFiles"](JSON.stringify(mappedFiles));
         const templateSuccess = window["writeHugoFiles"](JSON.stringify(templates));
         const extraSuccess = window["writeHugoFiles"](JSON.stringify(this.extraFiles));
-
-        // BIG OL' TODO: Writing these files ahead of render() seems to be load-bearing,
-        // which doesn't yet make sense to me.
-        // If these files are created for the first time in render(), the site doesn't
-        // appear to build (need to extract some logs from hugo to determine why).
-        // Perplexingly, writing then building in eval() appears to have been working
-        // fine in the same case.
-        // My suspicion would be something around our changeEvents() handling
-        // in the Hugo builder, but I don't know why that wouldn't affect eval()... 🤷‍♂️
-        // For now, the load-bearing stubs will live in this Hugo initialization.
-        window.writeHugoFiles(JSON.stringify({
-            "layouts/all.html": "Uninitialized Layout",
-            "content/_index.md": "{ \"initialized\": false }\n"
-        }));
     }
 
     async initializeLocalCompressedHugo(usePrefetch) {
@@ -352,7 +338,7 @@ export class Engine {
             await sleep(100);
         };
 
-        let writeFiles = {};
+        const writeFiles = {};
         let componentType = null;
 
         if (this.hasComponent(name)) {
@@ -388,12 +374,11 @@ export class Engine {
             return;
         }
 
-        const output = window.readHugoFiles(JSON.stringify([
-            `public/${uuid}/.html`
-        ]));
+        const outputFileName = `public/${uuid}/index.html`;
+        const output = window.readHugoFiles(JSON.stringify([outputFileName]));
 
-        target.innerHTML = output[`public/${uuid}/.html`];
-        window.removeHugoFiles([`public/${uuid}/.html`, `content/${uuid}.md`])
+        target.innerHTML = output[outputFileName];
+        window.removeHugoFiles([outputFileName, `content/${uuid}.md`])
     }
 
     async renderBatch(components, logger) {
