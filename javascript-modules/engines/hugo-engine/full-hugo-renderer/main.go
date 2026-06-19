@@ -211,7 +211,7 @@ func removeHugoFiles(this js.Value, args []js.Value) interface{} {
 		return nil
 	}
 
-	for file_name := range removeFiles {
+	for _, file_name := range removeFiles {
 		builder.removeFile(file_name)
 	}
 	return nil
