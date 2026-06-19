@@ -35,7 +35,7 @@ const ensureUnifiedLayoutInstalled = () => {
 
     window.__bookshop_unified_layout_installed = true;
     verboseLog('[hugo-engine] Installing unified static layout');
-    return { "layouts/index.html": UNIFIED_LAYOUT };
+    return { "layouts/all.html": UNIFIED_LAYOUT };
 };
 
 /**
@@ -345,6 +345,8 @@ export class Engine {
     }
 
     async render(target, name, props, globals, logger) {
+        const uuid = crypto.randomUUID();
+
         while (!window.buildHugo) {
             logger?.log?.(`Waiting for the Hugo WASM to be available...`);
             await sleep(100);
@@ -373,7 +375,7 @@ export class Engine {
 
         // If we have assigned a root scope we need to pass that in as the context
         if (props["."]) props = props["."];
-        writeFiles["content/_index.md"] = JSON.stringify({
+        writeFiles[`content/${uuid}.md`] = JSON.stringify({
             bookshop_name: name,
             bookshop_type: componentType,
             component: props
@@ -387,10 +389,11 @@ export class Engine {
         }
 
         const output = window.readHugoFiles(JSON.stringify([
-            "public/index.html"
+            `public/${uuid}/.html`
         ]));
 
-        target.innerHTML = output["public/index.html"];
+        target.innerHTML = output[`public/${uuid}/.html`];
+        window.removeHugoFiles([`public/${uuid}/.html`, `content/${uuid}.md`])
     }
 
     async renderBatch(components, logger) {

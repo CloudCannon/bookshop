@@ -114,6 +114,13 @@ func (builder *bookshopSiteBuilder) writeFile(filename, content string) {
 	builder.changedFiles = append(builder.changedFiles, filename)
 }
 
+// Writes content to the given file path in the in-memory filesystem
+func (builder *bookshopSiteBuilder) removeFile(filename string) {
+	if err := builder.Afs.Remove(filename); err != nil {
+		fmt.Println(fmt.Sprintf("Failed to remove file: %s", err))
+	}
+}
+
 // Reads content from the given file path in the in-memory filesystem
 func (builder *bookshopSiteBuilder) readFile(filename string) string {
 	b, err := afero.ReadFile(builder.Afs, filepath.Clean(filename))
@@ -164,6 +171,7 @@ func main() {
 	c := make(chan struct{}, 0)
 	js.Global().Set("initHugoConfig", js.FuncOf(initHugoConfig))
 	js.Global().Set("writeHugoFiles", js.FuncOf(writeHugoFiles))
+	js.Global().Set("removeHugoFiles", js.FuncOf(removeHugoFiles))
 	js.Global().Set("readHugoFiles", js.FuncOf(readHugoFiles))
 	js.Global().Set("buildHugo", js.FuncOf(buildHugo))
 	<-c
@@ -191,6 +199,20 @@ func writeHugoFiles(this js.Value, args []js.Value) interface{} {
 
 	for file_name, file_contents := range writeFiles {
 		builder.writeFile(file_name, file_contents)
+	}
+	return nil
+}
+
+func removeHugoFiles(this js.Value, args []js.Value) interface{} {
+	var removeFiles []string
+	err := json.Unmarshal([]byte(args[0].String()), &removeFiles)
+	if err != nil {
+		fmt.Println(fmt.Sprintf("Bad json: %+v", err))
+		return nil
+	}
+
+	for file_name := range removeFiles {
+		builder.removeFile(file_name)
 	}
 	return nil
 }
