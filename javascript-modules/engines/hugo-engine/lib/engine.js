@@ -35,7 +35,7 @@ const ensureUnifiedLayoutInstalled = () => {
 
     window.__bookshop_unified_layout_installed = true;
     verboseLog('[hugo-engine] Installing unified static layout');
-    return { "layouts/index.html": UNIFIED_LAYOUT };
+    return { "layouts/all.html": UNIFIED_LAYOUT };
 };
 
 /**
@@ -154,8 +154,8 @@ export class Engine {
         // in the Hugo builder, but I don't know why that wouldn't affect eval()... 🤷‍♂️
         // For now, the load-bearing stubs will live in this Hugo initialization.
         window.writeHugoFiles(JSON.stringify({
-            "layouts/index.html": "Uninitialized Layout",
-            "content/_index.md": "{ \”initialized\": false }\n"
+            "layouts/all.html": "Uninitialized Layout",
+            "content/_index.md": "{ \"initialized\": false }\n"
         }));
     }
 
@@ -345,12 +345,14 @@ export class Engine {
     }
 
     async render(target, name, props, globals, logger) {
+        const uuid = crypto.randomUUID();
+
         while (!window.buildHugo) {
             logger?.log?.(`Waiting for the Hugo WASM to be available...`);
             await sleep(100);
         };
 
-        let writeFiles = {};
+        const writeFiles = {};
         let componentType = null;
 
         if (this.hasComponent(name)) {
@@ -373,7 +375,7 @@ export class Engine {
 
         // If we have assigned a root scope we need to pass that in as the context
         if (props["."]) props = props["."];
-        writeFiles["content/_index.md"] = JSON.stringify({
+        writeFiles[`content/${uuid}.md`] = JSON.stringify({
             bookshop_name: name,
             bookshop_type: componentType,
             component: props
@@ -386,11 +388,11 @@ export class Engine {
             return;
         }
 
-        const output = window.readHugoFiles(JSON.stringify([
-            "public/index.html"
-        ]));
+        const outputFileName = `public/${uuid}/index.html`;
+        const output = window.readHugoFiles(JSON.stringify([outputFileName]));
 
-        target.innerHTML = output["public/index.html"];
+        target.innerHTML = output[outputFileName];
+        window.removeHugoFiles([outputFileName, `content/${uuid}.md`])
     }
 
     async renderBatch(components, logger) {
