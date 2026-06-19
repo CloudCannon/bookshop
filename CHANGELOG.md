@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+* Fixed component rendering race condition in Hugo Bookshop.
+
 ## v3.18.4 (June 18, 2026)
 
 * Fix deployment to NPM.
