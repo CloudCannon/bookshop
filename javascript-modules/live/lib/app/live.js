@@ -107,6 +107,15 @@ export const getLive = (engines) => class BookshopLive {
     }
 
     /**
+     * Whether the active engine supports batch rendering via renderBatch.
+     * Used by the live editing connector to decide whether to debounce and
+     * collect component renders into a single renderElements call.
+     */
+    supportsBatchRendering() {
+        return typeof this.engines[0]?.renderBatch === 'function';
+    }
+
+    /**
      * Render multiple components in a single batch for better performance.
      * Falls back to individual renders if the engine doesn't support batching.
      * 

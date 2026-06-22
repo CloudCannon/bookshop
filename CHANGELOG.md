@@ -9,6 +9,7 @@
 
 ## Unreleased
 
+* Use batch component rendering for editable regions when the engine supports it.
 * Fixed component rendering race condition in Hugo Bookshop.
 
 ## v3.18.4 (June 18, 2026)

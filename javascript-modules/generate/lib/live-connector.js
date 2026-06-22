@@ -95,6 +95,35 @@ const getEditableRegionsConnector = () => {
       script.onload = function() {
         window.bookshopLive = new window.BookshopLive({ remoteGlobals: [] });
 
+        let renderQueue = [];
+        let renderFlushTimer = null;
+
+        const flushRenderQueue = async () => {
+          renderFlushTimer = null;
+          if (renderQueue.length === 0) return;
+
+          const batch = renderQueue;
+          renderQueue = [];
+
+          const components = batch.map((entry) => ({
+            name: entry.key,
+            scope: entry.props,
+            dom: entry.rootEl,
+          }));
+
+          try {
+            await window.bookshopLive.renderElements(components);
+            for (const entry of batch) {
+              entry.resolve(entry.rootEl);
+            }
+          } catch (e) {
+            for (const entry of batch) {
+              entry.reject(e);
+            }
+          }
+        };
+
+        const engineSupportsBatching = window.bookshopLive.supportsBatchRendering();
         window.cc_components = window.cc_components || {};
         window.cc_components = new Proxy(window.cc_components, {
           get(target, key) {
@@ -112,20 +141,29 @@ const getEditableRegionsConnector = () => {
              * @param {any} props - Props to pass to the Bookshop Live component
              * @returns {Promise<HTMLElement>} The rendered component as an HTMLElement
              */
-            const wrappedComponent = async (props) => {
-              const rootEl = document.createElement("div");
-
+            const wrappedComponent = (props) => {
               if (!window.bookshopLive) {
                 throw new Error("Bookshop Live is not initialized");
               }
 
-              await window.bookshopLive.renderElement(
-                key,
-                props,
-                rootEl,
-              )
+              const rootEl = document.createElement("div");
 
-              return rootEl;
+              if (!engineSupportsBatching) {
+                await window.bookshopLive.renderElement(
+                  key,
+                  props,
+                  rootEl,
+                );
+                return rootEl;
+              }
+
+              return new Promise((resolve, reject) => {
+                renderQueue.push({ key, props, rootEl, resolve, reject });
+
+                if (renderFlushTimer === null) {
+                  renderFlushTimer = setTimeout(flushRenderQueue, 50);
+                }
+              });
             };
 
             return wrappedComponent;
