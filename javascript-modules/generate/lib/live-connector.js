@@ -141,7 +141,7 @@ const getEditableRegionsConnector = () => {
              * @param {any} props - Props to pass to the Bookshop Live component
              * @returns {Promise<HTMLElement>} The rendered component as an HTMLElement
              */
-            const wrappedComponent = (props) => {
+            const wrappedComponent = async (props) => {
               if (!window.bookshopLive) {
                 throw new Error("Bookshop Live is not initialized");
               }
