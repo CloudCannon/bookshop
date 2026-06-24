@@ -65,3 +65,42 @@ module.exports = {
   }
 }
 ```
+
+It is worth noting that *mounted files* are not available on their expected destination path. Use the source path instead. When using Hugo modules, the recommended approach would be to `vendor` the modules before referencing them.
+
+Run `hugo mod vendor` in your repository root to store all the module files in the `_vendor` folder. For example, use the following configuration to reference the partial `button.html` provided by the Hugo module `github.com/owner/repo`:
+
+```js
+const fs = require('fs')
+
+module.exports = {
+  engines: {
+    '@bookshop/hugo-engine': {
+      extraFiles: {
+        'layouts/partials/button.html': fs.readFileSync(
+          '_vendor/github.com/owner/repo/layouts/partials/button.html',
+          { encoding: 'utf8' }
+        )
+      }
+    }
+  }
+}
+```
+
+Hugo might give you a warning when rerunning `hugo mod vendor`. If you use npm, you could define a custom script to clear the `_vendor` folder prior to the vendor command. The next example uses the `rimraf` package to ensure the removal of the directory works across different operating systems. Install `rimraf` as a development dependency with `npm i -D rimraf`. Next, add the following script to your `package.json`:
+
+```javascript
+{
+  "scripts": {
+    [...]
+    "mod:vendor": "rimraf _vendor && hugo mod vendor",
+    [...]
+  }
+}
+```
+
+You can then include the npm script in your build pipeline to automate the vendor command. Head over to the build configuration of your CloudCannon site. Add the npm script to the `Install command` defined in the section `Command Line Options`:
+
+```bash
+[ -f package.json ] && npm i && npm run -s mod:vendor
+```
