@@ -33,7 +33,7 @@
   "dependencies": {
     "esbuild": "^0.13.10",
     "esbuild-svelte": "^0.8.2",
-    "svelte": "^4.2.19"
+    "svelte": "^5.53.5"
   },
   "engines": {
     "node": ">=14.16"

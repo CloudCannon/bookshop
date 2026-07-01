@@ -9,7 +9,7 @@
     "yarn": "please-use-pnpm"
   },
   "devDependencies": {
-    "astro": "^5.13.7",
+    "astro": "^6.1.6",
     "react": "^18",
     "react-dom": "^18"
   }
