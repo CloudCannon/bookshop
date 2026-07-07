@@ -9,6 +9,13 @@
 
 ## Unreleased
 
+* Major performance improvements for Hugo live editing:
+  * The Hugo renderer no longer replays every file ever written as a change event on each build, which was forcing a near-full site rebuild per render and made rendering slower the longer an editing session ran.
+  * Fixed component render cleanup never removing temporary content files, which leaked one page into the preview site per component render.
+  * Expression evaluation now renders through a dedicated partial instead of rewriting the home layout. Previously the first non-trivial evaluation shadowed the batch rendering layout, permanently disabling batched component rendering for the rest of the session.
+  * Repeated evaluations of the same expression reuse the parsed template rather than rewriting it each time.
+  * The live preview site now disables taxonomy, RSS, sitemap, robots, and 404 generation.
+
 ## v3.18.5 (July 1, 2026)
 
 * Use batch component rendering for editable regions when the engine supports it.
