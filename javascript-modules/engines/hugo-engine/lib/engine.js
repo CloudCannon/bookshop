@@ -604,7 +604,7 @@ export class Engine {
         // reach data outside its props (site scope, time, other templates).
         const isCacheableExpression = !/\b(site|hugo|now|time|partial|partialCached|resources|getJSON|getCSV)\b|\.Site\b/.test(str);
         const useCache = isCacheableExpression && !(typeof window !== 'undefined' && window.bookshopLiveNoMemo);
-        const cacheKey = `${this.dataGeneration} ${str} ${evalContent}`;
+const cacheKey = `${this.dataGeneration}\0${str}\0${evalContent}`;
         if (useCache && this.evalCache.has(cacheKey)) {
             verboseLog(`[hugo-engine] eval cache hit`);
             const cached = this.evalCache.get(cacheKey);
