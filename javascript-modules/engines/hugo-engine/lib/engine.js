@@ -26,6 +26,8 @@ const UNIFIED_LAYOUT = [
         `{{ else }}`,
             `{{ partial "bookshop" (slice .Params.bookshop_name .Params.component) }}`,
         `{{ end }}`,
+    `{{ else if .Params.bookshop_eval }}`,
+        `{{ partial "bookshop_eval_expr" . }}`,
     `{{ end }}`
 ].join('');
 
@@ -42,9 +44,12 @@ const ensureUnifiedLayoutInstalled = () => {
  * Build Hugo with retry logic using componentQuack for error recovery.
  * @param {Engine} engine - The engine instance for componentQuack access
  * @param {string} context - Description for logging (e.g., "rendering" or "batch rendering")
+ * @param {Object|null} contentFiles - The content files this build renders. Rewritten before
+ *   each retry: componentQuack may stub out a template that didn't exist before, and pages
+ *   don't depend on templates they failed to find, so the page must be invalidated directly.
  * @returns {Promise<string|null>} - The build error if unrecoverable, or null on success
  */
-const buildHugoWithRetry = async (engine, context = "rendering") => {
+const buildHugoWithRetry = async (engine, context = "rendering", contentFiles = null) => {
     window.hugo_wasm_logging = [];
     let render_attempts = 1;
     let buildError = window.buildHugo();
@@ -55,6 +60,9 @@ const buildHugoWithRetry = async (engine, context = "rendering") => {
             break;
         }
         // Try render again with the problem template stubbed out
+        if (contentFiles) {
+            window.writeHugoFiles(JSON.stringify(contentFiles));
+        }
         window.hugo_wasm_logging = [];
         buildError = window.buildHugo();
         render_attempts += 1;
@@ -125,7 +133,11 @@ export class Engine {
             "layouts/partials/_bookshop/errors/err.html": (await import("../bookshop-hugo-templates/errors/err.html")).default,
         };
 
-        templates["config.toml"] = "params.env_bookshop_live = true\nmarkup.goldmark.renderer.unsafe = true";
+        templates["config.toml"] = [
+            "params.env_bookshop_live = true",
+            "markup.goldmark.renderer.unsafe = true",
+            `disableKinds = ["taxonomy", "term", "RSS", "sitemap", "robotsTXT", "404"]`
+        ].join('\n');
 
         // When this script is run locally, the hugo wasm is loaded as binary rather than output as a file.
         if (compressedHugoWasm?.constructor === Uint8Array) {
@@ -266,7 +278,8 @@ export class Engine {
                 meta.copyright ? `copyright = ${meta.copyright}` : "",
                 meta.title ? `title = ${meta.title}` : "",
                 "params.env_bookshop_live = true",
-                "markup.goldmark.renderer.unsafe = true"
+                "markup.goldmark.renderer.unsafe = true",
+                `disableKinds = ["taxonomy", "term", "RSS", "sitemap", "robotsTXT", "404"]`
             ].join('\n')
         }));
         const err = window.initHugoConfig();
@@ -375,14 +388,17 @@ export class Engine {
 
         // If we have assigned a root scope we need to pass that in as the context
         if (props["."]) props = props["."];
-        writeFiles[`content/${uuid}.md`] = JSON.stringify({
-            bookshop_name: name,
-            bookshop_type: componentType,
-            component: props
-        }, null, 2) + "\n";
+        const contentFiles = {
+            [`content/${uuid}.md`]: JSON.stringify({
+                bookshop_name: name,
+                bookshop_type: componentType,
+                component: props
+            }, null, 2) + "\n"
+        };
+        Object.assign(writeFiles, contentFiles);
         window.writeHugoFiles(JSON.stringify(writeFiles));
 
-        const buildError = await buildHugoWithRetry(this, "rendering");
+        const buildError = await buildHugoWithRetry(this, "rendering", contentFiles);
         if (buildError) {
             console.error(buildError);
             return;
@@ -392,7 +408,7 @@ export class Engine {
         const output = window.readHugoFiles(JSON.stringify([outputFileName]));
 
         target.innerHTML = output[outputFileName];
-        window.removeHugoFiles([outputFileName, `content/${uuid}.md`])
+        window.removeHugoFiles(JSON.stringify([outputFileName, `content/${uuid}.md`]))
     }
 
     async renderBatch(components, logger) {
@@ -435,17 +451,20 @@ export class Engine {
         
         if (componentData.length === 0) return;
         
-        let writeFiles = {
+        const contentFiles = {
             "content/_index.md": JSON.stringify({
                 batch_id: batchId,
                 components: componentData.map(c => ({ name: c.name, type: c.type, props: c.props }))
-            }, null, 2) + "\n",
+            }, null, 2) + "\n"
+        };
+        let writeFiles = {
+            ...contentFiles,
             ...ensureUnifiedLayoutInstalled()
         };
-        
+
         window.writeHugoFiles(JSON.stringify(writeFiles));
-        
-        const buildError = await buildHugoWithRetry(this, "batch rendering");
+
+        const buildError = await buildHugoWithRetry(this, "batch rendering", contentFiles);
         if (buildError) {
             console.error(`Batch render error: ${buildError}`);
             verboseLog('[hugo-engine] Falling back to individual renders');
@@ -567,13 +586,20 @@ export class Engine {
         // This is the SLOW PATH - we're hitting Hugo WASM because no short-circuit worked
         verboseLog(`[hugo-engine] eval requires Hugo WASM: "${str.substring(0, 80)}${str.length > 80 ? '...' : ''}"`);
 
-        // Reset the unified layout flag since we're about to overwrite the layout
-        window.__bookshop_unified_layout_installed = false;
-        
-        window.writeHugoFiles(JSON.stringify({
-            "layouts/index.html": eval_str,
-            "content/_index.md": JSON.stringify({ props: props_obj, full_props: full_props }, null, 2)
-        }));
+        // Evals run through a partial behind the unified layout, rather than
+        // a layout file of their own. Writing layouts/index.html here would
+        // shadow layouts/all.html for the home page and permanently break
+        // batch rendering. Repeated evals of the same expression skip the
+        // template write so Hugo doesn't take the template-changed path.
+        const writeFiles = {
+            "content/_index.md": JSON.stringify({ bookshop_eval: true, props: props_obj, full_props: full_props }, null, 2),
+            ...ensureUnifiedLayoutInstalled()
+        };
+        if (this.lastEvalTemplate !== eval_str) {
+            writeFiles["layouts/partials/bookshop_eval_expr.html"] = eval_str;
+            this.lastEvalTemplate = eval_str;
+        }
+        window.writeHugoFiles(JSON.stringify(writeFiles));
 
         const buildError = window.buildHugo();
         if (buildError) {

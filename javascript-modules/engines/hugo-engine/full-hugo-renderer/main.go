@@ -19,6 +19,7 @@ import (
 	"io/ioutil"
 	"log"
 	"path/filepath"
+	"strings"
 	"syscall/js"
 
 	"github.com/fsnotify/fsnotify"
@@ -36,6 +37,7 @@ type bookshopSiteBuilder struct {
 	Fs           *hugofs.Fs
 	Sites        *hugolib.HugoSites
 	changedFiles []string
+	removedFiles []string
 }
 
 // Load whatever source config file we have previously written to disk
@@ -91,6 +93,12 @@ func (builder *bookshopSiteBuilder) build(cfg hugolib.BuildCfg) error {
 
 	err := builder.Sites.Build(cfg, builder.changeEvents()...)
 
+	// Each build consumes the pending change events. Replaying stale
+	// events on later builds forces Hugo down the "template changed"
+	// rebuild path every time, which re-renders the whole site.
+	builder.changedFiles = nil
+	builder.removedFiles = nil
+
 	if err == nil {
 		logErrorCount := builder.Sites.NumLogErrors()
 		if logErrorCount > 0 {
@@ -114,10 +122,17 @@ func (builder *bookshopSiteBuilder) writeFile(filename, content string) {
 	builder.changedFiles = append(builder.changedFiles, filename)
 }
 
-// Writes content to the given file path in the in-memory filesystem
+// Removes the given file path from the in-memory filesystem
 func (builder *bookshopSiteBuilder) removeFile(filename string) {
 	if err := builder.Afs.Remove(filename); err != nil {
 		fmt.Println(fmt.Sprintf("Failed to remove file: %s", err))
+		return
+	}
+
+	// Files in the publish dir aren't Hugo source files,
+	// so their removal shouldn't be fed back in as a change event.
+	if !strings.HasPrefix(filepath.ToSlash(filename), "public/") {
+		builder.removedFiles = append(builder.removedFiles, filename)
 	}
 }
 
@@ -149,6 +164,13 @@ func (builder *bookshopSiteBuilder) changeEvents() []fsnotify.Event {
 		events = append(events, fsnotify.Event{
 			Name: v,
 			Op:   fsnotify.Write,
+		})
+	}
+
+	for _, v := range builder.removedFiles {
+		events = append(events, fsnotify.Event{
+			Name: v,
+			Op:   fsnotify.Remove,
 		})
 	}
 

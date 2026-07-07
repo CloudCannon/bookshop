@@ -16,7 +16,7 @@ if [ -f $OUTPUTFILENAME.gz ]; then
 fi
 
 # Build temp module (For Windows use `$Env:GOOS = "js"; $Env:GOARCH = "wasm"` )
-GOOS=js GOARCH=wasm go build -tags nodeploy -o $TMPFILENAME
+GOOS=js GOARCH=wasm go build -tags nodeploy -ldflags="-s -w" -o $TMPFILENAME
 printf "Built Hugo WASM via $TMPFILENAME : "
 ls -lh $TMPFILENAME | awk '{print $5}'
 
