@@ -102,12 +102,16 @@ export const getLive = (engines) => class BookshopLive {
     async renderElement(componentName, scope, dom, logger) {
         try {
             logger?.log?.(`Rendering ${componentName}`);
-            await this.engines[0].render(dom, componentName, scope, { ...this.globalData }, logger?.nested?.());
+            // Engines that report render success return a boolean;
+            // engines that don't return undefined, which callers treat as success.
+            const result = await this.engines[0].render(dom, componentName, scope, { ...this.globalData }, logger?.nested?.());
             logger?.log?.(`Rendered ${componentName}`);
+            return result;
         } catch (e) {
             logger?.log?.(`Error rendering ${componentName}`);
             console.warn(`Error rendering bookshop component ${componentName}`, e.toString());
             console.warn(`This is expected in certain cases, and may not be an issue, especially when deleting or re-ordering components.`)
+            return false;
         }
     }
 
@@ -141,6 +145,8 @@ export const getLive = (engines) => class BookshopLive {
                     target: c.dom
                 }));
                 await this.engines[0].renderBatch(batchInput, logger?.nested?.());
+                // Copy each component's render outcome back to the caller's objects
+                components.forEach((c, i) => { c.renderedOk = batchInput[i].renderedOk; });
                 logger?.log?.(`Batch render complete`);
                 return;
             } catch (e) {
@@ -148,10 +154,10 @@ export const getLive = (engines) => class BookshopLive {
                 console.warn(`Batch render failed:`, e.toString());
             }
         }
-        
+
         // Fall back to individual renders
         for (const c of components) {
-            await this.renderElement(c.name, c.scope, c.dom, logger);
+            c.renderedOk = await this.renderElement(c.name, c.scope, c.dom, logger);
         }
     }
 
@@ -248,12 +254,16 @@ export const getLive = (engines) => class BookshopLive {
             output,     // A virtual-DOM node containing contents of the just-rendered component
             name,       // The name of this component being rendered
             memoKey,    // The render inputs, used to skip this component next update if unchanged
+            renderedOk, // Whether the engine reported this render as successful
         } of componentUpdates) {
             this.logFn.log(`Processing a component update for ${name}`);
-            const outputHadContent = output.childNodes.length > 0;
             this.logFn.log(`Grafting ${name}'s update to the DOM tree`);
             core.graftTrees(startNode, endNode, output, this.logFn.nested());
-            if (memoKey && outputHadContent) {
+            // Only remember successful renders — a failed render must be retried
+            // on the next update even if its inputs haven't changed. Engines that
+            // don't report an outcome leave renderedOk undefined, which counts
+            // as success. (A legitimately empty render is still a success.)
+            if (memoKey && renderedOk !== false) {
                 this.renderMemo.set(startNode, memoKey);
             }
             this.logFn.log(`Completed grafting ${name}'s update to the DOM tree`);

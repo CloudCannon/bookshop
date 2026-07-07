@@ -385,7 +385,7 @@ export class Engine {
             componentType = "shared";
         } else {
             console.warn(`[hugo-engine] No component found for ${name}`);
-            return "";
+            return false;
         }
 
         Object.assign(writeFiles, ensureUnifiedLayoutInstalled());
@@ -412,7 +412,7 @@ export class Engine {
         const buildError = await buildHugoWithRetry(this, "rendering", contentFiles);
         if (buildError) {
             console.error(buildError);
-            return;
+            return false;
         }
 
         const outputFileName = `public/${uuid}/index.html`;
@@ -420,6 +420,7 @@ export class Engine {
 
         target.innerHTML = output[outputFileName];
         window.removeHugoFiles(JSON.stringify([outputFileName, `content/${uuid}.md`]))
+        return true;
     }
 
     async renderBatch(components, logger) {
@@ -427,7 +428,8 @@ export class Engine {
         
         if (components.length === 1) {
             const c = components[0];
-            return this.render(c.target, c.name, c.props, c.globals, logger);
+            c.renderedOk = await this.render(c.target, c.name, c.props, c.globals, logger);
+            return;
         }
         
         while (!window.buildHugo) {
@@ -443,9 +445,10 @@ export class Engine {
         const componentData = components.map((c, index) => {
             const isComponent = this.hasComponent(c.name);
             const isShared = this.hasShared(c.name);
-            
+
             if (!isComponent && !isShared) {
                 console.warn(`[hugo-engine] No component found for ${c.name}`);
+                c.renderedOk = false;
                 return null;
             }
             
@@ -480,28 +483,29 @@ export class Engine {
             console.error(`Batch render error: ${buildError}`);
             verboseLog('[hugo-engine] Falling back to individual renders');
             for (const c of components) {
-                await this.render(c.target, c.name, c.props, c.globals, logger);
+                c.renderedOk = await this.render(c.target, c.name, c.props, c.globals, logger);
             }
             return;
         }
-        
+
         const output = window.readHugoFiles(JSON.stringify(["public/index.html"]));
         const html = output["public/index.html"];
-        
+
         for (let i = 0; i < componentData.length; i++) {
             const originalIndex = componentData[i].index;
             const startMarker = `<script type="bookshop/batch" data-batch="${batchId}" data-id="${i}" data-pos="start"></script>`;
             const endMarker = `<script type="bookshop/batch" data-batch="${batchId}" data-id="${i}" data-pos="end"></script>`;
             const startIdx = html.indexOf(startMarker);
             const endIdx = html.indexOf(endMarker);
-            
+
             if (startIdx !== -1 && endIdx !== -1) {
                 const componentHtml = html.substring(startIdx + startMarker.length, endIdx);
                 components[originalIndex].target.innerHTML = componentHtml;
+                components[originalIndex].renderedOk = true;
             } else {
                 verboseLog(`[hugo-engine] Could not find markers for component ${i}, falling back to individual render`);
                 const original = components[originalIndex];
-                await this.render(original.target, original.name, original.props, original.globals, logger);
+                original.renderedOk = await this.render(original.target, original.name, original.props, original.globals, logger);
             }
         }
     }

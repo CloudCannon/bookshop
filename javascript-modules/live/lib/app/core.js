@@ -372,14 +372,13 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
         processDeepComponents: false
     });
 
-    // Batch render all collected components
+    // Batch render all collected components.
+    // renderElements reads each component's name/scope/dom, and marks the
+    // outcome back onto each object as renderedOk.
     if (pendingComponents.length > 0) {
         logger?.log?.(`Batch rendering ${pendingComponents.length} components`);
-        await liveInstance.renderElements(
-            pendingComponents.map(c => ({ name: c.name, scope: c.scope, dom: c.dom })),
-            logger?.nested?.()
-        );
-        
+        await liveInstance.renderElements(pendingComponents, logger?.nested?.());
+
         // Build updates array from rendered components
         for (const c of pendingComponents) {
             logger?.log?.(`Rendered ${c.name} block into an update`);
@@ -391,7 +390,8 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
                 scope: c.scope,
                 name: c.name,
                 stashedNodes: c.stashedNodes,
-                memoKey: c.memoKey
+                memoKey: c.memoKey,
+                renderedOk: c.renderedOk
             });
         }
     }
