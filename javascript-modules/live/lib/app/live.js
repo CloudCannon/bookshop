@@ -22,6 +22,10 @@ export const getLive = (engines) => class BookshopLive {
         this.storedMeta = false;
 
         this.memo = {};
+        this.renderMemo = new WeakMap();
+        this.globalDataVersion = 0;
+        this.hydrationToken = null;
+        this.hydratedOnce = false;
 
         this.logFn = this.logger();
         this.loadedFn = options?.loadedFn;
@@ -71,6 +75,7 @@ export const getLive = (engines) => class BookshopLive {
             const dataReq = await fetch(path);
             const data = await dataReq.json();
             Object.assign(this.globalData, data);
+            this.globalDataVersion += 1;
             this.awaitingDataFetches -= 1;
         } catch (e) {
             this.awaitingDataFetches -= 1;
@@ -241,20 +246,33 @@ export const getLive = (engines) => class BookshopLive {
             startNode,  // The bookshop-live comment before this component's location in real-DOM
             endNode,    // The bookshop-live end comment following this component's location in real-DOM
             output,     // A virtual-DOM node containing contents of the just-rendered component
-            pathStack,  // Any "absolute paths" to data in scope for this component
-            stashedNodes, // Any bookshop_bindings tags that were applied to this component
             name,       // The name of this component being rendered
+            memoKey,    // The render inputs, used to skip this component next update if unchanged
         } of componentUpdates) {
             this.logFn.log(`Processing a component update for ${name}`);
-            if (options.dataBindings) { // If we should be adding data bindings _in general_
-                // Re-traverse this component to inject any data bindings we can to it or its children.
-                this.logFn.log(`Hydrating the data bindings for ${name}`);
-                await core.hydrateDataBindings(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode(), stashedNodes.map(n => n.cloneNode()), this.logFn.nested());
-            }
+            const outputHadContent = output.childNodes.length > 0;
             this.logFn.log(`Grafting ${name}'s update to the DOM tree`);
             core.graftTrees(startNode, endNode, output, this.logFn.nested());
+            if (memoKey && outputHadContent) {
+                this.renderMemo.set(startNode, memoKey);
+            }
             this.logFn.log(`Completed grafting ${name}'s update to the DOM tree`);
         }
+
+        // Data bindings hydrate after all content has been grafted — they only
+        // affect editor overlays, so they shouldn't hold up the rendered page.
+        if (options.dataBindings && (componentUpdates.length > 0 || !this.hydratedOnce)) {
+            const hydrationToken = {};
+            this.hydrationToken = hydrationToken;
+            const completed = await core.hydrateDocumentBindings(
+                this,
+                document,
+                this.logFn.nested(),
+                () => this.hydrationToken !== hydrationToken
+            );
+            if (completed) this.hydratedOnce = true;
+        }
+
         this.completeRender();
         this.logFn.log(`Finished rendering`);
     }

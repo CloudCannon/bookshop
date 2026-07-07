@@ -112,6 +112,13 @@ export class Engine {
         this.origin = (typeof document === 'undefined' ? '' : document.currentScript?.src) || `/bookshop.js`;
         this.synthetic = options.synthetic ?? false;
 
+        // eval() is a pure function of (expression, props) — unless the expression
+        // reaches outside its props. Results are cached across live updates, and
+        // dataGeneration invalidates the cache whenever site data, config, or
+        // templates change underneath us.
+        this.evalCache = new Map();
+        this.dataGeneration = 0;
+
         if (!this.synthetic) {
             this.initializeHugo();
         }
@@ -286,6 +293,7 @@ export class Engine {
         if (err) {
             console.error(err);
         }
+        this.dataGeneration += 1;
 
         // window.loadHugoBookshopMeta(JSON.stringify(meta));
     }
@@ -302,6 +310,7 @@ export class Engine {
             files[`data/${file}.json`] = JSON.stringify(contents);
         }
         window.writeHugoFiles(JSON.stringify(files));
+        this.dataGeneration += 1;
     }
 
     /**
@@ -322,6 +331,7 @@ export class Engine {
                 const deepest_errored_component = raw_deepest_errored_component.replace(/layouts\/_partials/, 'layouts/partials')
                 const error_chunks = error_string.split("execute of template failed:");
                 const error_msg = error_chunks[error_chunks.length - 1] ?? "template error";
+                this.dataGeneration += 1;
                 window.writeHugoFiles(JSON.stringify({
                     [deepest_errored_component]: [
                         `<div style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
@@ -342,6 +352,7 @@ export class Engine {
             });
             if (file_stack.length) {
                 const deepest_errored_component = file_stack[file_stack.length - 1];
+                this.dataGeneration += 1;
                 window.writeHugoFiles(JSON.stringify({
                     [deepest_errored_component]: [
                         `<div class="bookshop_error" style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
@@ -586,13 +597,32 @@ export class Engine {
         // This is the SLOW PATH - we're hitting Hugo WASM because no short-circuit worked
         verboseLog(`[hugo-engine] eval requires Hugo WASM: "${str.substring(0, 80)}${str.length > 80 ? '...' : ''}"`);
 
+        const evalContent = JSON.stringify({ bookshop_eval: true, props: props_obj, full_props: full_props }, null, 2);
+
+        // The result of an expression is a pure function of (expression, props),
+        // so it can be cached across live updates — unless the expression can
+        // reach data outside its props (site scope, time, other templates).
+        const isCacheableExpression = !/\b(site|hugo|now|time|partial|partialCached|resources|getJSON|getCSV)\b|\.Site\b/.test(str);
+        const useCache = isCacheableExpression && !(typeof window !== 'undefined' && window.bookshopLiveNoMemo);
+        const cacheKey = `${this.dataGeneration} ${str} ${evalContent}`;
+        if (useCache && this.evalCache.has(cacheKey)) {
+            verboseLog(`[hugo-engine] eval cache hit`);
+            const cached = this.evalCache.get(cacheKey);
+            // Refresh recency so hot expressions survive LRU eviction
+            this.evalCache.delete(cacheKey);
+            this.evalCache.set(cacheKey, cached);
+            // Parsing anew on each hit hands every caller a fresh object,
+            // as callers mutate the scopes these results end up in.
+            return JSON.parse(cached);
+        }
+
         // Evals run through a partial behind the unified layout, rather than
         // a layout file of their own. Writing layouts/index.html here would
         // shadow layouts/all.html for the home page and permanently break
         // batch rendering. Repeated evals of the same expression skip the
         // template write so Hugo doesn't take the template-changed path.
         const writeFiles = {
-            "content/_index.md": JSON.stringify({ bookshop_eval: true, props: props_obj, full_props: full_props }, null, 2),
+            "content/_index.md": evalContent,
             ...ensureUnifiedLayoutInstalled()
         };
         if (this.lastEvalTemplate !== eval_str) {
@@ -612,7 +642,14 @@ export class Engine {
         ]))["public/index.html"];
 
         try {
-            return JSON.parse(output);
+            const result = JSON.parse(output);
+            if (useCache) {
+                this.evalCache.set(cacheKey, output);
+                if (this.evalCache.size > 512) {
+                    this.evalCache.delete(this.evalCache.keys().next().value);
+                }
+            }
+            return result;
         } catch (e) {
             logger?.log?.(`Error evaluating \`${str}\` in the Hugo engine`);
             logger?.log?.(output);
