@@ -22,6 +22,10 @@ export const getLive = (engines) => class BookshopLive {
         this.storedMeta = false;
 
         this.memo = {};
+        this.renderMemo = new WeakMap();
+        this.globalDataVersion = 0;
+        this.hydrationToken = null;
+        this.hydratedOnce = false;
 
         this.logFn = this.logger();
         this.loadedFn = options?.loadedFn;
@@ -71,6 +75,7 @@ export const getLive = (engines) => class BookshopLive {
             const dataReq = await fetch(path);
             const data = await dataReq.json();
             Object.assign(this.globalData, data);
+            this.globalDataVersion += 1;
             this.awaitingDataFetches -= 1;
         } catch (e) {
             this.awaitingDataFetches -= 1;
@@ -97,12 +102,16 @@ export const getLive = (engines) => class BookshopLive {
     async renderElement(componentName, scope, dom, logger) {
         try {
             logger?.log?.(`Rendering ${componentName}`);
-            await this.engines[0].render(dom, componentName, scope, { ...this.globalData }, logger?.nested?.());
+            // Engines that report render success return a boolean;
+            // engines that don't return undefined, which callers treat as success.
+            const result = await this.engines[0].render(dom, componentName, scope, { ...this.globalData }, logger?.nested?.());
             logger?.log?.(`Rendered ${componentName}`);
+            return result;
         } catch (e) {
             logger?.log?.(`Error rendering ${componentName}`);
             console.warn(`Error rendering bookshop component ${componentName}`, e.toString());
             console.warn(`This is expected in certain cases, and may not be an issue, especially when deleting or re-ordering components.`)
+            return false;
         }
     }
 
@@ -136,6 +145,8 @@ export const getLive = (engines) => class BookshopLive {
                     target: c.dom
                 }));
                 await this.engines[0].renderBatch(batchInput, logger?.nested?.());
+                // Copy each component's render outcome back to the caller's objects
+                components.forEach((c, i) => { c.renderedOk = batchInput[i].renderedOk; });
                 logger?.log?.(`Batch render complete`);
                 return;
             } catch (e) {
@@ -143,10 +154,10 @@ export const getLive = (engines) => class BookshopLive {
                 console.warn(`Batch render failed:`, e.toString());
             }
         }
-        
+
         // Fall back to individual renders
         for (const c of components) {
-            await this.renderElement(c.name, c.scope, c.dom, logger);
+            c.renderedOk = await this.renderElement(c.name, c.scope, c.dom, logger);
         }
     }
 
@@ -241,20 +252,37 @@ export const getLive = (engines) => class BookshopLive {
             startNode,  // The bookshop-live comment before this component's location in real-DOM
             endNode,    // The bookshop-live end comment following this component's location in real-DOM
             output,     // A virtual-DOM node containing contents of the just-rendered component
-            pathStack,  // Any "absolute paths" to data in scope for this component
-            stashedNodes, // Any bookshop_bindings tags that were applied to this component
             name,       // The name of this component being rendered
+            memoKey,    // The render inputs, used to skip this component next update if unchanged
+            renderedOk, // Whether the engine reported this render as successful
         } of componentUpdates) {
             this.logFn.log(`Processing a component update for ${name}`);
-            if (options.dataBindings) { // If we should be adding data bindings _in general_
-                // Re-traverse this component to inject any data bindings we can to it or its children.
-                this.logFn.log(`Hydrating the data bindings for ${name}`);
-                await core.hydrateDataBindings(this, output, pathStack, startNode.cloneNode(), endNode.cloneNode(), stashedNodes.map(n => n.cloneNode()), this.logFn.nested());
-            }
             this.logFn.log(`Grafting ${name}'s update to the DOM tree`);
             core.graftTrees(startNode, endNode, output, this.logFn.nested());
+            // Only remember successful renders — a failed render must be retried
+            // on the next update even if its inputs haven't changed. Engines that
+            // don't report an outcome leave renderedOk undefined, which counts
+            // as success. (A legitimately empty render is still a success.)
+            if (memoKey && renderedOk !== false) {
+                this.renderMemo.set(startNode, memoKey);
+            }
             this.logFn.log(`Completed grafting ${name}'s update to the DOM tree`);
         }
+
+        // Data bindings hydrate after all content has been grafted — they only
+        // affect editor overlays, so they shouldn't hold up the rendered page.
+        if (options.dataBindings && (componentUpdates.length > 0 || !this.hydratedOnce)) {
+            const hydrationToken = {};
+            this.hydrationToken = hydrationToken;
+            const completed = await core.hydrateDocumentBindings(
+                this,
+                document,
+                this.logFn.nested(),
+                () => this.hydrationToken !== hydrationToken
+            );
+            if (completed) this.hydratedOnce = true;
+        }
+
         this.completeRender();
         this.logFn.log(`Finished rendering`);
     }

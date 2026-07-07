@@ -323,8 +323,31 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
             return;
         };
 
+        // Skip components whose render inputs haven't changed since the last
+        // update — during editing, usually everything but the edited component.
+        // Only enabled for engines that track a dataGeneration, since a render
+        // can also depend on site data/config changing underneath the scope.
+        let memoKey = null;
+        const engineGeneration = liveInstance.engines[0].dataGeneration;
+        const memoizationEnabled = engineGeneration !== undefined
+            && liveInstance.renderMemo
+            && !(typeof window !== 'undefined' && window.bookshopLiveNoMemo);
+        if (memoizationEnabled) {
+            memoKey = JSON.stringify({
+                name,
+                scope,
+                pathStack,
+                engineGeneration,
+                globalDataVersion: liveInstance.globalDataVersion ?? 0,
+            });
+            if (liveInstance.renderMemo.get(startNode) === memoKey) {
+                logger?.log?.(`Skipping render for ${name} — inputs unchanged since last render`);
+                return;
+            }
+        }
+
         const output = vDom.createElement('div');
-        
+
         // Collect components for batch rendering instead of rendering immediately
         pendingComponents.push({
             name,
@@ -333,7 +356,8 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
             startNode,
             endNode,
             pathStack,
-            stashedNodes
+            stashedNodes,
+            memoKey
         });
         logger?.log?.(`Queued ${name} for batch rendering`);
     }
@@ -348,14 +372,13 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
         processDeepComponents: false
     });
 
-    // Batch render all collected components
+    // Batch render all collected components.
+    // renderElements reads each component's name/scope/dom, and marks the
+    // outcome back onto each object as renderedOk.
     if (pendingComponents.length > 0) {
         logger?.log?.(`Batch rendering ${pendingComponents.length} components`);
-        await liveInstance.renderElements(
-            pendingComponents.map(c => ({ name: c.name, scope: c.scope, dom: c.dom })),
-            logger?.nested?.()
-        );
-        
+        await liveInstance.renderElements(pendingComponents, logger?.nested?.());
+
         // Build updates array from rendered components
         for (const c of pendingComponents) {
             logger?.log?.(`Rendered ${c.name} block into an update`);
@@ -366,7 +389,9 @@ export const renderComponentUpdates = async (liveInstance, documentNode, logger)
                 pathStack: c.pathStack,
                 scope: c.scope,
                 name: c.name,
-                stashedNodes: c.stashedNodes
+                stashedNodes: c.stashedNodes,
+                memoKey: c.memoKey,
+                renderedOk: c.renderedOk
             });
         }
     }
@@ -398,6 +423,101 @@ const findDataBinding = (identifier, liveInstance, pathStack, logger) => {
         dataBinding = dataBinding.replace(/^Params(\.|$)/, '');
         return dataBinding;
     }
+}
+
+/**
+ * Applies a data binding to a single rendered component,
+ * pointing at the front matter path passed to that component (if possible)
+ */
+const applyComponentBindings = (liveInstance, component, boundThisPass, logger) => {
+    const { startNode, endNode, params, pathStack, scope, name } = component;
+    // Tracks the elements this instance has bound, so that stale bindings can
+    // be removed without ever touching template-authored data-cms-bind attributes.
+    liveInstance.boundElements ??= new WeakSet();
+    // By default, don't add bindings for bookshop shared includes
+    const isStandardComponent = liveInstance.resolveComponentType(name) === 'component';
+    const dataBindingFlag = scope?.editorLink
+        ?? scope?.editor_link
+        ?? scope?._editorLink
+        ?? scope?._editor_link
+        ?? scope?.dataBinding
+        ?? scope?.data_binding
+        ?? scope?._dataBinding
+        ?? scope?._data_binding
+        ?? isStandardComponent;
+
+    let dataBinding = null;
+    if (dataBindingFlag) { // If we should be adding a data binding _for this component_
+        for (const [, identifier] of params) {
+            dataBinding = findDataBinding(identifier, liveInstance, pathStack, logger?.nested?.());
+            if (dataBinding) break;
+        }
+        logger?.log?.(dataBinding
+            ? `Found the data binding ${dataBinding} for ${name}`
+            : `Couldn't find a data binding for ${name}`);
+    } else {
+        logger?.log?.(`${name} opted out of getting a data binding`);
+    }
+
+    // Add the data binding to all top-level elements of the component,
+    // since we can't wrap the component in any elements.
+    // If this component shouldn't be bound, remove any binding
+    // that a previous pass applied.
+    let node = startNode.nextElementSibling;
+    while (node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0) {
+        if (dataBinding) {
+            logger?.log?.(`Setting data-cms-bind on an element`);
+            node.dataset.cmsBind = `#${dataBinding}`;
+            liveInstance.boundElements.add(node);
+            boundThisPass?.add(node);
+        } else if (liveInstance.boundElements.has(node) && !boundThisPass?.has(node)) {
+            // Component regions can overlap — an unbound wrapper's top-level
+            // elements can be another component's just-bound elements, so only
+            // remove bindings that no component applied during this pass.
+            logger?.log?.(`Removing a stale data-cms-bind from an element`);
+            node.removeAttribute('data-cms-bind');
+            liveInstance.boundElements.delete(node);
+        }
+        node = node.nextElementSibling;
+    }
+}
+
+const yieldToMain = () => new Promise(resolve => setTimeout(resolve, 0));
+
+/**
+ * Walks the live document post-graft and applies data bindings to every
+ * component found. Yields to the main thread between components so a long
+ * pass doesn't lock the UI, and bails when a newer render supersedes it.
+ * Returns true if the pass ran to completion.
+ */
+export const hydrateDocumentBindings = async (liveInstance, documentNode, logger, isSuperseded = () => false) => {
+    logger?.log?.(`Hydrating the document's data bindings`);
+    const components = [];
+
+    const templateBlockHandler = async (component, logger) => {
+        logger?.log?.(`Storing a binding candidate for ${component.name}`);
+        components.push(component);
+    }
+
+    await evaluateTemplate({
+        liveInstance,
+        documentNode,
+        templateBlockHandler,
+        isRetry: false,
+        logger: logger?.nested?.()
+    });
+
+    const boundThisPass = new Set();
+    for (const component of components) {
+        if (isSuperseded()) {
+            logger?.log?.(`A newer render superseded this hydration pass — bailing`);
+            return false;
+        }
+        applyComponentBindings(liveInstance, component, boundThisPass, logger?.nested?.());
+        await yieldToMain();
+    }
+    logger?.log?.(`Hydrated the document's data bindings`);
+    return true;
 }
 
 /**
@@ -436,40 +556,9 @@ export const hydrateDataBindings = async (liveInstance, documentNode, pathsInSco
         logger: logger?.nested?.()
     });
 
-    for (let { startNode, endNode, params, pathStack, scope, name } of components) {
-        // By default, don't add bindings for bookshop shared includes
-        const isStandardComponent = liveInstance.resolveComponentType(name) === 'component';
-        const dataBindingFlag = scope?.editorLink
-            ?? scope?.editor_link
-            ?? scope?._editorLink
-            ?? scope?._editor_link
-            ?? scope?.dataBinding
-            ?? scope?.data_binding
-            ?? scope?._dataBinding
-            ?? scope?._data_binding
-            ?? isStandardComponent;
-        if (dataBindingFlag) { // If we should be adding a data binding _for this component_
-            let dataBinding = null;
-            for (const [, identifier] of params) {
-                dataBinding = findDataBinding(identifier, liveInstance, pathStack, logger?.nested?.());
-                if (dataBinding) break;
-            }
-            if (dataBinding) {
-                logger?.log?.(`Found the data binding ${dataBinding} for ${name}`);
-                // Add the data binding to all top-level elements of the component,
-                // since we can't wrap the component in any elements
-                let node = startNode.nextElementSibling;
-                while (node && (node.compareDocumentPosition(endNode) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0) {
-                    logger?.log?.(`Setting data-cms-bind on an element`);
-                    node.dataset.cmsBind = `#${dataBinding}`;
-                    node = node.nextElementSibling;
-                }
-            } else {
-                logger?.log?.(`Couldn't find a data binding for ${name}`);
-            }
-        } else {
-            logger?.log?.(`${name} opted out of getting a data binding`);
-        }
+    const boundThisPass = new Set();
+    for (const component of components) {
+        applyComponentBindings(liveInstance, component, boundThisPass, logger?.nested?.());
     }
 
     preComment.remove();
@@ -511,13 +600,28 @@ export const graftTrees = (DOMStart, DOMEnd, vDOMObject, logger) => {
     }
 }
 
+// Data bindings are hydrated onto the live DOM after grafting, so freshly
+// rendered nodes won't have them yet. They shouldn't force a node replacement —
+// a replaced node gets its binding back on the post-graft hydration pass.
+const nodesShallowEqualIgnoringBindings = (a, b) => {
+    const aClone = a.cloneNode(false);
+    const bClone = b.cloneNode(false);
+    if (typeof aClone.removeAttribute === 'function') {
+        aClone.removeAttribute('data-cms-bind');
+    }
+    if (typeof bClone.removeAttribute === 'function') {
+        bClone.removeAttribute('data-cms-bind');
+    }
+    return aClone.isEqualNode(bClone);
+}
+
 const diffAndUpdateNode = (existingNode, incomingNode) => {
     if (existingNode.isEqualNode(incomingNode)) {
         // Node and full subtree is identical
         return;
     }
 
-    if (!existingNode.cloneNode(false).isEqualNode(incomingNode.cloneNode(false))) {
+    if (!nodesShallowEqualIgnoringBindings(existingNode, incomingNode)) {
         // Node sans-children has changes, update this whole node (and thus children)
         existingNode.replaceWith(incomingNode);
         return;
@@ -529,6 +633,17 @@ const diffAndUpdateNode = (existingNode, incomingNode) => {
         return;
     }
     // Existing node is fine, we can reach parity by updating one/some of the child nodes.
+
+    // We're keeping the existing node, so sync across any template-authored binding
+    // that the fresh render produced. (An incoming node _without_ a binding says
+    // nothing — bindings that Bookshop hydrates onto the live DOM won't be present
+    // on freshly rendered nodes, and are managed by the hydration pass instead.)
+    if (typeof incomingNode.getAttribute === 'function') {
+        const incomingBind = incomingNode.getAttribute('data-cms-bind');
+        if (incomingBind !== null && existingNode.getAttribute('data-cms-bind') !== incomingBind) {
+            existingNode.setAttribute('data-cms-bind', incomingBind);
+        }
+    }
 
 
     // Collapse each NodeList into an array so that moving an element
