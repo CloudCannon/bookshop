@@ -153,9 +153,18 @@ class WorkerHugo {
     }
 
     // Chain onto the queue so operations never interleave on the shared FS.
+    // A worker-side exception (WASM panic, handler error) comes back as
+    // { ok: false } and is surfaced as a thrown error rather than silently
+    // returning undefined. The queue itself is kept alive so a failed op
+    // doesn't wedge later ones.
     _enqueue(message, transfer, bytes) {
         const run = () => this._post(bytes ? { ...message, bytes } : message, transfer);
-        const result = this.queue.then(run, run);
+        const result = this.queue.then(run, run).then((reply) => {
+            if (reply && reply.ok === false) {
+                throw new Error(`Hugo WASM worker failed during "${message.op}": ${reply.error}`);
+            }
+            return reply;
+        });
         this.queue = result.catch(() => {});
         return result;
     }
@@ -179,6 +188,10 @@ class WorkerHugo {
 class InlineHugo {
     constructor(wasmBytes) {
         this.wasmBytes = wasmBytes;
+        // wasm_exec installs the Hugo globals (buildHugo, writeHugoFiles, …) on
+        // the global object; resolve it once and use it consistently in both
+        // init and the operations below.
+        this.g = (typeof window !== 'undefined') ? window : globalThis;
     }
 
     async init() {
@@ -186,19 +199,19 @@ class InlineHugo {
         const result = await WebAssembly.instantiate(this.wasmBytes, go.importObject);
         this.wasmBytes = null;
         go.run(result.instance);
-        while (typeof window === 'undefined' ? !globalThis.buildHugo : !window.buildHugo) {
+        while (!this.g.buildHugo) {
             await sleep(10);
         }
     }
 
-    async writeFiles(json) { return window.writeHugoFiles(json); }
-    async readFiles(json) { return window.readHugoFiles(json); }
-    async removeFiles(json) { return window.removeHugoFiles(json); }
-    async initConfig() { return window.initHugoConfig(); }
+    async writeFiles(json) { return this.g.writeHugoFiles(json); }
+    async readFiles(json) { return this.g.readHugoFiles(json); }
+    async removeFiles(json) { return this.g.removeHugoFiles(json); }
+    async initConfig() { return this.g.initHugoConfig(); }
     async build() {
-        window.hugo_wasm_logging = [];
-        const error = window.buildHugo();
-        return { error: error || null, logging: window.hugo_wasm_logging || [] };
+        this.g.hugo_wasm_logging = [];
+        const error = this.g.buildHugo();
+        return { error: error || null, logging: this.g.hugo_wasm_logging || [] };
     }
 }
 
