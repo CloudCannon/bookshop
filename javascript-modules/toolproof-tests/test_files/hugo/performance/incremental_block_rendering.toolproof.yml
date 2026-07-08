@@ -1,0 +1,101 @@
+name: Hugo bookshop incremental block rendering re-renders only changed blocks
+
+# Opt-in incremental rendering (window.bookshopIncrementalBlocks): on a large
+# page that ranges over content blocks, editing one block should re-render only
+# that block instead of the whole page. Measures a whole-page baseline (flag
+# off) then the incremental steady state (flag on) in the same browser, and
+# asserts the incremental edit is much cheaper — a machine-independent ratio.
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+  - step: I have a "component-lib/components/page/page.hugo.html" file with the content {html}
+    html: |-
+      <div class="page">{{ range .content_blocks }}{{ partial "bookshop" . }}{{ end }}</div>
+  - step: I have a "component-lib/components/feature/feature.hugo.html" file with the content {html}
+    html: |-
+      <section class="feature">
+        <h2>{{ .title }}</h2>
+        <div class="body">{{ .body | markdownify }}</div>
+        {{ partial "bookshop" (slice "badge" (dict "label" (upper .title))) }}
+      </section>
+  - step: I have a "component-lib/components/badge/badge.hugo.html" file with the content {html}
+    html: |-
+      <span class="badge">{{ .label }}</span>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `(dict "content_blocks" .Params.components)` }}
+      {{ partial "bookshop" (slice "page" (dict "content_blocks" .Params.components)) }}
+      </body>
+      </html>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      components:
+        - _bookshop_name: feature
+          title: Feature 0
+          body: Body 0
+      ---
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "components": [ { "_bookshop_name": "feature", "title": "Feature 0", "body": "Body 0" } ]}
+
+  - step: In my browser, I evaluate {js}
+    js: |-
+      const bl = window.bookshopLive;
+      bl.renderFrequency = 0;
+      const eng = bl.engines[0];
+      window.__eng = eng;
+      window.__md = (i) => '## Card ' + i + '\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.\n\n- one\n- two\n- three\n\n> Quote with `code`.';
+      window.__fm = (N, edited) => ({ components: Array.from({ length: N }, (_, i) => ({
+        _bookshop_name: 'feature', title: i === 0 ? edited : ('Feature ' + i), body: window.__md(i),
+      })) });
+      window.__edit = async (data) => {
+        const rc = bl.renderCount;
+        const b = eng.wasmBuildCount;
+        const t = performance.now();
+        window.CloudCannon.newData(data);
+        await toolproof.waitFor(() => bl.renderCount > rc, 30000);
+        return { ms: Math.round(performance.now() - t), builds: eng.wasmBuildCount - b };
+      };
+
+  # Baseline: default whole-page rendering (flag off).
+  - step: In my browser, I evaluate {js}
+    js: |-
+      window.bookshopIncrementalBlocks = false;
+      await window.__edit(window.__fm(140, 'Seed'));
+      window.__baseline = await window.__edit(window.__fm(140, 'Baseline'));
+
+  # Incremental: flag on. First edit warms the per-block memo (renders all
+  # blocks once); subsequent edits should render only the changed block.
+  - step: In my browser, I evaluate {js}
+    js: |-
+      window.bookshopIncrementalBlocks = true;
+      await window.__edit(window.__fm(140, 'Warm'));
+      window.__incremental = await window.__edit(window.__fm(140, 'Incremental'));
+
+  - step: In my browser, the result of {js} should contain "PASS"
+    js: |-
+      const base = window.__baseline, incr = window.__incremental, stats = window.__incrementalStats;
+      const summary = ' baseline(whole page)=' + JSON.stringify(base)
+        + ' incremental(one block)=' + JSON.stringify(incr)
+        + ' stats=' + JSON.stringify(stats);
+      // Editing one block of the 140-block page must re-render only that block:
+      // exactly one block rendered, and the unchanged blocks are skipped so
+      // cheaply that the edit is a small fraction of the whole-page render.
+      if (!stats || stats.rendered !== 1) return 'FAIL expected 1 block re-rendered, got ' + (stats && stats.rendered) + ';' + summary;
+      if (incr.ms > base.ms * 0.5) return 'FAIL incremental edit not meaningfully faster;' + summary;
+      return 'PASS' + summary;
+
+  # Correctness: the edited block updated, a sibling did not get its content.
+  - step: In my browser, the result of {js} should be exactly "Incremental"
+    js: return (await toolproof.querySelector(".page .feature:first-child h2")).innerText
+  - step: In my browser, the result of {js} should be exactly "Feature 1"
+    js: return (await toolproof.querySelector(".page .feature:nth-of-type(2) h2")).innerText
+  - step: In my browser, the console should be empty
