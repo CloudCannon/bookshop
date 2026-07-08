@@ -135,11 +135,11 @@ for (const impl of ['jekyll', 'eleventy']) {
             const betas = document.querySelectorAll('.beta');
             t.is(alphas.length, 1, `${label}: expected exactly one .alpha`);
             t.is(betas.length, 1, `${label}: expected exactly one .beta`);
-            t.is(alphas[0]?.textContent.trim(), `A:${a}`, `${label}: .alpha content`);
-            t.is(betas[0]?.textContent.trim(), `B:${b}`, `${label}: .beta content`);
+            t.is(alphas[0]?.textContent?.trim(), `A:${a}`, `${label}: .alpha content`);
+            t.is(betas[0]?.textContent?.trim(), `B:${b}`, `${label}: .beta content`);
             // Neither slot may contain the other's marker.
-            t.false(alphas[0]?.textContent.includes('B:'), `${label}: beta leaked into .alpha`);
-            t.false(betas[0]?.textContent.includes('A:'), `${label}: alpha leaked into .beta`);
+            t.false(alphas[0]?.textContent?.includes('B:'), `${label}: beta leaked into .alpha`);
+            t.false(betas[0]?.textContent?.includes('A:'), `${label}: alpha leaked into .beta`);
         };
 
         const push = async (a, b) =>
