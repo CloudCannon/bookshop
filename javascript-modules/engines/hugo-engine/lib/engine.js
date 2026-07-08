@@ -140,7 +140,6 @@ class WorkerHugo {
         const blob = new Blob([source], { type: 'text/javascript' });
         const url = URL.createObjectURL(blob);
         this.worker = new Worker(url);
-        setTimeout(() => URL.revokeObjectURL(url), 0);
         this.worker.onmessage = (e) => {
             const p = this.pending.get(e.data.id);
             if (p) { this.pending.delete(e.data.id); p.resolve(e.data); }
@@ -163,6 +162,7 @@ class WorkerHugo {
         try {
             await this._enqueue({ op: 'init' }, [buffer], buffer);
         } finally {
+            URL.revokeObjectURL(url);
             clearTimeout(timer);
         }
     }
