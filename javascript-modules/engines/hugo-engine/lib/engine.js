@@ -93,7 +93,15 @@ self.onmessage = async (e) => {
             const go = new self.Go();
             const { instance } = await WebAssembly.instantiate(bytes, go.importObject);
             go.run(instance);
-            while (!self.buildHugo) await new Promise(r => setTimeout(r, 5));
+            // Wait for the Go program to register its globals, but don't wait
+            // forever — if go.run failed or the module didn't install buildHugo,
+            // report it so the main thread can fall back rather than hang.
+            let waited = 0;
+            while (!self.buildHugo) {
+                if (waited >= 15000) throw new Error('Hugo WASM did not register buildHugo after go.run');
+                await new Promise(r => setTimeout(r, 5));
+                waited += 5;
+            }
             self.__ready = true;
             self.postMessage({ id, ok: true });
             return;
@@ -133,21 +141,46 @@ class WorkerHugo {
         this.worker = new Worker(url);
         URL.revokeObjectURL(url);
         this.worker.onmessage = (e) => {
-            const resolve = this.pending.get(e.data.id);
-            if (resolve) { this.pending.delete(e.data.id); resolve(e.data); }
+            const p = this.pending.get(e.data.id);
+            if (p) { this.pending.delete(e.data.id); p.resolve(e.data); }
         };
+        // A worker that fails to load/parse/execute (CSP, syntax error, uncaught
+        // error) never replies, so reject all pending calls rather than hang —
+        // this is what lets createBackend fall back to the inline backend.
+        this.worker.onerror = (e) => this._fail(new Error(`Hugo WASM worker error: ${e.message || e.type || 'unknown'}`));
+        this.worker.onmessageerror = () => this._fail(new Error('Hugo WASM worker received an uncloneable message'));
+
         // Hand the wasm bytes over (transferred, not copied) and wait for the
-        // module to instantiate.
+        // module to instantiate, with a ceiling so a silently-dead worker (never
+        // replies at all) still rejects instead of hanging init forever.
         const buffer = this.wasmBytes.buffer;
         this.wasmBytes = null;
-        await this._enqueue({ op: 'init' }, [buffer], buffer);
+        const timer = setTimeout(() => {
+            this._fail(new Error('Hugo WASM worker init timed out'));
+            try { this.worker.terminate(); } catch { /* ignore */ }
+        }, 20000);
+        try {
+            await this._enqueue({ op: 'init' }, [buffer], buffer);
+        } finally {
+            clearTimeout(timer);
+        }
     }
 
-    // Post a single message and resolve when its reply arrives.
+    // Reject every in-flight call and refuse further ones. Idempotent.
+    _fail(err) {
+        if (this.failed) return;
+        this.failed = err;
+        for (const p of this.pending.values()) p.reject(err);
+        this.pending.clear();
+    }
+
+    // Post a single message and settle when its reply arrives (or when the
+    // worker dies, via _fail).
     _post(message, transfer) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
+            if (this.failed) { reject(this.failed); return; }
             const id = ++this.msgId;
-            this.pending.set(id, resolve);
+            this.pending.set(id, { resolve, reject });
             this.worker.postMessage({ id, ...message }, transfer || []);
         });
     }
@@ -392,9 +425,9 @@ export class Engine {
 
             return renderer;
         } catch (e) {
-            console.error("Couldn't load the local compressed Hugo WASM");
+            console.error(`Couldn't load the compressed Hugo WASM (${usePrefetch ? "prefetch" : "network"})`);
             console.error(e);
-            // If our prefetch fails, fall back to loading the wasm ourselves
+            // If the prefetch attempt fails, fall back to fetching over the network
             if (usePrefetch) {
                 return this.fetchCompressedWasmBytes(false);
             }
