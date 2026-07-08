@@ -1,0 +1,81 @@
+name: Hugo bookshop live editing keeps concurrent evaluations isolated
+
+# Regression test for the concurrency hazard introduced by moving the Hugo WASM
+# into a Web Worker. buildHugo() used to be a synchronous, main-thread-blocking
+# call, which implicitly serialized render passes: a second update()->render()
+# could never begin while a build was running. With the build now behind
+# `await` (in the worker), the main thread is free during a build, so on a large
+# page a throttled render can fire while the previous pass is still building —
+# two render passes overlap.
+#
+# eval() (and renderBatch) drive Hugo through SHARED filesystem paths:
+# `layouts/partials/bookshop_eval_expr.html`, `content/_index.md`, and
+# `public/index.html`, plus the `lastEvalTemplate` write-skip optimisation.
+# The worker's queue serializes each individual op but NOT the
+# write -> build -> read SEQUENCE of a pass, so two overlapping evals interleave
+# as write(A), write(B), build (sees B), read(A) -> eval A returns B's result.
+#
+# This test exercises that invariant directly: two independent evaluations run
+# concurrently and each must return its own result. `upper` and `lower` give
+# outputs that are impossible to confuse (all-caps vs all-lower), so any
+# cross-contamination is unambiguous. It should FAIL until the engine serializes
+# its WASM operations (or gives each eval isolated paths); a live-layer render
+# mutex alone will not make a direct concurrent eval() safe.
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+  - step: I have a "component-lib/components/note/note.hugo.html" file with the content {html}
+    html: |-
+      <div class="note">{{ .text }}</div>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" ".Params.data" }}
+      {{ partial "bookshop" (slice "note" .Params.data) }}
+      </body>
+      </html>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      data:
+        text: seed
+      ---
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "data": { "text": "seed" } }
+
+  - step: In my browser, the console should be empty
+
+  - step: In my browser, the result of {js} should be exactly "PASS"
+    js: |-
+      const bl = window.bookshopLive;
+      const eng = bl.engines[0];
+
+      // Two distinct expressions -> distinct eval templates (so each pass writes
+      // bookshop_eval_expr.html, ping-ponging the shared template) with distinct
+      // props -> distinct output. `upper` yields all-caps, `lower` all-lower, so
+      // if one pass's result lands in the other, the casing gives it away.
+      const errs = [];
+      for (let i = 0; i < 5; i++) {
+        const left = 'left' + i;     // upper -> "LEFT<i>"
+        const right = 'RIGHT' + i;   // lower -> "right<i>"
+        const [r1, r2] = await Promise.all([
+          eng.eval('upper .v', [{ v: left }]),
+          eng.eval('lower .v', [{ v: right }]),
+        ]);
+        const want1 = left.toUpperCase();   // LEFT<i>
+        const want2 = right.toLowerCase();  // right<i>
+        if (r1 !== want1) errs.push('round ' + i + ' eval#1 (upper) returned "' + r1 + '" want "' + want1 + '"');
+        if (r2 !== want2) errs.push('round ' + i + ' eval#2 (lower) returned "' + r2 + '" want "' + want2 + '"');
+      }
+
+      const summary = ' backend=' + (eng && eng.backendKind);
+      return errs.length ? ('FAIL ' + errs.join(' | ') + ';' + summary) : 'PASS';
+
+  - step: In my browser, the console should be empty
