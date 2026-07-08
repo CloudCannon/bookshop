@@ -9,11 +9,13 @@
 
 ## Unreleased
 
-* Major Hugo live editing performance improvements, most noticeable on large pages:
-  * The Hugo WASM renderer now runs in a Web Worker, so rendering no longer freezes the UI while typing. Falls back to running inline where a Worker isn't available.
-  * Edits render incrementally instead of triggering a near-full site rebuild that got slower the longer an editing session ran.
-  * Unchanged components are no longer re-rendered, and repeated expression evaluations are cached.
-  * Fixed a leak that added a page to the preview site on every component render.
+* Hugo live editing performance improvements, most noticeable on large pages:
+  * The Hugo WASM renderer now runs in a Web Worker, so editing no longer freezes the interface while the page re-renders (falls back to inline where a Worker can't be created).
+  * Edits are incremental again, instead of a near-full site rebuild that got slower the longer an editing session ran.
+  * Repeated expression evaluations are cached across edits.
+  * Fixed expression evaluation disabling batched component rendering for the rest of an editing session.
+  * Fixed a leak that added a page to the preview site on every single-component render.
+  * Reduced the size of the Hugo WASM download.
 
 ## v3.18.5 (July 1, 2026)
 
