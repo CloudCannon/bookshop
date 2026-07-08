@@ -9,16 +9,13 @@
 
 ## Unreleased
 
-* Live editing performance improvements for typing latency:
-  * Hugo expression evaluations are cached across updates, so repeated evaluations with unchanged inputs no longer trigger WASM builds. The cache is invalidated whenever site data, config, or templates change, and skipped for expressions that reach outside their inputs (e.g. `site.`, `now`). Set `window.bookshopLiveNoMemo = true` to disable.
-  * Components whose render inputs are unchanged since the last update are no longer re-rendered, re-hydrated, or re-grafted.
-  * Data bindings now hydrate in a single document pass after content has been grafted, yielding to the main thread between components and bailing when a newer update supersedes them, instead of blocking each component's content update.
-* Major performance improvements for Hugo live editing:
-  * The Hugo renderer no longer replays every file ever written as a change event on each build, which was forcing a near-full site rebuild per render and made rendering slower the longer an editing session ran.
-  * Fixed component render cleanup never removing temporary content files, which leaked one page into the preview site per component render.
-  * Expression evaluation now renders through a dedicated partial instead of rewriting the home layout. Previously the first non-trivial evaluation shadowed the batch rendering layout, permanently disabling batched component rendering for the rest of the session.
-  * Repeated evaluations of the same expression reuse the parsed template rather than rewriting it each time.
-  * The live preview site now disables taxonomy, RSS, sitemap, robots, and 404 generation.
+* Hugo live editing performance improvements, most noticeable on large pages:
+  * The Hugo WASM renderer now runs in a Web Worker, so editing no longer freezes the interface while the page re-renders (falls back to inline where a Worker can't be created).
+  * Edits are incremental again, instead of a near-full site rebuild that got slower the longer an editing session ran.
+  * Repeated expression evaluations are cached across edits.
+  * Fixed expression evaluation disabling batched component rendering for the rest of an editing session.
+  * Fixed a leak that added a page to the preview site on every single-component render.
+  * Reduced the size of the Hugo WASM download.
 
 ## v3.18.5 (July 1, 2026)
 
