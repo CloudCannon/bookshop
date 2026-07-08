@@ -17,7 +17,7 @@ export const esbuildConfigFn = (esbuildConfig, options) => {
     const wasm_exec_banner = fs.readFileSync(path.join(__dirname, "../full-hugo-renderer/wasm_exec.js"), "utf8");
     esbuildConfig.banner = {
         ...esbuildConfig.banner,
-        js: (esbuildConfig.js ?? "") + wasm_exec_banner
+        js: (esbuildConfig.banner?.js ?? "") + wasm_exec_banner
     }
 
     // Expose the Go runtime source to the bundle so the engine can spin up a
