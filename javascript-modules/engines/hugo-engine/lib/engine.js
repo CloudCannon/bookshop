@@ -113,6 +113,7 @@ self.onmessage = async (e) => {
         else if (op === 'read') result = self.readHugoFiles(payload);
         else if (op === 'remove') result = self.removeHugoFiles(payload);
         else if (op === 'initConfig') result = self.initHugoConfig();
+        else throw new Error('Unknown Hugo WASM worker op: ' + op);
         self.postMessage({ id, ok: true, result, logging: self.hugo_wasm_logging || [] });
     } catch (err) {
         self.postMessage({ id, ok: false, error: String(err && err.stack || err) });
