@@ -139,7 +139,12 @@ class WorkerHugo {
         const source = WASM_EXEC_SOURCE + "\n" + HUGO_WORKER_BODY;
         const blob = new Blob([source], { type: 'text/javascript' });
         const url = URL.createObjectURL(blob);
-        this.worker = new Worker(url);
+        try {
+            this.worker = new Worker(url);
+        } catch (e) {
+            URL.revokeObjectURL(url);
+            throw e;
+        }
         this.worker.onmessage = (e) => {
             const p = this.pending.get(e.data.id);
             if (p) { this.pending.delete(e.data.id); p.resolve(e.data); }
