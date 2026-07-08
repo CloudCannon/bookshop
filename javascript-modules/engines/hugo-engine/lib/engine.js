@@ -173,6 +173,7 @@ class WorkerHugo {
         this.failed = err;
         for (const p of this.pending.values()) p.reject(err);
         this.pending.clear();
+        try { this.worker?.terminate(); } catch { /* ignore */ }
     }
 
     // Post a single message and settle when its reply arrives (or when the
