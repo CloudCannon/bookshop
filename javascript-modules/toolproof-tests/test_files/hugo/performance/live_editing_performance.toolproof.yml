@@ -1,0 +1,171 @@
+name: Hugo bookshop live editing performance stays incremental
+
+# Guards the live-editing performance work on a HEAVY, deeply-nested page
+# (page -> feature -> card -> badge, many instances). Runs in a real browser
+# against the real Hugo WASM, so it reflects production behaviour (unlike a
+# jsdom harness, whose timing is dominated by its slow XPath).
+#
+# Assertions are on deterministic COUNTS, not wall-clock (which is machine
+# dependent and only reported):
+#   1. Per-edit build count must not grow across an editing session
+#      (guards the O(session) regression we fixed).
+#   2. Per-edit build count must not scale with page size — editing one
+#      component on a 24-block page must cost the same builds as on a 4-block
+#      page (the core "incremental, not full rebuild" guarantee).
+# The reported ms arrays make the actual per-keystroke latency visible in CI
+# logs and are what optimisation work (eval-path fix, web worker) will move.
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+
+  # page -> feature -> card -> badge : three levels of nesting, each level a
+  # real bookshop component, with a computed (non-short-circuiting) param on
+  # the badge so the eval path actually reaches the WASM cache.
+  - step: I have a "component-lib/components/page/page.hugo.html" file with the content {html}
+    html: |-
+      <div class="page">
+      {{ range .content_blocks }}
+        {{ partial "bookshop" . }}
+      {{ end }}
+      </div>
+  - step: I have a "component-lib/components/feature/feature.hugo.html" file with the content {html}
+    html: |-
+      <section class="feature">
+        <h2>{{ .title }}</h2>
+        <p>{{ .body }}</p>
+        <div class="items">
+        {{ range .items }}
+          {{ partial "bookshop" . }}
+        {{ end }}
+        </div>
+      </section>
+  - step: I have a "component-lib/components/card/card.hugo.html" file with the content {html}
+    html: |-
+      <div class="card">
+        <h3>{{ .title }}</h3>
+        <div class="body">{{ .body | markdownify }}</div>
+        {{ partial "bookshop" (slice "badge" (dict "label" (upper .title))) }}
+      </div>
+  - step: I have a "component-lib/components/badge/badge.hugo.html" file with the content {html}
+    html: |-
+      <span class="badge">{{ .label }}</span>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" `(dict "content_blocks" .Params.components)` }}
+      {{ partial "bookshop" (slice "page" (dict "content_blocks" .Params.components)) }}
+      </body>
+      </html>
+  # Small static seed for the initial `hugo` build; the heavy pages are pushed
+  # from JS at measurement time so page size can be varied without huge YAML.
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      components:
+        - _bookshop_name: feature
+          title: Feature 0
+          body: Body 0
+          items:
+            - _bookshop_name: card
+              title: Item 0-0
+      ---
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "components": [
+        { "_bookshop_name": "feature", "title": "Feature 0", "body": "Body 0",
+          "items": [ { "_bookshop_name": "card", "title": "Item 0-0" } ] }
+      ]}
+
+  # Install per-update counters at the WASM boundary and on the engine's eval,
+  # and disable the 1s render throttle so each pushed edit renders immediately.
+  - step: In my browser, I evaluate {js}
+    js: |-
+      const bl = window.bookshopLive;
+      bl.renderFrequency = 0;
+      const perf = { builds: 0, evals: 0, cacheHits: 0 };
+      window.__perf = perf;
+      const b = window.buildHugo;
+      window.buildHugo = (...a) => { perf.builds++; return b(...a); };
+      const eng = bl.engines[0];
+      const oe = eng.eval.bind(eng);
+      eng.eval = (...a) => { perf.evals++; return oe(...a); };
+      if (eng.evalCache && typeof eng.evalCache.has === 'function') {
+        const oh = eng.evalCache.has.bind(eng.evalCache);
+        eng.evalCache.has = (k) => { const h = oh(k); if (h) perf.cacheHits++; return h; };
+      }
+      // Front matter builder: N features x M markdown cards; feature 0's title
+      // is the field we "type" into. Markdown makes each card's render (goldmark
+      // in WASM) genuinely expensive, so the big page is a multi-second edit.
+      window.__md = (i, j) => '**Card ' + i + '-' + j + '** lorem ipsum dolor sit amet, '
+        + 'consectetur adipiscing elit.\n\n- alpha item\n- beta item\n- gamma item\n\n'
+        + '> A blockquote with [a link](https://example.com/' + i + '/' + j + ') and `code`.';
+      window.__fm = (N, M, edited) => ({ components: Array.from({ length: N }, (_, i) => ({
+        _bookshop_name: 'feature',
+        title: i === 0 ? edited : ('Feature ' + i),
+        body: 'Body ' + i,
+        items: Array.from({ length: M }, (_, j) => ({ _bookshop_name: 'card', title: 'Item ' + i + '-' + j, body: window.__md(i, j) })),
+      })) });
+      // One measured edit. Each edit is its own toolproof step below, so a slow
+      // render never exceeds the per-action browser timeout however heavy the page.
+      window.__edit = async (data) => {
+        const rc = bl.renderCount;
+        const snap = { ...perf };
+        const t = performance.now();
+        window.CloudCannon.newData(data);
+        await toolproof.waitFor(() => bl.renderCount > rc, 30000);
+        return { ms: Math.round(performance.now() - t),
+                 builds: perf.builds - snap.builds,
+                 evals: perf.evals - snap.evals,
+                 hits: perf.cacheHits - snap.cacheHits };
+      };
+      window.__small = [];
+      window.__big = [];
+      return "installed";
+
+  # Small page: seed the size, then two measured edits (each its own step).
+  - step: In my browser, I evaluate {js}
+    js: await window.__edit(window.__fm(6, 3, 'Seed'));
+  - step: In my browser, I evaluate {js}
+    js: window.__small.push(await window.__edit(window.__fm(6, 3, 'Edit 1')));
+  - step: In my browser, I evaluate {js}
+    js: window.__small.push(await window.__edit(window.__fm(6, 3, 'Edit 2')));
+
+  # Large page: 40 features x 5 markdown cards = 200 components. This is the
+  # heavy case — a single edit re-renders the whole page in one WASM build,
+  # which is a multi-second main-thread freeze (the problem worth solving).
+  - step: In my browser, I evaluate {js}
+    js: await window.__edit(window.__fm(40, 5, 'Seed'));
+  - step: In my browser, I evaluate {js}
+    js: window.__big.push(await window.__edit(window.__fm(40, 5, 'Edit 1')));
+  - step: In my browser, I evaluate {js}
+    js: window.__big.push(await window.__edit(window.__fm(40, 5, 'Edit 2')));
+
+  # Assert the incremental invariants; timing is reported in the string, not asserted.
+  - step: In my browser, the result of {js} should contain "PASS"
+    js: |-
+      const small = window.__small, big = window.__big;
+      const median = (a) => a.slice().sort((x, y) => x - y)[Math.floor(a.length / 2)];
+      const stable = (res) => { const b = res.map(r => r.builds); return Math.max(...b) - Math.min(...b) <= 2; };
+      const sBuilds = median(small.map(r => r.builds));
+      const bBuilds = median(big.map(r => r.builds));
+      const summary =
+        ' | small(6x3): builds=' + JSON.stringify(small.map(r => r.builds)) +
+        ' ms=' + JSON.stringify(small.map(r => r.ms)) +
+        ' | big(40x5): builds=' + JSON.stringify(big.map(r => r.builds)) +
+        ' evals=' + JSON.stringify(big.map(r => r.evals)) +
+        ' hits=' + JSON.stringify(big.map(r => r.hits)) +
+        ' ms=' + JSON.stringify(big.map(r => r.ms));
+      if (!stable(small) || !stable(big)) return 'FAIL per-edit builds grew across session;' + summary;
+      if (Math.abs(sBuilds - bBuilds) > 2) return 'FAIL per-edit builds scale with page size (small=' + sBuilds + ' big=' + bBuilds + ');' + summary;
+      return 'PASS' + summary;
+
+  # The edit is actually reflected in the DOM (big page's last edit).
+  - step: In my browser, the result of {js} should contain "Edit 2"
+    js: return (await toolproof.querySelector(".page .feature:first-child h2")).innerText
+  - step: In my browser, the console should be empty

@@ -1,0 +1,96 @@
+name: Hugo bookshop live editing keeps sibling components isolated
+
+# Two independent top-level (depth-0) sibling components rendered side by side.
+# Editing them at different stages must never let one component's rendered
+# content land in the other's DOM slot — guarding the batch marker-slicing path
+# and the render memo against cross-component contamination (the class of bug
+# the "separate files per render" fix addressed). alpha renders "A:<text>" and
+# beta renders "B:<text>" so any swap/leak is unmistakable.
+
+platforms:
+  - linux
+  - mac
+
+steps:
+  - macro: I setup a Hugo site
+  - macro: I setup the generate package
+  # wrapper renders alpha + beta as DIRECT (non-range) children, so each is an
+  # independent depth-0 component that re-renders on its own via the batch path.
+  - step: I have a "component-lib/components/wrapper/wrapper.hugo.html" file with the content {html}
+    html: |-
+      <div class="wrapper">{{ partial "bookshop" (slice "alpha" .alpha) }}{{ partial "bookshop" (slice "beta" .beta) }}</div>
+  - step: I have a "component-lib/components/alpha/alpha.hugo.html" file with the content {html}
+    html: |-
+      <div class="alpha">A:{{ .text }}</div>
+  - step: I have a "component-lib/components/beta/beta.hugo.html" file with the content {html}
+    html: |-
+      <div class="beta">B:{{ .text }}</div>
+  - step: I have a "site/layouts/index.html" file with the content {html}
+    html: |-
+      <html>
+      <body>
+      {{ partial "bookshop_bindings" ".Params.data" }}
+      {{ partial "bookshop" (slice "wrapper" .Params.data) }}
+      </body>
+      </html>
+  - step: I have a "site/content/_index.md" file with the content {md}
+    md: |-
+      ---
+      data:
+        alpha:
+          text: a1
+        beta:
+          text: b1
+      ---
+  - macro: I build my Hugo site and load it with front matter {json}
+    json: |-
+      { "data": { "alpha": { "text": "a1" }, "beta": { "text": "b1" } } }
+
+  - step: In my browser, the console should be empty
+
+  # Drive edits in stages and assert isolation after each.
+  - step: In my browser, the result of {js} should be exactly "PASS"
+    js: |-
+      const bl = window.bookshopLive;
+      bl.renderFrequency = 0;
+
+      const push = async (a, b) => {
+        const rc = bl.renderCount;
+        window.CloudCannon.newData({ data: { alpha: { text: a }, beta: { text: b } } });
+        await toolproof.waitFor(() => bl.renderCount > rc, 8000);
+      };
+
+      const check = (label, a, b) => {
+        const errs = [];
+        const alphas = document.querySelectorAll('.alpha');
+        const betas = document.querySelectorAll('.beta');
+        if (alphas.length !== 1) errs.push(label + ': expected 1 .alpha, got ' + alphas.length);
+        if (betas.length !== 1) errs.push(label + ': expected 1 .beta, got ' + betas.length);
+        const al = alphas[0] && alphas[0].innerText.trim();
+        const be = betas[0] && betas[0].innerText.trim();
+        if (al !== 'A:' + a) errs.push(label + ': alpha shows "' + al + '" want "A:' + a + '"');
+        if (be !== 'B:' + b) errs.push(label + ': beta shows "' + be + '" want "B:' + b + '"');
+        // Cross-contamination: neither slot may contain the other's marker.
+        if (al && al.includes('B:')) errs.push(label + ': beta content leaked into .alpha ("' + al + '")');
+        if (be && be.includes('A:')) errs.push(label + ': alpha content leaked into .beta ("' + be + '")');
+        return errs;
+      };
+
+      let errs = [];
+      // Stage 0: initial SSG render.
+      errs = errs.concat(check('initial', 'a1', 'b1'));
+      // Stage 1: edit only alpha — beta must stay untouched and correct.
+      await push('a2', 'b1'); errs = errs.concat(check('edit-alpha', 'a2', 'b1'));
+      // Stage 2: edit only beta — alpha must stay untouched and correct.
+      await push('a2', 'b2'); errs = errs.concat(check('edit-beta', 'a2', 'b2'));
+      // Stage 3: edit both at once — exercises the batch marker-slicing path.
+      await push('a3', 'b3'); errs = errs.concat(check('edit-both', 'a3', 'b3'));
+      // Stage 4: edit only alpha again after a both-edit.
+      await push('a4', 'b3'); errs = errs.concat(check('edit-alpha-again', 'a4', 'b3'));
+      // Stage 5: swap-ish values that echo the other's previous text, to catch
+      // stale reuse (alpha now "b3", beta now "a4" as raw text).
+      await push('b3', 'a4'); errs = errs.concat(check('cross-values', 'b3', 'a4'));
+
+      return errs.length ? ('FAIL ' + errs.join(' | ')) : 'PASS';
+
+  - step: In my browser, the console should be empty
