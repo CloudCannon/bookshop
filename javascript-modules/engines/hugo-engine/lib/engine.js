@@ -50,21 +50,19 @@ const ensureUnifiedLayoutInstalled = () => {
  * @returns {Promise<string|null>} - The build error if unrecoverable, or null on success
  */
 const buildHugoWithRetry = async (engine, context = "rendering", contentFiles = null) => {
-    window.hugo_wasm_logging = [];
     let render_attempts = 1;
-    let buildError = window.buildHugo();
+    let { error: buildError, logging } = await engine.buildWasm();
     while (buildError && render_attempts < 5) {
-        console.warn(`Hit a build error when ${context} Hugo:\n${window.hugo_wasm_logging.map(l => `  ${l}`).join('\n')}`);
-        if (await engine.componentQuack(buildError, window.hugo_wasm_logging) === null) {
+        console.warn(`Hit a build error when ${context} Hugo:\n${logging.map(l => `  ${l}`).join('\n')}`);
+        if (await engine.componentQuack(buildError, logging) === null) {
             // Can't find a template to overwrite and re-render
             break;
         }
         // Try render again with the problem template stubbed out
         if (contentFiles) {
-            window.writeHugoFiles(JSON.stringify(contentFiles));
+            await engine.wasm.writeFiles(JSON.stringify(contentFiles));
         }
-        window.hugo_wasm_logging = [];
-        buildError = window.buildHugo();
+        ({ error: buildError, logging } = await engine.buildWasm());
         render_attempts += 1;
     }
     return buildError;
@@ -72,6 +70,136 @@ const buildHugoWithRetry = async (engine, context = "rendering", contentFiles = 
 
 const sleep = (ms = 0) => {
     return new Promise(r => setTimeout(r, ms));
+}
+
+// The Go runtime source, injected at build time (see lib/builder.js). Only
+// present in the bundled browser build; undefined under plain Node (unit tests).
+const WASM_EXEC_SOURCE = (typeof __BOOKSHOP_WASM_EXEC_SOURCE__ !== 'undefined')
+    ? __BOOKSHOP_WASM_EXEC_SOURCE__
+    : null;
+
+// The body of the Web Worker that hosts the Hugo WASM. It receives the
+// (decompressed) wasm bytes once, instantiates them, then answers one message
+// per filesystem/build operation. Each build's log output is captured and
+// returned alongside the result. Kept as a string so it can be wrapped in a
+// Blob together with the Go runtime source — no separate asset to host.
+const HUGO_WORKER_BODY = `
+self.window = self; // wasm_exec.js writes its log capture onto window
+self.__ready = false;
+self.onmessage = async (e) => {
+    const { id, op, payload, bytes } = e.data;
+    try {
+        if (op === 'init') {
+            const go = new self.Go();
+            const { instance } = await WebAssembly.instantiate(bytes, go.importObject);
+            go.run(instance);
+            while (!self.buildHugo) await new Promise(r => setTimeout(r, 5));
+            self.__ready = true;
+            self.postMessage({ id, ok: true });
+            return;
+        }
+        self.hugo_wasm_logging = [];
+        let result = null;
+        if (op === 'write') result = self.writeHugoFiles(payload);
+        else if (op === 'build') result = self.buildHugo();
+        else if (op === 'read') result = self.readHugoFiles(payload);
+        else if (op === 'remove') result = self.removeHugoFiles(payload);
+        else if (op === 'initConfig') result = self.initHugoConfig();
+        self.postMessage({ id, ok: true, result, logging: self.hugo_wasm_logging || [] });
+    } catch (err) {
+        self.postMessage({ id, ok: false, error: String(err && err.stack || err) });
+    }
+};
+`;
+
+/**
+ * Runs the Hugo WASM inside a dedicated Web Worker so that buildHugo() — which
+ * can take seconds on a large page — never blocks the main (UI) thread.
+ * All operations are serialized through a queue, preserving the strict
+ * write -> build -> read ordering the in-memory filesystem relies on.
+ */
+class WorkerHugo {
+    constructor(wasmBytes) {
+        this.wasmBytes = wasmBytes;
+        this.pending = new Map();
+        this.msgId = 0;
+        this.queue = Promise.resolve();
+    }
+
+    async init() {
+        const source = WASM_EXEC_SOURCE + "\n" + HUGO_WORKER_BODY;
+        const blob = new Blob([source], { type: 'text/javascript' });
+        const url = URL.createObjectURL(blob);
+        this.worker = new Worker(url);
+        URL.revokeObjectURL(url);
+        this.worker.onmessage = (e) => {
+            const resolve = this.pending.get(e.data.id);
+            if (resolve) { this.pending.delete(e.data.id); resolve(e.data); }
+        };
+        // Hand the wasm bytes over (transferred, not copied) and wait for the
+        // module to instantiate.
+        const buffer = this.wasmBytes.buffer;
+        this.wasmBytes = null;
+        await this._enqueue({ op: 'init' }, [buffer], buffer);
+    }
+
+    // Post a single message and resolve when its reply arrives.
+    _post(message, transfer) {
+        return new Promise((resolve) => {
+            const id = ++this.msgId;
+            this.pending.set(id, resolve);
+            this.worker.postMessage({ id, ...message }, transfer || []);
+        });
+    }
+
+    // Chain onto the queue so operations never interleave on the shared FS.
+    _enqueue(message, transfer, bytes) {
+        const run = () => this._post(bytes ? { ...message, bytes } : message, transfer);
+        const result = this.queue.then(run, run);
+        this.queue = result.catch(() => {});
+        return result;
+    }
+
+    async writeFiles(json) { return (await this._enqueue({ op: 'write', payload: json })).result; }
+    async readFiles(json) { return (await this._enqueue({ op: 'read', payload: json })).result; }
+    async removeFiles(json) { return (await this._enqueue({ op: 'remove', payload: json })).result; }
+    async initConfig() { return (await this._enqueue({ op: 'initConfig' })).result; }
+    async build() {
+        const reply = await this._enqueue({ op: 'build' });
+        return { error: reply.result || null, logging: reply.logging || [] };
+    }
+}
+
+/**
+ * Runs the Hugo WASM on the current thread via the globals wasm_exec installs.
+ * Used for the Node unit tests and as a fallback when a Web Worker can't be
+ * created (e.g. a restrictive Content-Security-Policy). Behaviour matches the
+ * original synchronous implementation.
+ */
+class InlineHugo {
+    constructor(wasmBytes) {
+        this.wasmBytes = wasmBytes;
+    }
+
+    async init() {
+        const go = new Go();
+        const result = await WebAssembly.instantiate(this.wasmBytes, go.importObject);
+        this.wasmBytes = null;
+        go.run(result.instance);
+        while (typeof window === 'undefined' ? !globalThis.buildHugo : !window.buildHugo) {
+            await sleep(10);
+        }
+    }
+
+    async writeFiles(json) { return window.writeHugoFiles(json); }
+    async readFiles(json) { return window.readHugoFiles(json); }
+    async removeFiles(json) { return window.removeHugoFiles(json); }
+    async initConfig() { return window.initHugoConfig(); }
+    async build() {
+        window.hugo_wasm_logging = [];
+        const error = window.buildHugo();
+        return { error: error || null, logging: window.hugo_wasm_logging || [] };
+    }
 }
 
 const dig = (obj, path) => {
@@ -119,9 +247,19 @@ export class Engine {
         this.evalCache = new Map();
         this.dataGeneration = 0;
 
+        // Number of Hugo WASM builds run, for perf instrumentation/tests.
+        this.wasmBuildCount = 0;
+
         if (!this.synthetic) {
-            this.initializeHugo();
+            // Kick off initialization; render()/eval()/storeMeta() await this.
+            this.ready = this.initializeHugo();
         }
+    }
+
+    // A single Hugo build, tracked and routed through the active backend.
+    async buildWasm() {
+        this.wasmBuildCount += 1;
+        return this.wasm.build();
     }
 
     async initializeHugo() {
@@ -146,12 +284,11 @@ export class Engine {
             `disableKinds = ["taxonomy", "term", "RSS", "sitemap", "robotsTXT", "404"]`
         ].join('\n');
 
-        // When this script is run locally, the hugo wasm is loaded as binary rather than output as a file.
-        if (compressedHugoWasm?.constructor === Uint8Array) {
-            await this.initializeInlineHugo();
-        } else {
-            await this.initializeLocalCompressedHugo(true);
-        }
+        // Obtain the decompressed WASM bytes, then hand them to a backend that
+        // runs the module either in a Web Worker (off the main thread — the
+        // default in the browser) or inline (unit tests / Worker unavailable).
+        const wasmBytes = await this.loadWasmBytes();
+        this.wasm = await this.createBackend(wasmBytes);
 
         // TODO: Tidy
         const mappedFiles = {};
@@ -159,9 +296,9 @@ export class Engine {
             mappedFiles[`layouts/partials/bookshop/${file[0]}`] = translateTextTemplate(file[1], {});
         }
 
-        const componentSuccess = window["writeHugoFiles"](JSON.stringify(mappedFiles));
-        const templateSuccess = window["writeHugoFiles"](JSON.stringify(templates));
-        const extraSuccess = window["writeHugoFiles"](JSON.stringify(this.extraFiles));
+        await this.wasm.writeFiles(JSON.stringify(mappedFiles));
+        await this.wasm.writeFiles(JSON.stringify(templates));
+        await this.wasm.writeFiles(JSON.stringify(this.extraFiles));
 
         // BIG OL' TODO: Writing these files ahead of render() seems to be load-bearing,
         // which doesn't yet make sense to me.
@@ -172,22 +309,55 @@ export class Engine {
         // My suspicion would be something around our changeEvents() handling
         // in the Hugo builder, but I don't know why that wouldn't affect eval()... 🤷‍♂️
         // For now, the load-bearing stubs will live in this Hugo initialization.
-        window.writeHugoFiles(JSON.stringify({
+        await this.wasm.writeFiles(JSON.stringify({
             "layouts/all.html": "Uninitialized Layout",
             "content/_index.md": "{ \"initialized\": false }\n"
         }));
     }
 
-    async initializeLocalCompressedHugo(usePrefetch) {
-        try {
+    // Pick a backend: a Web Worker where possible (keeps buildHugo off the UI
+    // thread), otherwise inline. Any failure creating the worker degrades
+    // gracefully to the inline backend.
+    async createBackend(wasmBytes) {
+        const workerable = typeof Worker !== 'undefined'
+            && typeof Blob !== 'undefined'
+            && typeof URL !== 'undefined'
+            && typeof URL.createObjectURL === 'function'
+            && WASM_EXEC_SOURCE;
+        if (workerable) {
+            try {
+                const backend = new WorkerHugo(wasmBytes.slice());
+                await backend.init();
+                this.backendKind = 'worker';
+                return backend;
+            } catch (e) {
+                console.warn("[hugo-engine] Web Worker unavailable, running Hugo WASM inline", e);
+            }
+        }
+        const inline = new InlineHugo(wasmBytes);
+        await inline.init();
+        this.backendKind = 'inline';
+        return inline;
+    }
 
+    // Returns the decompressed Hugo WASM as a Uint8Array. Inline builds embed
+    // the gzipped bytes directly; hosted builds fetch the .wasm.gz (optionally
+    // from the CloudCannon prefetch cache).
+    async loadWasmBytes() {
+        if (compressedHugoWasm?.constructor === Uint8Array) {
+            return gunzipSync(new Uint8Array(compressedHugoWasm.buffer));
+        }
+        return this.fetchCompressedWasmBytes(true);
+    }
+
+    async fetchCompressedWasmBytes(usePrefetch) {
+        try {
             let prefetched = {};
             if (typeof window !== "undefined" && window?.CloudCannon && window?.CloudCannon?.prefetchedFiles) {
                 prefetched = await window.CloudCannon.prefetchedFiles?.();
                 this.availablePrefetchKeys = Object.keys(prefetched);
             }
 
-            const go = new Go();
             const compressedWasmOrigin = this.origin.replace(/\/[^\.\/]+\.(min\.)?js/, compressedHugoWasm.replace(/^\./, ''));
             const compressedWasmPath = (new URL(compressedWasmOrigin)).pathname;
 
@@ -207,25 +377,16 @@ export class Engine {
             const isWasm = ([...renderer.slice(0, 4)]).map(g => g.toString(16).padStart(2, '0')).join('') === "0061736d";
             if (!isWasm) throw "Not WASM";
 
-            const compressedResult = await WebAssembly.instantiate(renderer, go.importObject);
-            go.run(compressedResult.instance);
+            return renderer;
         } catch (e) {
             console.error("Couldn't load the local compressed Hugo WASM");
             console.error(e);
-
             // If our prefetch fails, fall back to loading the wasm ourselves
             if (usePrefetch) {
-                await this.initializeLocalCompressedHugo(false);
+                return this.fetchCompressedWasmBytes(false);
             }
+            throw e;
         }
-    }
-
-    async initializeInlineHugo() {
-        const go = new Go();
-        const buffer = compressedHugoWasm.buffer;
-        const renderer = gunzipSync(new Uint8Array(buffer));
-        const result = await WebAssembly.instantiate(renderer, go.importObject);
-        go.run(result.instance);
     }
 
     getSharedKey(name) {
@@ -276,10 +437,8 @@ export class Engine {
     }
 
     async storeMeta(meta = {}) {
-        while (!window.writeHugoFiles) {
-            await sleep(100);
-        };
-        window.writeHugoFiles(JSON.stringify({
+        await this.ready;
+        await this.wasm.writeFiles(JSON.stringify({
             "config.toml": [
                 meta.baseurl ? `baseURL = ${meta.baseurl}` : "",
                 meta.copyright ? `copyright = ${meta.copyright}` : "",
@@ -289,7 +448,7 @@ export class Engine {
                 `disableKinds = ["taxonomy", "term", "RSS", "sitemap", "robotsTXT", "404"]`
             ].join('\n')
         }));
-        const err = window.initHugoConfig();
+        const err = await this.wasm.initConfig();
         if (err) {
             console.error(err);
         }
@@ -299,9 +458,7 @@ export class Engine {
     }
 
     async storeInfo(info = {}) {
-        while (!window.writeHugoFiles) {
-            await sleep(100);
-        };
+        await this.ready;
 
         const data = info?.data;
         if (!data || typeof data !== "object") return;
@@ -309,7 +466,7 @@ export class Engine {
         for (const [file, contents] of Object.entries(data)) {
             files[`data/${file}.json`] = JSON.stringify(contents);
         }
-        window.writeHugoFiles(JSON.stringify(files));
+        await this.wasm.writeFiles(JSON.stringify(files));
         this.dataGeneration += 1;
     }
 
@@ -332,7 +489,7 @@ export class Engine {
                 const error_chunks = error_string.split("execute of template failed:");
                 const error_msg = error_chunks[error_chunks.length - 1] ?? "template error";
                 this.dataGeneration += 1;
-                window.writeHugoFiles(JSON.stringify({
+                await this.wasm.writeFiles(JSON.stringify({
                     [deepest_errored_component]: [
                         `<div style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
                         `Failed to render ${deepest_errored_component}. <br/>`,
@@ -353,7 +510,7 @@ export class Engine {
             if (file_stack.length) {
                 const deepest_errored_component = file_stack[file_stack.length - 1];
                 this.dataGeneration += 1;
-                window.writeHugoFiles(JSON.stringify({
+                await this.wasm.writeFiles(JSON.stringify({
                     [deepest_errored_component]: [
                         `<div class="bookshop_error" style="padding: 10px; background-color: lightcoral; color: black; font-weight: bold;">`,
                         `Failed to find component ${deepest_errored_component}`,
@@ -371,10 +528,7 @@ export class Engine {
     async render(target, name, props, globals, logger) {
         const uuid = crypto.randomUUID();
 
-        while (!window.buildHugo) {
-            logger?.log?.(`Waiting for the Hugo WASM to be available...`);
-            await sleep(100);
-        };
+        await this.ready;
 
         const writeFiles = {};
         let componentType = null;
@@ -407,7 +561,7 @@ export class Engine {
             }, null, 2) + "\n"
         };
         Object.assign(writeFiles, contentFiles);
-        window.writeHugoFiles(JSON.stringify(writeFiles));
+        await this.wasm.writeFiles(JSON.stringify(writeFiles));
 
         const buildError = await buildHugoWithRetry(this, "rendering", contentFiles);
         if (buildError) {
@@ -416,10 +570,10 @@ export class Engine {
         }
 
         const outputFileName = `public/${uuid}/index.html`;
-        const output = window.readHugoFiles(JSON.stringify([outputFileName]));
+        const output = await this.wasm.readFiles(JSON.stringify([outputFileName]));
 
         target.innerHTML = output[outputFileName];
-        window.removeHugoFiles(JSON.stringify([outputFileName, `content/${uuid}.md`]))
+        await this.wasm.removeFiles(JSON.stringify([outputFileName, `content/${uuid}.md`]));
         return true;
     }
 
@@ -431,12 +585,9 @@ export class Engine {
             c.renderedOk = await this.render(c.target, c.name, c.props, c.globals, logger);
             return;
         }
-        
-        while (!window.buildHugo) {
-            logger?.log?.(`Waiting for the Hugo WASM to be available...`);
-            await sleep(100);
-        }
-        
+
+        await this.ready;
+
         verboseLog(`[hugo-engine] Batch rendering ${components.length} components`);
         
         // Generate a unique batch ID to prevent marker collisions with component content
@@ -476,7 +627,7 @@ export class Engine {
             ...ensureUnifiedLayoutInstalled()
         };
 
-        window.writeHugoFiles(JSON.stringify(writeFiles));
+        await this.wasm.writeFiles(JSON.stringify(writeFiles));
 
         const buildError = await buildHugoWithRetry(this, "batch rendering", contentFiles);
         if (buildError) {
@@ -488,7 +639,7 @@ export class Engine {
             return;
         }
 
-        const output = window.readHugoFiles(JSON.stringify(["public/index.html"]));
+        const output = await this.wasm.readFiles(JSON.stringify(["public/index.html"]));
         const html = output["public/index.html"];
 
         for (let i = 0; i < componentData.length; i++) {
@@ -512,7 +663,7 @@ export class Engine {
 
     async eval(str, props = [{}], logger) {
         if (!this.synthetic) {
-            while (!window.buildHugo) await sleep(10);
+            await this.ready;
         }
         let props_obj = props.reduce((a, b) => { return { ...a, ...b } });
         let full_props = props_obj;
@@ -633,17 +784,17 @@ export class Engine {
             writeFiles["layouts/partials/bookshop_eval_expr.html"] = eval_str;
             this.lastEvalTemplate = eval_str;
         }
-        window.writeHugoFiles(JSON.stringify(writeFiles));
+        await this.wasm.writeFiles(JSON.stringify(writeFiles));
 
-        const buildError = window.buildHugo();
+        const { error: buildError } = await this.buildWasm();
         if (buildError) {
             console.warn(buildError);
             return;
         }
 
-        const output = window.readHugoFiles(JSON.stringify([
+        const output = (await this.wasm.readFiles(JSON.stringify([
             "public/index.html"
-        ]))["public/index.html"];
+        ])))["public/index.html"];
 
         try {
             const result = JSON.parse(output);

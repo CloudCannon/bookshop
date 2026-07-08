@@ -30,6 +30,10 @@ const jekyllFiles = {
     [jekyllComponent('titles-wrapper-erroneous-component')]: "{% bookshop_include {{include.component}} titles=page.titles %}{% bookshop null null=t %}",
     [jekyllComponent('assign-wrapper')]: "{% assign test_var=include.component %}{% bookshop {{test_var}} bind=page %}",
     [jekyllComponent('dynamic-loop')]: "{% for props in include.t %}{% bookshop {{props._bookshop_name}} bind=props %}{% endfor %}",
+    // Two visibly-distinct sibling components for the isolation test.
+    [jekyllComponent('alpha')]: `<div class="alpha">A:{{ include.text }}</div>`,
+    [jekyllComponent('beta')]: `<div class="beta">B:{{ include.text }}</div>`,
+    [jekyllComponent('two-up')]: "{% bookshop alpha bind=page.alpha %}{% bookshop beta bind=page.beta %}",
 }
 
 const eleventyComponent = (k) => `components/${k}/${k}.eleventy.liquid`;
@@ -49,6 +53,10 @@ const eleventyFiles = {
     [eleventyComponent('titles-wrapper-erroneous-component')]: "{% bookshop_include '{{component}}' titles: titles %}{% bookshop 'null' null: t %}",
     [eleventyComponent('assign-wrapper')]: "{% assign test_var=component %}{% bookshop '{{test_var}}' bind: page %}",
     [eleventyComponent('dynamic-loop')]: "{% for props in t %}{% bookshop {{props._bookshop_name}} bind: props %}{% endfor %}",
+    // Two visibly-distinct sibling components for the isolation test.
+    [eleventyComponent('alpha')]: `<div class="alpha">A:{{ text }}</div>`,
+    [eleventyComponent('beta')]: `<div class="beta">B:{{ text }}</div>`,
+    [eleventyComponent('two-up')]: "{% bookshop 'alpha' bind: alpha %}{% bookshop 'beta' bind: beta %}",
 }
 
 const wrapDataFor = (impl, data) => {
@@ -75,6 +83,15 @@ const initialSub = async (liveInstance, component, props, wrapper = 'wrapper') =
         props
     );
 }
+
+// Renders the `two-up` wrapper (two independent sibling components, alpha + beta)
+// into the body, matching how each engine exposes bound scope.
+const initTwoUp = async (liveInstance, a, b) => {
+    const data = { alpha: { text: a }, beta: { text: b } };
+    const eng = liveInstance.engines[0];
+    const globals = eng.name === 'Jekyll' ? { page: data } : data;
+    await eng.render(document.querySelector('body'), 'two-up', {}, globals);
+};
 
 const getBody = () => document.querySelector('body').innerHTML;
 const setBody = (h) => document.querySelector('body').innerHTML = Array.isArray(h) ? h.join('') : h;
@@ -104,6 +121,37 @@ for (const impl of ['jekyll', 'eleventy']) {
             `<h1>Live Love Laugh<\/h1>`,
             `<!--bookshop-live end-->`
         ].join(''));
+    });
+
+    test.serial(`[${impl}]: keeps sibling components isolated across staged edits`, async t => {
+        // Two independent sibling components rendered side by side. Editing them
+        // at different stages must never let one component's content land in the
+        // other's DOM slot — guards the shared live layer (batch collection,
+        // hydration pass, and graft) against cross-component contamination.
+        await initTwoUp(t.context[impl], 'a1', 'b1');
+
+        const check = (label, a, b) => {
+            const alphas = document.querySelectorAll('.alpha');
+            const betas = document.querySelectorAll('.beta');
+            t.is(alphas.length, 1, `${label}: expected exactly one .alpha`);
+            t.is(betas.length, 1, `${label}: expected exactly one .beta`);
+            t.is(alphas[0]?.textContent.trim(), `A:${a}`, `${label}: .alpha content`);
+            t.is(betas[0]?.textContent.trim(), `B:${b}`, `${label}: .beta content`);
+            // Neither slot may contain the other's marker.
+            t.false(alphas[0]?.textContent.includes('B:'), `${label}: beta leaked into .alpha`);
+            t.false(betas[0]?.textContent.includes('A:'), `${label}: alpha leaked into .beta`);
+        };
+
+        const push = async (a, b) =>
+            t.context[impl].update(wrapDataFor(impl, { alpha: { text: a }, beta: { text: b } }));
+
+        check('initial', 'a1', 'b1');
+        await push('a2', 'b1'); check('edit-alpha', 'a2', 'b1');   // only alpha changes
+        await push('a2', 'b2'); check('edit-beta', 'a2', 'b2');    // only beta changes
+        await push('a3', 'b3'); check('edit-both', 'a3', 'b3');    // both change together
+        await push('a4', 'b3'); check('edit-alpha-again', 'a4', 'b3');
+        // Values that echo the other component's previous text, to catch stale reuse.
+        await push('b3', 'a4'); check('cross-values', 'b3', 'a4');
     });
 
     test.serial(`[${impl}]: Re-renders in a loop`, async t => {

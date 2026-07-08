@@ -1,19 +1,21 @@
 name: Hugo bookshop live editing performance stays incremental
 
 # Guards the live-editing performance work on a HEAVY, deeply-nested page
-# (page -> feature -> card -> badge, many instances). Runs in a real browser
-# against the real Hugo WASM, so it reflects production behaviour (unlike a
-# jsdom harness, whose timing is dominated by its slow XPath).
+# (page -> feature -> card -> badge) at the scale of the original bug report:
+# ~140 top-level components / ~5000 lines of rendered HTML. Runs in a real
+# browser against the real Hugo WASM, so it reflects production behaviour
+# (unlike a jsdom harness, whose timing is dominated by its slow XPath).
 #
 # Assertions are on deterministic COUNTS, not wall-clock (which is machine
 # dependent and only reported):
 #   1. Per-edit build count must not grow across an editing session
 #      (guards the O(session) regression we fixed).
 #   2. Per-edit build count must not scale with page size — editing one
-#      component on a 24-block page must cost the same builds as on a 4-block
-#      page (the core "incremental, not full rebuild" guarantee).
+#      component on the 140-block page must cost the same builds as on a
+#      6-block page (the core "incremental, not full rebuild" guarantee).
 # The reported ms arrays make the actual per-keystroke latency visible in CI
 # logs and are what optimisation work (eval-path fix, web worker) will move.
+# Each edit is its own step so a slow render never trips the browser timeout.
 
 platforms:
   - linux
@@ -82,17 +84,18 @@ steps:
           "items": [ { "_bookshop_name": "card", "title": "Item 0-0" } ] }
       ]}
 
-  # Install per-update counters at the WASM boundary and on the engine's eval,
-  # and disable the 1s render throttle so each pushed edit renders immediately.
+  # Install per-update counters on the engine and disable the 1s render throttle
+  # so each pushed edit renders immediately. Build count is read from the
+  # engine's own wasmBuildCount (the WASM runs in a Web Worker, so there is no
+  # window.buildHugo to patch); eval/cache counters wrap the engine's eval.
   - step: In my browser, I evaluate {js}
     js: |-
       const bl = window.bookshopLive;
       bl.renderFrequency = 0;
-      const perf = { builds: 0, evals: 0, cacheHits: 0 };
-      window.__perf = perf;
-      const b = window.buildHugo;
-      window.buildHugo = (...a) => { perf.builds++; return b(...a); };
       const eng = bl.engines[0];
+      const perf = { evals: 0, cacheHits: 0 };
+      window.__perf = perf;
+      window.__engine = eng;
       const oe = eng.eval.bind(eng);
       eng.eval = (...a) => { perf.evals++; return oe(...a); };
       if (eng.evalCache && typeof eng.evalCache.has === 'function') {
@@ -102,9 +105,21 @@ steps:
       // Front matter builder: N features x M markdown cards; feature 0's title
       // is the field we "type" into. Markdown makes each card's render (goldmark
       // in WASM) genuinely expensive, so the big page is a multi-second edit.
-      window.__md = (i, j) => '**Card ' + i + '-' + j + '** lorem ipsum dolor sit amet, '
-        + 'consectetur adipiscing elit.\n\n- alpha item\n- beta item\n- gamma item\n\n'
-        + '> A blockquote with [a link](https://example.com/' + i + '/' + j + ') and `code`.';
+      window.__md = (i, j) => [
+        '## Card ' + i + '-' + j,
+        '',
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt.',
+        '',
+        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.',
+        '',
+        '- alpha item one', '- beta item two', '- gamma item three', '- delta item four',
+        '',
+        '1. first ordered', '2. second ordered', '3. third ordered',
+        '',
+        '> A blockquote with [a link](https://example.com/' + i + '/' + j + ') and `inline code`.',
+        '',
+        'Final paragraph with **bold**, *italic*, and enough prose to fill out the block.',
+      ].join('\n');
       window.__fm = (N, M, edited) => ({ components: Array.from({ length: N }, (_, i) => ({
         _bookshop_name: 'feature',
         title: i === 0 ? edited : ('Feature ' + i),
@@ -115,12 +130,12 @@ steps:
       // render never exceeds the per-action browser timeout however heavy the page.
       window.__edit = async (data) => {
         const rc = bl.renderCount;
-        const snap = { ...perf };
+        const snap = { ...perf, builds: eng.wasmBuildCount };
         const t = performance.now();
         window.CloudCannon.newData(data);
         await toolproof.waitFor(() => bl.renderCount > rc, 30000);
         return { ms: Math.round(performance.now() - t),
-                 builds: perf.builds - snap.builds,
+                 builds: eng.wasmBuildCount - snap.builds,
                  evals: perf.evals - snap.evals,
                  hits: perf.cacheHits - snap.cacheHits };
       };
@@ -130,23 +145,38 @@ steps:
 
   # Small page: seed the size, then two measured edits (each its own step).
   - step: In my browser, I evaluate {js}
-    js: await window.__edit(window.__fm(6, 3, 'Seed'));
+    js: await window.__edit(window.__fm(6, 1, 'Seed'));
   - step: In my browser, I evaluate {js}
-    js: window.__small.push(await window.__edit(window.__fm(6, 3, 'Edit 1')));
+    js: window.__small.push(await window.__edit(window.__fm(6, 1, 'Edit 1')));
   - step: In my browser, I evaluate {js}
-    js: window.__small.push(await window.__edit(window.__fm(6, 3, 'Edit 2')));
+    js: window.__small.push(await window.__edit(window.__fm(6, 1, 'Edit 2')));
 
-  # Large page: 40 features x 5 markdown cards = 200 components. This is the
-  # heavy case — a single edit re-renders the whole page in one WASM build,
-  # which is a multi-second main-thread freeze (the problem worth solving).
+  # Large page: 140 feature blocks, each with a markdown card + badge (~420
+  # component renders, ~5000 lines of output) — the scale of the original bug
+  # report. A single edit re-renders the whole page in one WASM build, a
+  # multi-second main-thread freeze: the problem worth solving.
   - step: In my browser, I evaluate {js}
-    js: await window.__edit(window.__fm(40, 5, 'Seed'));
+    js: await window.__edit(window.__fm(140, 1, 'Seed'));
   - step: In my browser, I evaluate {js}
-    js: window.__big.push(await window.__edit(window.__fm(40, 5, 'Edit 1')));
+    js: window.__big.push(await window.__edit(window.__fm(140, 1, 'Edit 1')));
   - step: In my browser, I evaluate {js}
-    js: window.__big.push(await window.__edit(window.__fm(40, 5, 'Edit 2')));
+    js: window.__big.push(await window.__edit(window.__fm(140, 1, 'Edit 2')));
 
-  # Assert the incremental invariants; timing is reported in the string, not asserted.
+  # Main-thread stall probe: tick a timer every 20ms during a heavy edit and
+  # record the largest gap between ticks. The WASM build runs in the worker, so
+  # the main thread should keep ticking (small max gap) instead of freezing for
+  # the whole ~2s build. This is the property the fix delivers.
+  - step: In my browser, I evaluate {js}
+    js: |-
+      const gaps = [];
+      let last = performance.now();
+      const iv = setInterval(() => { const n = performance.now(); gaps.push(n - last); last = n; }, 20);
+      window.__stall = await window.__edit(window.__fm(140, 1, 'Stall'));
+      clearInterval(iv);
+      window.__maxGap = Math.round(Math.max.apply(null, gaps));
+
+  # Assert incremental invariants + that the heavy edit did NOT block the main
+  # thread for its full duration. Timing is reported in the string.
   - step: In my browser, the result of {js} should contain "PASS"
     js: |-
       const small = window.__small, big = window.__big;
@@ -154,18 +184,24 @@ steps:
       const stable = (res) => { const b = res.map(r => r.builds); return Math.max(...b) - Math.min(...b) <= 2; };
       const sBuilds = median(small.map(r => r.builds));
       const bBuilds = median(big.map(r => r.builds));
+      const maxGap = window.__maxGap, stallMs = window.__stall.ms;
       const summary =
-        ' | small(6x3): builds=' + JSON.stringify(small.map(r => r.builds)) +
+        ' backend=' + (window.__engine && window.__engine.backendKind) +
+        ' | small(6x1): builds=' + JSON.stringify(small.map(r => r.builds)) +
         ' ms=' + JSON.stringify(small.map(r => r.ms)) +
-        ' | big(40x5): builds=' + JSON.stringify(big.map(r => r.builds)) +
+        ' | big(140x1): builds=' + JSON.stringify(big.map(r => r.builds)) +
         ' evals=' + JSON.stringify(big.map(r => r.evals)) +
         ' hits=' + JSON.stringify(big.map(r => r.hits)) +
-        ' ms=' + JSON.stringify(big.map(r => r.ms));
+        ' ms=' + JSON.stringify(big.map(r => r.ms)) +
+        ' | stall: editMs=' + stallMs + ' maxMainThreadGap=' + maxGap + 'ms';
       if (!stable(small) || !stable(big)) return 'FAIL per-edit builds grew across session;' + summary;
       if (Math.abs(sBuilds - bBuilds) > 2) return 'FAIL per-edit builds scale with page size (small=' + sBuilds + ' big=' + bBuilds + ');' + summary;
+      // The build ran off-thread if the longest main-thread freeze was only a
+      // fraction of the total edit time (which includes the ~2s worker build).
+      if (maxGap > stallMs * 0.6) return 'FAIL main thread blocked for most of the edit (gap=' + maxGap + ' of ' + stallMs + 'ms);' + summary;
       return 'PASS' + summary;
 
-  # The edit is actually reflected in the DOM (big page's last edit).
-  - step: In my browser, the result of {js} should contain "Edit 2"
+  # The edit is actually reflected in the DOM (the stall probe's edit is last).
+  - step: In my browser, the result of {js} should contain "Stall"
     js: return (await toolproof.querySelector(".page .feature:first-child h2")).innerText
   - step: In my browser, the console should be empty
