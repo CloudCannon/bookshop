@@ -239,8 +239,11 @@ class InlineHugo {
         const result = await WebAssembly.instantiate(this.wasmBytes, go.importObject);
         this.wasmBytes = null;
         go.run(result.instance);
+        let waited = 0;
         while (!this.g.buildHugo) {
+            if (waited >= 15000) throw new Error('Hugo WASM did not register buildHugo after go.run');
             await sleep(10);
+            waited += 10;
         }
     }
 
