@@ -10,7 +10,7 @@
 ## Unreleased
 
 * Hugo live editing performance improvements, most noticeable on large pages:
-  * The Hugo WASM renderer now runs in a Web Worker, so editing no longer freezes the interface while the page re-renders (falls back to inline where a Worker can't be created).
+  * The Hugo WASM renderer now runs in a Web Worker, so editing no longer freezes the interface while the page re-renders.
   * Edits are incremental again, instead of a near-full site rebuild that got slower the longer an editing session ran.
   * Repeated expression evaluations are cached across edits.
   * Fixed expression evaluation disabling batched component rendering for the rest of an editing session.
