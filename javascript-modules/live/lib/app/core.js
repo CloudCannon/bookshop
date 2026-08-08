@@ -109,7 +109,13 @@ const evaluateTemplate = async (opts) => {
         templateBlockHandler,
         isRetry,
         logger,
-        processDeepComponents = true
+        processDeepComponents = true,
+        // Optional Map(startNode -> identity). When provided, a "block" (a
+        // component directly inside a range/with) whose inputs are unchanged
+        // since last walk has its entire subtree skipped — not evaluated, not
+        // handed to templateBlockHandler. This is what makes editing one block
+        // of a large page cheap: the other blocks aren't walked at all.
+        blockMemo,
     } = opts;
     const stack = [{ scope: {} }];           // The stack of data scopes
     const pathStack = parentPathStack || [{}];     // The paths from the root to any assigned variables
@@ -215,6 +221,7 @@ const evaluateTemplate = async (opts) => {
             stack.push({
                 pathStack: JSON.parse(JSON.stringify(pathStack)),
                 scope,
+                isRange: true, // a range/with iteration; its child components are "blocks"
             });
         } else if (liveTag.unstack) {
             logger?.log?.(`Unstacking a context`);
@@ -226,6 +233,49 @@ const evaluateTemplate = async (opts) => {
             stashedParams = [...stashedParams, ...parseParams(liveTag?.params)];
         } else if (liveTag?.name) { // Entering a new component
             const componentDepth = stack.length - 1;
+            // A "block" is a component that sits directly inside a range/with
+            // iteration (its enclosing frame is a range). These are the
+            // independently-renderable content blocks of a page.
+            const isBlock = !!stack[stack.length - 1]?.isRange;
+
+            // Skip an unchanged block's whole subtree without evaluating it.
+            // The block's inputs are its enclosing (loop) scope, which the
+            // preceding context comment has already resolved cheaply, plus its
+            // own params and the engine's data/globals generation. We only READ
+            // the memo here to decide skipping; the caller writes it once the
+            // block has actually been processed, so a superseded or failed pass
+            // never leaves a block wrongly marked up-to-date.
+            let blockIdentity = null;
+            if (blockMemo && isBlock) {
+                blockIdentity = JSON.stringify({
+                    n: normalizeName(liveTag.name),
+                    p: liveTag.params || '',
+                    s: stack[stack.length - 1]?.scope,
+                    g: liveInstance.engines?.[0]?.dataGeneration ?? 0,
+                    v: liveInstance.globalDataVersion ?? 0,
+                });
+                if (blockMemo.get(currentNode) === blockIdentity) {
+                    logger?.log?.(`Skipping unchanged block ${liveTag.name}`);
+                    // Advance past this component's matching end, tracking
+                    // nested components (stack/unstack and standalone bindings
+                    // tags don't open a component, so don't affect the depth).
+                    let depth = 1;
+                    while (depth > 0) {
+                        let next;
+                        try { next = iterator.iterateNext(); } catch { next = null; }
+                        if (!next) break;
+                        currentNode = next;
+                        const t = parseComment(currentNode);
+                        if (t?.name && t.name !== '__bookshop__subsequent') depth++;
+                        else if (t?.end) depth--;
+                    }
+                    stashedParams = [];
+                    stashedNodes = [];
+                    try { currentNode = iterator.iterateNext(); } catch { currentNode = null; }
+                    continue;
+                }
+            }
+
             if (componentDepth == 0 || processDeepComponents === true) {
                 logger?.log?.(`Rendering a new component ${liveTag.name}`);
                 let scope = {};
@@ -268,6 +318,8 @@ const evaluateTemplate = async (opts) => {
                     params,
                     stashedNodes,
                     depth: componentDepth,
+                    isBlock,
+                    blockIdentity,
                 });
             } else {
                 logger?.log?.(`Skipping deep render of ${liveTag.name}`);
@@ -277,6 +329,8 @@ const evaluateTemplate = async (opts) => {
                     startNode: currentNode,
                     name: normalizeName(liveTag?.name),
                     depth: componentDepth,
+                    isBlock,
+                    blockIdentity,
                 });
             }
             stashedParams = [];
@@ -300,7 +354,114 @@ const evaluateTemplate = async (opts) => {
  * Returns an array of all components rendered in virtual-DOM nodes,
  * with the start & end real-DOM nodes to anchor each component on
  */
+// Opt-in (window.bookshopIncrementalBlocks): render only the content blocks
+// whose inputs changed rather than re-rendering the whole top-level wrapper.
+// A "block" is a component that sits directly inside a range/with iteration
+// (e.g. each entry of a page that ranges over `content_blocks`). Editing one
+// block then rebuilds only that block instead of the entire page. Pages with no
+// range-child blocks fall back to whole-component rendering, so non-range
+// layouts behave exactly as the default path.
+const renderComponentUpdatesIncremental = async (liveInstance, documentNode, logger) => {
+    const vDom = document.implementation.createHTMLDocument();
+    const updates = [];
+    const pendingComponents = [];
+    const all = [];
+
+    // Skip walking/evaluating blocks whose inputs are unchanged. Disabled by
+    // window.bookshopLiveNoMemo (then every block is re-walked and re-rendered).
+    const useMemo = !(typeof window !== 'undefined' && window.bookshopLiveNoMemo);
+    liveInstance.renderBlockMemo ??= new WeakMap();
+
+    await evaluateTemplate({
+        liveInstance,
+        documentNode,
+        templateBlockHandler: async (frame) => { all.push(frame); },
+        isRetry: false,
+        logger: logger?.nested?.(),
+        processDeepComponents: true,
+        blockMemo: useMemo ? liveInstance.renderBlockMemo : undefined,
+    });
+
+    // `all` holds only the components that were actually walked — unchanged
+    // blocks were skipped wholesale. Render units = outermost walked blocks, or
+    // (a page with no range-child blocks) the walked top-level components.
+    const blocks = all.filter(c => c.isBlock && c.startNode && c.endNode);
+    const usesBlocks = blocks.length > 0;
+    const units = usesBlocks
+        ? blocks.filter(b => !blocks.some(o => o !== b
+            && nodeIsBefore(o.startNode, b.startNode) && nodeIsBefore(b.endNode, o.endNode)))
+        : all.filter(c => c.depth === 0 && c.startNode && c.endNode);
+
+    if (typeof window !== 'undefined') {
+        window.__incrementalStats = { total: all.length, blocks: blocks.length, units: units.length, rendered: 0 };
+    }
+
+    // Blocks are already filtered by the subtree-skip above (only changed ones
+    // were walked). Top-level fallback units aren't blocks, so memo-skip
+    // unchanged ones per-unit here — the same skip the non-incremental path does.
+    const engineGeneration = liveInstance.engines[0]?.dataGeneration;
+    const perUnitMemo = !usesBlocks && useMemo && engineGeneration !== undefined && !!liveInstance.renderMemo;
+
+    for (const c of units) {
+        const liveRenderFlag = c.scope?.live_render ?? c.scope?.liveRender
+            ?? c.scope?._live_render ?? c.scope?._liveRender ?? true;
+        if (!liveRenderFlag) {
+            logger?.log?.(`Skipping render for ${c.name} due to false liverender flag`);
+            continue; // never memoized (we only memoize after a real render)
+        }
+        let memoKey = null;
+        if (perUnitMemo) {
+            memoKey = JSON.stringify({
+                name: c.name, scope: c.scope, pathStack: c.pathStack,
+                engineGeneration, globalDataVersion: liveInstance.globalDataVersion ?? 0,
+            });
+            if (liveInstance.renderMemo.get(c.startNode) === memoKey) {
+                logger?.log?.(`Skipping ${c.name} — inputs unchanged since last render`);
+                continue;
+            }
+        }
+        pendingComponents.push({
+            name: c.name, scope: c.scope, dom: vDom.createElement('div'),
+            startNode: c.startNode, endNode: c.endNode,
+            pathStack: c.pathStack, stashedNodes: c.stashedNodes,
+            blockIdentity: c.blockIdentity, memoKey,
+        });
+    }
+
+    if (typeof window !== 'undefined' && window.__incrementalStats) {
+        window.__incrementalStats.rendered = pendingComponents.length;
+    }
+
+    if (pendingComponents.length > 0) {
+        logger?.log?.(`Incrementally rendering ${pendingComponents.length} block(s)`);
+        await liveInstance.renderElements(pendingComponents, logger?.nested?.());
+        for (const c of pendingComponents) {
+            // Memoize only once a component has actually rendered, so a failed
+            // render re-runs next time rather than being skipped as up-to-date.
+            // We own the memo write here (blocks -> renderBlockMemo via subtree
+            // identity, fallback units -> renderMemo) and pass memoKey: null to
+            // the update so live.js doesn't also memoize on output-present alone.
+            if (useMemo && c.renderedOk !== false) {
+                if (c.blockIdentity) liveInstance.renderBlockMemo.set(c.startNode, c.blockIdentity);
+                else if (c.memoKey) liveInstance.renderMemo.set(c.startNode, c.memoKey);
+            }
+            updates.push({
+                startNode: c.startNode, endNode: c.endNode, output: c.dom,
+                pathStack: c.pathStack, scope: c.scope, name: c.name,
+                stashedNodes: c.stashedNodes, memoKey: null,
+            });
+        }
+    }
+    return updates;
+};
+
 export const renderComponentUpdates = async (liveInstance, documentNode, logger) => {
+    // Incremental block rendering is on by default; opt out with
+    // window.bookshopIncrementalBlocks = false.
+    if (typeof window === 'undefined' || window.bookshopIncrementalBlocks !== false) {
+        return renderComponentUpdatesIncremental(liveInstance, documentNode, logger);
+    }
+
     const vDom = document.implementation.createHTMLDocument();
     const updates = [];     // Rendered elements and their DOM locations
     const pendingComponents = []; // Components to batch render
@@ -499,21 +660,39 @@ export const hydrateDocumentBindings = async (liveInstance, documentNode, logger
         components.push(component);
     }
 
+    // Skip re-binding unchanged blocks: their DOM (and existing data-cms-bind
+    // attributes) is untouched between edits. Uses a memo separate from the
+    // render pass so a block that just re-rendered is still re-bound this pass.
+    // Only engaged for the incremental path; the default path passes no memo.
+    let blockMemo;
+    if (typeof window !== 'undefined' && window.bookshopIncrementalBlocks !== false
+        && !window.bookshopLiveNoMemo) {
+        liveInstance.hydrateBlockMemo ??= new WeakMap();
+        blockMemo = liveInstance.hydrateBlockMemo;
+    }
+
     await evaluateTemplate({
         liveInstance,
         documentNode,
         templateBlockHandler,
         isRetry: false,
-        logger: logger?.nested?.()
+        logger: logger?.nested?.(),
+        blockMemo,
     });
 
     const boundThisPass = new Set();
     for (const component of components) {
         if (isSuperseded()) {
             logger?.log?.(`A newer render superseded this hydration pass — bailing`);
+            // A newer pass will re-walk everything; some blocks weren't bound
+            // this pass, so drop the memo rather than leave them marked done.
+            if (blockMemo) liveInstance.hydrateBlockMemo = new WeakMap();
             return false;
         }
         applyComponentBindings(liveInstance, component, boundThisPass, logger?.nested?.());
+        if (blockMemo && component.blockIdentity) {
+            blockMemo.set(component.startNode, component.blockIdentity);
+        }
         await yieldToMain();
     }
     logger?.log?.(`Hydrated the document's data bindings`);

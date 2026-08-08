@@ -265,20 +265,21 @@ const dig = (obj, path) => {
     return obj;
 }
 
+// Find the Hugo `$variables` in a scope so they can be re-declared in the eval
+// template. The live layer only ever assigns `$`-vars as top-level keys of a
+// scope, so we scan top-level keys only. Recursing the whole merged props —
+// which on a deeply-nested eval contains the entire page's data — was O(page)
+// (and quadratic via the spread) wasted work on every single eval.
 let mapHugoVariablesToParams = (obj, path) => {
-    let resolved = {};
-    for (let [k, v] of Object.entries(obj)) {
+    const resolved = {};
+    for (const [k, v] of Object.entries(obj)) {
         if (k.startsWith('$')) {
             const remapped = `__bksh_${k.substring(1)}`;
             obj[remapped] = v;
             resolved[k] = `${path}.${remapped}`;
-        } else {
-            if (v && typeof v === 'object' && !Array.isArray(v)) {
-                resolved = { ...resolved, ...mapHugoVariablesToParams(v, `${path}.${k}`) }
-            }
         }
     }
-    return resolved
+    return resolved;
 }
 
 export class Engine {
@@ -316,6 +317,20 @@ export class Engine {
     async buildWasm() {
         this.wasmBuildCount += 1;
         return this.wasm.build();
+    }
+
+    // Runs `fn` with exclusive access to the Hugo virtual filesystem. A single
+    // render/eval is a write -> build -> read SEQUENCE over shared paths
+    // (content/_index.md, the eval partial, public/index.html); the worker
+    // serializes individual ops but not the sequence. Since the WASM now builds
+    // off the main thread, a throttled render can fire mid-build and two passes
+    // would otherwise interleave (write A, write B, build, read A -> A gets B's
+    // output). This lock keeps each pass's sequence atomic.
+    async withWasmLock(fn) {
+        const run = () => fn();
+        const result = (this._wasmLock || Promise.resolve()).then(run, run);
+        this._wasmLock = result.then(() => {}, () => {});
+        return result;
     }
 
     async initializeHugo() {
@@ -617,19 +632,24 @@ export class Engine {
             }, null, 2) + "\n"
         };
         Object.assign(writeFiles, contentFiles);
-        await this.wasm.writeFiles(JSON.stringify(writeFiles));
 
-        const buildError = await buildHugoWithRetry(this, "rendering", contentFiles);
+        // Keep this render's write -> build -> read/remove atomic against other
+        // renders/evals sharing the Hugo filesystem and build.
+        const outputFileName = `public/${uuid}/index.html`;
+        const { buildError, output } = await this.withWasmLock(async () => {
+            await this.wasm.writeFiles(JSON.stringify(writeFiles));
+            const err = await buildHugoWithRetry(this, "rendering", contentFiles);
+            if (err) return { buildError: err };
+            const out = await this.wasm.readFiles(JSON.stringify([outputFileName]));
+            await this.wasm.removeFiles(JSON.stringify([outputFileName, `content/${uuid}.md`]));
+            return { output: out };
+        });
         if (buildError) {
             console.error(buildError);
             return false;
         }
 
-        const outputFileName = `public/${uuid}/index.html`;
-        const output = await this.wasm.readFiles(JSON.stringify([outputFileName]));
-
         target.innerHTML = output[outputFileName];
-        await this.wasm.removeFiles(JSON.stringify([outputFileName, `content/${uuid}.md`]));
         return true;
     }
 
@@ -683,9 +703,16 @@ export class Engine {
             ...ensureUnifiedLayoutInstalled()
         };
 
-        await this.wasm.writeFiles(JSON.stringify(writeFiles));
-
-        const buildError = await buildHugoWithRetry(this, "batch rendering", contentFiles);
+        // Atomic write -> build -> read against other renders/evals. The
+        // error fallback calls this.render (which takes the lock itself), so it
+        // must run outside the lock.
+        const { buildError, html } = await this.withWasmLock(async () => {
+            await this.wasm.writeFiles(JSON.stringify(writeFiles));
+            const err = await buildHugoWithRetry(this, "batch rendering", contentFiles);
+            if (err) return { buildError: err };
+            const out = await this.wasm.readFiles(JSON.stringify(["public/index.html"]));
+            return { html: out["public/index.html"] };
+        });
         if (buildError) {
             console.error(`Batch render error: ${buildError}`);
             verboseLog('[hugo-engine] Falling back to individual renders');
@@ -694,9 +721,6 @@ export class Engine {
             }
             return;
         }
-
-        const output = await this.wasm.readFiles(JSON.stringify(["public/index.html"]));
-        const html = output["public/index.html"];
 
         for (let i = 0; i < componentData.length; i++) {
             const originalIndex = componentData[i].index;
@@ -808,7 +832,12 @@ export class Engine {
         // This is the SLOW PATH - we're hitting Hugo WASM because no short-circuit worked
         verboseLog(`[hugo-engine] eval requires Hugo WASM: "${str.substring(0, 80)}${str.length > 80 ? '...' : ''}"`);
 
-        const evalContent = JSON.stringify({ bookshop_eval: true, props: props_obj, full_props: full_props }, null, 2);
+        // full_props is only referenced by the `$`-variable declarations, so
+        // only ship (and key on) it when the expression actually uses `$`-vars.
+        // For the common component eval this avoids serialising the whole page.
+        const evalContent = variable_decl
+            ? JSON.stringify({ bookshop_eval: true, props: props_obj, full_props: full_props })
+            : JSON.stringify({ bookshop_eval: true, props: props_obj });
 
         // The result of an expression is a pure function of (expression, props),
         // so it can be cached across live updates — unless the expression can
@@ -832,25 +861,33 @@ export class Engine {
         // shadow layouts/all.html for the home page and permanently break
         // batch rendering. Repeated evals of the same expression skip the
         // template write so Hugo doesn't take the template-changed path.
-        const writeFiles = {
-            "content/_index.md": evalContent,
-            ...ensureUnifiedLayoutInstalled()
-        };
-        if (this.lastEvalTemplate !== eval_str) {
-            writeFiles["layouts/partials/bookshop_eval_expr.html"] = eval_str;
-            this.lastEvalTemplate = eval_str;
-        }
-        await this.wasm.writeFiles(JSON.stringify(writeFiles));
+        //
+        // The write -> build -> read sequence (and the shared lastEvalTemplate /
+        // content/_index.md / public/index.html paths) must be atomic, or a
+        // concurrent eval/render could build or read the wrong expression.
+        let buildError = null;
+        const output = await this.withWasmLock(async () => {
+            const writeFiles = {
+                "content/_index.md": evalContent,
+                ...ensureUnifiedLayoutInstalled()
+            };
+            if (this.lastEvalTemplate !== eval_str) {
+                writeFiles["layouts/partials/bookshop_eval_expr.html"] = eval_str;
+                this.lastEvalTemplate = eval_str;
+            }
+            await this.wasm.writeFiles(JSON.stringify(writeFiles));
 
-        const { error: buildError } = await this.buildWasm();
+            const built = await this.buildWasm();
+            if (built.error) { buildError = built.error; return null; }
+
+            return (await this.wasm.readFiles(JSON.stringify([
+                "public/index.html"
+            ])))["public/index.html"];
+        });
         if (buildError) {
             console.warn(buildError);
             return;
         }
-
-        const output = (await this.wasm.readFiles(JSON.stringify([
-            "public/index.html"
-        ])))["public/index.html"];
 
         try {
             const result = JSON.parse(output);
