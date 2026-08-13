@@ -76,6 +76,19 @@ test("eval complex dict", async t => {
     t.deepEqual(dot, { zanzibar: ['live', 'editing'], and: 'a_literal' });
 });
 
+test("eval matches Hugo's case insensitive params", async t => {
+    const val = await engine.eval(`params`, [{ Params: { test: 'bookshop' } }]);
+    t.deepEqual(val, { test: 'bookshop' });
+
+    const nested = await engine.eval(`.params.Test`, [{ Params: { test: 'bookshop' } }]);
+    t.is(nested, 'bookshop');
+});
+
+test("eval an identifier that isn't in scope", async t => {
+    const val = await engine.eval(`nowhere.to.be.seen`, [{ test: 'bookshop' }]);
+    t.is(val, undefined);
+});
+
 test("eval array index", async t => {
     const dot = await engine.eval(`(index .live 1)`, [{ live: ["editing", "lively"] }]);
     t.deepEqual(dot, "lively");
