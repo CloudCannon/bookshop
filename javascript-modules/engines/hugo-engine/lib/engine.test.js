@@ -76,6 +76,39 @@ test("eval complex dict", async t => {
     t.deepEqual(dot, { zanzibar: ['live', 'editing'], and: 'a_literal' });
 });
 
+test("eval matches Hugo's case insensitive params", async t => {
+    const val = await engine.eval(`params`, [{ Params: { test: 'bookshop' } }]);
+    t.deepEqual(val, { test: 'bookshop' });
+
+    const nested = await engine.eval(`.params.Test`, [{ Params: { test: 'bookshop' } }]);
+    t.is(nested, 'bookshop');
+
+    // Hugo stops lowercasing keys at an array, so neither should we
+    const inArray = await engine.eval(`.blocks.0.Heading`, [{ blocks: [{ heading: 'bookshop' }] }]);
+    t.is(inArray, null);
+});
+
+test("eval the Params scope", async t => {
+    const data = { Params: { title: 'Home', blocks: ['first', 'second'] } };
+
+    const params = await engine.eval(`.Params`, [data]);
+    t.deepEqual(params, data.Params);
+
+    const nested = await engine.eval(`.Params.title`, [data]);
+    t.is(nested, 'Home');
+
+    const indexed = await engine.eval(`(index .Params.blocks 1)`, [data]);
+    t.is(indexed, 'second');
+
+    const dict = await engine.eval(`(dict "page" .Params "heading" .Params.title)`, [data]);
+    t.deepEqual(dict, { page: data.Params, heading: 'Home' });
+});
+
+test("eval an identifier that isn't in scope", async t => {
+    const val = await engine.eval(`nowhere.to.be.seen`, [{ test: 'bookshop' }]);
+    t.is(val, undefined);
+});
+
 test("eval array index", async t => {
     const dot = await engine.eval(`(index .live 1)`, [{ live: ["editing", "lively"] }]);
     t.deepEqual(dot, "lively");

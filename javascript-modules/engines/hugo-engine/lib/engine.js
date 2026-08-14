@@ -1,7 +1,7 @@
-import compressedHugoWasm from "../full-hugo-renderer/hugo_renderer.wasm.gz";
 import { gunzipSync } from 'fflate';
-import translateTextTemplate from './translateTextTemplate.js';
+import compressedHugoWasm from "../full-hugo-renderer/hugo_renderer.wasm.gz";
 import { IdentifierParser } from './hugoIdentifierParser.js';
+import translateTextTemplate from './translateTextTemplate.js';
 
 const verboseLog = (message, ...args) => {
     if (typeof window !== 'undefined' && window?.bookshopLiveVerbose) {
@@ -264,6 +264,36 @@ const dig = (obj, path) => {
     if (obj && path.length) return dig(obj, path);
     return obj;
 }
+
+// Props are handed to Hugo as front matter, and Hugo lowercases the keys of
+// every map it finds there, so lookups that reach a Hugo build resolve without
+// regard to case. Hugo doesn't recurse into arrays, so anything below one keeps
+// the case it was written with.
+const digInsensitive = (obj, path) => {
+    const keys = path.replace(/\[(\d+)]/g, '.$1').split('.');
+    let current = obj;
+    let lowercased = true;
+    for (const key of keys) {
+        if (!current || typeof current !== 'object') return undefined;
+        if (key in current) {
+            current = current[key];
+        } else {
+            if (!lowercased) return undefined;
+            const match = Object.keys(current).find(k => k.toLowerCase() === key.toLowerCase());
+            if (match === undefined) return undefined;
+            current = current[match];
+        }
+        if (Array.isArray(current)) lowercased = false;
+    }
+    return current;
+}
+
+const HUGO_GLOBALS = new Set([
+    'cast', 'collections', 'compare', 'crypto', 'css', 'debug', 'diagrams',
+    'encoding', 'fmt', 'hash', 'hugo', 'images', 'inflect', 'js', 'lang', 'math',
+    'now', 'openapi3', 'os', 'page', 'partials', 'path', 'reflect', 'resources',
+    'safe', 'site', 'strings', 'templates', 'time', 'transform', 'urls'
+]);
 
 let mapHugoVariablesToParams = (obj, path) => {
     let resolved = {};
@@ -778,6 +808,17 @@ export class Engine {
             // We're capable of looking up a simple dot notation access
             const result = dig(props_obj, normalized);
             if (result !== undefined) return result
+
+            const insensitiveResult = digInsensitive(props_obj, normalized);
+            if (insensitiveResult !== undefined) return insensitiveResult;
+        }
+
+        // Hugo reads a leading bare word as a function call, so an identifier
+        // that isn't in scope and isn't a Hugo global can only build a
+        // template that fails to parse.
+        if (/^\w+(\.\w+)*$/.test(str) && !HUGO_GLOBALS.has(str.split('.')[0])) {
+            logger?.log?.(`Nothing in scope for ${str}`);
+            return undefined;
         }
 
         // Rewrite array.0 into index array 0
@@ -836,15 +877,26 @@ export class Engine {
             "content/_index.md": evalContent,
             ...ensureUnifiedLayoutInstalled()
         };
-        if (this.lastEvalTemplate !== eval_str) {
+        const rewriteTemplate = this.lastEvalTemplate !== eval_str;
+        if (rewriteTemplate) {
             writeFiles["layouts/partials/bookshop_eval_expr.html"] = eval_str;
-            this.lastEvalTemplate = eval_str;
         }
         await this.wasm.writeFiles(JSON.stringify(writeFiles));
+        if (rewriteTemplate) {
+            this.lastEvalTemplate = eval_str;
+        }
 
-        const { error: buildError } = await this.buildWasm();
+        const { error: buildError, logging } = await this.buildWasm();
         if (buildError) {
-            console.warn(buildError);
+            // Hugo keeps a template that failed to parse in its store with no
+            // parsed tree, and running it again crashes rather than erroring,
+            // so make sure the next eval rewrites this template.
+            this.lastEvalTemplate = null;
+            console.warn([
+                `Bookshop failed to evaluate \`${str}\``,
+                buildError,
+                ...(logging || [])
+            ].join('\n'));
             return;
         }
 
