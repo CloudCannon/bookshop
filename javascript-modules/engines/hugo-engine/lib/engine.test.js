@@ -82,6 +82,26 @@ test("eval matches Hugo's case insensitive params", async t => {
 
     const nested = await engine.eval(`.params.Test`, [{ Params: { test: 'bookshop' } }]);
     t.is(nested, 'bookshop');
+
+    // Hugo stops lowercasing keys at an array, so neither should we
+    const inArray = await engine.eval(`.blocks.0.Heading`, [{ blocks: [{ heading: 'bookshop' }] }]);
+    t.is(inArray, null);
+});
+
+test("eval the Params scope", async t => {
+    const data = { Params: { title: 'Home', blocks: ['first', 'second'] } };
+
+    const params = await engine.eval(`.Params`, [data]);
+    t.deepEqual(params, data.Params);
+
+    const nested = await engine.eval(`.Params.title`, [data]);
+    t.is(nested, 'Home');
+
+    const indexed = await engine.eval(`(index .Params.blocks 1)`, [data]);
+    t.is(indexed, 'second');
+
+    const dict = await engine.eval(`(dict "page" .Params "heading" .Params.title)`, [data]);
+    t.deepEqual(dict, { page: data.Params, heading: 'Home' });
 });
 
 test("eval an identifier that isn't in scope", async t => {
