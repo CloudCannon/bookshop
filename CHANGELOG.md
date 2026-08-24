@@ -9,6 +9,8 @@
 
 ## Unreleased
 
+## v3.20.0 (August 24, 2026)
+
 * Fixed Hugo live editing breaking when a component referenced a prop that wasn't in scope. The expression was passed to Hugo as a bare word, which Hugo read as a function call, and the resulting template left Hugo unable to render anything else on the page.
 * Hugo live editing now resolves props without regard to case, matching how Hugo reads front matter, rather than falling back to a Hugo build to answer a lookup it already had the data for.
 * Expressions that can't resolve are no longer sent to Hugo, saving a WASM build each time one is evaluated.
