@@ -29,8 +29,8 @@
   "dependencies": {
     "@bookshop/helpers": "workspace:*",
     "esbuild": "^0.13.10",
-    "liquidjs": "10.17.0",
-    "markdown-it": "^13.0.1",
+    "liquidjs": "10.27.2",
+    "markdown-it": "^14.2.0",
     "punycode": "^2.1.1",
     "slugify": "^1.5.3"
   },
